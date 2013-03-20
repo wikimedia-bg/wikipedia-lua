@@ -456,4 +456,16 @@ function str._escapePattern( pattern_str )
     return mw.ustring.gsub( pattern_str, "([%(%)%.%%%+%-%*%?%[%^%$%]])", "%%%1" );
 end
 
+--[[
+Checks if a string starts with a latin character
+]]
+function str.latin( frame )
+    local c = mw.ustring.sub( frame.args[1], 1, 1 )
+    if ((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z')) then
+        return 1
+    else
+        return 0
+    end
+end
+
 return str
