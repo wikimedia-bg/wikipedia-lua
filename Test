@@ -1,0 +1,8 @@
+local str = {}
+
+function str.lat( frame )
+    local new_args = str._getParameters( frame.args, { 's' } );
+    local s = new_args['s'] or '';
+    local c = mw.ustring.sub( s, 1, 1 )
+    return ((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z'))
+end
