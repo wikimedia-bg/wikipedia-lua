@@ -1,12 +1,7 @@
 local str = {}
 
 function str.lat( frame )
-    local c = mw.ustring.sub( frame.args[1], 1, 1 )
-    if ((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z')) then
-        return 1
-    else
-        return 0
-    end
+    return 0
 end
 
 return str
