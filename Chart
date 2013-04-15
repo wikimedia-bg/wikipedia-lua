@@ -107,7 +107,7 @@ function pieChart( frame )
     end
 
     function createImageMap()
-        addRes( '{{#tag:imagemap|', 'Image:Circle frame.svg{{!}}' .. ( radius * 2 ) .. 'px' )
+        addRes( '{{#tag:imagemap|', 'Image:Circle frame white.svg{{!}}' .. ( radius * 2 ) .. 'px' )
         addRes( unpack( imslices ) )
         addRes( 'desc none', '}}' )
     end
