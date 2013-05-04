@@ -189,6 +189,41 @@ function z.min( frame )
 end
 
 --[[
+average 
+ 
+Finds the average
+ 
+Usage:
+    {{#invoke:Math| average | value1 | value2 | ... }}
+OR
+    {{#invoke:Math| average }}
+ 
+When used with no arguments, it takes its input from the parent
+frame.  Note, any values that do not evaluate to numbers are ignored.
+]]
+function z.average( frame )
+    local args = frame.args;
+    if args[1] == nil then
+        local parent = frame:getParent();
+        args = parent.args;
+    end
+    local sum = 0;
+    local count = 0;
+ 
+    local i = 1;
+    while args[i] ~= nil do
+        local val = z._cleanNumber( frame, args[i] );
+        if val ~= nil then
+            sum = sum + val
+            count = count + 1
+        end        
+        i = i + 1;
+    end
+ 
+    return (count == 0 and 0 or sum/count)
+end
+
+--[[
 round
 
 Rounds a number to specified precision
