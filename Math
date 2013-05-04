@@ -224,6 +224,39 @@ function z.average( frame )
 end
 
 --[[
+sum
+ 
+Finds the sum
+ 
+Usage:
+    {{#invoke:Math| sum | value1 | value2 | ... }}
+OR
+    {{#invoke:Math| sum }}
+ 
+When used with no arguments, it takes its input from the parent
+frame.  Note, any values that do not evaluate to numbers are ignored.
+]]
+function z.sum( frame )
+    local args = frame.args;
+    if args[1] == nil then
+        local parent = frame:getParent();
+        args = parent.args;
+    end
+    local sum = 0;
+ 
+    local i = 1;
+    while args[i] ~= nil do
+        local val = z._cleanNumber( frame, args[i] );
+        if val ~= nil then
+            sum = sum + val
+        end        
+        i = i + 1;
+    end
+ 
+    return sum
+end
+
+--[[
 round
 
 Rounds a number to specified precision
