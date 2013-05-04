@@ -395,7 +395,7 @@ function z._cleanNumber( frame, number_string )
     end    
     
     -- Evaluate comma as decimal separator
-    number_string = number_string:gsub( ',', '.', 1 );
+    number_string = mw.ustring.gsub( number_string, ',', '.', 1 );
     
     -- Attempt basic conversion
     local number = tonumber( number_string )
