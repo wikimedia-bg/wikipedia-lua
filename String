@@ -382,6 +382,18 @@ function str.replace( frame )
     return result;
 end
 
+--[[ 
+    simple function to pipe string.rep to templates.
+]]
+
+function str.rep( frame )
+    local repetitions = tonumber( frame.args[2] )
+    if not repetitions then 
+        return str._error( 'function rep expects a number as second parameter, received "' .. ( frame.args[2] or '' ) .. '"' )
+    end
+    return string.rep( frame.args[1] or '', repetitions )
+end
+
 --[[
 Helper function that populates the argument list given that user may need to use a mix of
 named and unnamed parameters.  This is relevant because named parameters are not
@@ -454,18 +466,6 @@ as plain text.
 ]]
 function str._escapePattern( pattern_str )
     return mw.ustring.gsub( pattern_str, "([%(%)%.%%%+%-%*%?%[%^%$%]])", "%%%1" );
-end
-
---[[
-Checks if a string starts with a latin character
-]]
-function str.latin( frame )
-    local c = mw.ustring.sub( frame.args[1], 1, 1 )
-    if ((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z')) then
-        return 1
-    else
-        return 0
-    end
 end
 
 return str
