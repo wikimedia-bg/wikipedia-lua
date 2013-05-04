@@ -394,9 +394,12 @@ function z._cleanNumber( frame, number_string )
         return nil, nil;
     end    
     
+    -- Evaluate comma as decimal separator
+    number_string = number_string:gsub( ',', '.', 1 );
+    
     -- Attempt basic conversion
     local number = tonumber( number_string )
-    
+        
     -- If failed, attempt to evaluate input as an expression
     if number == nil then        
         local attempt = frame:preprocess( '{{#expr: ' .. number_string .. '}}' );
