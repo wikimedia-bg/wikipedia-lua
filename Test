@@ -1,10 +1,12 @@
 local p = {}
 
-function p.getEntityFromId( frame )
+function p.test( frame )
     if frame.args.id then
-        return mw.wikibase.getEntity( frame.args.id )
+        a = mw.wikibase.getEntity( frame.args.id )
+    else
+        a = mw.wikibase.getEntity()
     end
-    return mw.wikibase.getEntity()
+    return a.title
 end
 
 return p
