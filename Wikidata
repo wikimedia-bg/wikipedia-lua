@@ -135,4 +135,21 @@ function p.formatStatements( frame )
     return formatStatements( frame.args )
 end
 
+function getLabel( frame )
+    if not frame.args.lang then
+        return ''
+    end
+
+    --Get entity
+    local entity = getEntityFromId( frame.args.entityId )
+    if not entity then
+        return ''
+    end
+
+    if (entity.labels == nil) or (not entity.labels[frame.args.lang]) then
+        return ''
+    end
+    return entity.labels[frame.args.lang]['value']
+end
+
 return p
