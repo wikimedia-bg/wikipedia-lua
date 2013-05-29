@@ -135,7 +135,7 @@ function p.formatStatements( frame )
     return formatStatements( frame.args )
 end
 
-function getLabel( frame )
+function p.getLabel( frame )
     if not frame.args.lang then
         return ''
     end
