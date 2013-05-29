@@ -1,7 +1,10 @@
-local str = {}
+local p = {}
 
-function str.lat( frame )
-    return 0
+function p.getEntityFromId( id )
+    if id then
+        return mw.wikibase.getEntity( id )
+    end
+    return mw.wikibase.getEntity()
 end
 
-return str
+return p
