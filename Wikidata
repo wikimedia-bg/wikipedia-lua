@@ -110,9 +110,13 @@ function formatDatavalue( datavalue, options )
 end
 
 function formatEntityId( entityId, options )
+    if (options.format == 'id') then
+        return entityId
+    end
+
     local label = mw.wikibase.label( entityId )
     local link = mw.wikibase.sitelink( entityId )
-    if link and (not options.label) then
+    if link and (options.format ~= 'label') then
         if label then
             return '[[' .. link .. '|' .. label .. ']]'
         else
