@@ -112,7 +112,7 @@ end
 function formatEntityId( entityId, options )
     local label = mw.wikibase.label( entityId )
     local link = mw.wikibase.sitelink( entityId )
-    if link then
+    if link and (not options.label) then
         if label then
             return '[[' .. link .. '|' .. label .. ']]'
         else
