@@ -314,17 +314,18 @@ end
 --[[
     Return a Time as a string
     @param mw.language|string|nil language to use. By default the content language.
+    @param string format string
     @return string
 ]]--
-function Time:toString( language )
+function Time:toString( language, format )
     if language == nil then
         language = mw.language.getContentLanguage()
     elseif type( language ) == 'string' then
         language = mw.language.new( language )
     end
 
-    --return language:formatDate( 'r', self:toIso8061() )
-    return self:toIso8061()
+    return language:formatDate( format, self:toIso8061() )
+    --return self:toIso8061()
     --TODO: improve
 end
 
@@ -332,14 +333,15 @@ end
     Return a Time in HTMl (with a <time> node)
     @param mw.language|string|nil language to use. By default the content language.
     @param table|nil attributes table of attributes to add to the <time> node.
+    @param string format string
     @return string
 ]]--
-function Time:toHtml( language, attributes )
+function Time:toHtml( language, attributes, format )
     if attributes == nil then
         attributes = {}
     end
     attributes['datetime'] = self:toIso8061()
-    return mw.text.tag( 'time', attributes, self:toString( language ) )
+    return mw.text.tag( 'time', attributes, self:toString( language, format ) )
 end
 
 --[[
