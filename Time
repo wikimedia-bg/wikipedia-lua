@@ -323,8 +323,8 @@ function Time:toString( language )
         language = mw.language.new( language )
     end
 
-    --return language:formatDate( 'r', self:toIso8061() )
-    return self:toIso8061()
+    return language:formatDate( 'j F Y', self:toIso8061() )
+    --return self:toIso8061()
     --TODO: improve
 end
 
