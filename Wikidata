@@ -103,7 +103,14 @@ function formatDatavalue( datavalue, options )
     if datavalue.type == 'wikibase-entityid' then
         return formatEntityId( getEntityIdFromValue( datavalue.value ), options )
     elseif datavalue.type == 'string' then
-        return datavalue.value --TODO ids + media
+        if options.pattern and options.pattern ~= '' then
+            return formatFromPattern( datavalue.value, options )
+        else
+            return datavalue.value
+        end
+    elseif datavalue.type == 'time' then
+        local Time = require 'Module:Time'
+        return Time.newFromWikidataValue( datavalue.value ):toHtml()
     else
         return formatError( 'unknown-datavalue-type' )
     end
