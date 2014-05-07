@@ -82,6 +82,49 @@ function formatSnak( snak, options )
     end
 end
 
+function formatGlobeCoordinate( value, options )
+    if options['subvalue'] == 'latitude' then
+        return value['latitude']
+    elseif options['subvalue'] == 'longitude' then
+        return value['longitude']
+    else
+        local eps = 0.0000001 -- < 1/360000
+        local globe = '' -- TODO
+        local lat = {}
+        lat['abs'] = math.abs(value['latitude'])
+        lat['ns'] = value['latitude'] >= 0 and 'N' or 'S'
+        lat['d'] = math.floor(lat['abs'] + eps)
+        lat['m'] = math.floor((lat['abs'] - lat['d']) * 60 + eps)
+        lat['s'] = math.max(0, ((lat['abs'] - lat['d']) * 60 - lat['m']) * 60)
+        local lon = {}
+        lon['abs'] = math.abs(value['longitude'])
+        lon['ew'] = value['longitude'] >= 0 and 'E' or 'W'
+        lon['d'] = math.floor(lon['abs'] + eps)
+        lon['m'] = math.floor((lon['abs'] - lon['d']) * 60 + eps)
+        lon['s'] = math.max(0, ((lon['abs'] - lon['d']) * 60 - lon['m']) * 60)
+        local coord = '{{coord'
+        if (value['precision'] == nil) or (value['precision'] < 1/60) then -- по умолчанию с точностью до секунды
+            coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['s'] .. '|' .. lat['ns']
+            coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['s'] .. '|' .. lon['ew']
+        elseif value['precision'] < 1 then
+            coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['ns']
+            coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['ew']
+        else
+            coord = coord .. '|' .. lat['d'] .. '|' .. lat['ns']
+            coord = coord .. '|' .. lon['d'] .. '|' .. lon['ew']
+        end
+        coord = coord .. '|globe:' .. globe
+        if options['display'] then
+            coord = coord .. '|display=' .. options.display
+        else
+            coord = coord .. '|display=title'
+        end
+        coord = coord .. '}}'
+ 
+        return g_frame:preprocess(coord)
+    end
+end
+
 function formatDatavalue( datavalue, options )
     --Use the customize handler if provided
     if options['value-module'] or options['value-function'] then
@@ -108,6 +151,8 @@ function formatDatavalue( datavalue, options )
         else
             return datavalue.value
         end
+    elseif datavalue.type == 'globecoordinate' then
+        return formatGlobeCoordinate( datavalue.value, options ) 
     elseif datavalue.type == 'time' then
         local Time = require 'Module:Time'
         return Time.newFromWikidataValue( datavalue.value ):toHtml()
