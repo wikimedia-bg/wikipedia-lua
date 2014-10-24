@@ -1,4 +1,4 @@
-require('Модул:No globals')
+require('Module:No globals')
 
 local function getCatForId( id )
     local title = mw.title.getCurrentTitle()
@@ -400,7 +400,7 @@ function p.authorityControl( frame )
             rct = rct + 1
         end
     end
-    local Navbox = require('Модул:Навигационен шаблон')
+    local Navbox = require('Module:Навигационен шаблон')
     local elementscats = ''
     if rct > 13 then
     	elementscats  = '[[Category:AC with ' .. rct .. ' elements]]'
