@@ -275,8 +275,8 @@ end
 
 local function getTrackingCategories()
     local cats = {}
-    if needsHorizontalLists() then table.insert(cats, 'Navigational boxes without horizontal lists') end
-    if hasBackgroundColors() then table.insert(cats, 'Navboxes using background colours') end
+    if needsHorizontalLists() then table.insert(cats, 'Навигационни шаблони без хоризонтални списъци') end
+    if hasBackgroundColors() then table.insert(cats, 'Навигационни шаблони подържащи background цветове') end
     return cats
 end
 
@@ -287,7 +287,7 @@ local function renderTrackingCategories(builder)
     if subpage == 'doc' or subpage == 'sandbox' or subpage == 'testcases' then return end
     
     for i, cat in ipairs(getTrackingCategories()) do
-        builder.wikitext('[[Category:' .. cat .. ']]') 
+        builder.wikitext('[[Категория:' .. cat .. ']]') 
     end
 end
 
