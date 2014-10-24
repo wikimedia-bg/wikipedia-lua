@@ -1,14 +1,14 @@
-require('Module:No globals')
+require('Модул:No globals')
 
 local function getCatForId( id )
     local title = mw.title.getCurrentTitle()
     local namespace = title.namespace
     if namespace == 0 then
-        return '[[Категория:Енциклопедични статии с ' .. id .. ' на идентификация]]'
+        return '[[Категория:Енциклопедични статии с нормативен контрол ('.. id .. ')]]'
     elseif namespace == 2 and not title.isSubpage then
-        return '[[Категория:Потребителски страници с ' .. id .. ' на идентификация]]'
+        return '[[Категория:Потребителски страници с нормативен контрол ('.. id .. ']]'
     else
-        return '[[Категория:Други страници с ' .. id .. ' на идентификация]]'
+        return '[[Категория:Други страници с нормативен контрол ('.. id .. ')]]'
     end
 end
 
@@ -280,7 +280,7 @@ local function createRow( id, label, rawValue, link, withUid )
             return '* ' .. label .. ' ' .. link .. '\n'
         end
     else
-        return '* <span class="error">The ' .. id .. ' id ' .. rawValue .. ' is not valid.</span>[[Категория:Енциклопедични статии с грешен нормативен контрол на идентификация (' .. id .. ')]]\n'
+        return '* <span class="error">The ' .. id .. ' id ' .. rawValue .. ' is not valid.</span>[[Категория:Енциклопедични статии с грешен нормативен контрол (' .. id .. ')]]\n'
     end
 end
 
@@ -400,7 +400,7 @@ function p.authorityControl( frame )
             rct = rct + 1
         end
     end
-    local Navbox = require('Module:Navbox')
+    local Navbox = require('Модул:Навигационен шаблон')
     local elementscats = ''
     if rct > 13 then
     	elementscats  = '[[Category:AC with ' .. rct .. ' elements]]'
@@ -410,7 +410,7 @@ function p.authorityControl( frame )
 		return Navbox._navbox( {
 			name  = 'Authority control',
 			bodyclass = 'hlist',
-			group1 = '[[Authority control]]' .. elementscats,
+			group1 = '[[Нормативен контрол]]' .. elementscats,
 			list1 = table.concat( elements )
 			} )
 	else
