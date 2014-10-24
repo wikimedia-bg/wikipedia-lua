@@ -400,7 +400,7 @@ function p.authorityControl( frame )
             rct = rct + 1
         end
     end
-    local Navbox = require('Module:Навигационен шаблон')
+    local Navbox = require('Module:Navbox')
     local elementscats = ''
     if rct > 13 then
     	elementscats  = '[[Category:AC with ' .. rct .. ' elements]]'
