@@ -2,11 +2,11 @@ function getCatForId( id )
     local title = mw.title.getCurrentTitle()
     local namespace = title.namespace
     if namespace == 0 then
-        return '[[Категорија:Енциклопедични статии с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Енциклопедични статии с нормативен контрол (' .. id .. ')]]'
     elseif namespace == 2 and not title.isSubpage then
-        return '[[Категорија:Потребителски страници с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Потребителски страници с нормативен контрол (' .. id .. ')]]'
     else
-        return '[[Категорија:Други страници с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Други страници с нормативен контрол (' .. id .. ')]]'
     end
 end
 
@@ -283,18 +283,18 @@ end
 
 --In this order: name of the parameter, label, propertyId in Wikidata, formatting function
 local conf = {
-    { 'VIAF', '[[Виртуално международно нормативно досие|VIAF]]', 214, viafLink },
+    { 'VIAF', '[[Виртуален международнен нормативен архив|VIAF]]', 214, viafLink },
     { 'LCCN', '[[Контролен номер на библиотеката на американския Конгрес|LCCN]]', 244, lccnLink },
     { 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, isniLink },
     { 'ORCID', '[[ORCID]]', 496, orcidLink },
-    { 'GND', '[[Общо нормативно досие|GND]]', 227, gndLink },
+    { 'GND', '[[Колективен нормативен архив|GND]]', 227, gndLink },
     { 'SELIBR', '[[LIBRIS|SELIBR]]', 906, selibrLink },
     { 'SUDOC', '[[Система за университетска документацията на Франция|SUDOC]]', 269, sudocLink },    
     { 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, bnfLink },
     { 'BPN', '[[Биографичен портал|BPN]]', 651, bpnLink },
     { 'RID', '[[ResearcherID]]', 1053, ridLink },
     { 'BIBSYS', '[[BIBSYS]]', 1015, bibsysLink },
-    { 'ULAN', '[[Общ списък на авторските имена|ULAN]]', 245, ulanLink },
+    { 'ULAN', '[[Колективен архив на авторските имена|ULAN]]', 245, ulanLink },
     { 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, hlsLink },
     { 'LIR', '[[Швейцарски исторически лексикон#Творби|LIR]]', 886, lirLink },
     { 'MBA', '[[MusicBrainz]]', 434, mbLink },
