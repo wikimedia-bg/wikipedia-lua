@@ -2,11 +2,11 @@ function getCatForId( id )
     local title = mw.title.getCurrentTitle()
     local namespace = title.namespace
     if namespace == 0 then
-        return '[[Категория:Енциклопедични статии с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Уикипедия:Енциклопедични статии с нормативен контрол (' .. id .. ')]]'
     elseif namespace == 2 and not title.isSubpage then
-        return '[[Категория:Потребителски страници с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Уикипедия:Потребителски страници с нормативен контрол (' .. id .. ')]]'
     else
-        return '[[Категория:Други страници с нормативен контрол (' .. id .. ')]]'
+        return '[[Категория:Уикипедия:Други страници с нормативен контрол (' .. id .. ')]]'
     end
 end
 
