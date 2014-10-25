@@ -215,7 +215,7 @@ function bnfLink( id )
         id = 'cb' .. id
     end
 
-    return '[http://catalogue.bnf.fr/ark:/12148/' .. id .. ' ' .. id .. '] [http://data.bnf.fr/ark:/12148/' .. id .. ' (досиета)]' .. getCatForId( 'BNF' )
+    return '[http://catalogue.bnf.fr/ark:/12148/' .. id .. ' ' .. id .. '] [http://data.bnf.fr/ark:/12148/' .. id .. ' (архив)]' .. getCatForId( 'BNF' )
 end
 
 function bpnLink( id )
