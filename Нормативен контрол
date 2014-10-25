@@ -1,75 +1,73 @@
-require('Module:No globals')
-
-local function getCatForId( id )
+function getCatForId( id )
     local title = mw.title.getCurrentTitle()
     local namespace = title.namespace
     if namespace == 0 then
-        return '[[Категория:Енциклопедични статии с нормативен контрол ('.. id .. ')]]'
+        return '[[Категорија:Енциклопедични статии с нормативен контрол (' .. id .. ')]]'
     elseif namespace == 2 and not title.isSubpage then
-        return '[[Категория:Потребителски страници с нормативен контрол ('.. id .. ']]'
+        return '[[Категорија:Потребителски страници с нормативен контрол (' .. id .. ')]]'
     else
-        return '[[Категория:Други страници с нормативен контрол ('.. id .. ')]]'
+        return '[[Категорија:Други страници с нормативен контрол (' .. id .. ')]]'
     end
 end
 
-local function viafLink( id )
+function viafLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[https://viaf.org/viaf/' .. id .. ' ' .. id .. ']' .. getCatForId( 'VIAF' )
 end
 
-local function kulturnavLink( id )
+function kulturnavLink( id )
     return '[http://kulturnav.org/language/en/' .. id .. ' id]' 
 end
 
-local function sikartLink( id )
+function sikartLink( id )
     return '[http://www.sikart.ch/KuenstlerInnen.aspx?id=' .. id .. '&lng=en ' .. id .. ']' 
 end
 
-local function tlsLink( id )
-	local id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'WIKI') end)
+function tlsLink( id )
+	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'WIKI') end)
     return '[http://tls.theaterwissenschaft.ch/wiki/' .. id2 .. ' ' .. id .. ']' 
 end
 
 
-local function ciniiLink( id )
+function ciniiLink( id )
     return '[http://ci.nii.ac.jp/author/' .. id .. '?l=en ' .. id .. ']' 
 end
 
-local function bneLink( id )
+function bneLink( id )
     return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id=' .. id .. ' ' .. id .. ']' 
 end
 
 
-local function uscongressLink( id )
+function uscongressLink( id )
     return '[http://bioguide.congress.gov/scripts/biodisplay.pl?index=' .. id .. ' ' .. id .. ']' 
 end
 
-local function narapersonLink( id )
+function narapersonLink( id )
     return '[http://research.archives.gov/person/' .. id .. ' ' .. id .. ']' 
 end
 
-local function naraorganizationLink( id )
+function naraorganizationLink( id )
     return '[http://research.archives.gov/organization/' .. id .. ' ' .. id .. ']' 
 end
 
-local function botanistLink( id )
-	local id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'PATH') end)
+function botanistLink( id )
+	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'PATH') end)
     return '[http://www.ipni.org/ipni/advAuthorSearch.do?find_abbreviation=' .. id2 .. ' ' .. id .. ']' 
 end
 
-local function mgpLink( id )
+function mgpLink( id )
     -- TODO Implement some sanity checking regex
     return '[http://www.genealogy.ams.org/id.php?id=' .. id .. ' ' .. id .. ']' 
 end
 
-local function rslLink( id )
+function rslLink( id )
     -- TODO Implement some sanity checking regex
     return '[http://aleph.rsl.ru/F?func=find-b&find_code=SYS&adjacent=Y&local_base=RSL11&request=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
 end
 
-local function leonoreLink( id )
+function leonoreLink( id )
 -- Identifiants allant de LH/1/1 à LH/2794/54 (légionnaires)
 -- Identifiants allant de C/0/1 à C/0/84 (84 légionnaires célèbres)
 -- Identifiants allant de 19800035/1/1 à 19800035/385/51670 (légionnaires décédés entre 1954 et 1977, et quelques dossiers de légionnaires décédés avant 1954)
@@ -81,50 +79,64 @@ local function leonoreLink( id )
     return '[//www.culture.gouv.fr/public/mistral/leonore_fr?ACTION=CHERCHER&FIELD_1=COTE&VALUE_1=' .. id .. ' ' .. id .. ']' 
 end
 
-local function sbnLink( id )
+function sbnLink( id )
     if not string.match( id, '^IT\\ICCU\\%d%d%d%d%d%d%d%d%d%d$' ) and not string.match( id, '^IT\\ICCU\\%u%u[%d%u]%u\\%d%d%d%d%d%d$' ) then
         return false
     end
     return '[http://opac.sbn.it/opacsbn/opac/iccu/scheda_authority.jsp?bid=' .. id .. ' ' .. id .. ']'
 end
 
-local function nkcLink( id )
+function nkcLink( id )
 	return '[http://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica=' .. id .. '&CON_LNG=ENG ' .. id .. ']' 
 end
 
-local function nclLink( id )
+function nclLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence=' .. id .. '&CON_LNG=ENG ' .. id .. ']' 
 end
 
-local function ndlLink( id )
+function ndlLink( id )
 	return '[http://id.ndl.go.jp/auth/ndlna/' .. id .. ' ' .. id .. ']' 
 end
 
-local function sudocLink( id )
+function sudocLink( id )
     if not string.match( id, '^%d%d%d%d%d%d%d%d[%dxX]$' ) then
         return false
     end
     return '[http://www.idref.fr/' .. id .. ' ' .. id .. ']' 
 end
 
-local function hlsLink( id )
+function hlsLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[http://www.hls-dhs-dss.ch/textes/f/F' .. id .. '.php ' .. id .. ']'
 end
 
-local function lirLink( id )
+function lirLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[http://www.e-lir.ch/e-LIR___Lexicon.' .. id .. '.450.0.html ' .. id .. ']'
 end
 
-local function splitLccn( id )
+function lccnLink( id )
+    local parts = splitLccn( id )
+    if not parts then
+        return false
+    end
+    id = parts[1] .. parts[2] .. append( parts[3], '0', 6 )
+    return '[http://id.loc.gov/authorities/names/' .. id .. ' ' .. id .. ']' .. getCatForId( 'LCCN' )
+end
+
+function mbLink( id )
+    -- TODO Implement some sanity checking regex
+    return '[//musicbrainz.org/artist/' .. id .. ' ' .. id .. ']' .. getCatForId( 'MusicBrainz' )
+end
+
+function splitLccn( id )
     if id:match( '^%l%l?%l?%d%d%d%d%d%d%d%d%d?%d?$' ) then
         id = id:gsub( '^(%l+)(%d+)(%d%d%d%d%d%d)$', '%1/%2/%3' )
     end
@@ -134,30 +146,36 @@ local function splitLccn( id )
     return false
 end
 
-local function append(str, c, length)
+function append(str, c, length)
     while str:len() < length do
         str = c .. str
     end
     return str
 end
 
-local function lccnLink( id )
-    local parts = splitLccn( id )
-    if not parts then
+function isniLink( id )
+    id = validateIsni( id )
+    if not id then
         return false
     end
-    local lccnType = parts[1] ~= 'sh' and 'names' or 'subjects'
-    id = parts[1] .. parts[2] .. append( parts[3], '0', 6 )
-    return '[http://id.loc.gov/authorities/' .. lccnType .. '/' .. id .. ' ' .. id .. ']' .. getCatForId( 'LCCN' )
+    return '[http://isni-url.oclc.nl/isni/' .. id .. ' ' .. id:sub( 1, 4 ) .. ' ' .. id:sub( 5, 8 ) .. ' '  .. id:sub( 9, 12 ) .. ' '  .. id:sub( 13, 16 ) .. ']' .. getCatForId( 'ISNI' )
 end
 
-local function mbLink( id )
-    -- TODO Implement some sanity checking regex
-    return '[//musicbrainz.org/artist/' .. id .. ' ' .. id .. ']' .. getCatForId( 'MusicBrainz' )
+--Validate ISNI (and ORCID) and retuns it as a 16 characters string or returns false if it's invalid
+--See http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+function validateIsni( id )
+    id = id:gsub( '[ %-]', '' ):upper()
+    if not id:match( '^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d[%dX]$' ) then
+        return false
+    end
+    if getIsniCheckDigit( id ) ~= string.char( id:byte( 16 ) ) then
+        return false
+    end
+    return id
 end
 
 --Returns the ISNI check digit isni must be a string where the 15 first elements are digits
-local function getIsniCheckDigit( isni )
+function getIsniCheckDigit( isni )
     local total = 0
     for i = 1, 15 do
         local digit = isni:byte( i ) - 48 --Get integer value
@@ -171,28 +189,7 @@ local function getIsniCheckDigit( isni )
     return tostring( result )
 end
 
---Validate ISNI (and ORCID) and retuns it as a 16 characters string or returns false if it's invalid
---See http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
-local function validateIsni( id )
-    id = id:gsub( '[ %-]', '' ):upper()
-    if not id:match( '^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d[%dX]$' ) then
-        return false
-    end
-    if getIsniCheckDigit( id ) ~= string.char( id:byte( 16 ) ) then
-        return false
-    end
-    return id
-end
-
-local function isniLink( id )
-    id = validateIsni( id )
-    if not id then
-        return false
-    end
-    return '[http://isni-url.oclc.nl/isni/' .. id .. ' ' .. id:sub( 1, 4 ) .. ' ' .. id:sub( 5, 8 ) .. ' '  .. id:sub( 9, 12 ) .. ' '  .. id:sub( 13, 16 ) .. ']' .. getCatForId( 'ISNI' )
-end
-
-local function orcidLink( id )
+function orcidLink( id )
     id = validateIsni( id )
     if not id then
         return false
@@ -201,50 +198,50 @@ local function orcidLink( id )
     return '[http://orcid.org/' .. id .. ' ' .. id .. ']' .. getCatForId( 'ORCID' )
 end
 
-local function gndLink( id )
+function gndLink( id )
     return '[http://d-nb.info/gnd/' .. id .. ' ' .. id .. ']' .. getCatForId( 'GND' )
 end
 
-local function selibrLink( id )
+function selibrLink( id )
 	if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[//libris.kb.se/auth/' .. id .. ' ' .. id .. ']' .. getCatForId( 'SELIBR' )
 end
 
-local function bnfLink( id )
+function bnfLink( id )
     --Add cb prefix if it has been removed
     if not string.match( id, '^cb.+$' ) then
         id = 'cb' .. id
     end
 
-    return '[http://catalogue.bnf.fr/ark:/12148/' .. id .. ' ' .. id .. '] [http://data.bnf.fr/ark:/12148/' .. id .. ' (data)]' .. getCatForId( 'BNF' )
+    return '[http://catalogue.bnf.fr/ark:/12148/' .. id .. ' ' .. id .. '] [http://data.bnf.fr/ark:/12148/' .. id .. ' (досиета)]' .. getCatForId( 'BNF' )
 end
 
-local function bpnLink( id )
+function bpnLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
     return '[http://www.biografischportaal.nl/en/persoon/' .. id .. ' ' .. id .. ']' .. getCatForId( 'BPN' )
 end
 
-local function ridLink( id )
+function ridLink( id )
     return '[http://www.researcherid.com/rid/' .. id .. ' ' .. id .. ']' .. getCatForId( 'RID' )
 end
 
-local function bibsysLink( id )
+function bibsysLink( id )
     return '[http://ask.bibsys.no/ask/action/result?cmd=&kilde=biblio&cql=bs.autid+%3D+' .. id .. '&feltselect=bs.autid ' .. id .. ']' .. getCatForId( 'BIBSYS' )
 end
 
-local function ulanLink( id )
+function ulanLink( id )
     return '[//www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&subjectid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'ULAN' )
 end
 
-local function nlaLink( id )
+function nlaLink( id )
 	return '[//nla.gov.au/anbd.aut-an' .. id .. ' ' .. id .. ']' .. getCatForId( 'NLA' )
 end
 
-local function getIdsFromWikidata( item, property )
+function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
         return ids
@@ -255,7 +252,7 @@ local function getIdsFromWikidata( item, property )
     return ids
 end
 
-local function matchesWikidataRequirements( item, reqs )
+function matchesWikidataRequirements( item, reqs )
     for _, group in pairs( reqs ) do
         local property = 'p' .. group[1]
         local qid = group[2]
@@ -272,7 +269,7 @@ local function matchesWikidataRequirements( item, reqs )
     return false
 end
 
-local function createRow( id, label, rawValue, link, withUid )
+function createRow( id, label, rawValue, link, withUid )
     if link then
         if withUid then
             return '* ' .. label .. ' <span class="uid">' .. link .. '</span>\n'
@@ -280,7 +277,7 @@ local function createRow( id, label, rawValue, link, withUid )
             return '* ' .. label .. ' ' .. link .. '\n'
         end
     else
-        return '* <span class="error">The ' .. id .. ' id ' .. rawValue .. ' is not valid.</span>[[Категория:Енциклопедични статии с грешен нормативен контрол (' .. id .. ')]]\n'
+        return '* <span class="error">The ' .. id .. ' id ' .. rawValue .. ' is not valid.</span>[[Category:Wikipedia articles with faulty authority control identifiers (' .. id .. ')]]\n'
     end
 end
 
@@ -383,39 +380,28 @@ function p.authorityControl( frame )
 
     --Worldcat
     if parentArgs['WORLDCATID'] and parentArgs['WORLDCATID'] ~= '' then
-        table.insert( elements, createRow( 'WORLDCATID', '', parentArgs['WORLDCATID'], '[//www.worldcat.org/identities/' .. parentArgs['WORLDCATID'] .. ' WorldCat]', false ) ) --Validation?
+        table.insert( elements, createRow( 'WORLDCATID', '', parentArgs['WORLDCATID'], '[http://www.worldcat.org/identities/' .. parentArgs['WORLDCATID'] .. ' WorldCat]', false ) ) --Validation?
     elseif parentArgs['LCCN'] and parentArgs['LCCN'] ~= '' then
         local lccnParts = splitLccn( parentArgs['LCCN'] )
         if lccnParts then
-            table.insert( elements, createRow( 'LCCN', '', parentArgs['LCCN'], '[//www.worldcat.org/identities/lccn-' .. lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3] .. ' WorldCat]', false ) )
+            table.insert( elements, createRow( 'LCCN', '', parentArgs['LCCN'], '[http://www.worldcat.org/identities/lccn-' .. lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3] .. ' WorldCat]', false ) )
         end
     end
 
     --Configured rows
-    local rct = 0
     for k, params in pairs( conf ) do
         local val = parentArgs[params[1]]
         if val and val ~= '' then
             table.insert( elements, createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
-            rct = rct + 1
         end
     end
     local Navbox = require('Module:Navbox')
-    local elementscats = ''
-    if rct > 13 then
-    	elementscats  = '[[Category:AC with ' .. rct .. ' elements]]'
-	end
-	
-	if #elements ~= 0 then
-		return Navbox._navbox( {
-			name  = 'Authority control',
-			bodyclass = 'hlist',
-			group1 = '[[Нормативен контрол]]' .. elementscats,
-			list1 = table.concat( elements )
-			} )
-	else
-		return ""
-	end
+    return Navbox._navbox( {
+        name  = 'Authority control',
+        bodyclass = 'hlist',
+        group1 = '[[Нормативен контрол]]',
+        list1 = table.concat( elements )
+    } )
 end
 
 return p
