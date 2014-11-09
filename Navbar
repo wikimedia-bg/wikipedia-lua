@@ -66,9 +66,9 @@ function p._navbar(args)
 	local talkpage = talk_title and talk_title.fullText or ''
 	local editurl = title:fullUrl('action=edit');
 
-	local viewLink, talkLink, editLink = 'преглед', 'разговор', 'редактирай'
+	local viewLink, talkLink, editLink = 'преглед', 'беседа', 'редактирай'
 	if args.mini then
-		viewLink, talkLink, editLink = 'п', 'р', 'у'
+		viewLink, talkLink, editLink = 'п', 'б', 'р'
 	end
 
 	local div = HtmlBuilder.create().tag('div')
@@ -85,7 +85,7 @@ function p._navbar(args)
 			.tag('span')
 				.css('word-spacing', 0)
 				.cssText(args.fontstyle)
-				.wikitext(args.text or 'This box:')
+				.wikitext(args.text or 'Кутия:')
 				.wikitext(' ')
 	end
 
