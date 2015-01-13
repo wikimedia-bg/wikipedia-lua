@@ -1,47 +1,10 @@
 local p = {}
 
 local getArgs
-local HtmlBuilder = require('Module:HtmlBuilder')
-
-local function trim(s)
-	return mw.ustring.match(s, "^%s*(.-)%s*$")
-end
-
-local function htmlError(s)
-	local span = HtmlBuilder.create('span')
-
-	span
-		.addClass('error')
-		.css('float', 'left')
-		.css('white-space', 'nowrap')
-		.wikitext('Грешка: ' .. s)
-
-	return tostring(span)
-end
-
-local function getTitle(pageName)
-	pageName = trim(pageName);
-	local page_title, talk_page_title;
-
-	if mw.ustring.sub(pageName, 1, 1) == ':' then
-		page_title = mw.title.new( mw.ustring.sub(pageName, 2));
-	else
-		page_title = mw.title.new(pageName, 'Шаблон');
-	end
-
-	if page_title then
-		talk_page_title = page_title.talkPageTitle;
-	else
-		talk_page_title = nil;
-	end
-
-	return page_title, talk_page_title;
-end
 
 function p._navbar(args)
-	local good, title, talk_title;
 	local titleArg = 1
-	
+
 	if args.collapsible then
 		titleArg = 2
 		if not args.plain then
@@ -52,107 +15,98 @@ function p._navbar(args)
 		end
 		args.style = 'float:left; text-align:left; width:6em;'
 	end
-	
-	good, title, talk_title = pcall(getTitle, args[titleArg] or (':' .. mw.getCurrentFrame():getParent():getTitle()));
-	if not good then
-		return htmlError(title);
-	end
+
+	local titleText = args[titleArg] or (':' .. mw.getCurrentFrame():getParent():getTitle())
+	local title = mw.title.new(mw.text.trim(titleText), 'Шаблон');
 
 	if not title then
-		return htmlError('Страницата не съществува')
+		error('Грешно заглавие ' .. titleText)
 	end
 
-	local mainpage = title.fullText;
-	local talkpage = talk_title and talk_title.fullText or ''
-	local editurl = title:fullUrl('action=edit');
+	local talkpage = title.talkPageTitle and title.talkPageTitle.fullText or '';
 
-	local viewLink, talkLink, editLink = 'преглед', 'беседа', 'редактирай'
-	if args.mini then
-		viewLink, talkLink, editLink = 'п', 'б', 'р'
-	end
-
-	local div = HtmlBuilder.create().tag('div')
+	local div = mw.html.create():tag('div')
 	div
-		.addClass('plainlinks')
-		.addClass('hlist')
-		.addClass('navbar')
-		.cssText(args.style)
+		:addClass('plainlinks')
+		:addClass('hlist')
+		:addClass('navbar')
+		:cssText(args.style)
 
-	if args.mini then div.addClass('mini') end
+	if args.mini then div:addClass('mini') end
 
 	if not (args.mini or args.plain) then
 		div
-			.tag('span')
-				.css('word-spacing', 0)
-				.cssText(args.fontstyle)
-				.wikitext(args.text or 'Кутия:')
-				.wikitext(' ')
+			:tag('span')
+				:css('word-spacing', 0)
+				:cssText(args.fontstyle)
+				:wikitext(args.text or 'Тази кутия:')
+				:wikitext(' ')
 	end
 
 	if args.brackets then
 		div
-			.tag('span')
-				.css('margin-right', '-0.125em')
-				.cssText(args.fontstyle)
-				.wikitext('&#91;')
-				.newline();
+			:tag('span')
+				:css('margin-right', '-0.125em')
+				:cssText(args.fontstyle)
+				:wikitext('&#91;')
+				:newline();
 	end
 
-	local ul = div.tag('ul');
+	local ul = div:tag('ul');
 
 	ul
-		.tag('li')
-			.addClass('nv-view')
-			.wikitext('[[' .. mainpage .. '|')
-			.tag('span')
-				.attr('title', 'Преглед на шаблона')
-				.cssText(args.fontstyle or '')
-				.wikitext(viewLink)
-				.done()
-			.wikitext(']]')
-			.done()
-		.tag('li')
-			.addClass('nv-talk')
-			.wikitext('[[' .. talkpage .. '|')
-			.tag('span')
-				.attr('title', 'Беседа на шаблона')
-				.cssText(args.fontstyle or '')
-				.wikitext(talkLink)
-				.done()
-			.wikitext(']]');
+		:tag('li')
+			:addClass('nv-view')
+			:wikitext('[[' .. title.fullText .. '|')
+			:tag('span')
+				:attr('title', 'Преглед на шаблона')
+				:cssText(args.fontstyle)
+				:wikitext(args.mini and 'п' or 'преглед')
+				:done()
+			:wikitext(']]')
+			:done()
+		:tag('li')
+			:addClass('nv-talk')
+			:wikitext('[[' .. talkpage .. '|')
+			:tag('span')
+				:attr('title', 'Беседа на шаблона')
+				:cssText(args.fontstyle)
+				:wikitext(args.mini and 'б' or 'беседа')
+				:done()
+			:wikitext(']]');
 
 	if not args.noedit then
 		ul
-			.tag('li')
-				.addClass('nv-edit')
-				.wikitext('[' .. editurl .. ' ')
-				.tag('span')
-					.attr('title', 'Редактиране на шаблона')
-					.cssText(args.fontstyle or '')
-					.wikitext(editLink)
-					.done()
-				.wikitext(']');
+			:tag('li')
+				:addClass('nv-edit')
+				:wikitext('[' .. title:fullUrl('action=edit') .. ' ')
+				:tag('span')
+					:attr('title', 'Редактиране на шаблона')
+					:cssText(args.fontstyle)
+					:wikitext(args.mini and 'р' or 'редактиране')
+					:done()
+				:wikitext(']');
 	end
 
 	if args.brackets then
 		div
-			.tag('span')
-				.css('margin-left', '-0.125em')
-				.cssText( args.fontstyle or '')
-				.wikitext('&#93;')
-				.newline();
-	end
-	
-	if args.collapsible then
-		div
-			.done()
-		.tag('span')
-			.css('font-size', '110%')
-			.cssText(args.fontstyle or '')
-			.wikitext(args[1])
+			:tag('span')
+				:css('margin-left', '-0.125em')
+				:cssText(args.fontstyle)
+				:wikitext('&#93;')
+				:newline();
 	end
 
-	return tostring(div.allDone())
+	if args.collapsible then
+		div
+			:done()
+		:tag('span')
+			:css('font-size', '110%')
+			:cssText(args.fontstyle)
+			:wikitext(args[1])
+	end
+
+	return tostring(div:done())
 end
 
 function p.navbar(frame)
