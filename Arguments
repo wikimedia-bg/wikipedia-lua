@@ -169,15 +169,15 @@ function arguments.getArgs(frame, options)
 		-- Accepts multiple tables as input and merges their keys and values
 		-- into one table using the specified iterator. If a value is already
 		-- present it is not overwritten; tables listed earlier have precedence.
-		-- We are also memoizing nil values, but those values can be
-		-- overwritten.
+		-- We are also memoizing nil values, which can be overwritten if they
+		-- are 's' (soft).
 		--]]
 		for _, t in ipairs(tables) do
 			for key, val in iterator(t) do
-				if metaArgs[key] == nil then
+				if metaArgs[key] == nil and nilArgs[key] ~= 'h' then
 					local tidiedVal = tidyVal(key, val)
 					if tidiedVal == nil then
-						nilArgs[key] = true
+						nilArgs[key] = 's'
 					else
 						metaArgs[key] = tidiedVal
 					end
@@ -218,13 +218,12 @@ function arguments.getArgs(frame, options)
 		end
 		for _, argTable in ipairs(argTables) do
 			local argTableVal = tidyVal(key, argTable[key])
-			if argTableVal == nil then
-				nilArgs[key] = true
-			else
+			if argTableVal ~= nil then
 				metaArgs[key] = argTableVal
 				return argTableVal
 			end
 		end
+		nilArgs[key] = 'h'
 		return nil
 	end
 
@@ -254,7 +253,7 @@ function arguments.getArgs(frame, options)
 			-- up in the argument tables if it is accessed again.
 			--]]
 			metaArgs[key] = nil
-			nilArgs[key] = true
+			nilArgs[key] = 'h'
 		else
 			metaArgs[key] = val
 		end
