@@ -272,7 +272,7 @@ end
 function getTrackingCategories()
     local cats = {}
     if needsHorizontalLists() then table.insert(cats, 'Навигационни шаблони без хоризонтални списъци') end
-    if hasBackgroundColors() then table.insert(cats, 'Навигационни шаблони подържащи background цветове') end
+    if hasBackgroundColors() then table.insert(cats, 'Навигационни шаблони с фонови цветове') end
     return cats
 end
 
