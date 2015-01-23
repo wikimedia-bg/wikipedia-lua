@@ -227,7 +227,7 @@ function p.render(data)
 
 	-- Render the table tag html.
 	local tableroot = root:tag('table')
-	tableroot.setattribute('cellspacing', 3)
+	tableroot.attr('cellspacing', 3)
 	tableroot
 		:css('border-collapse', 'collapse')
 		:css('width', data.width)
