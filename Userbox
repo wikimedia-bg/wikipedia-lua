@@ -84,7 +84,8 @@ function p._userbox(args)
 
 	-- Get table tag values.
 	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
-
+	data.cellspacing = args['cellspacing'] or '3'
+	
 	-- Get id values.
 	local id = args.logo or args.id or args[3]
 	data.id = id
@@ -128,7 +129,8 @@ p['_userbox-2'] = function (args)
 
 	-- Get table tag values.
 	data.backgroundColor = args['info-c'] or args[2] or '#eeeeee'
-
+	data.cellspacing = args['cellspacing'] or '3'
+	
 	-- Get id values.
 	data.showId = true
 	data.id = args.logo or args.id1 or args[3] or 'id1'
@@ -181,7 +183,8 @@ p['_userbox-r'] = function (args)
 	
 	-- Get table tag values.
 	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
-
+	data.cellspacing = args['cellspacing'] or '3'
+	
 	-- Get id values.
 	data.showId = false -- We only show id2 in userbox-r.
 
@@ -224,6 +227,7 @@ function p.render(data)
 
 	-- Render the table tag html.
 	local tableroot = root:tag('table')
+	tableroot.setattribute('cellspacing', data.cellspacing)
 	tableroot
 		:css('border-collapse', 'collapse')
 		:css('width', data.width)
