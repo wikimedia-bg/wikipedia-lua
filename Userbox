@@ -1,7 +1,6 @@
 -- This module implements {{userbox}}.
 
 local getArgs = require('Module:Arguments').getArgs
-local categoryHandler = require('Module:Category handler').main
 
 local p = {}
 
@@ -281,48 +280,6 @@ function p.render(data)
 	end
 
 	return tostring(root)
-end
-
-function p.categories(args, page)
-	-- Gets categories from [[Module:Category handler]].
-	-- The page parameter makes the function act as though the module was being called from that page.
-	-- It is included for testing purposes.
-	local cats = {}
-	cats[#cats + 1] = args.usercategory
-	cats[#cats + 1] = args.usercategory2
-	cats[#cats + 1] = args.usercategory3
-	if #cats > 0 then
-		-- Get the title object
-		local title
-		if page then
-			title = mw.title.new(page)
-		else
-			title = mw.title.getCurrentTitle()
-		end
-		-- Build category handler arguments.
-		local chargs = {}
-		chargs.page = page
-		chargs.nocat = args.nocat
-		if args.notcatsubpages then
-			chargs.subpage = 'no'
-		end
-		-- User namespace.
-		local user = ''
-		for i, cat in ipairs(cats) do
-			user = user .. makeCat(cat)
-		end
-		chargs.user = user
-		-- Template namespace.
-		local basepage = title.baseText
-		local template = ''
-		for i, cat in ipairs(cats) do
-			template = template .. makeCat(cat, ' ' .. basepage)
-		end
-		chargs.template = template
-		return categoryHandler(chargs)
-	else
-		return nil
-	end
 end
 
 return p
