@@ -76,22 +76,22 @@ function p._userbox(args)
 	data.float = args.float or 'left'
 	local borderWidthNum = checkNum(args['border-width'] or args['border-s'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
-	data.borderColor = args['border-color'] or args[1] or args['border-c'] or args['id-c'] or '#999'
+	data.borderColor = args['border-color'] or args['border-c'] or args['id-c'] or args[1] or '#999'
 	data.width = addSuffix(240 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 
 	-- Get table tag values.
-	data.backgroundColor = args['info-background'] or args[2] or args['info-c'] or '#eee'
+	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
 
 	-- Get id values.
-	local id = args.logo or args[3] or args.id
+	local id = args.logo or args.id or args[3]
 	data.id = id
 	data.showId = id and true or false
 	data.idWidth = checkNumAndAddSuffix(args['logo-width'] or args['id-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
-	data.idBackgroundColor = args['logo-background'] or args[1] or args['id-c'] or '#ddd'
+	data.idBackgroundColor = args['logo-background'] or args['id-c'] or args[1] or '#ddd'
 	data.idTextAlign = args['id-a'] or 'center'
-	data.idFontSize = checkNumAndAddSuffix(args['logo-size'] or args[5] or args['id-s'], 14, 'pt')
+	data.idFontSize = checkNumAndAddSuffix(args['logo-size'] or args['id-s'] or args[5], 14, 'pt')
 	data.idColor = args['logo-color'] or args['id-fc'] or 'black'
 	data.idPadding = args['logo-padding'] or args['id-p'] or '0 1px 0 0'
 	data.idLineHeight = args['logo-line-height'] or args['id-lh'] or '1.25em'
@@ -118,21 +118,21 @@ p['_userbox-2'] = function (args)
 
 	-- Get div tag values.
 	data.float = args.float or 'left'
-	local borderWidthNum = checkNum(args[9] or args['border-s'], 1) -- Used to calculate width.
+	local borderWidthNum = checkNum(args['border-s'] or args[9], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
-	data.borderColor = args[1] or args['border-c'] or args['id1-c'] or '#999999'
+	data.borderColor = args['border-c'] or args['id1-c'] or args[1] or '#999999'
 	data.width = addSuffix(240 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 
 	-- Get table tag values.
-	data.backgroundColor = args[2] or args['info-c'] or '#eeeeee'
+	data.backgroundColor = args['info-c'] or args[2] or '#eeeeee'
 
 	-- Get id values.
 	data.showId = true
-	data.id = args.logo or args[3] or args.id1 or 'id1'
+	data.id = args.logo or args.id1 or args[3] or 'id1'
 	data.idWidth = checkNumAndAddSuffix(args['id1-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
-	data.idBackgroundColor = args[1] or args['id1-c'] or '#dddddd'
+	data.idBackgroundColor = args['id1-c'] or args[1] or '#dddddd'
 	data.idTextAlign = 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['id1-s'], 14, 'pt')
 	data.idLineHeight = args['id1-lh'] or '1.25em'
@@ -141,20 +141,20 @@ p['_userbox-2'] = function (args)
 	data.idOtherParams = args['id1-op']
 
 	-- Get info values.
-	data.info = args[4] or args.info or "''info''"
+	data.info = args.info or args[4] or "''info''"
 	data.infoTextAlign = args['info-a'] or 'left'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
-	data.infoColor = args[8] or args['info-fc'] or 'black'
+	data.infoColor = args['info-fc'] or args[8] or 'black'
 	data.infoPadding = args['info-p'] or '0 4px 0 4px'
 	data.infoLineHeight = args['info-lh'] or '1.25em'
 	data.infoOtherParams = args['info-op']
 
 	-- Get id2 values.
 	data.showId2 = true
-	data.id2 = args.logo or args[5] or args.id2 or 'id2'
+	data.id2 = args.logo or args.id2 or args[5] or 'id2'
 	data.id2Width = checkNumAndAddSuffix(args['id2-w'], 45, 'px')
 	data.id2Height = data.idHeight
-	data.id2BackgroundColor = args[7] or args['id2-c'] or args[1] or '#dddddd'
+	data.id2BackgroundColor = args['id2-c'] or args[7] or args[1] or '#dddddd'
 	data.id2TextAlign = 'center'
 	data.id2FontSize = checkNumAndAddSuffix(args['id2-s'], 14, 'pt')
 	data.id2LineHeight = args['id2-lh'] or '1.25em'
@@ -173,12 +173,12 @@ p['_userbox-r'] = function (args)
 	data.float = args.float or 'left'
 	local borderWidthNum = checkNum(args['border-width'] or args['border-s'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
-	data.borderColor = args['border-color'] or args[1] or args['border-c'] or args['id-c'] or '#999'
+	data.borderColor = args['border-color'] or args['border-c'] or args['id-c'] or args[1] or '#999'
 	data.width = addSuffix(240 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 	
 	-- Get table tag values.
-	data.backgroundColor = args['info-background'] or args[2] or args['info-c'] or '#eee'
+	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
 
 	-- Get id values.
 	data.showId = false -- We only show id2 in userbox-r.
@@ -194,12 +194,12 @@ p['_userbox-r'] = function (args)
 	
 	-- Get id2 values.
 	data.showId2 = true
-	data.id2 = args.logo or args[3] or args.id or 'id'
+	data.id2 = args.logo or args.id or args[3] or 'id'
 	data.id2Width = checkNumAndAddSuffix(args['logo-width'] or args['id-w'], 45, 'px')
 	data.id2Height = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
-	data.id2BackgroundColor = args['logo-background'] or args[1] or args['id-c'] or '#ddd'
+	data.id2BackgroundColor = args['logo-background'] or args['id-c'] or args[1] or '#ddd'
 	data.id2TextAlign = args['id-a'] or 'center'
-	data.id2FontSize = checkNumAndAddSuffix(args['logo-size'] or args[5] or args['id-s'], 14, 'pt')
+	data.id2FontSize = checkNumAndAddSuffix(args['logo-size'] or args['id-s'] or args[5], 14, 'pt')
 	data.id2Color = args['logo-color'] or args['id-fc'] or 'black'
 	data.id2Padding = args['logo-padding'] or args['id-p'] or '0 0 0 1px'
 	data.id2LineHeight = args['logo-line-height'] or args['id-lh'] or '1.25em'
