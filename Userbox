@@ -65,8 +65,7 @@ p['userbox-r'] = makeInvokeFunc('_userbox-r')
 function p.main(funcName, args)
 	local userboxData = p[funcName](args)
 	local userbox = p.render(userboxData)
-	local cats = p.categories(args)
-	return userbox .. (cats or '')
+	return userbox .. ('')
 end
 
 function p._userbox(args)
