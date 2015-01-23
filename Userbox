@@ -90,7 +90,6 @@ function p._userbox(args)
 	data.idWidth = checkNumAndAddSuffix(args['logo-width'] or args['id-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
 	data.idBackgroundColor = args['logo-background'] or args['id-c'] or args[1] or '#ddd'
-	data.cellspacing = args['cellspacing'] or '3'
 	data.idTextAlign = args['id-a'] or 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['logo-size'] or args['id-s'] or args[5], 14, 'pt')
 	data.idColor = args['logo-color'] or args['id-fc'] or 'black'
@@ -101,7 +100,7 @@ function p._userbox(args)
 
 	-- Get info values.
 	data.info = args.info or args[4] or "''info''"
-	data.infoTextAlign = args['info-a'] or 'left'
+	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-size'] or args['info-s'], 8, 'pt')
 	data.infoHeight = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
 	data.infoPadding = args['info-padding'] or args['info-p'] or '0 4px 0 4px'
@@ -134,7 +133,6 @@ p['_userbox-2'] = function (args)
 	data.idWidth = checkNumAndAddSuffix(args['id1-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
 	data.idBackgroundColor = args['id1-c'] or args[1] or '#dddddd'
-	data.cellspacing = args['cellspacing'] or '3'
 	data.idTextAlign = 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['id1-s'], 14, 'pt')
 	data.idLineHeight = args['id1-lh'] or '1.25em'
@@ -144,7 +142,7 @@ p['_userbox-2'] = function (args)
 
 	-- Get info values.
 	data.info = args.info or args[4] or "''info''"
-	data.infoTextAlign = args['info-a'] or 'left'
+	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoColor = args['info-fc'] or args[8] or 'black'
 	data.infoPadding = args['info-p'] or '0 4px 0 4px'
@@ -187,7 +185,7 @@ p['_userbox-r'] = function (args)
 
 	-- Get info values.
 	data.info = args.info or args[4] or "''info''"
-	data.infoTextAlign = args['info-align'] or args['info-a'] or 'left'
+	data.infoTextAlign = args['info-align'] or args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-size'] or args['info-s'], 8, 'pt')
 	data.infoPadding = args['info-padding'] or args['info-p'] or '0 4px 0 4px'
 	data.infoLineHeight = args['info-line-height'] or args['info-lh'] or '1.25em'
@@ -225,7 +223,6 @@ function p.render(data)
 	-- Render the table tag html.
 	local tableroot = root:tag('table')
 	tableroot
-		:css('cellspacing', data.cellspacing)
 		:css('border-collapse', 'collapse')
 		:css('width', data.width)
 		:css('margin-bottom', '0')
