@@ -90,6 +90,7 @@ function p._userbox(args)
 	data.idWidth = checkNumAndAddSuffix(args['logo-width'] or args['id-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
 	data.idBackgroundColor = args['logo-background'] or args['id-c'] or args[1] or '#ddd'
+	data.cellspacing = args['cellspacing'] or '3'
 	data.idTextAlign = args['id-a'] or 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['logo-size'] or args['id-s'] or args[5], 14, 'pt')
 	data.idColor = args['logo-color'] or args['id-fc'] or 'black'
@@ -133,6 +134,7 @@ p['_userbox-2'] = function (args)
 	data.idWidth = checkNumAndAddSuffix(args['id1-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
 	data.idBackgroundColor = args['id1-c'] or args[1] or '#dddddd'
+	data.cellspacing = args['cellspacing'] or '3'
 	data.idTextAlign = 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['id1-s'], 14, 'pt')
 	data.idLineHeight = args['id1-lh'] or '1.25em'
@@ -223,6 +225,7 @@ function p.render(data)
 	-- Render the table tag html.
 	local tableroot = root:tag('table')
 	tableroot
+		:css('cellspacing', data.cellspacing)
 		:css('border-collapse', 'collapse')
 		:css('width', data.width)
 		:css('margin-bottom', '0')
