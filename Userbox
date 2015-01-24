@@ -98,7 +98,7 @@ function p._userbox(args)
 	data.idClass = args['id-class']
 
 	-- Get info values.
-	data.info = args.info or ("'''" .. args[2] .. "'''")
+	data.info = "'''" .. (args.info or args[2]) .. "'''"
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
@@ -138,7 +138,7 @@ p['_userbox-2'] = function (args)
 	data.idOtherParams = args['id1-other']
 
 	-- Get info values.
-	data.info = args.info or ("'''" .. args[2] .. "'''")
+	data.info = "'''" .. (args.info or args[2]) .. "'''"
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoColor = args['info-fc'] or args[7] or 'black'
@@ -179,7 +179,7 @@ p['_userbox-r'] = function (args)
 	data.showId = false -- We only show id2 in userbox-r.
 
 	-- Get info values.
-	data.info = args.info or ("'''" .. args[2] .. "'''")
+	data.info = "'''" .. (args.info or args[2]) .. "'''"
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoPadding = args['info-p'] or '0 4px 0 4px'
