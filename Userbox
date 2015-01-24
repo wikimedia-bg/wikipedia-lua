@@ -45,7 +45,7 @@ local function makeCat(cat, sort)
 end
 
 local function checkImageExists(image)
-	-- Checks if some image file exists in Wikipedia
+	-- Checks if some image file exists in Wikipedia and return it like text or image template
 	if string.sub(image,1,5) == 'File:' then
 		return '[[' .. image .. '|40п]]'
 	else
@@ -214,7 +214,7 @@ p['_userbox-r'] = function (args)
 end
 
 function p.render(data)
-	-- Renders the userbox html using the content of the data table. 
+	-- Renders the userbox html using the content of the data table.
 	-- Render the div tag html.
 	local root = mw.html.create('div')
 	root
