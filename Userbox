@@ -46,7 +46,7 @@ end
 
 local function checkImageExists(image)
 	-- Checks if some image file exists in Wikipedia and return it like text or image template
-	if string.sub(image,1,5) == 'File:' then
+	if (image ~= null and string.sub(image,1,5) == 'File:') then
 		return '[[' .. image .. '|40п]]'
 	else
 		return image
