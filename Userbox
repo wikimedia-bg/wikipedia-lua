@@ -46,10 +46,10 @@ end
 
 local function checkImageExists(image)
 	-- Checks if some image file exists in Wikipedia
-	if mw.title.new( image, 'Media' ).exists == true then
-    	return ('[[Image:' .. image .. '|40п]]')
+	if string.sub(image,1,5) == 'File:' then
+		return '[[' .. image .. '|40п]]'
 	else
-    	return image
+		return image
 	end
 end
 
