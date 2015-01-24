@@ -44,6 +44,15 @@ local function makeCat(cat, sort)
 	end
 end
 
+local function checkImageExists(image)
+	-- Checks if some image file exists in Wikipedia
+	if mw.title.new( image, 'Media' ).exists == true then
+    	return ('[[Image:' .. image .. '|40п]]')
+	else
+    	return image
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Argument processing
 --------------------------------------------------------------------------------
@@ -83,7 +92,7 @@ function p._userbox(args)
 	data.bodyClass = args.bodyclass
 
 	-- Get id values.
-	local id = args.logo or args.id or ('{{#ifexist:Media:' .. args[1] .. '|[[Image:' .. args[1] .. '|40п]]|' .. args[1] .. '}}')
+	local id = args.logo or args.id or checkImageExists(args[1])
 	data.id = id
 	data.showId = id and true or false
 	data.idWidth = checkNumAndAddSuffix(args['id-w'], 45, 'px')
@@ -190,7 +199,7 @@ p['_userbox-r'] = function (args)
 	
 	-- Get id2 values.
 	data.showId2 = true
-	data.id2 = args.logo or args.id or args[1] or 'id'
+	data.id2 = args.logo or args.id or checkImageExists(args[1]) or 'id'
 	data.id2Width = checkNumAndAddSuffix(args['id-w'], 45, 'px')
 	data.id2Height = checkNumAndAddSuffix(args['id-h'], 45, 'px')
 	data.id2BackgroundColor = args['id-c'] or args[4] or '#ddd'
