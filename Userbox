@@ -95,7 +95,7 @@ function p._userbox(args)
 	data.idTextAlign = args['id-a'] or 'center'
 	data.idFontSize = checkNumAndAddSuffix(args['logo-size'] or args['id-s'] or args[5], 14, 'pt')
 	data.idColor = args['logo-color'] or args['id-fc'] or 'black'
-	data.idPadding = args['logo-padding'] or args['id-p'] or '0 1px 0 0'
+	data.idPadding = args['logo-padding'] or args['id-p'] or '1px'
 	data.idLineHeight = args['logo-line-height'] or args['id-lh'] or '1.25em'
 	data.idOtherParams = args['logo-other-param'] or args['id-op']
 	data.idClass = args['id-class']
@@ -139,7 +139,7 @@ p['_userbox-2'] = function (args)
 	data.idFontSize = checkNumAndAddSuffix(args['id1-s'], 14, 'pt')
 	data.idLineHeight = args['id1-lh'] or '1.25em'
 	data.idColor = args['id1-fc'] or 'black'
-	data.idPadding = args['id1-p'] or '0 1px 0 0'
+	data.idPadding = args['id1-p'] or '1px'
 	data.idOtherParams = args['id1-op']
 
 	-- Get info values.
@@ -225,10 +225,8 @@ function p.render(data)
 	-- Render the table tag html.
 	local tableroot = root:tag('table')
 	tableroot
-		:css('border-collapse', 'collapse')
 		:css('width', data.width)
 		:css('margin-bottom', '0')
-		:css('background', data.backgroundColor)
 	
 	-- Render the id html.
 	local tablerow = tableroot:tag('tr')
@@ -259,6 +257,7 @@ function p.render(data)
 		:css('line-height', data.infoLineHeight)
 		:css('color', data.infoColor)
 		:css('vertical-align', 'middle')
+		:css('background-color', data.backgroundColor)
 		:cssText(data.infoOtherParams)
 		:addClass(data.infoClass)
 		:wikitext(data.info)
