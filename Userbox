@@ -82,9 +82,6 @@ function p._userbox(args)
 	data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 
-	-- Get table tag values.
-	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
-
 	-- Get id values.
 	local id = args.logo or args.id or args[3]
 	data.id = id
@@ -105,6 +102,7 @@ function p._userbox(args)
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-size'] or args['info-s'], 8, 'pt')
 	data.infoHeight = checkNumAndAddSuffix(args['logo-height'] or args['id-h'], 45, 'px')
+	data.infoBackgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
 	data.infoPadding = args['info-padding'] or args['info-p'] or '0 4px 0 4px'
 	data.infoLineHeight = args['info-line-height'] or args['info-lh'] or '1.25em'
 	data.infoColor = args['info-color'] or args['info-fc'] or 'black'
@@ -126,9 +124,6 @@ p['_userbox-2'] = function (args)
 	data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 
-	-- Get table tag values.
-	data.backgroundColor = args['info-c'] or args[2] or '#eeeeee'
-
 	-- Get id values.
 	data.showId = true
 	data.id = args.logo or args.id1 or args[3] or 'id1'
@@ -147,6 +142,7 @@ p['_userbox-2'] = function (args)
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoColor = args['info-fc'] or args[8] or 'black'
+	data.infoBackgroundColor = args['info-c'] or args[2] or '#eeeeee'
 	data.infoPadding = args['info-p'] or '0 4px 0 4px'
 	data.infoLineHeight = args['info-lh'] or '1.25em'
 	data.infoOtherParams = args['info-op']
@@ -179,9 +175,6 @@ p['_userbox-r'] = function (args)
 	data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 	
-	-- Get table tag values.
-	data.backgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
-
 	-- Get id values.
 	data.showId = false -- We only show id2 in userbox-r.
 
@@ -191,6 +184,7 @@ p['_userbox-r'] = function (args)
 	data.infoFontSize = checkNumAndAddSuffix(args['info-size'] or args['info-s'], 8, 'pt')
 	data.infoPadding = args['info-padding'] or args['info-p'] or '0 4px 0 4px'
 	data.infoLineHeight = args['info-line-height'] or args['info-lh'] or '1.25em'
+	data.infoBackgroundColor = args['info-background'] or args['info-c'] or args[2] or '#eee'
 	data.infoColor = args['info-color'] or args['info-fc'] or 'black'
 	data.infoOtherParams = args['info-other-param'] or args['info-op']
 	
@@ -257,7 +251,7 @@ function p.render(data)
 		:css('line-height', data.infoLineHeight)
 		:css('color', data.infoColor)
 		:css('vertical-align', 'middle')
-		:css('background-color', data.backgroundColor)
+		:css('background-color', data.infoBackgroundColor)
 		:cssText(data.infoOtherParams)
 		:addClass(data.infoClass)
 		:wikitext(data.info)
