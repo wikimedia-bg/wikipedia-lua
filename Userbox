@@ -75,7 +75,7 @@ function p._userbox(args)
 	local data = {}
 
 	-- Get div tag values.
-	data.float = args.float or 'left'
+	data.float = args.float or 'right'
 	local borderWidthNum = checkNum(args['border-width'] or args['border-s'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
 	data.borderColor = args['border-color'] or args['border-c'] or args['id-c'] or args[1] or '#999'
@@ -117,7 +117,7 @@ p['_userbox-2'] = function (args)
 	local data = {}
 
 	-- Get div tag values.
-	data.float = args.float or 'left'
+	data.float = args.float or 'right'
 	local borderWidthNum = checkNum(args['border-s'] or args[9], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
 	data.borderColor = args['border-c'] or args['id1-c'] or args[1] or '#999999'
@@ -168,7 +168,7 @@ p['_userbox-r'] = function (args)
 	local data = {}
 
 	-- Get div tag values.
-	data.float = args.float or 'left'
+	data.float = args.float or 'right'
 	local borderWidthNum = checkNum(args['border-width'] or args['border-s'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
 	data.borderColor = args['border-color'] or args['border-c'] or args['id-c'] or args[1] or '#999'
