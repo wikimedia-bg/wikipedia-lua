@@ -58,7 +58,11 @@ function formatStatements( options )
     for i, statement in pairs( entity.claims[string.lower(options.property)] ) do
         table.insert( formattedStatements, formatStatement( statement, options ) )
     end
-    return mw.text.listToText( formattedStatements, options.separator, options.conjunction )
+    if options.first then
+        return formattedStatements[0]
+    else 
+        return mw.text.listToText( formattedStatements, options.separator, options.conjunction )
+    end
 end
 
 function formatStatement( statement, options )
