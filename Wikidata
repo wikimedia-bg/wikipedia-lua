@@ -59,7 +59,7 @@ function formatStatements( options )
         table.insert( formattedStatements, formatStatement( statement, options ) )
     end
     if options.first then
-        return formattedStatements[0]
+        return formattedStatements[1]
     else 
         return mw.text.listToText( formattedStatements, options.separator, options.conjunction )
     end
