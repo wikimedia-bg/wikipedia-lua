@@ -135,7 +135,7 @@ p['_userbox-2'] = function (args)
 
 	-- Get id values.
 	data.showId = true
-	data.id = args.logo or args.id1 or args[1] or 'id1'
+	data.id = args.logo or args.id1 or checkImageExists(args[1])
 	data.idWidth = checkNumAndAddSuffix(args['id1-w'], 45, 'px')
 	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
 	data.idBackgroundColor = args['id1-c'] or args[4] or '#ddd'
@@ -158,7 +158,7 @@ p['_userbox-2'] = function (args)
 
 	-- Get id2 values.
 	data.showId2 = true
-	data.id2 = args.logo or args.id2 or 'id2'
+	data.id2 = args.logo or args.id2 or checkImageExists(args.id2)
 	data.id2Width = checkNumAndAddSuffix(args['id2-w'], 45, 'px')
 	data.id2Height = data.idHeight
 	data.id2BackgroundColor = args['id2-c'] or args[4] or '#ddd'
