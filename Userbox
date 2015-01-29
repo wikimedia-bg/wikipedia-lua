@@ -158,7 +158,7 @@ p['_userbox-2'] = function (args)
 
 	-- Get id2 values.
 	data.showId2 = true
-	data.id2 = args.logo or args.id2 or checkImageExists(args.id2)
+	data.id2 = args.logo or checkImageExists(args.id2)
 	data.id2Width = checkNumAndAddSuffix(args['id2-w'], 45, 'px')
 	data.id2Height = data.idHeight
 	data.id2BackgroundColor = args['id2-c'] or args[4] or '#ddd'
