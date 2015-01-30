@@ -290,9 +290,9 @@ function p.categories(args, page)
 	-- The page parameter makes the function act as though the module was being called from that page.
 	-- It is included for testing purposes.
 	local cats = {}
-	cats[#cats + 1] = args.usercategory or args[8]
-	cats[#cats + 1] = args.usercategory2
-	cats[#cats + 1] = args.usercategory3
+	cats[#cats + 1] = args.category or args[8]
+	cats[#cats + 1] = args.category2
+	cats[#cats + 1] = args.category3
 	if #cats > 0 then
 		-- Get the title object
 		local title
