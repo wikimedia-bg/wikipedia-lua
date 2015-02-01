@@ -42,7 +42,7 @@ end
 
 function wikify_date(date)
 	local day, month_name, year = split_date(date)
-	return "[[" .. day .. " " .. month_name .. "]] [[" .. year .. "]]"
+	return "[[" .. day .. " " .. month_name .. "]] [[" .. year .. "]]&nbsp;г."
 end
 
 function format_age_suffix(age)
