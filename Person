@@ -1,0 +1,98 @@
+function is_empty(var)
+	return var == nil or var == ""
+end
+
+function local_month_name_to_int(month_name)
+	local tbl = {
+		["януари"] = 1,
+		["февруари"] = 2,
+		["март"]  = 3,
+		["април"]  = 4,
+		["май"]  = 5,
+		["юни"]  = 6,
+		["юли"]  = 7,
+		["август"]  = 8,
+		["септември"]  = 9,
+		["октомври"]  = 10,
+		["ноември"]  = 11,
+		["декември"]  = 12,
+	}
+	return tbl[month_name] or nil
+end
+
+function split_date(date)
+	return mw.ustring.match(date, "(%d+) (%a+) (%d+)")
+end
+
+function age(date_of_birth, date_of_death)
+	local start_date = date_for_calc(date_of_birth)
+	local end_date
+	if is_empty(date_of_death) then
+		end_date = os.date("%Y%m%d")
+	else
+		end_date = date_for_calc(date_of_death)
+	end
+	return math.floor((end_date - start_date) / 10000)
+end
+
+function date_for_calc(date)
+	local day, month_name, year = split_date(date)
+	return string.format("%d%02d%02d", year, local_month_name_to_int(month_name), day)
+end
+
+function wikify_date(date)
+	local day, month_name, year = split_date(date)
+	return "[[" .. day .. " " .. month_name .. "]] [[" .. year .. "]]"
+end
+
+function format_age_suffix(age)
+	return '<span class="noprint">&nbsp;<small>('.. age .. '&nbsp;г.)</small></span>'
+end
+
+function birth_categories(date)
+	local day, month_name, year = split_date(date)
+	return "[[Категория:Родени през " ..  year .. " година]]"
+		.. "[[Категория:Родени на " ..  day .. " " .. month_name .. "]]"
+end
+
+function death_categories(date)
+	local day, month_name, year = split_date(date)
+	return "[[Категория:Починали през " ..  year .. " година]]"
+		.. "[[Категория:Починали на " ..  day .. " " .. month_name .. "]]"
+end
+
+function format_birth_date(date_of_birth, date_of_death)
+	if is_empty(date_of_birth) then
+		return ""
+	end
+	local output = wikify_date(date_of_birth)
+	if is_empty(date_of_death) then
+		output = output .. format_age_suffix(age(date_of_birth))
+	end
+	output = output .. birth_categories(date_of_birth)
+	return output
+end
+
+function format_death_date(date_of_birth, date_of_death)
+	if is_empty(date_of_death) then
+		return ""
+	end
+	local output = wikify_date(date_of_death)
+	if not is_empty(date_of_birth) then
+		output = output .. format_age_suffix(age(date_of_birth, date_of_death))
+	end
+	output = output .. death_categories(date_of_death)
+	return output
+end
+
+local p = {}
+
+function p.birth_date(frame)
+	return format_birth_date(frame.args[1], frame.args[2])
+end
+
+function p.death_date(frame)
+	return format_death_date(frame.args[1], frame.args[2])
+end
+
+return p
