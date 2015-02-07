@@ -1,0 +1,10 @@
+-- Unit tests for [[Module:BananaArgs]]. Click talk page to run tests.
+local p = require('Module:UnitTests')
+
+require('Module:Person')
+ 
+function p:test_local_month_name_to_int()
+    self:equals('local_month_name_to_int', local_month_name_to_int("март"), 3)
+end
+
+return p
