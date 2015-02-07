@@ -1,10 +1,112 @@
--- Unit tests for [[Module:BananaArgs]]. Click talk page to run tests.
-local p = require('Module:UnitTests')
+-- Unit tests for [[Module:Person]]. Click talk page to run tests.
+local t = require('Module:UnitTests')
 
-require('Module:Person')
- 
-function p:test_local_month_name_to_int()
-    self:equals('local_month_name_to_int', local_month_name_to_int("март"), 3)
+local person = require('Module:Person')
+
+-- This is used for mocking calculations which use the current date
+function Date.currentDate()
+	return { year = 2015, month = 1, day = 1 }
 end
 
-return p
+function t:test_prepareBirthDateVars()
+	self:equals_deep('prepareBirthDateVars wo args 1', prepareBirthDateVars(), {})
+	self:equals_deep('prepareBirthDateVars wo args 2', prepareBirthDateVars(""), {})
+	self:equals_deep('prepareBirthDateVars wo args 3', prepareBirthDateVars("", ""), {})
+	self:equals_deep('prepareBirthDateVars wo args 4', prepareBirthDateVars(nil), {})
+	self:equals_deep('prepareBirthDateVars wo args 5', prepareBirthDateVars(nil, nil), {})
+	self:equals_deep('prepareBirthDateVars wo birth date', prepareBirthDateVars("", "2 март 1911"), {})
+
+	self:equals_deep('prepareBirthDateVars alive', prepareBirthDateVars("2 март 1960"), {
+		date = { day = "2", month = 3, monthName = "март", year = "1960", _ = "2 март 1960" },
+		age = 54,
+		cats = { "Родени през 1960 година", "Родени на 2 март" }
+	})
+
+	self:equals_deep('prepareBirthDateVars dead', prepareBirthDateVars("2 март 1910", "2 май 1995"), {
+		date = { day = "2", month = 3, monthName = "март", year = "1910", _ = "2 март 1910" },
+		cats = { "Родени през 1910 година", "Родени на 2 март" }
+	})
+
+	self:equals_deep('prepareBirthDateVars dead BC-AD', prepareBirthDateVars("2 март 10 BC", "2 май 65"), {
+		date = { day = "2", month = 3, monthName = "март", year = "10", _ = "2 март 10 BC", bc = true },
+		cats = { "Родени през 10 година пр.н.е.", "Родени на 2 март" }
+	})
+
+	self:equals_deep('prepareBirthDateVars dead BC', prepareBirthDateVars("2 март 90 BC", "2 май 10 BC"), {
+		date = { day = "2", month = 3, monthName = "март", year = "90", _ = "2 март 90 BC", bc = true },
+		cats = { "Родени през 90 година пр.н.е.", "Родени на 2 март" }
+	})
+
+	self:equals_deep('prepareBirthDateVars only birth year', prepareBirthDateVars("1830", "7 януари 1862"), {
+		date = { year = "1830", _ = "1830" },
+		cats = { "Родени през 1830 година" }
+	})
+
+	self:equals_deep('prepareBirthDateVars century', prepareBirthDateVars("8. century", "9. century"), {
+		date = { century = "8", _ = "8. century" },
+		cats = { "Родени през 8 век" }
+	})
+	self:equals_deep('prepareBirthDateVars century BC', prepareBirthDateVars("8. century BC", "7. century BC"), {
+		date = { century = "8", _ = "8. century BC", bc = true },
+		cats = { "Родени през 8 век пр.н.е." }
+	})
+end
+
+function t:test_prepareDeathDateVars()
+	self:equals_deep('prepareDeathDateVars wo args 1', prepareDeathDateVars(), {})
+	self:equals_deep('prepareDeathDateVars wo args 2', prepareDeathDateVars(""), {})
+	self:equals_deep('prepareDeathDateVars wo args 3', prepareDeathDateVars("", ""), {})
+	self:equals_deep('prepareDeathDateVars wo args 4', prepareDeathDateVars(nil), {})
+	self:equals_deep('prepareDeathDateVars wo args 5', prepareDeathDateVars(nil, nil), {})
+	self:equals_deep('prepareDeathDateVars wo death date 1', prepareDeathDateVars("2 март 1911"), {})
+	self:equals_deep('prepareDeathDateVars wo death date 2', prepareDeathDateVars("2 март 1911", ""), {})
+
+	self:equals_deep('prepareDeathDateVars dead', prepareDeathDateVars("2 март 1910", "2 май 1995"), {
+		date = { day = "2", month = 5, monthName = "май", year = "1995", _ = "2 май 1995" },
+		age = 85,
+		cats = { "Починали през 1995 година", "Починали на 2 май" }
+	})
+
+	self:equals_deep('prepareDeathDateVars wo birth year', prepareDeathDateVars("", "2 май 1995"), {
+		date = { day = "2", month = 5, monthName = "май", year = "1995", _ = "2 май 1995" },
+		cats = { "Починали през 1995 година", "Починали на 2 май" }
+	})
+
+	self:equals_deep('prepareDeathDateVars only birth year', prepareDeathDateVars("1830", "7 януари 1862"), {
+		date = { day = "7", month = 1, monthName = "януари", year = "1862", _ = "7 януари 1862" },
+		age = 32,
+		cats = { "Починали през 1862 година", "Починали на 7 януари" }
+	})
+
+	self:equals_deep('prepareDeathDateVars dead BC-AD', prepareDeathDateVars("2 март 10 BC", "2 май 65"), {
+		date = { day = "2", month = 5, monthName = "май", year = "65", _ = "2 май 65" },
+		age = 74,
+		cats = { "Починали през 65 година", "Починали на 2 май" }
+	})
+
+	self:equals_deep('prepareDeathDateVars dead BC', prepareDeathDateVars("2 март 90 BC", "2 май 10 BC"), {
+		date = { day = "2", month = 5, monthName = "май", year = "10", _ = "2 май 10 BC", bc = true },
+		age = 80,
+		cats = { "Починали през 10 година пр.н.е.", "Починали на 2 май" }
+	})
+
+	self:equals_deep('prepareDeathDateVars century', prepareDeathDateVars("8. century", "9. century"), {
+		date = { century = "9", _ = "9. century" },
+		cats = { "Починали през 9 век" }
+	})
+	self:equals_deep('prepareDeathDateVars century BC', prepareDeathDateVars("8. century BC", "7. century BC"), {
+		date = { century = "7", _ = "7. century BC", bc = true },
+		cats = { "Починали през 7 век пр.н.е." }
+	})
+end
+
+function t:test_wikifyDate()
+	self:equals('wikifyDate full', wikifyDate({ day = "3", monthName = "март", year = "1880" }), "[[3 март]] [[1880]] г.")
+	self:equals('wikifyDate only year', wikifyDate({ year = "1880" }), "[[1880]] г.")
+	self:equals('wikifyDate century', wikifyDate({ century = "9" }), "[[9 век]]")
+	self:equals('wikifyDate full BC', wikifyDate({ day = "3", monthName = "март", year = "80", bc = true }), "[[3 март]] [[80 г. пр.н.е.]]")
+	self:equals('wikifyDate only year BC', wikifyDate({ year = "80", bc = true }), "[[80 г. пр.н.е.]]")
+	self:equals('wikifyDate century BC', wikifyDate({ century = "9", bc = true }), "[[9 век пр.н.е.]]")
+end
+
+return t
