@@ -468,4 +468,26 @@ function str.latin( frame )
     end
 end
 
+--[[
+Returns linked page from potential link
+]]
+function str.unlink( frame )
+    local new_args = str._getParameters( frame.args, {'source'} ); 
+    local source_str = new_args['source'] or '';
+ 
+    if source_str == '' then
+        return source_str;
+    end    
+ 
+    local result;
+    local i;
+
+    result = mw.ustring.gsub( source_str, '[[', '' );
+    result = mw.ustring.gsub( result, ']]', '' );
+    i = mw.ustring.find( result, '|');
+    result = mw.ustring.sub( result, 1, i-1);
+
+    return result;
+end
+
 return str
