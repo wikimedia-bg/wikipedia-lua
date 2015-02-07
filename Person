@@ -1,98 +1,202 @@
-function is_empty(var)
+local p = {}
+
+function isEmpty(var)
 	return var == nil or var == ""
 end
 
-function local_month_name_to_int(month_name)
-	local tbl = {
+Date = {
+	-- _ = nil, -- save here the original date string, e.g. "31 май 2000"
+	-- day = nil,
+	-- month = nil,
+	-- monthName = nil,
+	-- year = nil,
+	-- bc = nil,
+}
+function Date.currentDate()
+	return os.date("*t")
+end
+
+function Date:isEmpty()
+	return isEmpty(self._)
+end
+function Date:monthNameToNumber(monthName)
+	local map = {
 		["януари"] = 1,
 		["февруари"] = 2,
 		["март"]  = 3,
-		["април"]  = 4,
-		["май"]  = 5,
-		["юни"]  = 6,
-		["юли"]  = 7,
-		["август"]  = 8,
-		["септември"]  = 9,
-		["октомври"]  = 10,
-		["ноември"]  = 11,
-		["декември"]  = 12,
+		["април"] = 4,
+		["май"] = 5,
+		["юни"] = 6,
+		["юли"] = 7,
+		["август"] = 8,
+		["септември"] = 9,
+		["октомври"] = 10,
+		["ноември"] = 11,
+		["декември"] = 12
 	}
-	return tbl[month_name] or nil
+	return map[monthName] or nil
+end
+function Date:set(year, monthName, day)
+	self.year = year
+	self.monthName = monthName
+	self.month = self:monthNameToNumber(monthName)
+	self.day = day
+	return self
 end
 
-function split_date(date)
-	return mw.ustring.match(date, "(%d+) (%a+) (%d+)")
-end
-
-function age(date_of_birth, date_of_death)
-	local start_date = date_for_calc(date_of_birth)
-	local end_date
-	if is_empty(date_of_death) then
-		end_date = os.date("%Y%m%d")
-	else
-		end_date = date_for_calc(date_of_death)
+function Date:fromString(dateString)
+	d = { _ = dateString }
+	setmetatable(d, self)
+	self.__index = self
+	if isEmpty(dateString) then
+		return d
 	end
-	return math.floor((end_date - start_date) / 10000)
+	if string.match(dateString, 'BC$') then
+		d.bc = true
+	end
+	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
+	if day and monthName and year then
+		return d:set(year, monthName, day)
+	end
+	monthName, year = mw.ustring.match(dateString, "^(%a+) (%d+)")
+	if monthName and year then
+		return d:set(year, monthName)
+	end
+	century = mw.ustring.match(dateString, "^(%d+)\. century")
+	if century then
+		d.century = century
+		return d
+	end
+	year = mw.ustring.match(dateString, "^(%d+)")
+	if year then
+		return d:set(year)
+	end
+
+	return d
 end
 
-function date_for_calc(date)
-	local day, month_name, year = split_date(date)
-	return string.format("%d%02d%02d", year, local_month_name_to_int(month_name), day)
+
+function age(dateOfBirth, dateOfDeath)
+	if not dateOfBirth.year then
+		return nil
+	end
+	if isEmpty(dateOfDeath) or dateOfDeath:isEmpty() then
+		dateOfDeath = Date.currentDate()
+	end
+	local startDate = dateForCalc(dateOfBirth)
+	local endDate = dateForCalc(dateOfDeath)
+	if dateOfBirth.bc and not dateOfDeath.bc then
+		-- reverse the sign and subtract one year
+		startDate = startDate * -1 + 10000
+	end
+	local age = math.abs(math.floor((endDate - startDate) / 10000))
+	if age > 125 then -- put a max age
+		return nil
+	end
+	return age
 end
 
-function wikify_date(date)
-	local day, month_name, year = split_date(date)
-	return "[[" .. day .. " " .. month_name .. "]] [[" .. year .. "]] г."
+function dateForCalc(date)
+	return string.format("%d%02d%02d", date.year or 0, date.month or 0, date.day or 0)
 end
 
-function format_age_suffix(age)
+function birthCategories(date)
+	local cats = {}
+	if date.century then
+		table.insert(cats, "Родени през " ..  date.century .. " век" .. bcSuffix(date.bc))
+	end
+	if date.year then
+		table.insert(cats, "Родени през " ..  date.year .. " година" .. bcSuffix(date.bc))
+	end
+	if date.day and date.monthName then
+		table.insert(cats, "Родени на " ..  date.day .. " " .. date.monthName)
+	end
+	return cats
+end
+
+function deathCategories(date)
+	local cats = {}
+	if date.century then
+		table.insert(cats, "Починали през " ..  date.century .. " век" .. bcSuffix(date.bc))
+	end
+	if date.year then
+		table.insert(cats, "Починали през " ..  date.year .. " година" .. bcSuffix(date.bc))
+	end
+	if date.day and date.monthName then
+		table.insert(cats, "Починали на " ..  date.day .. " " .. date.monthName)
+	end
+	return cats
+end
+
+function prepareBirthDateVars(dateOfBirthString, dateOfDeathString)
+	local vars = {}
+	if isEmpty(dateOfBirthString) then
+		return vars
+	end
+	vars.date = Date:fromString(dateOfBirthString)
+	if isEmpty(dateOfDeathString) then
+		vars.age = age(vars.date)
+	end
+	vars.cats = birthCategories(vars.date)
+	return vars
+end
+
+function prepareDeathDateVars(dateOfBirthString, dateOfDeathString)
+	local vars = {}
+	if isEmpty(dateOfDeathString) then
+		return vars
+	end
+	vars.date = Date:fromString(dateOfDeathString)
+	if not isEmpty(dateOfBirthString) then
+		vars.age = age(Date:fromString(dateOfBirthString), vars.date)
+	end
+	vars.cats = deathCategories(vars.date)
+	return vars
+end
+
+function wikifyDate(date)
+	if date.century then
+		return "[[" .. date.century .. " век" .. bcSuffix(date.bc) .. "]]"
+	end
+	local output = ""
+	if date.day and date.monthName then
+		output = output .. "[[" .. date.day .. " " .. date.monthName .. "]] "
+	end
+	if date.year then
+		output = output .. "[[" .. date.year .. (date.bc and " г. пр.н.е.]]" or "]] г.")
+	end
+	return output
+end
+
+function bcSuffix(isBc)
+	if isBc then return " пр.н.е." else return "" end
+end
+
+function formatAgeSuffix(age)
 	return '<span class="noprint"> <small>('.. age .. ' г.)</small></span>'
 end
 
-function birth_categories(date)
-	local day, month_name, year = split_date(date)
-	return "[[Категория:Родени през " ..  year .. " година]]"
-		.. "[[Категория:Родени на " ..  day .. " " .. month_name .. "]]"
-end
-
-function death_categories(date)
-	local day, month_name, year = split_date(date)
-	return "[[Категория:Починали през " ..  year .. " година]]"
-		.. "[[Категория:Починали на " ..  day .. " " .. month_name .. "]]"
-end
-
-function format_birth_date(date_of_birth, date_of_death)
-	if is_empty(date_of_birth) then
+function formatDate(vars)
+	if #vars == 0 then
 		return ""
 	end
-	local output = wikify_date(date_of_birth)
-	if is_empty(date_of_death) then
-		output = output .. format_age_suffix(age(date_of_birth))
+	local output = wikifyDate(vars.date)
+	if vars.age then
+		output = output .. formatAgeSuffix(vars.age)
 	end
-	output = '<span class="oneline">'..output ..'</span>' .. birth_categories(date_of_birth)
+	output = '<span class="oneline">' .. output .. '</span>'
+	for k, category in pairs(vars.cats) do
+		output = output .. '[[Категория:' .. category .. ']]'
+	end
 	return output
 end
-
-function format_death_date(date_of_birth, date_of_death)
-	if is_empty(date_of_death) then
-		return ""
-	end
-	local output = wikify_date(date_of_death)
-	if not is_empty(date_of_birth) then
-		output = output .. format_age_suffix(age(date_of_birth, date_of_death))
-	end
-	output = '<span class="oneline">'..output ..'</span>' .. death_categories(date_of_death)
-	return output
-end
-
-local p = {}
 
 function p.birth_date(frame)
-	return format_birth_date(frame.args[1], frame.args[2])
+	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2]))
 end
 
 function p.death_date(frame)
-	return format_death_date(frame.args[1], frame.args[2])
+	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2]))
 end
 
 return p
