@@ -472,8 +472,7 @@ end
 Returns linked page from potential link
 ]]
 function str.unlink( frame )
-    local new_args = str._getParameters( frame.args, {'source'} ); 
-    local source_str = new_args['source'] or '';
+    local source_str = frame.args[1];
  
     if source_str == '' then
         return source_str;
