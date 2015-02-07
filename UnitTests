@@ -1,4 +1,5 @@
 -- UnitTester provides unit testing for other Lua scripts. For details see [[en:Wikipedia:Lua#Unit_testing]].
+-- For user documentation see talk page.
 local UnitTester = {}
 
 local frame, tick, cross
@@ -139,8 +140,8 @@ function UnitTester:run(frame_arg)
     frame = frame_arg
     self.frame = frame
     self.differs_at = frame.args['differs_at']
-    tick = frame:preprocess('{{Да}}')
-    cross = frame:preprocess('{{Не}}')
+    tick = '<span style="color:green; font-size:125%">✔</span>'
+    cross = '<span style="color:red; font-size:125%">✘</span>'
 
     local table_header = result_table_header
     if self.differs_at then
