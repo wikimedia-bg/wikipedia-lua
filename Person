@@ -10,7 +10,7 @@ Date = {
 	-- month = nil,
 	-- monthName = nil,
 	-- year = nil,
-	-- bc = nil,
+	-- bce = nil, -- is it in the BCE epoch
 }
 function Date.currentDate()
 	return os.date("*t")
@@ -51,7 +51,7 @@ function Date:fromString(dateString)
 	if isEmpty(dateString) then
 		return d
 	end
-	if string.match(dateString, 'BC$') then
+	if string.match(dateString, 'BCE$') then
 		d.bc = true
 	end
 	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
@@ -103,10 +103,10 @@ end
 function birthCategories(date)
 	local cats = {}
 	if date.century then
-		table.insert(cats, "Родени през " ..  date.century .. " век" .. bcSuffix(date.bc))
+		table.insert(cats, "Родени през " ..  date.century .. " век" .. bcSuffix(date.bce))
 	end
 	if date.year then
-		table.insert(cats, "Родени през " ..  date.year .. " година" .. bcSuffix(date.bc))
+		table.insert(cats, "Родени през " ..  date.year .. " година" .. bcSuffix(date.bce))
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Родени на " ..  date.day .. " " .. date.monthName)
@@ -117,10 +117,10 @@ end
 function deathCategories(date)
 	local cats = {}
 	if date.century then
-		table.insert(cats, "Починали през " ..  date.century .. " век" .. bcSuffix(date.bc))
+		table.insert(cats, "Починали през " ..  date.century .. " век" .. bcSuffix(date.bce))
 	end
 	if date.year then
-		table.insert(cats, "Починали през " ..  date.year .. " година" .. bcSuffix(date.bc))
+		table.insert(cats, "Починали през " ..  date.year .. " година" .. bcSuffix(date.bce))
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Починали на " ..  date.day .. " " .. date.monthName)
@@ -156,14 +156,14 @@ end
 
 function wikifyDate(date)
 	if date.century then
-		return "[[" .. date.century .. " век" .. bcSuffix(date.bc) .. "]]"
+		return "[[" .. date.century .. " век" .. bcSuffix(date.bce) .. "]]"
 	end
 	local output = ""
 	if date.day and date.monthName then
 		output = output .. "[[" .. date.day .. " " .. date.monthName .. "]] "
 	end
 	if date.year then
-		output = output .. "[[" .. date.year .. (date.bc and " г. пр.н.е.]]" or "]] г.")
+		output = output .. "[[" .. date.year .. (date.bce and " г. пр.н.е.]]" or "]] г.")
 	end
 	return output
 end
