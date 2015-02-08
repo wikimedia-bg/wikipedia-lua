@@ -9,12 +9,13 @@ function Date.currentDate()
 end
 
 function t:test_prepareBirthDateVars()
-	self:equals_deep('prepareBirthDateVars wo args 1', prepareBirthDateVars(), {})
-	self:equals_deep('prepareBirthDateVars wo args 2', prepareBirthDateVars(""), {})
-	self:equals_deep('prepareBirthDateVars wo args 3', prepareBirthDateVars("", ""), {})
-	self:equals_deep('prepareBirthDateVars wo args 4', prepareBirthDateVars(nil), {})
-	self:equals_deep('prepareBirthDateVars wo args 5', prepareBirthDateVars(nil, nil), {})
-	self:equals_deep('prepareBirthDateVars wo birth date', prepareBirthDateVars("", "2 март 1911"), {})
+	self:equals('prepareBirthDateVars - no args', prepareBirthDateVars(), nil)
+	self:equals('prepareBirthDateVars - empty, noarg', prepareBirthDateVars(""), nil)
+	self:equals('prepareBirthDateVars - empty, empty', prepareBirthDateVars("", ""), nil)
+	self:equals('prepareBirthDateVars - nil, noarg', prepareBirthDateVars(nil), nil)
+	self:equals('prepareBirthDateVars - nil, nil', prepareBirthDateVars(nil, nil), nil)
+	self:equals('prepareBirthDateVars wo empty birth date', prepareBirthDateVars("", "2 март 1911"), nil)
+	self:equals('prepareBirthDateVars wo nil birth date', prepareBirthDateVars(nil, "2 март 1911"), nil)
 
 	self:equals_deep('prepareBirthDateVars alive', prepareBirthDateVars("2 март 1960"), {
 		date = { day = "2", month = 3, monthName = "март", year = "1960", _ = "2 март 1960" },
@@ -53,13 +54,13 @@ function t:test_prepareBirthDateVars()
 end
 
 function t:test_prepareDeathDateVars()
-	self:equals_deep('prepareDeathDateVars wo args 1', prepareDeathDateVars(), {})
-	self:equals_deep('prepareDeathDateVars wo args 2', prepareDeathDateVars(""), {})
-	self:equals_deep('prepareDeathDateVars wo args 3', prepareDeathDateVars("", ""), {})
-	self:equals_deep('prepareDeathDateVars wo args 4', prepareDeathDateVars(nil), {})
-	self:equals_deep('prepareDeathDateVars wo args 5', prepareDeathDateVars(nil, nil), {})
-	self:equals_deep('prepareDeathDateVars wo death date 1', prepareDeathDateVars("2 март 1911"), {})
-	self:equals_deep('prepareDeathDateVars wo death date 2', prepareDeathDateVars("2 март 1911", ""), {})
+	self:equals('prepareDeathDateVars - noargs', prepareDeathDateVars(), nil)
+	self:equals('prepareDeathDateVars - empty, noarg', prepareDeathDateVars(""), nil)
+	self:equals('prepareDeathDateVars - empty, empty', prepareDeathDateVars("", ""), nil)
+	self:equals('prepareDeathDateVars - nil, noarg', prepareDeathDateVars(nil), nil)
+	self:equals('prepareDeathDateVars - nil, nil', prepareDeathDateVars(nil, nil), nil)
+	self:equals('prepareDeathDateVars wo death date', prepareDeathDateVars("2 март 1911"), nil)
+	self:equals('prepareDeathDateVars wo empty death date', prepareDeathDateVars("2 март 1911", ""), nil)
 
 	self:equals_deep('prepareDeathDateVars dead', prepareDeathDateVars("2 март 1910", "2 май 1995"), {
 		date = { day = "2", month = 5, monthName = "май", year = "1995", _ = "2 май 1995" },
@@ -107,6 +108,15 @@ function t:test_wikifyDate()
 	self:equals('wikifyDate full BC', wikifyDate({ day = "3", monthName = "март", year = "80", bc = true }), "[[3 март]] [[80 г. пр.н.е.]]")
 	self:equals('wikifyDate only year BC', wikifyDate({ year = "80", bc = true }), "[[80 г. пр.н.е.]]")
 	self:equals('wikifyDate century BC', wikifyDate({ century = "9", bc = true }), "[[9 век пр.н.е.]]")
+end
+
+function t:test_formatDate()
+	local vars = {
+		date = { day = "2", month = 3, monthName = "март", year = "1960", _ = "2 март 1960" },
+		age = 54,
+		cats = { "Родени през 1960 година", "Родени на 2 март" }
+	}
+	self:equals('formatDate', formatDate(vars), '<span class="oneline">[[2 март]] [[1960]] г.<span class="noprint"> <small>(54 г.)</small></span></span>[[Category:Родени през 1960 година]][[Category:Родени на 2 март]]')
 end
 
 return t
