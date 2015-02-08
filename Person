@@ -52,7 +52,7 @@ function Date:fromString(dateString)
 		return d
 	end
 	if string.match(dateString, 'BCE$') then
-		d.bc = true
+		d.bce = true
 	end
 	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
 	if day and monthName and year then
@@ -85,7 +85,7 @@ function age(dateOfBirth, dateOfDeath)
 	end
 	local startDate = dateForCalc(dateOfBirth)
 	local endDate = dateForCalc(dateOfDeath)
-	if dateOfBirth.bc and not dateOfDeath.bc then
+	if dateOfBirth.bce and not dateOfDeath.bce then
 		-- reverse the sign and subtract one year
 		startDate = startDate * -1 + 10000
 	end
@@ -103,10 +103,10 @@ end
 function birthCategories(date)
 	local cats = {}
 	if date.century then
-		table.insert(cats, "Родени през " ..  date.century .. " век" .. bcSuffix(date.bce))
+		table.insert(cats, "Родени през " ..  date.century .. " век" .. bceSuffix(date.bce))
 	end
 	if date.year then
-		table.insert(cats, "Родени през " ..  date.year .. " година" .. bcSuffix(date.bce))
+		table.insert(cats, "Родени през " ..  date.year .. " година" .. bceSuffix(date.bce))
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Родени на " ..  date.day .. " " .. date.monthName)
@@ -117,10 +117,10 @@ end
 function deathCategories(date)
 	local cats = {}
 	if date.century then
-		table.insert(cats, "Починали през " ..  date.century .. " век" .. bcSuffix(date.bce))
+		table.insert(cats, "Починали през " ..  date.century .. " век" .. bceSuffix(date.bce))
 	end
 	if date.year then
-		table.insert(cats, "Починали през " ..  date.year .. " година" .. bcSuffix(date.bce))
+		table.insert(cats, "Починали през " ..  date.year .. " година" .. bceSuffix(date.bce))
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Починали на " ..  date.day .. " " .. date.monthName)
@@ -156,7 +156,7 @@ end
 
 function wikifyDate(date)
 	if date.century then
-		return "[[" .. date.century .. " век" .. bcSuffix(date.bce) .. "]]"
+		return "[[" .. date.century .. " век" .. bceSuffix(date.bce) .. "]]"
 	end
 	local output = ""
 	if date.day and date.monthName then
@@ -168,8 +168,8 @@ function wikifyDate(date)
 	return output
 end
 
-function bcSuffix(isBc)
-	if isBc then return " пр.н.е." else return "" end
+function bceSuffix(isBce)
+	if isBce then return " пр.н.е." else return "" end
 end
 
 function formatAgeSuffix(age)
