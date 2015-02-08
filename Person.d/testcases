@@ -29,12 +29,12 @@ function t:test_prepareBirthDateVars()
 	})
 
 	self:equals_deep('prepareBirthDateVars dead BC-AD', prepareBirthDateVars("2 март 10 BC", "2 май 65"), {
-		date = { day = "2", month = 3, monthName = "март", year = "10", _ = "2 март 10 BC", bc = true },
+		date = { day = "2", month = 3, monthName = "март", year = "10", _ = "2 март 10 BC", bce = true },
 		cats = { "Родени през 10 година пр.н.е.", "Родени на 2 март" }
 	})
 
 	self:equals_deep('prepareBirthDateVars dead BC', prepareBirthDateVars("2 март 90 BC", "2 май 10 BC"), {
-		date = { day = "2", month = 3, monthName = "март", year = "90", _ = "2 март 90 BC", bc = true },
+		date = { day = "2", month = 3, monthName = "март", year = "90", _ = "2 март 90 BC", bce = true },
 		cats = { "Родени през 90 година пр.н.е.", "Родени на 2 март" }
 	})
 
@@ -48,7 +48,7 @@ function t:test_prepareBirthDateVars()
 		cats = { "Родени през 8 век" }
 	})
 	self:equals_deep('prepareBirthDateVars century BC', prepareBirthDateVars("8. century BC", "7. century BC"), {
-		date = { century = "8", _ = "8. century BC", bc = true },
+		date = { century = "8", _ = "8. century BC", bce = true },
 		cats = { "Родени през 8 век пр.н.е." }
 	})
 end
@@ -86,7 +86,7 @@ function t:test_prepareDeathDateVars()
 	})
 
 	self:equals_deep('prepareDeathDateVars dead BC', prepareDeathDateVars("2 март 90 BC", "2 май 10 BC"), {
-		date = { day = "2", month = 5, monthName = "май", year = "10", _ = "2 май 10 BC", bc = true },
+		date = { day = "2", month = 5, monthName = "май", year = "10", _ = "2 май 10 BC", bce = true },
 		age = 80,
 		cats = { "Починали през 10 година пр.н.е.", "Починали на 2 май" }
 	})
@@ -96,7 +96,7 @@ function t:test_prepareDeathDateVars()
 		cats = { "Починали през 9 век" }
 	})
 	self:equals_deep('prepareDeathDateVars century BC', prepareDeathDateVars("8. century BC", "7. century BC"), {
-		date = { century = "7", _ = "7. century BC", bc = true },
+		date = { century = "7", _ = "7. century BC", bce = true },
 		cats = { "Починали през 7 век пр.н.е." }
 	})
 end
@@ -105,9 +105,9 @@ function t:test_wikifyDate()
 	self:equals('wikifyDate full', wikifyDate({ day = "3", monthName = "март", year = "1880" }), "[[3 март]] [[1880]] г.")
 	self:equals('wikifyDate only year', wikifyDate({ year = "1880" }), "[[1880]] г.")
 	self:equals('wikifyDate century', wikifyDate({ century = "9" }), "[[9 век]]")
-	self:equals('wikifyDate full BC', wikifyDate({ day = "3", monthName = "март", year = "80", bc = true }), "[[3 март]] [[80 г. пр.н.е.]]")
-	self:equals('wikifyDate only year BC', wikifyDate({ year = "80", bc = true }), "[[80 г. пр.н.е.]]")
-	self:equals('wikifyDate century BC', wikifyDate({ century = "9", bc = true }), "[[9 век пр.н.е.]]")
+	self:equals('wikifyDate full BC', wikifyDate({ day = "3", monthName = "март", year = "80", bce = true }), "[[3 март]] [[80 г. пр.н.е.]]")
+	self:equals('wikifyDate only year BC', wikifyDate({ year = "80", bce = true }), "[[80 г. пр.н.е.]]")
+	self:equals('wikifyDate century BC', wikifyDate({ century = "9", bce = true }), "[[9 век пр.н.е.]]")
 end
 
 function t:test_formatDate()
