@@ -103,6 +103,7 @@ end
 
 function t:test_wikifyDate()
 	self:equals('wikifyDate full', wikifyDate({ day = "3", monthName = "март", year = "1880" }), "[[3 март]] [[1880]] г.")
+	self:equals('wikifyDate only month and year', wikifyDate({ monthName = "март", year = "1880" }), "март [[1880]] г.")
 	self:equals('wikifyDate only year', wikifyDate({ year = "1880" }), "[[1880]] г.")
 	self:equals('wikifyDate century', wikifyDate({ century = "9" }), "[[9 век]]")
 	self:equals('wikifyDate full BCE', wikifyDate({ day = "3", monthName = "март", year = "80", bce = true }), "[[3 март]] [[80 г. пр.н.е.]]")
