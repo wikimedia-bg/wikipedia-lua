@@ -3,14 +3,12 @@
 --
  
 local p = {}
- 
-local HtmlBuilder = require('Module:HtmlBuilder')
- 
+
 local args = {}
 local origArgs
 local root
- 
-function union(t1, t2)
+
+local function union(t1, t2)
     -- Returns the union of the values of two tables, as a sequence.
     local vals = {}
     for k, v in pairs(t1) do
@@ -44,38 +42,46 @@ local function addRow(rowArgs)
     -- or a label/data cell combination.
     if rowArgs.header then
         root
-            .tag('tr')
-                .addClass(rowArgs.rowclass)
-                .tag('th')
-                    .attr('colspan', 2)
-                    .addClass(rowArgs.class)
-                    .css('text-align', 'center')
-                    .cssText(args.headerstyle)
-                    .wikitext(rowArgs.header)
+            :tag('tr')
+                :addClass(rowArgs.rowclass)
+                :cssText(rowArgs.rowstyle)
+                :attr('id', rowArgs.rowid)
+                :tag('th')
+                    :attr('colspan', 2)
+                    :attr('id', rowArgs.headerid)
+                    :addClass(rowArgs.class)
+                    :addClass(args.headerclass)
+                    :css('text-align', 'center')
+                    :cssText(args.headerstyle)
+                    :wikitext(rowArgs.header)
     elseif rowArgs.data then
-        local row = root.tag('tr')
-        row.addClass(rowArgs.rowclass)
+        local row = root:tag('tr')
+        row:addClass(rowArgs.rowclass)
+        row:cssText(rowArgs.rowstyle)
+        row:attr('id', rowArgs.rowid)
         if rowArgs.label then
             row
-                .tag('th')
-                    .attr('scope', 'row')
-                    .css('text-align', 'left')
-                    .cssText(args.labelstyle)
-                    .wikitext(rowArgs.label)
-                    .done()
+                :tag('th')
+                    :attr('scope', 'row')
+                    :attr('id', rowArgs.labelid)
+                    :css('text-align', 'left')
+                    :cssText(args.labelstyle)
+                    :wikitext(rowArgs.label)
+                    :done()
         end
         
-        local dataCell = row.tag('td')
+        local dataCell = row:tag('td')
         if not rowArgs.label then 
             dataCell
-                .attr('colspan', 2)
-                .css('text-align', 'center') 
+                :attr('colspan', 2)
+                :css('text-align', 'center') 
         end
         dataCell
-            .addClass(rowArgs.class)
-            .cssText(rowArgs.datastyle)
-            .newline()
-            .wikitext(rowArgs.data)
+            :attr('id', rowArgs.dataid)
+            :addClass(rowArgs.class)
+            :cssText(rowArgs.datastyle)
+            :newline()
+            :wikitext(rowArgs.data)
     end
 end
 
@@ -83,39 +89,39 @@ local function renderTitle()
     if not args.title then return end
 
     root
-        .tag('caption')
-            .addClass(args.titleclass)
-            .cssText(args.titlestyle)
-            .wikitext(args.title)
+        :tag('caption')
+            :addClass(args.titleclass)
+            :cssText(args.titlestyle)
+            :wikitext(args.title)
 end
 
 local function renderAboveRow()
     if not args.above then return end
     
     root
-        .tag('tr')
-            .tag('th')
-                .attr('colspan', 2)
-                .addClass(args.aboveclass)
-                .css('text-align', 'center')
-                .css('font-size', '125%')
-                .css('font-weight', 'bold')
-                .cssText(args.abovestyle)
-                .wikitext(args.above)
+        :tag('tr')
+            :tag('th')
+                :attr('colspan', 2)
+                :addClass(args.aboveclass)
+                :css('text-align', 'center')
+                :css('font-size', '125%')
+                :css('font-weight', 'bold')
+                :cssText(args.abovestyle)
+                :wikitext(args.above)
 end
 
 local function renderBelowRow()
     if not args.below then return end
     
     root
-        .tag('tr')
-            .tag('td')
-                .attr('colspan', '2')
-                .addClass(args.belowclass)
-                .css('text-align', 'center')
-                .cssText(args.belowstyle)
-                .newline()
-                .wikitext(args.below)
+        :tag('tr')
+            :tag('td')
+                :attr('colspan', '2')
+                :addClass(args.belowclass)
+                :css('text-align', 'center')
+                :cssText(args.belowstyle)
+                :newline()
+                :wikitext(args.below)
 end
 
 local function renderSubheaders()
@@ -146,14 +152,12 @@ local function renderImages()
     local imagenums = getArgNums('image')
     for k, num in ipairs(imagenums) do
         local caption = args['caption' .. tostring(num)]
-        local data = HtmlBuilder.create().wikitext(args['image' .. tostring(num)])
+        local data = mw.html.create():wikitext(args['image' .. tostring(num)])
         if caption then
             data
-                .tag('br', {selfClosing = true})
-                    .done()
-                .tag('div')
-                    .cssText(args.captionstyle)
-                    .wikitext(caption)
+                :tag('div')
+                    :cssText(args.captionstyle)
+                    :wikitext(caption)
         end
         addRow({
             data = tostring(data),
@@ -176,7 +180,12 @@ local function renderRows()
             data = args['data' .. tostring(num)],
             datastyle = args.datastyle,
             class = args['class' .. tostring(num)],
-            rowclass = args['rowclass' .. tostring(num)]
+            rowclass = args['rowclass' .. tostring(num)],
+            rowstyle = args['rowstyle' .. tostring(num)],
+            dataid = args['dataid' .. tostring(num)],
+            labelid = args['labelid' .. tostring(num)],
+            headerid = args['headerid' .. tostring(num)],
+            rowid = args['rowid' .. tostring(num)]
         })
     end
 end
@@ -185,11 +194,11 @@ local function renderNavBar()
     if not args.name then return end
     
     root
-        .tag('tr')
-            .tag('td')
-                .attr('colspan', '2')
-                .css('text-align', 'right')
-                .wikitext(mw.getCurrentFrame():expandTemplate({ 
+        :tag('tr')
+            :tag('td')
+                :attr('colspan', '2')
+                :css('text-align', 'right')
+                :wikitext(mw.getCurrentFrame():expandTemplate({ 
                     title = 'navbar', 
                     args = { args.name, mini = 1 }
                 }))
@@ -198,17 +207,17 @@ end
 local function renderItalicTitle()
     local italicTitle = args['italic title'] and mw.ustring.lower(args['italic title'])
     if italicTitle == '' or italicTitle == 'force' or italicTitle == 'yes' then
-        root.wikitext(mw.getCurrentFrame():expandTemplate({title = 'italic title'}))
+        root:wikitext(mw.getCurrentFrame():expandTemplate({title = 'italic title'}))
     end
 end
 
 local function renderTrackingCategories()
     if args.decat ~= 'yes' then
         if #(getArgNums('data')) == 0 and mw.title.getCurrentTitle().namespace == 0 then
-            root.wikitext('[[Category:Articles which use infobox templates with no data rows]]')
+            root:wikitext('[[Category:Articles which use infobox templates with no data rows]]')
         end
         if args.child == 'yes' and args.title then
-            root.wikitext('[[Category:Articles which use embedded infobox templates with the title parameter]]')
+            root:wikitext('[[Category:Pages which use embedded infobox templates with the title parameter]]')
         end
     end
 end
@@ -217,39 +226,37 @@ local function _infobox()
     -- Specify the overall layout of the infobox, with special settings
     -- if the infobox is used as a 'child' inside another infobox.
     if args.child ~= 'yes' then
-        root = HtmlBuilder.create('table')
+        root = mw.html.create('table')
         
         root
-            .addClass('infobox')
-            .addClass(args.bodyclass)
-            .attr('cellspacing', 3)
-            .css('border-spacing', '3px')
+            :addClass('infobox')
+            :addClass(args.bodyclass)
             
             if args.subbox == 'yes' then
                 root
-                    .css('padding', '0')
-                    .css('border', 'none')
-                    .css('margin', '-3px')
-                    .css('width', 'auto')
-                    .css('min-width', '100%')
-                    .css('font-size', '100%')
-                    .css('clear', 'none')
-                    .css('float', 'none')
-                    .css('background-color', 'transparent')
+                    :css('padding', '0')
+                    :css('border', 'none')
+                    :css('margin', '-3px')
+                    :css('width', 'auto')
+                    :css('min-width', '100%')
+                    :css('font-size', '100%')
+                    :css('clear', 'none')
+                    :css('float', 'none')
+                    :css('background-color', 'transparent')
             else
                 root
-                    .css('width', '22em')
+                    :css('width', '22em')
             end
         root
-            .cssText(args.bodystyle)
+            :cssText(args.bodystyle)
     
         renderTitle()
         renderAboveRow()
     else
-        root = HtmlBuilder.create()
+        root = mw.html.create()
         
         root
-            .wikitext(args.title)
+            :wikitext(args.title)
     end
 
     renderSubheaders()
@@ -367,8 +374,14 @@ function p.infobox(frame)
         {prefix = 'header'},
         {prefix = 'data', depend = {'label'}},
         {prefix = 'rowclass'},
-        {prefix = 'class'}
+        {prefix = 'rowstyle'},
+        {prefix = 'class'},
+        {prefix = 'dataid'},
+        {prefix = 'labelid'},
+        {prefix = 'headerid'},
+        {prefix = 'rowid'}
     }, 50)
+    preprocessSingleArg('headerclass')
     preprocessSingleArg('headerstyle')
     preprocessSingleArg('labelstyle')
     preprocessSingleArg('datastyle')
