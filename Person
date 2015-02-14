@@ -71,6 +71,13 @@ function Date:fromString(dateString)
 	if year then
 		return d:set(year)
 	end
+	if string.match(dateString, "неизвестна стойност") then
+		d.unknown = true
+	end
+	-- old value
+	if string.match(dateString, "неразпозната стойност") then
+		d.unknown = true
+	end
 
 	return d
 end
@@ -111,6 +118,9 @@ function birthCategories(date)
 	if date.day and date.monthName then
 		table.insert(cats, "Родени на " ..  date.day .. " " .. date.monthName)
 	end
+	if date.unknown then
+		table.insert(cats, "Статии за личности с неизвестна година на раждане")
+	end
 	return cats
 end
 
@@ -124,6 +134,9 @@ function deathCategories(date)
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Починали на " ..  date.day .. " " .. date.monthName)
+	end
+	if date.unknown then
+		table.insert(cats, "Статии за личности с неизвестна година на смърт")
 	end
 	return cats
 end
