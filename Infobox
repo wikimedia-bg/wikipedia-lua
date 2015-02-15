@@ -69,12 +69,12 @@ local function addRow(rowArgs)
 					:wikitext(rowArgs.label)
 					:done()
 		end
-		
+
 		local dataCell = row:tag('td')
-		if not rowArgs.label then 
+		if not rowArgs.label then
 			dataCell
 				:attr('colspan', 2)
-				:css('text-align', 'center') 
+				:css('text-align', 'center')
 		end
 		dataCell
 			:attr('id', rowArgs.dataid)
@@ -97,7 +97,7 @@ end
 
 local function renderAboveRow()
 	if not args.above then return end
-	
+
 	root
 		:tag('tr')
 			:tag('th')
@@ -112,7 +112,7 @@ end
 
 local function renderBelowRow()
 	if not args.below then return end
-	
+
 	root
 		:tag('tr')
 			:tag('td')
@@ -192,14 +192,14 @@ end
 
 local function renderNavBar()
 	if not args.name then return end
-	
+
 	root
 		:tag('tr')
 			:tag('td')
 				:attr('colspan', '2')
 				:css('text-align', 'right')
-				:wikitext(mw.getCurrentFrame():expandTemplate({ 
-					title = 'navbar', 
+				:wikitext(mw.getCurrentFrame():expandTemplate({
+					title = 'navbar',
 					args = { args.name, mini = 1 }
 				}))
 end
@@ -227,11 +227,11 @@ local function _infobox()
 	-- if the infobox is used as a 'child' inside another infobox.
 	if args.child ~= 'yes' then
 		root = mw.html.create('table')
-		
+
 		root
 			:addClass('infobox')
 			:addClass(args.bodyclass)
-			
+
 			if args.subbox == 'yes' then
 				root
 					:css('padding', '0')
@@ -249,24 +249,24 @@ local function _infobox()
 			end
 		root
 			:cssText(args.bodystyle)
-	
+
 		renderTitle()
 		renderAboveRow()
 	else
 		root = mw.html.create()
-		
+
 		root
 			:wikitext(args.title)
 	end
 
 	renderSubheaders()
-	renderImages() 
-	renderRows() 
-	renderBelowRow()  
+	renderImages()
+	renderRows()
+	renderBelowRow()
 	renderNavBar()
 	renderItalicTitle()
 	renderTrackingCategories()
-	
+
 	return tostring(root)
 end
 
@@ -291,7 +291,7 @@ local function preprocessArgs(prefixTable, step)
 	if type(step) ~= 'number' then
 		error("Invalid step value detected", 2)
 	end
-	
+
 	-- Get arguments without a number suffix, and check for bad input.
 	for i,v in ipairs(prefixTable) do
 		if type(v) ~= 'table' or type(v.prefix) ~= "string" or (v.depend and type(v.depend) ~= 'table') then
@@ -344,7 +344,7 @@ function p.infobox(frame)
 	else
 		origArgs = frame
 	end
-	
+
 	-- Parse the data parameters in the same order that the old {{infobox}} did, so that
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
