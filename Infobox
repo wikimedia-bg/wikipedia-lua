@@ -53,6 +53,7 @@ local function addRow(rowArgs)
 					:addClass(args.headerclass)
 					:css('text-align', 'center')
 					:cssText(args.headerstyle)
+					:cssText(rowArgs.headerstyle)
 					:wikitext(rowArgs.header)
 	elseif rowArgs.data then
 		local row = root:tag('tr')
@@ -66,6 +67,7 @@ local function addRow(rowArgs)
 					:attr('id', rowArgs.labelid)
 					:css('text-align', 'left')
 					:cssText(args.labelstyle)
+					:cssText(rowArgs.labelstyle)
 					:wikitext(rowArgs.label)
 					:done()
 		end
@@ -176,9 +178,11 @@ local function renderRows()
 	for k, num in ipairs(rownums) do
 		addRow({
 			header = args['header' .. tostring(num)],
+			headerstyle = args['headerstyle' .. tostring(num)],
 			label = args['label' .. tostring(num)],
+			labelstyle = args['labelstyle' .. tostring(num)],
 			data = args['data' .. tostring(num)],
-			datastyle = args.datastyle,
+			datastyle = (args.datastyle or '') ..' '.. (args['datastyle' .. tostring(num)] or ''),
 			class = args['class' .. tostring(num)],
 			rowclass = args['rowclass' .. tostring(num)],
 			rowstyle = args['rowstyle' .. tostring(num)],
@@ -229,7 +233,7 @@ local function _infobox()
 		root = mw.html.create('table')
 
 		root
-			:addClass('infobox')
+			:addClass('infobox infobox-lua')
 			:addClass(args.bodyclass)
 
 			if args.subbox == 'yes' then
@@ -265,7 +269,7 @@ local function _infobox()
 	renderBelowRow()
 	renderNavBar()
 	renderItalicTitle()
-	renderTrackingCategories()
+	-- renderTrackingCategories()
 
 	return tostring(root)
 end
@@ -372,7 +376,10 @@ function p.infobox(frame)
 	preprocessSingleArg('imageclass')
 	preprocessArgs({
 		{prefix = 'header'},
+		{prefix = 'headerstyle'},
 		{prefix = 'data', depend = {'label'}},
+		{prefix = 'labelstyle'},
+		{prefix = 'datastyle'},
 		{prefix = 'rowclass'},
 		{prefix = 'rowstyle'},
 		{prefix = 'class'},
@@ -380,7 +387,7 @@ function p.infobox(frame)
 		{prefix = 'labelid'},
 		{prefix = 'headerid'},
 		{prefix = 'rowid'}
-	}, 50)
+	}, 100)
 	preprocessSingleArg('headerclass')
 	preprocessSingleArg('headerstyle')
 	preprocessSingleArg('labelstyle')
