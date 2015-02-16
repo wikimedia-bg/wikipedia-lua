@@ -379,6 +379,18 @@ function p._navbox(navboxArgs)
 	return tostring(res)
 end
 
+local aliases = {
+	['заглавие'] = 'title',
+	['заглавие-стил'] = 'titlestyle',
+	['картинка-ляво'] = 'imageleft',
+	['картинка'] = 'image',
+	['име'] = 'name',
+	['тяло'] = 'list1',
+	['тяло-стил'] = 'list1style',
+	['отдолу'] = 'below',
+	['отдолу-стил'] = 'belowstyle',
+}
+
 function p.navbox(frame)
 	-- ParserFunctions considers the empty string to be false, so to preserve the previous
 	-- behavior of {{navbox}}, change any empty arguments to nil, so Lua will consider
@@ -390,7 +402,7 @@ function p.navbox(frame)
 	local temp;
 	temp = parent_args.title;
 	temp = parent_args.above;
-	for i = 1, 20 do
+	for i = 1, 25 do
 		temp = parent_args["group" .. tostring(i)];
 		temp = parent_args["list" .. tostring(i)];
 	end
@@ -399,7 +411,13 @@ function p.navbox(frame)
 	for k, v in pairs(parent_args) do
 		if v ~= '' then
 			args[k] = v
+			if aliases[k] then
+				args[aliases[k]] = v
+			end
 		end
+	end
+	if args['скрит'] then
+		args['state'] = 'collapsed'
 	end
 	return p._navbox(args)
 end
