@@ -182,7 +182,7 @@ local function renderRows()
 			label = args['label' .. tostring(num)],
 			labelstyle = args['labelstyle' .. tostring(num)],
 			data = args['data' .. tostring(num)],
-			datastyle = (args.datastyle or '') ..' '.. (args['datastyle' .. tostring(num)] or ''),
+			datastyle = (args.datastyle or '') ..';'.. (args['datastyle' .. tostring(num)] or ''),
 			class = args['class' .. tostring(num)],
 			rowclass = args['rowclass' .. tostring(num)],
 			rowstyle = args['rowstyle' .. tostring(num)],
