@@ -368,6 +368,8 @@ function p.infobox(frame)
 	}, 10)
 	preprocessSingleArg('subheaderstyle')
 	preprocessSingleArg('subheaderclass')
+	preprocessSingleArg('image')
+	preprocessSingleArg('caption')
 	preprocessArgs({
 		{prefix = 'image', depend = {'caption', 'imagerowclass'}}
 	}, 10)
