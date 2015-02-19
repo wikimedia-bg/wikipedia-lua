@@ -32,10 +32,10 @@ local i18n = {
 		-- the following use the format of #time parser function
 		[9]  = "Y",					-- precision: year,
 		[10] = "F Y",				-- precision: month
-		[11] = "j. F Y",			-- precision: day
-		[12] = 'j. F Y, G "часа"',	-- precision: hour
-		[13] = "j. F Y G:i",		-- precision: minute
-		[14] = "j. F Y G:i:s",		-- precision: second
+		[11] = "j F Y",			-- precision: day
+		[12] = 'j F Y, G "часа"',	-- precision: hour
+		[13] = "j F Y G:i",		-- precision: minute
+		[14] = "j F Y G:i:s",		-- precision: second
 		["beforenow"] = "преди $1",	-- how to format negative numbers for precisions 0 to 5
 		["afternow"] = "след $1",		-- how to format positive numbers for precisions 0 to 5
 		["bc"] = '$1 "пр.н.е."',		-- how print negative years
