@@ -1,215 +1,215 @@
 local i18n = {
-    ["errors"] = {
-        ["property-param-not-provided"] = "Property parameter not provided.",
-        ["entity-not-found"] = "Entity not found.",
-        ["unknown-claim-type"] = "Unknown claim type.",
-        ["unknown-snak-type"] = "Unknown snak type.",
-        ["unknown-datavalue-type"] = "Unknown datavalue type.",
-        ["unknown-entity-type"] = "Unknown entity type.",
-        ["unknown-value-module"] = "You must set both value-module and value-function parameters.",
-        ["value-module-not-found"] = "The module pointed by value-module not found.",
-        ["value-function-not-found"] = "The function pointed by value-function not found."
-    },
-    ["somevalue"] = "",
-    ["novalue"] = ""
+	["errors"] = {
+		["property-param-not-provided"] = "Property parameter not provided.",
+		["entity-not-found"] = "Entity not found.",
+		["unknown-claim-type"] = "Unknown claim type.",
+		["unknown-snak-type"] = "Unknown snak type.",
+		["unknown-datavalue-type"] = "Unknown datavalue type.",
+		["unknown-entity-type"] = "Unknown entity type.",
+		["unknown-value-module"] = "You must set both value-module and value-function parameters.",
+		["value-module-not-found"] = "The module pointed by value-module not found.",
+		["value-function-not-found"] = "The function pointed by value-function not found."
+	},
+	["somevalue"] = "",
+	["novalue"] = ""
 }
 
 function getEntityFromId( id )
-    if id then
-        return mw.wikibase.getEntity( id )
-    end
-    return mw.wikibase.getEntity()
+	if id then
+		return mw.wikibase.getEntity( id )
+	end
+	return mw.wikibase.getEntity()
 end
 
 function getEntityIdFromValue( value )
-    local prefix = ''
-    if value['entity-type'] == 'item' then
-        prefix = 'q'
-    elseif value['entity-type'] == 'property' then
-        prefix = 'p'
-    else
-        return formatError( 'unknown-entity-type' )
-    end
-    return prefix .. value['numeric-id']
+	local prefix = ''
+	if value['entity-type'] == 'item' then
+		prefix = 'q'
+	elseif value['entity-type'] == 'property' then
+		prefix = 'p'
+	else
+		return formatError( 'unknown-entity-type' )
+	end
+	return prefix .. value['numeric-id']
 end
 
 function formatError( key )
-    return '<span class="error">' .. i18n.errors[key] .. '</span>'
+	return '<span class="error">' .. i18n.errors[key] .. '</span>'
 end
 
 
 function formatStatements( options )
-    if not options.property then
-        return formatError( 'property-param-not-provided' )
-    end
+	if not options.property then
+		return formatError( 'property-param-not-provided' )
+	end
 
-    --Get entity
-    local entity = getEntityFromId( options.entityId )
-    if not entity then
-        return -- formatError( 'entity-not-found' )
-    end
+	--Get entity
+	local entity = getEntityFromId( options.entityId )
+	if not entity then
+		return -- formatError( 'entity-not-found' )
+	end
 
-    if (entity.claims == nil) or (not entity.claims[string.lower(options.property)]) then
-        return '' --TODO error?
-    end
+	if (entity.claims == nil) or (not entity.claims[string.lower(options.property)]) then
+		return '' --TODO error?
+	end
 
-    --Format statement and concat them cleanly
-    local formattedStatements = {}
-    for i, statement in pairs( entity.claims[string.lower(options.property)] ) do
-        table.insert( formattedStatements, formatStatement( statement, options ) )
-    end
-    if options.first then
-        return formattedStatements[1]
-    else 
-        return mw.text.listToText( formattedStatements, options.separator, options.conjunction )
-    end
+	--Format statement and concat them cleanly
+	local formattedStatements = {}
+	for i, statement in pairs( entity.claims[string.lower(options.property)] ) do
+		table.insert( formattedStatements, formatStatement( statement, options ) )
+	end
+	if options.first then
+		return formattedStatements[1]
+	else
+		return mw.text.listToText( formattedStatements, options.separator, options.conjunction )
+	end
 end
 
 function formatStatement( statement, options )
-    if not statement.type or statement.type ~= 'statement' then
-        return formatError( 'unknown-claim-type' )
-    end
+	if not statement.type or statement.type ~= 'statement' then
+		return formatError( 'unknown-claim-type' )
+	end
 
-    return formatSnak( statement.mainsnak, options )
-    --TODO reference and qualifiers
+	return formatSnak( statement.mainsnak, options )
+	--TODO reference and qualifiers
 end
 
 function formatSnak( snak, options )
-    if snak.snaktype == 'somevalue' then
-        return i18n['somevalue']
-    elseif snak.snaktype == 'novalue' then
-        return i18n['novalue']
-    elseif snak.snaktype == 'value' then
-        return formatDatavalue( snak.datavalue, options )
-    else
-        return formatError( 'unknown-snak-type' )
-    end
+	if snak.snaktype == 'somevalue' then
+		return i18n['somevalue']
+	elseif snak.snaktype == 'novalue' then
+		return i18n['novalue']
+	elseif snak.snaktype == 'value' then
+		return formatDatavalue( snak.datavalue, options )
+	else
+		return formatError( 'unknown-snak-type' )
+	end
 end
 
 function formatGlobeCoordinate( value, options )
-    if options['subvalue'] == 'latitude' then
-        return value['latitude']
-    elseif options['subvalue'] == 'longitude' then
-        return value['longitude']
-    else
-        local eps = 0.0000001 -- < 1/360000
-        local globe = '' -- TODO
-        local lat = {}
-        lat['abs'] = math.abs(value['latitude'])
-        lat['ns'] = value['latitude'] >= 0 and 'N' or 'S'
-        lat['d'] = math.floor(lat['abs'] + eps)
-        lat['m'] = math.floor((lat['abs'] - lat['d']) * 60 + eps)
-        lat['s'] = math.max(0, ((lat['abs'] - lat['d']) * 60 - lat['m']) * 60)
-        local lon = {}
-        lon['abs'] = math.abs(value['longitude'])
-        lon['ew'] = value['longitude'] >= 0 and 'E' or 'W'
-        lon['d'] = math.floor(lon['abs'] + eps)
-        lon['m'] = math.floor((lon['abs'] - lon['d']) * 60 + eps)
-        lon['s'] = math.max(0, ((lon['abs'] - lon['d']) * 60 - lon['m']) * 60)
-        local coord = '{{coord'
-        if (value['precision'] == nil) or (value['precision'] < 1/60) then -- по умолчанию с точностью до секунды
-            coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['s'] .. '|' .. lat['ns']
-            coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['s'] .. '|' .. lon['ew']
-        elseif value['precision'] < 1 then
-            coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['ns']
-            coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['ew']
-        else
-            coord = coord .. '|' .. lat['d'] .. '|' .. lat['ns']
-            coord = coord .. '|' .. lon['d'] .. '|' .. lon['ew']
-        end
-        coord = coord .. '|globe:' .. globe
-        if options['display'] then
-            coord = coord .. '|display=' .. options.display
-        else
-            coord = coord .. '|display=title'
-        end
-        coord = coord .. '}}'
- 
-        return g_frame:preprocess(coord)
-    end
+	if options['subvalue'] == 'latitude' then
+		return value['latitude']
+	elseif options['subvalue'] == 'longitude' then
+		return value['longitude']
+	else
+		local eps = 0.0000001 -- < 1/360000
+		local globe = '' -- TODO
+		local lat = {}
+		lat['abs'] = math.abs(value['latitude'])
+		lat['ns'] = value['latitude'] >= 0 and 'N' or 'S'
+		lat['d'] = math.floor(lat['abs'] + eps)
+		lat['m'] = math.floor((lat['abs'] - lat['d']) * 60 + eps)
+		lat['s'] = math.max(0, ((lat['abs'] - lat['d']) * 60 - lat['m']) * 60)
+		local lon = {}
+		lon['abs'] = math.abs(value['longitude'])
+		lon['ew'] = value['longitude'] >= 0 and 'E' or 'W'
+		lon['d'] = math.floor(lon['abs'] + eps)
+		lon['m'] = math.floor((lon['abs'] - lon['d']) * 60 + eps)
+		lon['s'] = math.max(0, ((lon['abs'] - lon['d']) * 60 - lon['m']) * 60)
+		local coord = '{{coord'
+		if (value['precision'] == nil) or (value['precision'] < 1/60) then -- по умолчанию с точностью до секунды
+			coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['s'] .. '|' .. lat['ns']
+			coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['s'] .. '|' .. lon['ew']
+		elseif value['precision'] < 1 then
+			coord = coord .. '|' .. lat['d'] .. '|' .. lat['m'] .. '|' .. lat['ns']
+			coord = coord .. '|' .. lon['d'] .. '|' .. lon['m'] .. '|' .. lon['ew']
+		else
+			coord = coord .. '|' .. lat['d'] .. '|' .. lat['ns']
+			coord = coord .. '|' .. lon['d'] .. '|' .. lon['ew']
+		end
+		coord = coord .. '|globe:' .. globe
+		if options['display'] then
+			coord = coord .. '|display=' .. options.display
+		else
+			coord = coord .. '|display=title'
+		end
+		coord = coord .. '}}'
+
+		return g_frame:preprocess(coord)
+	end
 end
 
 function formatDatavalue( datavalue, options )
-    --Use the customize handler if provided
-    if options['value-module'] or options['value-function'] then
-        if not options['value-module'] or not options['value-function'] then
-            return formatError( 'unknown-value-module' )
-        end
-        local formatter = require ('Module:' .. options['value-module'])
-        if formatter == nil then
-            return formatError( 'value-module-not-found' )
-        end
-        local fun = formatter[options['value-function']]
-        if fun == nil then
-            return formatError( 'value-function-not-found' )
-        end
-        return fun( datavalue.value, options )
-    end
+	--Use the customize handler if provided
+	if options['value-module'] or options['value-function'] then
+		if not options['value-module'] or not options['value-function'] then
+			return formatError( 'unknown-value-module' )
+		end
+		local formatter = require ('Module:' .. options['value-module'])
+		if formatter == nil then
+			return formatError( 'value-module-not-found' )
+		end
+		local fun = formatter[options['value-function']]
+		if fun == nil then
+			return formatError( 'value-function-not-found' )
+		end
+		return fun( datavalue.value, options )
+	end
 
-    --Default formatters
-    if datavalue.type == 'wikibase-entityid' then
-        return formatEntityId( getEntityIdFromValue( datavalue.value ), options )
-    elseif datavalue.type == 'string' then
-        if options.pattern and options.pattern ~= '' then
-            return formatFromPattern( datavalue.value, options )
-        else
-            return datavalue.value
-        end
-    elseif datavalue.type == 'globecoordinate' then
-        return formatGlobeCoordinate( datavalue.value, options ) 
-    elseif datavalue.type == 'time' then
-        local Time = require 'Module:Time'
-        return Time.newFromWikidataValue( datavalue.value ):toHtml()
-    else
-        return formatError( 'unknown-datavalue-type' )
-    end
+	--Default formatters
+	if datavalue.type == 'wikibase-entityid' then
+		return formatEntityId( getEntityIdFromValue( datavalue.value ), options )
+	elseif datavalue.type == 'string' then
+		if options.pattern and options.pattern ~= '' then
+			return formatFromPattern( datavalue.value, options )
+		else
+			return datavalue.value
+		end
+	elseif datavalue.type == 'globecoordinate' then
+		return formatGlobeCoordinate( datavalue.value, options )
+	elseif datavalue.type == 'time' then
+		local Time = require 'Module:Time'
+		return Time.newFromWikidataValue( datavalue.value ):toHtml()
+	else
+		return formatError( 'unknown-datavalue-type' )
+	end
 end
 
 function formatEntityId( entityId, options )
-    if (options.format == 'id') then
-        return entityId
-    end
+	if (options.format == 'id') then
+		return entityId
+	end
 
-    local label = mw.wikibase.label( entityId )
-    local link = mw.wikibase.sitelink( entityId )
-    if link and (options.format ~= 'label') then
-        if label then
-            return '[[' .. link .. '|' .. label .. ']]'
-        else
-            return '[[' .. link .. ']]'
-        end
-    else
-        return label --TODO what if no links and label + fallback language?
-    end
+	local label = mw.wikibase.label( entityId )
+	local link = mw.wikibase.sitelink( entityId )
+	if link and (options.format ~= 'label') then
+		if label then
+			return '[[' .. link .. '|' .. label .. ']]'
+		else
+			return '[[' .. link .. ']]'
+		end
+	else
+		return label --TODO what if no links and label + fallback language?
+	end
 end
 
 local p = {}
 
 function p.formatStatements( frame )
-    local args = frame.args
+	local args = frame.args
 
-    --If a value if already set, use it
-    if args.value and args.value ~= '' then
-        return args.value
-    end
-    return formatStatements( frame.args )
+	--If a value if already set, use it
+	if args.value and args.value ~= '' then
+		return args.value
+	end
+	return formatStatements( frame.args )
 end
 
 function p.getLabel( frame )
-    if not frame.args.lang then
-        return ''
-    end
+	if not frame.args.lang then
+		return ''
+	end
 
-    --Get entity
-    local entity = getEntityFromId( frame.args.entityId )
-    if not entity then
-        return ''
-    end
+	--Get entity
+	local entity = getEntityFromId( frame.args.entityId )
+	if not entity then
+		return ''
+	end
 
-    if (entity.labels == nil) or (not entity.labels[frame.args.lang]) then
-        return ''
-    end
-    return entity.labels[frame.args.lang]['value']
+	if (entity.labels == nil) or (not entity.labels[frame.args.lang]) then
+		return ''
+	end
+	return entity.labels[frame.args.lang]['value']
 end
 
 return p
