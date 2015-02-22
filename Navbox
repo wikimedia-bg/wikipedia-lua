@@ -227,7 +227,7 @@ function renderListRow(tbl, listnum)
 		.cssText(args.liststyle)
 		.cssText(rowstyle)
 		.cssText(args['list' .. listnum .. 'style'])
-		.addClass('navbox-list')
+		.addClass('navbox-list nowraplinks')
 		.addClass('navbox-' .. evenOdd)
 		.addClass(args.listclass)
 		.tag('div')
@@ -300,7 +300,6 @@ end
 function renderMainTable()
 	local tbl = HtmlBuilder.create('table')
 		.attr('cellspacing', 0)
-		.addClass('nowraplinks')
 		.addClass(args.bodyclass)
 
 	if args.title and (args.state ~= 'plain' and args.state ~= 'off') then
