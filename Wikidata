@@ -62,17 +62,17 @@ end
 
 function getEntityFromId( id )
 	if id then
-		return mw.wikibase.getEntity( id )
+		return mw.wikibase.getEntityObject( id )
 	end
-	return mw.wikibase.getEntity()
+	return mw.wikibase.getEntityObject()
 end
 
 function getEntityIdFromValue( value )
 	local prefix = ''
 	if value['entity-type'] == 'item' then
-		prefix = 'q'
+		prefix = 'Q'
 	elseif value['entity-type'] == 'property' then
-		prefix = 'p'
+		prefix = 'P'
 	else
 		return formatError( 'unknown-entity-type' )
 	end
@@ -95,13 +95,13 @@ function formatStatements( options )
 		return -- formatError( 'entity-not-found' )
 	end
 
-	if (entity.claims == nil) or (not entity.claims[string.lower(options.property)]) then
+	if (entity.claims == nil) or (not entity.claims[string.upper(options.property)]) then
 		return '' --TODO error?
 	end
 
 	--Format statement and concat them cleanly
 	local formattedStatements = {}
-	for i, statement in pairs( entity.claims[string.lower(options.property)] ) do
+	for i, statement in pairs( entity.claims[string.upper(options.property)] ) do
 		table.insert( formattedStatements, formatStatement( statement, options ) )
 	end
 	if options.first then
