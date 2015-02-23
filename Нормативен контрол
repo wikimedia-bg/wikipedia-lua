@@ -254,7 +254,7 @@ end
 
 function matchesWikidataRequirements( item, reqs )
     for _, group in pairs( reqs ) do
-        local property = 'p' .. group[1]
+        local property = 'P' .. group[1]
         local qid = group[2]
         if item.claims[property] ~= nil then
             for _, statement in pairs ( item.claims[property] ) do
@@ -355,7 +355,7 @@ function p.authorityControl( frame )
     end
 
     --Wikidata fallback if requested
-    local item = mw.wikibase.getEntity()
+    local item = mw.wikibase.getEntityObject()
     if item ~= nil and item.claims ~= nil then
         for _, params in pairs( conf ) do
             if params[3] ~= 0 then
@@ -368,7 +368,7 @@ function p.authorityControl( frame )
                         canUseWikidata = true
                     end
                     if canUseWikidata then
-                        local wikidataIds = getIdsFromWikidata( item, 'p' .. params[3] )
+                        local wikidataIds = getIdsFromWikidata( item, 'P' .. params[3] )
                         if wikidataIds[1] then
                             parentArgs[params[1]] = wikidataIds[1]
                         end
