@@ -7,7 +7,7 @@ function p.id(frame)
            return "wikibase module not found"
         end
  
-        entity = mw.wikibase.getEntity()
+        entity = mw.wikibase.getEntityObject()
  
         if entity == nil then
            return "(no item connected)"
@@ -19,7 +19,7 @@ end
 -- Return the label of a given data item.
 function p.label(frame)
         if frame.args[1] == nil then
-            entity = mw.wikibase.getEntity()
+            entity = mw.wikibase.getEntityObject()
             if not entity then return nil end
  
             id = entity.id
@@ -33,7 +33,7 @@ end
 -- Return the local page about a given data item.
 function p.page(frame)
         if frame.args[1] == nil then
-            entity = mw.wikibase.getEntity()
+            entity = mw.wikibase.getEntityObject()
             if not entity then return nil end
  
             id = entity.id
