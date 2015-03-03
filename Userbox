@@ -2,6 +2,13 @@
 
 local getArgs = require('Module:Arguments').getArgs
 local categoryHandler = require('Module:Category handler').main
+local languages = {
+    bg = { name = '...', {}},
+    en = { name = 'English', {'This user is a', 'native', 'speaker of'}, {'This user can\'t speak or has', 'bad', 'level of'}, {'This user is able to contribute with a', 'basic', 'level of'}, {'This user is able to contribute with an', 'intermediate', 'level of'}, {'This user is able to contribute with an', 'advanced', 'level of'}, {'This user is able to contribute with a', 'near-native', 'level of'}, {'This user is able to contribute with a', 'professional', 'level of'} },
+    es = { name = '...', {}},
+    fr = { name = '...', {}},
+    it = { name = '...', {}},
+}
 
 local p = {}
 
@@ -53,6 +60,24 @@ local function checkImageExists(image)
 	end
 end
 
+local function checkLang(word)
+	-- Checks if some string word is language template (for example: fr-4)
+    local result = {}
+	if string.match(word, "^[a-z][a-z][a-z]?-?%d?$") ~= nil
+	then
+		local dash = string.find(word, '-')
+		if dash ~= nil
+		then
+    		result[1] = string.sub(word, 1, string.len(word) - 2)
+		    result[2] = string.sub(word, dash + 1)
+	    else
+    		result[1] = word
+	    end
+	end
+	
+	return result
+end
+
 --------------------------------------------------------------------------------
 -- Argument processing
 --------------------------------------------------------------------------------
@@ -83,44 +108,53 @@ function p._userbox(args)
 	-- Does argument processing for {{userbox}}.
 	local data = {}
 
-	if (args[2] ~= null)
+	-- Get div tag values.
+	data.float = args.float or 'right'
+	local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
+	data.borderWidth = addSuffix(borderWidthNum, 'px')
+	data.borderColor = args['border-c'] or args[3] or '#999'
+	data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
+	data.bodyClass = args.bodyclass
+	
+	-- Get id values.
+	local id = args.logo or args.id or checkImageExists(args[1])
+	data.id = id
+	data.showId = id and true or false
+	data.idWidth = checkNumAndAddSuffix(args['id-w'], 45, 'px')
+	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
+	data.idBackgroundColor = args['id-c'] or args[4] or '#ddd'
+	data.idTextAlign = args['id-a'] or 'center'
+	data.idFontSize = checkNumAndAddSuffix(args['id-s'], 14, 'pt')
+	data.idColor = args['id-fc'] or args[6] or 'black'
+	data.idPadding = args['id-p'] or '1px'
+	data.idLineHeight = args['id-lh'] or '1.25em'
+	data.idOtherParams = args['id-other']
+	data.idClass = args['id-class']
+	
+	-- Get info values.
+	data.info = "'''" .. (args.info or args[2] or '') .. "'''"
+	data.infoTextAlign = args['info-a'] or 'center'
+	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
+	data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
+	data.infoBackgroundColor = args['info-c'] or args[5] or '#eee'
+	data.infoPadding = args['info-p'] or '0 4px 0 4px'
+	data.infoLineHeight = args['info-lh'] or '1.25em'
+	data.infoColor = args['info-fc'] or args[7] or 'black'
+	data.infoOtherParams = args['info-other']
+	data.infoClass = args['info-class']
+	
+	if (args[2] == null)
 	then
-		-- Get div tag values.
-		data.float = args.float or 'right'
-		local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
-		data.borderWidth = addSuffix(borderWidthNum, 'px')
-		data.borderColor = args['border-c'] or args[3] or '#999'
-		data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
-		data.bodyClass = args.bodyclass
-	
-		-- Get id values.
-		local id = args.logo or args.id or checkImageExists(args[1])
-		data.id = id
-		data.showId = id and true or false
-		data.idWidth = checkNumAndAddSuffix(args['id-w'], 45, 'px')
-		data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
-		data.idBackgroundColor = args['id-c'] or args[4] or '#ddd'
-		data.idTextAlign = args['id-a'] or 'center'
-		data.idFontSize = checkNumAndAddSuffix(args['id-s'], 14, 'pt')
-		data.idColor = args['id-fc'] or args[6] or 'black'
-		data.idPadding = args['id-p'] or '1px'
-		data.idLineHeight = args['id-lh'] or '1.25em'
-		data.idOtherParams = args['id-other']
-		data.idClass = args['id-class']
-	
-		-- Get info values.
-		data.info = "'''" .. (args.info or args[2]) .. "'''"
-		data.infoTextAlign = args['info-a'] or 'center'
-		data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
-		data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
-		data.infoBackgroundColor = args['info-c'] or args[5] or '#eee'
-		data.infoPadding = args['info-p'] or '0 4px 0 4px'
-		data.infoLineHeight = args['info-lh'] or '1.25em'
-		data.infoColor = args['info-fc'] or args[7] or 'black'
-		data.infoOtherParams = args['info-other']
-		data.infoClass = args['info-class']
-	else
-		-- Check for language Userbox
+		local word = checkLang(args[1])
+		if (word[1] ~= nil)
+		then
+			-- Language userbox
+			data = getLangData(data, word[1], word[2])
+		else
+			-- Unknown userbox
+			data.info = "'''Несъществуваща потребителска кутийка.'''"
+			data.infoColor = 'red'
+		end
 	end
 	
 	return data
@@ -330,6 +364,52 @@ function p.categories(args, page)
 	else
 		return nil
 	end
+end
+
+function getLangData(data, lang, rank)
+	-- Get id and category values
+	data.id = '[[' .. lang .. ']]'
+	args.category = 'Потребител ' .. args[1]
+	if (rank ~= nil)
+	then data.id = data.id .. '-' .. rank
+	else args.category = args.category .. '-N'
+	end
+	
+	-- Get color and info values
+	local info = { name = languages[lang].name }
+	
+	if rank == nil then
+  		data.borderColor = '#6f8'
+		data.idBackgroundColor ='#7fb'
+		data.infoBackgroundColor = '#cfe'
+		
+	 	info = languages[lang][1]
+	elseif rank == 0 then
+		data.borderColor = 'red'
+		data.idBackgroundColor ='red'
+		data.infoBackgroundColor = '#fdd'
+		
+		info = languages[lang][2]
+	elseif rank == 1 or rank == 2 or rank == 3 then
+		data.borderColor = '#9bf'
+		data.idBackgroundColor ='#9bf'
+		data.infoBackgroundColor = '#eef'
+		
+		if rank == 1 then info = languages[lang][3]
+		elseif rank == 2 then info = languages[lang][4]
+		elseif rank == 3 then info = languages[lang][5]
+		end
+	elseif rank == 4 or rank == 5 then
+		data.borderColor = '#dd0'
+		data.idBackgroundColor ='#ff0'
+		data.infoBackgroundColor = '#ff9'
+		
+		if rank == 4 then info = languages[lang][6]
+		elseif rank == 5 then info = languages[lang][7]
+		end
+	end
+
+	data.info = "'''" .. info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. info.name .. "]].'''"
 end
 
 return p
