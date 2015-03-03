@@ -69,7 +69,7 @@ local function checkLang(word)
 		if dash ~= nil
 		then
     		result[1] = string.sub(word, 1, string.len(word) - 2)
-		    result[2] = string.sub(word, dash + 1)
+		    result[2] = tonumber(string.sub(word, dash + 1))
 	    else
     		result[1] = word
 	    end
