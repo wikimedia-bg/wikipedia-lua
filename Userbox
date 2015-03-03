@@ -394,9 +394,9 @@ function getLangData(data, args, lang, rank)
 	if (languages[lang] ~= nil and -1 <= rank and rank <= table.getn(languages[lang]) - 2)
 	then
 		local info = languages[lang][rank + 2]
-		data.info = string.gsub("'''" ..
-			info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " ..
-			info[3] .. " [[:Категория:Потребител " .. lang .. "|" .. languages[lang].name .. "]].'''", '  ', ' ')
+		data.info = string.gsub(
+			info[1] .. ' [[:Категория:' .. args.category .. '|' .. info[2] .. ']] ' ..
+			info[3] .. ' [[:Категория:Потребител ' .. lang .. '|' .. languages[lang].name .. ']].', '  ', ' ')
 	else
 		data.info = "'''Невалидна потребителска кутийка за език.'''"
 		data.infoColor = 'red'
