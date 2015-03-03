@@ -2,17 +2,7 @@
 
 local getArgs = require('Module:Arguments').getArgs
 local categoryHandler = require('Module:Category handler').main
-local languages = {
-    bg = { name = '...', {}},
-    en = { name = 'English', {'This user is a', 'native', 'speaker of'}, {'This user can\'t speak or has', 'bad', 'level of'}, {'This user is able to contribute with a', 'basic', 'level of'}, {'This user is able to contribute with an', 'intermediate', 'level of'}, {'This user is able to contribute with an', 'advanced', 'level of'}, {'This user is able to contribute with a', 'near-native', 'level of'}, {'This user is able to contribute with a', 'professional', 'level of'} },
-    es = { name = 'Español', { 'Este usuario es un hablante', 'nativo', 'de'}, { 'Este usuario' ,'no entiende', ''}, { 'Este usuario puede contribuir con un nivel', 'básico', 'de'}, { 'Este usuario puede contribuir con un nivel', 'intermedio', 'de'}, { 'Este usuario puede contribuir con un nivel', 'avanzado', 'de'}, { 'El nivel de este usuario corresponde al de un' ,'hablante casi nativo', 'del'}, { 'Este usuario puede contribuir con un nivel', 'profesional', 'de'} },
-    fr = { name = '...', {}},
-    it = { name = '...', {}},
-}
-
-
-
-
+local languages = require('Модул:Userbox/Languages')
 local p = {}
 
 --------------------------------------------------------------------------------
@@ -378,43 +368,37 @@ function getLangData(data, args, lang, rank)
 	else args.category = args.category .. '-N'
 	end
 	
-	-- Get color and info values
-	local info = {}
-	
+	-- Get color values
 	if rank == nil then
   		data.borderColor = '#6f8'
 		data.idBackgroundColor ='#7fb'
 		data.infoBackgroundColor = '#cfe'
-		
-	 	info = languages[lang][1]
+		rank = -1
 	elseif rank == 0 then
 		data.borderColor = 'red'
 		data.idBackgroundColor ='red'
 		data.infoBackgroundColor = '#fdd'
-		
-		info = languages[lang][2]
 	elseif rank == 1 or rank == 2 or rank == 3 then
 		data.borderColor = '#9bf'
 		data.idBackgroundColor ='#9bf'
 		data.infoBackgroundColor = '#eef'
-		
-		if rank == 1 then info = languages[lang][3]
-		elseif rank == 2 then info = languages[lang][4]
-		elseif rank == 3 then info = languages[lang][5]
-		end
 	elseif rank == 4 or rank == 5 then
 		data.borderColor = '#dd0'
 		data.idBackgroundColor ='#ff0'
 		data.infoBackgroundColor = '#ff9'
-		
-		if rank == 4 then info = languages[lang][6]
-		elseif rank == 5 then info = languages[lang][7]
-		end
 	end
 	
-	data.info = string.gsub("'''" ..
-		info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " ..
-		info[3] .. " [[:Категория:Потребител " .. lang .. "|" .. languages[lang].name .. "]].'''", '  ', ' ')
+	-- Get info value
+	if (-1 <= rank and rank <= 5 and languages[lang] ~= nil)
+	then
+		local info = languages[lang][rank + 2]
+		data.info = string.gsub("'''" ..
+			info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " ..
+			info[3] .. " [[:Категория:Потребител " .. lang .. "|" .. languages[lang].name .. "]].'''", '  ', ' ')
+	else
+		data.info = "'''Невалидна потребителска кутийка за език.'''"
+		data.infoColor = 'red'
+	end
 
 	return data
 end
