@@ -395,8 +395,8 @@ function getLangData(data, args, lang, rank)
 	then
 		local info = languages[lang][rank + 2]
 		data.info = string.gsub(
-			info[1] .. ' [[:Категория:' .. args.category .. '|' .. info[2] .. ']] ' ..
-			info[3] .. ' [[:Категория:Потребител ' .. lang .. '|' .. languages[lang].name .. ']].', '  ', ' ')
+			info[1] .. " '''[[:Категория:" .. args.category .. '|' .. info[2] .. "]]''' " ..
+			info[3] .. " '''[[:Категория:Потребител " .. lang .. '|' .. languages[lang].name .. "]]'''.", '  ', ' ')
 	else
 		data.info = "'''Невалидна потребителска кутийка за език.'''"
 		data.infoColor = 'red'
