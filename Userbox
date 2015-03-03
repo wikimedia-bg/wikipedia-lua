@@ -83,41 +83,46 @@ function p._userbox(args)
 	-- Does argument processing for {{userbox}}.
 	local data = {}
 
-	-- Get div tag values.
-	data.float = args.float or 'right'
-	local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
-	data.borderWidth = addSuffix(borderWidthNum, 'px')
-	data.borderColor = args['border-c'] or args[3] or '#999'
-	data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
-	data.bodyClass = args.bodyclass
-
-	-- Get id values.
-	local id = args.logo or args.id or checkImageExists(args[1])
-	data.id = id
-	data.showId = id and true or false
-	data.idWidth = checkNumAndAddSuffix(args['id-w'], 45, 'px')
-	data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
-	data.idBackgroundColor = args['id-c'] or args[4] or '#ddd'
-	data.idTextAlign = args['id-a'] or 'center'
-	data.idFontSize = checkNumAndAddSuffix(args['id-s'], 14, 'pt')
-	data.idColor = args['id-fc'] or args[6] or 'black'
-	data.idPadding = args['id-p'] or '1px'
-	data.idLineHeight = args['id-lh'] or '1.25em'
-	data.idOtherParams = args['id-other']
-	data.idClass = args['id-class']
-
-	-- Get info values.
-	data.info = "'''" .. (args.info or args[2]) .. "'''"
-	data.infoTextAlign = args['info-a'] or 'center'
-	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
-	data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
-	data.infoBackgroundColor = args['info-c'] or args[5] or '#eee'
-	data.infoPadding = args['info-p'] or '0 4px 0 4px'
-	data.infoLineHeight = args['info-lh'] or '1.25em'
-	data.infoColor = args['info-fc'] or args[7] or 'black'
-	data.infoOtherParams = args['info-other']
-	data.infoClass = args['info-class']
-
+	if (args[2] ~= null)
+	then
+		-- Get div tag values.
+		data.float = args.float or 'right'
+		local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
+		data.borderWidth = addSuffix(borderWidthNum, 'px')
+		data.borderColor = args['border-c'] or args[3] or '#999'
+		data.width = addSuffix(238 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
+		data.bodyClass = args.bodyclass
+	
+		-- Get id values.
+		local id = args.logo or args.id or checkImageExists(args[1])
+		data.id = id
+		data.showId = id and true or false
+		data.idWidth = checkNumAndAddSuffix(args['id-w'], 45, 'px')
+		data.idHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
+		data.idBackgroundColor = args['id-c'] or args[4] or '#ddd'
+		data.idTextAlign = args['id-a'] or 'center'
+		data.idFontSize = checkNumAndAddSuffix(args['id-s'], 14, 'pt')
+		data.idColor = args['id-fc'] or args[6] or 'black'
+		data.idPadding = args['id-p'] or '1px'
+		data.idLineHeight = args['id-lh'] or '1.25em'
+		data.idOtherParams = args['id-other']
+		data.idClass = args['id-class']
+	
+		-- Get info values.
+		data.info = "'''" .. (args.info or args[2]) .. "'''"
+		data.infoTextAlign = args['info-a'] or 'center'
+		data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
+		data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
+		data.infoBackgroundColor = args['info-c'] or args[5] or '#eee'
+		data.infoPadding = args['info-p'] or '0 4px 0 4px'
+		data.infoLineHeight = args['info-lh'] or '1.25em'
+		data.infoColor = args['info-fc'] or args[7] or 'black'
+		data.infoOtherParams = args['info-other']
+		data.infoClass = args['info-class']
+	else
+		-- Check for language Userbox
+	end
+	
 	return data
 end
 
