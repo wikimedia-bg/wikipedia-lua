@@ -2,7 +2,6 @@
 
 local getArgs = require('Module:Arguments').getArgs
 local categoryHandler = require('Module:Category handler').main
-local category = nil
 local languages = {
     bg = { name = '...', {}},
     en = { name = 'English', {'This user is a', 'native', 'speaker of'}, {'This user can\'t speak or has', 'bad', 'level of'}, {'This user is able to contribute with a', 'basic', 'level of'}, {'This user is able to contribute with an', 'intermediate', 'level of'}, {'This user is able to contribute with an', 'advanced', 'level of'}, {'This user is able to contribute with a', 'near-native', 'level of'}, {'This user is able to contribute with a', 'professional', 'level of'} },
@@ -150,7 +149,7 @@ function p._userbox(args)
 		if (word[1] ~= nil)
 		then
 			-- Language userbox
-			data = getLangData(data, word[1], word[2])
+			data = getLangData(data, args, word[1], word[2])
 		else
 			-- Unknown userbox
 			data.info = "'''Несъществуваща потребителска кутийка.'''"
@@ -330,7 +329,7 @@ function p.categories(args, page)
 	-- The page parameter makes the function act as though the module was being called from that page.
 	-- It is included for testing purposes.
 	local cats = {}
-	cats[#cats + 1] = args.category or args[8] or category
+	cats[#cats + 1] = args.category or args[8]
 	cats[#cats + 1] = args.category2
 	cats[#cats + 1] = args.category3
 	if #cats > 0 then
@@ -367,13 +366,13 @@ function p.categories(args, page)
 	end
 end
 
-function getLangData(data, lang, rank)
+function getLangData(data, args, lang, rank)
 	-- Get id and category values
 	data.id = '[[' .. lang .. ']]'
-	category = 'Потребител ' .. args[1]
+	args.category = 'Потребител ' .. args[1]
 	if (rank ~= nil)
 	then data.id = data.id .. '-' .. rank
-	else category = category .. '-N'
+	else args.category = args.category .. '-N'
 	end
 	
 	-- Get color and info values
@@ -410,7 +409,7 @@ function getLangData(data, lang, rank)
 		end
 	end
 
-	data.info = "'''" .. info[1] .. " [[:Категория:" .. category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. info.name .. "]].'''"
+	data.info = "'''" .. info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. info.name .. "]].'''"
 end
 
 return p
