@@ -363,9 +363,11 @@ function getLangData(data, args, lang, rank)
 	-- Get id and category values
 	data.id = '[[' .. lang .. ']]'
 	args.category = 'Потребител ' .. args[1]
-	if (rank ~= nil)
-	then data.id = data.id .. '-' .. rank
-	else args.category = args.category .. '-N'
+	if rank ~= nil
+	then
+		data.id = data.id .. '-' .. rank
+	else
+		args.category = args.category .. '-N'
 	end
 	
 	-- Get color values
