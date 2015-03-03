@@ -410,6 +410,8 @@ function getLangData(data, args, lang, rank)
 	end
 	
 	data.info = "'''" .. info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. languages[lang].name .. "]].'''"
+	
+	return data
 end
 
 return p
