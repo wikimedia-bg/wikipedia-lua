@@ -376,7 +376,7 @@ function getLangData(data, args, lang, rank)
 	end
 	
 	-- Get color and info values
-	local info = { name = languages[lang].name }
+	local info = {}
 	
 	if rank == nil then
   		data.borderColor = '#6f8'
@@ -408,8 +408,8 @@ function getLangData(data, args, lang, rank)
 		elseif rank == 5 then info = languages[lang][7]
 		end
 	end
-
-	data.info = "'''" .. info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. info.name .. "]].'''"
+	
+	data.info = "'''" .. info[1] .. " [[:Категория:" .. args.category .. "|" .. info[2] .. "]] " .. info[3] .. "[[:Категория:Потребител " .. lang .. "|" .. languages[lang].name .. "]].'''"
 end
 
 return p
