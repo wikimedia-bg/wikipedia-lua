@@ -391,7 +391,7 @@ function getLangData(data, args, lang, rank)
 	end
 	
 	-- Get info value
-	if (-1 <= rank and rank <= 5 and languages[lang] ~= nil)
+	if (languages[lang] ~= nil and -1 <= rank and rank <= table.getn(languages[lang]) - 2)
 	then
 		local info = languages[lang][rank + 2]
 		data.info = string.gsub("'''" ..
