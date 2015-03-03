@@ -5,10 +5,13 @@ local categoryHandler = require('Module:Category handler').main
 local languages = {
     bg = { name = '...', {}},
     en = { name = 'English', {'This user is a', 'native', 'speaker of'}, {'This user can\'t speak or has', 'bad', 'level of'}, {'This user is able to contribute with a', 'basic', 'level of'}, {'This user is able to contribute with an', 'intermediate', 'level of'}, {'This user is able to contribute with an', 'advanced', 'level of'}, {'This user is able to contribute with a', 'near-native', 'level of'}, {'This user is able to contribute with a', 'professional', 'level of'} },
-    es = { name = '...', {}},
+    es = { name = 'Español', { 'Este usuario es un hablante', 'nativo', 'de'}, { 'Este usuario' ,'no entiende', ''}, { 'Este usuario puede contribuir con un nivel', 'básico', 'de'}, { 'Este usuario puede contribuir con un nivel', 'intermedio', 'de'}, { 'Este usuario puede contribuir con un nivel', 'avanzado', 'de'}, { 'El nivel de este usuario corresponde al de un' ,'hablante casi nativo', 'del'}, { 'Este usuario puede contribuir con un nivel', 'profesional', 'de'} },
     fr = { name = '...', {}},
     it = { name = '...', {}},
 }
+
+
+
 
 local p = {}
 
