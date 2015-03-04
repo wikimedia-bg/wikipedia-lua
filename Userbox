@@ -139,14 +139,12 @@ function p._userbox(args)
 	if (args[2] == null)
 	then
 		local word = checkLang(args[1])
-		if (word[1] ~= nil)
-		then
+		if (word[1] ~= nil) then
 			-- Language userbox
 			data = getLangData(data, args, word[1], word[2])
 		else
 			-- Unknown userbox
-			data.info = "'''Несъществуваща потребителска кутийка.'''"
-			data.infoColor = 'red'
+			data = {}
 		end
 	end
 	
