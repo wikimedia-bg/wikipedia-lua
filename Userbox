@@ -230,6 +230,7 @@ function p.render(data)
 	tableroot
 		:css('width', data.width)
 		:css('margin-bottom', '0')
+		:css('border-collapse', 'collapse')
 	
 	-- Render the id html.
 	local tablerow = tableroot:tag('tr')
