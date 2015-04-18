@@ -220,7 +220,7 @@ function p.render(data)
 	root
 		:css('float', data.float)
 		:css('border', (data.borderWidth or '') .. ' solid ' .. (data.borderColor or ''))
-		:css('margin', '1px 2px')
+		:css('margin', '1px')
 		:css('width', data.width)
 		:addClass('wikipediauserbox')
 		:addClass(data.bodyClass)
