@@ -130,7 +130,7 @@ p['_userbox-2'] = function (args)
 	local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
 	data.borderColor = args['border-c'] or args[3] or '#999'
-	data.width = addSuffix(242 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
+	data.width = addSuffix(240 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 
 	-- Get id values.
@@ -181,7 +181,7 @@ p['_userbox-r'] = function (args)
 	local borderWidthNum = checkNum(args['border-w'], 1) -- Used to calculate width.
 	data.borderWidth = addSuffix(borderWidthNum, 'px')
 	data.borderColor = args['border-c'] or args[3] or '#999'
-	data.width = addSuffix(242 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
+	data.width = addSuffix(240 - 2 * borderWidthNum, 'px') -- Also used in the table tag.
 	data.bodyClass = args.bodyclass
 	
 	-- Get id values.
