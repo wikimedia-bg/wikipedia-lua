@@ -294,7 +294,7 @@ function p.categories(args, page)
 	cats[#cats + 1] = args.category or args[8]
 	cats[#cats + 1] = args.category2
 	cats[#cats + 1] = args.category3
-	if #cats and mw.title.getCurrentTitle().nsText ~= 'Шаблон'> 0 then
+	if #cats > 0 then
 		-- Get the title object
 		local title
 		if page then
