@@ -31,6 +31,19 @@
 ** <code>category</code> - категория в която ще попадат страниците използващи шаблона. Отговаря на индекс 8 в шаблона.
 ** <code>id2</code> - втора картинка или текст. Използва се с '''userbox-2'''.
 
+== Използване ==
+* Потребителска кутия с поле за картинка от ляво:
+{{#invoke:userbox|userbox|File:Periguito.JPG|Текст}}
+<pre>{{#invoke:userbox|userbox|id|info|border-c|id-c|info-c|id-fc|info-fc|usercategory}}</pre>
+
+* Потребителска кутия с поле за картинка от дясно:
+{{#invoke:userbox|userbox-r|File:Periguito.JPG|Текст}}
+<pre>{{#invoke:userbox|userbox-r|id|info|border-c|id-c|info-c|id-fc|info-fc|usercategory}}</pre>
+
+* Потребителска кутия с поле за картинка от двете страни:
+{{#invoke:userbox|userbox-2|File:Periguito.JPG|Текст|id2=File:Periguito.JPG}}
+<pre>{{#invoke:userbox|userbox-2|id|info|border-c|id-c|info-c|id-fc|info-fc|usercategory|id2}}</pre>
+
 <includeonly>
 <!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ - В УИКИДАННИ -->
 
