@@ -83,7 +83,6 @@ function formatError( key )
 	return '<span class="error">' .. i18n.errors[key] .. '</span>'
 end
 
-
 function formatStatements( options )
 	if not options.property then
 		return formatError( 'property-param-not-provided' )
@@ -377,7 +376,6 @@ local function formatDatavalueMonolingualText(data, parameter)
 	end
 end
 
-
 function findClaims(entity, property)
 	if not property or not entity or not entity.claims then return end
 
@@ -522,6 +520,30 @@ function p.claim(frame)
 
 	if result then return result else
 		if showerrors then return error else return default end
+	end
+end
+
+-- look into entity object
+function p.ViewSomething(frame)
+	local data = mw.wikibase.getEntityObject()
+	if not data then
+		return nil
+	end
+ 
+	local f = frame.args[1] and frame or frame:getParent()
+	local i = 1
+	while true do
+		local index = f.args[i]
+		if not index then
+			return tostring(data)
+		end
+ 
+		data = data[index] or data[tonumber(index)]
+		if not data then
+			return
+		end
+ 
+		i = i + 1
 	end
 end
 
