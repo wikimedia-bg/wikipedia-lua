@@ -18,7 +18,7 @@ function p.test(frame)
 	
 	p.lang = mw.language.new(wiki.langcode):formatDate('Y', '1768-00-00T00:00:00Z')
 	
-	return getVal(p.lang)
+	return p.lang
 end
 
 return p
