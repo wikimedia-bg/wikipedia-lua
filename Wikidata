@@ -304,7 +304,7 @@ function formatDate(date, precision, timezone)
 		return relative
 	end
 
-	-- precision is decades, centuries and millenia
+ 	-- precision is decades, centuries and millennia
 	local era
 	if precision == 6 then era = mw.ustring.gsub(i18n.datetime[6], "$1", tostring(math.floor((math.abs(year) - 1) / 1000) + 1)) end
 	if precision == 7 then era = mw.ustring.gsub(i18n.datetime[7], "$1", tostring(math.floor((math.abs(year) - 1) / 100) + 1)) end
@@ -315,8 +315,13 @@ function formatDate(date, precision, timezone)
 		return era
 	end
 
-	-- precision is years or less
-	if precision >= 9 then
+ 	-- precision is year
+ 	if precision == 9 then
+ 		return year
+ 	end
+
+	-- precision is less than years
+	if precision > 9 then
 		--[[ the following code replaces the UTC suffix with the given negated timezone to convert the global time to the given local time
 		timezone = tonumber(timezone)
 		if timezone and timezone ~= 0 then
