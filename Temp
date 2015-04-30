@@ -1,8 +1,8 @@
 local p = {}
 
-local function getVal(table)
+local function getVal(obj)
 	local root = mw.html.create('div')
-	for i, v in pairs(table) do
+	for i, v in pairs(obj) do
 		local newDiv = root:tag('div')
 		newDiv:wikitext(i .. ': ' .. tostring(v))
 	end
@@ -10,10 +10,15 @@ local function getVal(table)
 	return tostring(root)
 end
 
-function p.test()
-	p.xxx = mw.wikibase.getEntityObject(nil)
+function p.test(frame)
+	local wiki = 
+	{
+		langcode = mw.language.getContentLanguage().code
+	}
 	
-	return p.xxx
+	p.lang = mw.language.new(wiki.langcode):formatDate('Y', '1768-00-00T00:00:00Z')
+	
+	return getVal(p.lang)
 end
 
 return p
