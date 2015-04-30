@@ -3,8 +3,15 @@ local p = {}
 local function getVal(obj)
 	local result = ''
 	for i, v in pairs(obj) do
-	  result = result .. v .. '\n'
+	    if i ~= 'test' then
+	        result = result .. '\n' .. i .. ': ' .. v
+	    end
 	end
+
+	local root = mw.html.create('div')
+	root:wikitext(result)
+ 
+	return tostring(root)
 end
 
 function p.test(frame)
