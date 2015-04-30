@@ -10,15 +10,11 @@ local function getVal(obj)
 	return tostring(root)
 end
 
-function p.test(frame)
-	local wiki = 
-	{
-		langcode = mw.language.getContentLanguage().code
-	}
+function p.test()
+
+	p.xxx = mw.wikibase.getEntityObject(nil)
 	
-	p.lang = mw.language.new(wiki.langcode)
-	
-	return getVal(p.lang)
+	return getVal(p.xxx)
 end
 
-return p
+return p.test()
