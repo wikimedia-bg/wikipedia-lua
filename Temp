@@ -1,16 +1,12 @@
 local p = {}
 
 local function getVal(obj)
-	local result = ''
-	for i, v in pairs(obj) do
-	    if i ~= 'test' then
-	        result = result .. '\n' .. i .. ': ' .. v
-	    end
-	end
-
 	local root = mw.html.create('div')
-	root:wikitext(result)
- 
+	for i, v in pairs(obj) do
+		local newDiv = root:tag('div')
+		newDiv:wikitext(i .. ': ' .. v)
+	end
+	
 	return tostring(root)
 end
 
