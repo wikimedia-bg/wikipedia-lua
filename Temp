@@ -8,7 +8,7 @@ end
 
 function p.test(frame)
 	p.code = mw.language.getContentLanguage().code
-	p.lang = mw.language.new(code)
+	p.lang = 'lang' --mw.language.new(code)
 	
 	return getVal(p)
 end
