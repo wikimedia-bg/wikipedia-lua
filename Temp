@@ -4,7 +4,7 @@ local function getVal(obj)
 	local root = mw.html.create('div')
 	for i, v in pairs(obj) do
 		local newDiv = root:tag('div')
-		newDiv:wikitext(i .. ': ' .. v)
+		newDiv:wikitext(i .. ': ' .. tostring(v))
 	end
 	
 	return tostring(root)
