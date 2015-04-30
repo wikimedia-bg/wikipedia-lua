@@ -17,4 +17,4 @@ function p.test()
 	return getVal(p.xxx)
 end
 
-return p.test()
+return p
