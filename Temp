@@ -15,8 +15,12 @@ local function getVal(obj)
 end
 
 function p.test(frame)
-	p.code = mw.language.getContentLanguage().code
-	p.lang = 'lang' --mw.language.new(code)
+	local wiki = 
+	{
+		langcode = mw.language.getContentLanguage().code
+	}
+	
+	p.lang = mw.language.new(wiki.langcode)
 	
 	return getVal(p)
 end
