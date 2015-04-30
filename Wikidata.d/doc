@@ -1,0 +1,15 @@
+== Примерно използване ==
+* <code><nowiki>{{#invoke:Wikidata|claim|P225}}</nowiki></code> → стойността на P225
+* <code><nowiki>{{#invoke:Wikidata|formatStatements|property=P625|subvalue=latitude}}</nowiki></code> → стойността за latitude на P625
+
+=== References ===
+* <code><nowiki>{{#invoke:Wikidata|claim|P141|references=1}}</nowiki></code>
+
+=== Qualifiers ===
+==== dates ====
+* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойност на датата
+* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → датата във формат <samp>0000-00-00T00:00:00Z</samp>
+
+==== items ====
+* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P405}}</nowiki></code> → името на страницата в bgwiki
+* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P405|parameter=numeric-id}}</nowiki></code> → itemId (напр. 219 за [[:d:Q219]])
