@@ -1,8 +1,9 @@
 local p = {}
 
 local function getVal(obj)
+	local result = ''
 	for i, v in pairs(obj) do
-	  print(v)
+	  result = result .. v .. '\n'
 	end
 end
 
