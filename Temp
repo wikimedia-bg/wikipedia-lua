@@ -1,1 +1,16 @@
-return 45
+local p = {}
+
+local function getVal(obj)
+	for i, v in pairs(obj) do
+	  print(v)
+	end
+end
+
+function p.test(frame)
+	p.code = mw.language.getContentLanguage().code
+	p.lang = mw.language.new(code)
+	
+	return getVal(p)
+end
+
+return p
