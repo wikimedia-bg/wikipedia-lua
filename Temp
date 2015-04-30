@@ -1,8 +1,8 @@
 local p = {}
 
-local function getVal(obj)
+local function getVal(table)
 	local root = mw.html.create('div')
-	for i, v in pairs(obj) do
+	for i, v in pairs(table) do
 		local newDiv = root:tag('div')
 		newDiv:wikitext(i .. ': ' .. tostring(v))
 	end
@@ -11,10 +11,9 @@ local function getVal(obj)
 end
 
 function p.test()
-
 	p.xxx = mw.wikibase.getEntityObject(nil)
 	
-	return getVal(p.xxx)
+	return p.xxx
 end
 
 return p
