@@ -16,7 +16,7 @@ function p.test(frame)
 		langcode = mw.language.getContentLanguage().code
 	}
 	
-	p.lang = mw.language.new(wiki.langcode):formatDate('Y', '1768-00-00T00:00:00Z')
+	p.lang = ({code='en'}):formatDate('Y', '1768-00-00T00:00:00Z')
 	
 	return p.lang
 end
