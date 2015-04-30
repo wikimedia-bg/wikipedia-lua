@@ -1,3 +1,5 @@
+{{Подстраница с документация}}
+
 == Примерно използване ==
 * <code><nowiki>{{#invoke:Wikidata|claim|P225}}</nowiki></code> → стойността на P225
 * <code><nowiki>{{#invoke:Wikidata|formatStatements|property=P625|subvalue=latitude}}</nowiki></code> → стойността за latitude на P625
