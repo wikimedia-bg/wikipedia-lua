@@ -1,1 +1,1 @@
-print('test')
+return 45
