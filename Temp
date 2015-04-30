@@ -1,24 +1,7 @@
 local p = {}
 
-local function getVal(obj)
-	local root = mw.html.create('div')
-	for i, v in pairs(obj) do
-		local newDiv = root:tag('div')
-		newDiv:wikitext(i .. ': ' .. tostring(v))
-	end
-	
-	return tostring(root)
-end
-
 function p.test(frame)
-	local wiki = 
-	{
-		langcode = mw.language.getContentLanguage().code
-	}
-	
-	p.lang = mw.language.new('en'):formatDate('Y', '1768-00-00T00:00:00Z', false)
-
-	return p.lang
+	return mw.language.new('en'):formatDate('Y', '1768-00-00T00:00:00Z')
 end
 
 return p
