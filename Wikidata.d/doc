@@ -7,7 +7,7 @@
 
 === Qualifiers ===
 ==== dates ====
-* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойност на датата
+* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойността на P574 (от тип дата) за P225
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → датата във формат <samp>0000-00-00T00:00:00Z</samp>
 
 ==== items ====
