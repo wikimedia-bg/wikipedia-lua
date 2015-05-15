@@ -185,6 +185,9 @@ function wikifyDate(date)
 	if date.decade then
 		return "[[" .. date.decade .. "-те" .. (date.bce and " пр.н.е.]]" or "]] години")
 	end
+	if date.unknown then
+		return "неизв."
+	end
 	local output = ""
 	if date.day and date.monthName then
 		output = output .. "[[" .. date.day .. " " .. date.monthName .. "]] "
