@@ -67,6 +67,11 @@ function Date:fromString(dateString)
 		d.century = century
 		return d
 	end
+	decade = mw.ustring.match(dateString, "^(%d+)s")
+	if decade then
+		d.decade = decade
+		return d
+	end
 	year = mw.ustring.match(dateString, "^(%d+)")
 	if year then
 		return d:set(year)
@@ -112,6 +117,9 @@ function birthCategories(date)
 	if date.century then
 		table.insert(cats, "Родени през " ..  date.century .. " век" .. bceSuffix(date.bce))
 	end
+	if date.decade then
+		table.insert(cats, "Родени през " ..  date.decade.. "-те години" .. bceSuffix(date.bce))
+	end
 	if date.year then
 		table.insert(cats, "Родени през " ..  date.year .. " година" .. bceSuffix(date.bce))
 	end
@@ -128,6 +136,9 @@ function deathCategories(date)
 	local cats = {}
 	if date.century then
 		table.insert(cats, "Починали през " ..  date.century .. " век" .. bceSuffix(date.bce))
+	end
+	if date.decade then
+		table.insert(cats, "Починали през " ..  date.decade .. "-те години" .. bceSuffix(date.bce))
 	end
 	if date.year then
 		table.insert(cats, "Починали през " ..  date.year .. " година" .. bceSuffix(date.bce))
@@ -170,6 +181,9 @@ end
 function wikifyDate(date)
 	if date.century then
 		return "[[" .. date.century .. " век" .. bceSuffix(date.bce) .. "]]"
+	end
+	if date.decade then
+		return "[[" .. date.decade .. "-те" .. (date.bce and " пр.н.е.]]" or "]] години")
 	end
 	local output = ""
 	if date.day and date.monthName then
