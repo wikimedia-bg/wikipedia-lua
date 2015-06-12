@@ -158,7 +158,7 @@ function isniLink( id )
     if not id then
         return false
     end
-    return '[http://isni-url.oclc.nl/isni/' .. id .. ' ' .. id:sub( 1, 4 ) .. ' ' .. id:sub( 5, 8 ) .. ' '  .. id:sub( 9, 12 ) .. ' '  .. id:sub( 13, 16 ) .. ']' .. getCatForId( 'ISNI' )
+    return '[http://isni.org/' .. id .. ' ' .. id:sub( 1, 4 ) .. ' ' .. id:sub( 5, 8 ) .. ' '  .. id:sub( 9, 12 ) .. ' '  .. id:sub( 13, 16 ) .. ']' .. getCatForId( 'ISNI' )
 end
 
 --Validate ISNI (and ORCID) and retuns it as a 16 characters string or returns false if it's invalid
