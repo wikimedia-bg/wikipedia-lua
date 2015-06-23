@@ -240,6 +240,11 @@ function p.formatStatements( frame )
 	return formatStatements( frame.args )
 end
 
+function p.getPageId(frame)
+	local entity = mw.wikibase.getEntityObject()
+	if not entity then return nil else return entity.id end
+end
+
 function p.getLabel( frame )
 	if not frame.args.lang then
 		return ''
