@@ -312,7 +312,7 @@ local conf = {
     { 'USCongress', '[[Биографичен лексикон на американския Конгрес|US Congress]]', 1157, uscongressLink },
     { 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, bneLink },
     { 'CINII', '[[CiNii]]', 271, ciniiLink },
-    { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 0, tlsLink },
+    { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 1362, tlsLink },
     { 'SIKART', '[[SIKART]]', 781, sikartLink },
     { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
 }
