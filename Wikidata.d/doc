@@ -1,4 +1,6 @@
 == Примерно използване ==
+* <code><nowiki>{{#invoke:Wikidata|getLabel|lang=fr}}</nowiki></code> → името на статията на френски език
+
 * <code><nowiki>{{#invoke:Wikidata|claim|P225}}</nowiki></code> → стойността на P225
 * <code><nowiki>{{#invoke:Wikidata|claim|P580|1|mainsnak|datavalue|value|time}}</nowiki></code> → стойността на P580
 * <code><nowiki>{{#invoke:Wikidata|formatStatements|property=P625|subvalue=latitude}}</nowiki></code> → стойността за latitude на P625
