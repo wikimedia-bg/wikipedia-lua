@@ -283,7 +283,7 @@ end
 
 --In this order: name of the parameter, label, propertyId in Wikidata, formatting function
 local conf = {
-    { 'VIAF', '[[Виртуален международнен нормативен архив|VIAF]]', 214, viafLink },
+    { 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, viafLink },
     { 'LCCN', '[[Контролен номер на библиотеката на американския Конгрес|LCCN]]', 244, lccnLink },
     { 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, isniLink },
     { 'ORCID', '[[ORCID]]', 496, orcidLink },
