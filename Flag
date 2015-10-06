@@ -271,7 +271,7 @@ function flag.pays(frame)
     local taille = args["taille"] or '20x15'
     if (args["area"] == nil) then args["area"] = 'defaut' else args["area"] = _latinise(args["area"]) end 
     local align = args["align"] or 'left'
-    local lien = args["lien"] or 'oui'
+    local link = args["link"] or 'oui'
     local annee = args[2] or args["année"] or ''    
     local extra={}
     if (args["compétition"] ~= nil) then
@@ -312,7 +312,7 @@ function flag.pays(frame)
     if(args["cible"] ~= nil) then
         res=res .. args["cible"] .. '&nbsp;<span style="font-size:90%;" class="nowrap">(';
     end
-    if(lien == 'oui' and data["label"] ~= '') then
+    if(link == 'oui' and data["label"] ~= '') then
         res=res ..printData(data,args["area"],extra);
     end
     if(args["cible"] ~= nil) then
