@@ -268,7 +268,7 @@ function flag.pays(frame)
     local key=_latinise(args[1]);
 
     --par défaut
-    local taille = args["taille"] or '20x15'
+    local size = args["size"] or '20x15'
     if (args["area"] == nil) then args["area"] = 'defaut' else args["area"] = _latinise(args["area"]) end 
     local align = args["align"] or 'left'
     local link = args["link"] or 'oui'
@@ -307,7 +307,7 @@ function flag.pays(frame)
         res=res .. _cletri(data["label"]);
     --end    
     if(align == 'left') then
-        res=res .. printIcon(data,image,args["area"],taille,annee)..'&nbsp;';
+        res=res .. printIcon(data,image,args["area"],size,annee)..'&nbsp;';
     end    
     if(args["cible"] ~= nil) then
         res=res .. args["cible"] .. '&nbsp;<span style="font-size:90%;" class="nowrap">(';
@@ -319,7 +319,7 @@ function flag.pays(frame)
         res=res  .. ')</span>';
     end    
     if(align == 'right') then
-        res=res .. '&nbsp;' .. printIcon(data,image,args["area"],taille,annee);
+        res=res .. '&nbsp;' .. printIcon(data,image,args["area"],size,annee);
     end
     return res .. reserror;
 
