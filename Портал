@@ -1,9 +1,9 @@
 local p = {}
-local math_mod = require( "Module:Math" )
+local math_mod = require( "Модул:Math" )
 
 --Chargement de la liste En/Au/Aux/A
 local gdata
-local success, resultat = pcall (mw.loadData, "Module:Flag/Data" )
+local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" )
 if success then
     gdata = resultat
 else
