@@ -4,7 +4,7 @@ local Country = { }
 --    1 : code ISO-3166 of country ;
 --    text or 2 : text in this country ;
 function Country.country( frame )
-	local args = ( frame.getParent and frame:getParent().args ) or frame or { }         -- préparation pour appel par modèle ou direct.
+	local args = ( frame.getRelative and frame:getRelative().args ) or frame or { }         -- préparation pour appel par modèle ou direct.
 	local code = mw.ustring.lower( mw.text.trim( args[1] or '' ) )
 	local text = args.text or ''
 	if text == '' then
@@ -19,7 +19,7 @@ end
 --    2 : code ISO-3166 ;
 --    text : text in this country ;
 function Country.indicationDeCountry( frame )
-	local args = ( frame.getParent and frame:getParent().args ) or frame or { }
+	local args = ( frame.getRelative and frame:getRelative().args ) or frame or { }
 	local nameCountry = args[1] or ''
 	local code = args.Country or mw.text.trim( args[2] or '' )
 	local text = args.text
