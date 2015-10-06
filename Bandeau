@@ -16,7 +16,7 @@ function fun.do_metaBandeauAvertissement(arguments)
     local icone = ""
     local texte = ""
     
-	-- Icônes prédéfinies
+	-- icones prédéfinies
 	local iconeTable = {
 		grave = "Fairytale no.svg",
 		["modéré"] = "Emblem-important.svg",
@@ -24,11 +24,11 @@ function fun.do_metaBandeauAvertissement(arguments)
 		["ébauche"] = "Nuvola_apps_kedit.svg"
 		}
 	
-	-- Utiliser l'icône fournie s'il y a lieu, ou prendre parmi celles de la table
-	if(arguments["icône-complexe"] ~= nil and arguments["icône-complexe"] ~= "") then
-		icone = arguments["icône-complexe"]
+	-- Utiliser l'icone fournie s'il y a lieu, ou prendre parmi celles de la table
+	if(arguments["icone-complexe"] ~= nil and arguments["icone-complexe"] ~= "") then
+		icone = arguments["icone-complexe"]
 	else
-		icone = "<div style=\"width:45px; text-align:center\">[[Fichier:" .. (arguments["icône"] or iconeTable[arguments.niveau] or "Icon apps query.svg") .. "|45x35px|alt=|link=]]</div>"
+		icone = "<div style=\"width:45px; text-align:center\">[[File:" .. (arguments["icone"] or iconeTable[arguments.niveau] or "Icon apps query.svg") .. "|45x35px|alt=|link=]]</div>"
 	end
 	
 	-- Texte du bandeau
@@ -37,7 +37,7 @@ function fun.do_metaBandeauAvertissement(arguments)
 	end
 	
 	-- Mise en boîte
-	result = "<div " .. (arguments.id or "") .. "class=\"plainlinks bandeau-niveau-" .. bClass .. " bandeau js-no-interprojets\"><table style=\"background-color:transparent\"><tr><td class=\"bandeau-icone\">" .. icone .. "</td><td><div class=\"bandeau-titre\"><strong>" .. (arguments.titre or "Pas de titre") .. "</strong>" .. (arguments.date or "") .. "</div>" .. texte .. "</td></tr></table>" .. (arguments["supplément"] or "") .. "</div>"
+	result = "<div " .. (arguments.id or "") .. "class=\"plainlinks bandeau-niveau-" .. bClass .. " bandeau js-no-interprojets\"><table style=\"background-color:transparent\"><tr><td class=\"bandeau-icone\">" .. icone .. "</td><td><div class=\"bandeau-titre\"><strong>" .. (arguments.titre or "No title") .. "</strong>" .. (arguments.date or "") .. "</div>" .. texte .. "</td></tr></table>" .. (arguments["supplément"] or "") .. "</div>"
 
 	return result
 end
@@ -51,7 +51,7 @@ end
 function fun.do_ebauche(arguments)
 	-- Données relatives aux différents paramètres possibles du modèle
 	-- Seront déplacées en sous-page dès que loadData sera activé
-	-- local data = mw.loadData("Module:Bandeau/ébauche")
+	-- local data = mw.loadData("Модул:Bandeau/мъниче")
 	local data = {
 		football = {"Soccer.svg", "[[футбол]]"},
 		footballeur = {"football", "[[Портал:Футбол|футболист]]"},
@@ -84,15 +84,15 @@ function fun.do_ebauche(arguments)
 			else
 				-- Cas normal
 				newTheme = 0
-				-- Gestion de l'icône
+				-- Gestion de l'icone
 				if(theme[1] ~= nil) then
 					local cibleIcone = data[theme[1]]
-					-- Le nom de l'icône est-il une référence directe à un autre thème ?
+					-- Le nom de l'icone est-il une référence directe à un autre thème ?
 					if(cibleIcone == nil or cibleIcone[1] == "alias" or cibleIcone[1] == "redirection") then
 						-- Non : on récupère le nom du fichier
 						icones[#icones+1] = theme[1]
 					else
-						-- Oui : on récupère l'icône de l'autre thème
+						-- Oui : on récupère l'icone de l'autre thème
 						icones[#icones+1] = cibleIcone[1]
 					end
 				end
@@ -129,7 +129,7 @@ function fun.do_ebauche(arguments)
 	-- Génération du bandeau
 	local multiIcone = ""
 	local taille = "45x35px"
-	-- Réduire les icônes si elles sont trop nombreuses
+	-- Réduire les icones si elles sont trop nombreuses
 	if(#icones > 3) then
 		taille = "35x25px"
 	end
@@ -147,7 +147,7 @@ function fun.do_ebauche(arguments)
 	end
 	
 	-- Texte du bandeau, contenant les sujets
-	local texteSuj = "Cet article est une [[Aide:Ébauche|ébauche]]"
+	local texteSuj = "Тази статия е [[Уикипедия:Мъниче|мъниче]]"
 	if(#sujets > 0) then
 		texteSuj = texteSuj .. " concernant "
 		for i = 1, #sujets do
@@ -176,7 +176,7 @@ function fun.do_ebauche(arguments)
 	-- Préparation de l'appel du modèle de méta-bandeau
 	local metaArgs = {
 		niveau = "ébauche",
-		["icône-complexe"] = multiIcone,
+		["icone-complexe"] = multiIcone,
 		titre = texteSuj
 		}
 	
