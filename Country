@@ -1,8 +1,8 @@
 local Country = { }
 
 -- Parameters :
---    1 : code ISO-3166 de country ;
---    text ou 2 : text dans ce country ;
+--    1 : code ISO-3166 of country ;
+--    text or 2 : text in this country ;
 function Country.country( frame )
 	local args = ( frame.getParent and frame:getParent().args ) or frame or { }         -- préparation pour appel par modèle ou direct.
 	local code = mw.ustring.lower( mw.text.trim( args[1] or '' ) )
