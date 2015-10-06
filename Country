@@ -44,7 +44,7 @@ function Country.indicationDeCountry( frame )
 		text = ''
 	end
 	-- Compilation de l'indicateur de country et du text.
-	wikiText = '<span class="indicateur-country">(<abbr class="abbr" title="country : '
+	wikiText = '<span class="indicator-country">(<abbr class="abbr" title="country : '
 		.. nameCountry .. '">'
 		.. code .. '</abbr>)</span>'
 		.. text
