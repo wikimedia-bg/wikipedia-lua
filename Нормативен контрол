@@ -395,7 +395,7 @@ function p.authorityControl( frame )
             table.insert( elements, createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
         end
     end
-    local Navbox = require('Module:Navbox')
+    local Navbox = require('Модул:Navbox')
     return Navbox._navbox( {
         name  = 'Authority control',
         bodyclass = 'hlist',
