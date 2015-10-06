@@ -60,7 +60,7 @@ function pagesInCategoryGlobal(pays,portail)
  	end
  	i['portail']=portail
  	
-	local catPortail='Портал:' .. portail .. '/Articles liés'
+	local catPortail='Портал:' .. portail
 	i['catPortail']='Категория:'..catPortail
 	i['articles']=mw.site.stats.pagesInCategory( catPortail, 'pages'  )
 	
@@ -71,7 +71,7 @@ function pagesInCategoryGlobal(pays,portail)
 	local catgeoQ1 ='Article de qualité géolocalisé ' .. l
 	local catgeoQ2 ='Bon article géolocalisé ' .. l
 	i['catGeo']='Категория:'..catgeo
-	if mw.title.new('category:'..catgeo).exists then
+	if mw.title.new('категория:'..catgeo).exists then
 		i['geo']=mw.site.stats.pagesInCategory( catgeo, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
 		i['geoRatio']=	'';
 		i['geoQ']=mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
@@ -95,8 +95,8 @@ function pagesInCategory(pays,portail)
 	local paysId = gdata.idByName[_latinise(pays)]
 	local paysData =gdata.data[paysId]
 	
-	local catPortail='Портал:' .. portail .. '/Articles liés'
-	i['catPortail']='Категория:'..catPortail
+	local catPortail='Портал:' .. portail
+	i['catPortail']='категория:'..catPortail
 	i['articles']=mw.site.stats.pagesInCategory( catPortail, 'pages'  )
 	
 	local l=paysData.label
@@ -109,7 +109,7 @@ function pagesInCategory(pays,portail)
 	local catgeoQ1 ='Article de qualité géolocalisé ' .. genre[paysData.genre].en .. ' ' .. l
 	local catgeoQ2 ='Bon article géolocalisé ' .. genre[paysData.genre].en .. ' ' .. l
 	i['catGeo']='Категория:'..catgeo
-	if mw.title.new('category:'..catgeo).exists then
+	if mw.title.new('категория:'..catgeo).exists then
 		i['geo']=mw.site.stats.pagesInCategory( catgeo, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
 		i['geoRatio']= math.floor(10000*i['geo']/i['articles'])/100
 		i['geoQ']=mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
@@ -129,7 +129,7 @@ function p.row(frame)
 	
 	if(args[1] == nil) then
 		--entete
-		return '! Portail !! Total !! Articles géolocalisés !! pourcentage !! Articles géolocalisés labélisés \n'
+		return '! Портал !! Общ брой !! Локализирани страници !! % !! Articles géolocalisés labélisés \n'
 	end
 	
 	local tab
