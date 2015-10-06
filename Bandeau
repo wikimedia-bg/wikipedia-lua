@@ -37,7 +37,7 @@ function fun.do_metabandeauAvertissement(arguments)
 	end
 	
 	-- Mise en boîte
-	result = "<div " .. (arguments.id or "") .. "class=\"plainlinks bandeau-level-" .. bClass .. " bandeau js-no-interprojets\"><table style=\"background-color:transparent\"><tr><td class=\"bandeau-icone\">" .. icone .. "</td><td><div class=\"bandeau-titre\"><strong>" .. (arguments.titre or "Pas de titre") .. "</strong>" .. (arguments.date or "") .. "</div>" .. text .. "</td></tr></table>" .. (arguments["supplément"] or "") .. "</div>"
+	result = "<div " .. (arguments.id or "") .. "class=\"plainlinks bandeau-level-" .. bClass .. " bandeau js-no-interprojets\"><table style=\"background-color:transparent\"><tr><td class=\"bandeau-icone\">" .. icone .. "</td><td><div class=\"bandeau-title\"><strong>" .. (arguments.title or "Pas de title") .. "</strong>" .. (arguments.date or "") .. "</div>" .. text .. "</td></tr></table>" .. (arguments["supplément"] or "") .. "</div>"
 
 	return result
 end
@@ -177,7 +177,7 @@ function fun.do_ebauche(arguments)
 	local metaArgs = {
 		level = "ébauche",
 		["icone-complexe"] = multiIcone,
-		titre = textSuj
+		title = textSuj
 		}
 	
 	return fun.do_metabandeauAvertissement(metaArgs) .. "\n" .. textCat
