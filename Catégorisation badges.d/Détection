@@ -1,0 +1,16 @@
+local p = { }
+
+function p.hasAnyBadge( frame )
+        local entity = mw.wikibase.getEntityObject()
+        if not entity then
+                return ''
+        end
+        for siteid, linkTable in pairs( entity.sitelinks ) do
+                if next(entity.sitelinks[ siteid ].badges) ~= nil then
+                        return '1'
+                end
+        end
+        return ''
+end
+
+return p
