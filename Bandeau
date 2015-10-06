@@ -128,14 +128,14 @@ function fun.do_ebauche(arguments)
 	
 	-- Génération du bandeau
 	local multiIcone = ""
-	local taille = "45x35px"
+	local size = "45x35px"
 	-- Réduire les icones si elles sont trop nombreuses
 	if(#icones > 3) then
-		taille = "35x25px"
+		size = "35x25px"
 	end
 	if(#icones > 0) then
 		for i = 1, #icones do
-			multiIcone = multiIcone .. "[[Image:" .. icones[i] .. "|" .. taille .. "|alt=|link=]]"
+			multiIcone = multiIcone .. "[[Image:" .. icones[i] .. "|" .. size .. "|alt=|link=]]"
 			-- Passage sur la deuxième ligne
 			if(#icones > 3 and i == math.floor((#icones+1)/2)) then
 				multiIcone = multiIcone .. "</span><br /><span style=\"white-space:nowrap;word-spacing:5px\">"
