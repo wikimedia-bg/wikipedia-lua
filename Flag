@@ -12,7 +12,7 @@ local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" )
 if success then
     gdata = resultat
 else
-    -- Banque de données à minima en cas de bogue dans le Module:Langue/Data
+    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
     gdata={}
     gdata.data={};
     gdata.idByName={};
@@ -27,7 +27,7 @@ local success, resultat = pcall (mw.loadData, "Модул:Flag/Image" )
 if success then
     gflag = resultat
 else
-    -- Banque de données à minima en cas de bogue dans le Module:Langue/Data
+    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
     gflag={}
     gflag.flag={};
 end
@@ -37,10 +37,10 @@ local success, resultat = pcall (mw.loadData, "Модул:Flag/Area" )
 if success then
     garea = resultat
 else
-    -- Banque de données à minima en cas de bogue dans le Module:Langue/Data
+    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
     garea={}
     garea.arealist={
-     defaut = {regexp="[[$sitelink|$label]]" , desc="article sur le pays"}
+     defaut = {regexp="[[$sitelink|$label]]" , desc="article sur le country"}
      ,flag = {regexp="flag", desc=""}
      }
     garea.genre={ms={},msa={},msi={},msia={},fs={},fsa={},fsi={},fsia={},mp={},fp={}}
@@ -75,11 +75,11 @@ function _getCompetition(c,aaaa)
     local rep="";
     if(c=="WK" or c=="световно") then
         rep="Световно първенство по футбол"
-    elseif(c=="CE" or c=="европейско") then
+    elseif(c=="EC" or c=="европейско") then
         rep="Европейско първенство по футбол"
-    elseif(c=="ChM") then
+    elseif(c=="EWC") then
         rep="Световен шампионат"
-    elseif(c=="CAN" or c=="купа-на-конфедерациите") then
+    elseif(c=="CC" or c=="купа-на-конфедерациите") then
         rep="Купа на конфедерациите"
     elseif(c=="en" ) then
         rep="en"
@@ -104,12 +104,12 @@ function _getCompetition(c,aaaa)
     return rep
 end
 --[[
-pays
+country
 
-Affiche le pays accompagné de son flag {{flag2}}
+Affiche le country accompagné de son flag {{flag2}}
 
 Usage:
-    {{ Invoke:flag | pays | France }}
+    {{ Invoke:flag | country | France }}
     
 ]]
 function printIcon(data,image,area,size,day)    
@@ -150,7 +150,7 @@ function printData(text,area,extra)
         target=string.gsub(target, "%$(%w+)", extra)
         target=string.gsub(target, "%$(%w+)", "") --une toute dernière pour supprimer les non-attribués
     end
-    --Cas spécial des ïles un nom commun avec un espace devant
+    --Cas spécial des ïles un Name commun avec un espace devant
     --target=string.gsub(target, " République", " république") NON cf Usage_des_majuscules_en_français_lorsque_le_spécifique_est_un_adjectif
     target=string.gsub(target, " Île", " île")
     target=string.gsub(target, "'Île", "'île")
@@ -185,21 +185,21 @@ function _latinise(tmparg)
 end
 
 function _cletri(tmparg)
-    local pays=tmparg;
+    local country=tmparg;
             --2>--remove case and accents
             tmparg=_latinise_letters(tmparg);
             --3>--remove ponct
             tmparg=mw.ustring.gsub(tmparg, "['-_]", " ");
             --4>--remove forme longue            
-            tmparg=mw.ustring.gsub(tmparg, "^republique ", "");
+            tmparg=mw.ustring.gsub(tmparg, "^republic ", "");
             tmparg=mw.ustring.gsub(tmparg, "^federation ", "");
             tmparg=mw.ustring.gsub(tmparg, "^union ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^iles ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^de ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^des ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^du ", "");
+            tmparg=mw.ustring.gsub(tmparg, "^island ", "");
+            tmparg=mw.ustring.gsub(tmparg, "^from ", "");
+            tmparg=mw.ustring.gsub(tmparg, "^of ", "");
+            tmparg=mw.ustring.gsub(tmparg, "^to ", "");
             
-            return '<span class="datasortkey" data-sort-value="'..tmparg..'" style="display:none;">'..pays..'</span>';
+            return '<span class="datasortkey" data-sort-value="'..tmparg..'" style="display:none;">'..country..'</span>';
 end
 
 function flag.list(frame)
@@ -208,7 +208,7 @@ function flag.list(frame)
     local res="";
     
     if args[1] == nil then
-        local pFrame = frame:getParent();
+        local pFrame = frame:getRelative();
         args = pFrame.args;
         for k,v in pairs( frame.args ) do
             args[k] = v;
@@ -227,8 +227,8 @@ function flag.list(frame)
         end
         res=res .. "|}"
     end
-    if(args[1]=='pays') then      
-        res="{|class='wikitable sortable' \n!Nom!!Code CIO!!usage classique!!flag!!Équipe sportive (de football)!!Catégorie sport\n|-\n"
+    if(args[1]=='country') then      
+        res="{|class='wikitable sortable' \n!Name!!Code CIO!!usage classique!!flag!!Équipe sportive (de football)!!Catégorie sport\n|-\n"
         for k,v in pairs( gdata.data ) do
             local cio=v["cio"] or ""
 		    if(args[3] == nil or v["group"] == args[3]) then
@@ -245,12 +245,12 @@ function flag.List(frame)
     return flag.list(frame)
 end
 
-function flag.pays(frame)
+function flag.Country(frame)
     globalFrame = frame
     local args = frame.args
     local tmparg;
     if args[1] == nil then
-        local pFrame = frame:getParent();
+        local pFrame = frame:getRelative();
         args = pFrame.args;
         for k,v in pairs( frame.args ) do
             args[k] = v;
@@ -267,15 +267,15 @@ function flag.pays(frame)
     end
     local key=_latinise(args[1]);
 
-    --par défaut
+    --default
     local size = args["size"] or '20x15'
     if (args["area"] == nil) then args["area"] = 'defaut' else args["area"] = _latinise(args["area"]) end 
     local align = args["align"] or 'left'
-    local link = args["link"] or 'oui'
-    local annee = args[2] or args["année"] or ''    
+    local link = args["link"] or 'yes'
+    local year = args[2] or args["year"] or ''    
     local extra={}
-    if (args["compétition"] ~= nil) then
-        extra["competition"] = " ".._getCompetition(_latinise(args["compétition"]),args["édition"])
+    if (args["competition"] ~= nil) then
+        extra["competition"] = " ".._getCompetition(_latinise(args["competition"]),args["edition"])
     end
     
     local q=0;
@@ -292,11 +292,11 @@ function flag.pays(frame)
     
     local res='';
     local reserror='';
-    --le pays est inconnu !!
+    --le country est inconnu !!
     if(data == nil) then
         data={qid="", flag="Flag_of_None.svg", label=args[1], sitelink="$label", cio=""
             , genre="ms" , namelong="$label", gentileMS="$label",gentileFS="$label",gentileMP="$label",gentileFP="$label"}
-        reserror = reserror .. '<strong class="error">Aucun pays paramétré</strong>'
+        reserror = reserror .. '<strong class="error">No country parametre</strong>'
     end   
      --on ajoute le gentillé en bas de casse
 	--data["gentileminiMS"]=mw.ustring.lower(data["gentileMS"]);
@@ -307,26 +307,26 @@ function flag.pays(frame)
         res=res .. _cletri(data["label"]);
     --end    
     if(align == 'left') then
-        res=res .. printIcon(data,image,args["domaine"],taille,annee)..'&nbsp;';
+        res=res .. printIcon(data,image,args["area"],size,year)..'&nbsp;';
     end    
     if(args["cible"] ~= nil) then
         res=res .. args["cible"] .. '&nbsp;<span style="font-size:90%;" class="nowrap">(';
     end
-    if(lien == 'oui' and data["label"] ~= '') then
-        res=res ..printData(data,args["domaine"],extra);
+    if(lien == 'yes' and data["label"] ~= '') then
+        res=res ..printData(data,args["area"],extra);
     end
     if(args["cible"] ~= nil) then
         res=res  .. ')</span>';
     end    
     if(align == 'right') then
-        res=res .. '&nbsp;' .. printIcon(data,image,args["domaine"],taille,annee);
+        res=res .. '&nbsp;' .. printIcon(data,image,args["area"],size,year);
     end
     return res .. reserror;
 
 end
 
-function drapeau.Pays(frame)
-    return drapeau.pays(frame)
+function flag.Country(frame)
+    return flag.Country(frame)
 end
 
-return drapeau
+return Flag
