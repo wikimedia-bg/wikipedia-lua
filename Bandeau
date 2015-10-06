@@ -166,7 +166,7 @@ function fun.do_ebauche(arguments)
 	if(arguments.nocat == nil) then
 		if(#categories > 0) then
 			for i = 1, #categories do
-				texteCat = texteCat .. "[[Категория:Мъничета " .. categories[i] .. "]]\n"
+				texteCat = texteCat .. "[[Категория:Мъничета " .. categories[i] .. "]]"
 			end
 		else
 			texteCat = "[[Категория:Мъничета]]\n"
@@ -180,7 +180,7 @@ function fun.do_ebauche(arguments)
 		titre = texteSuj
 		}
 	
-	return fun.do_metaBandeauAvertissement(metaArgs) .. "\n" .. texteCat
+	return fun.do_metaBandeauAvertissement(metaArgs) .. texteCat
 		
 end
 
