@@ -296,7 +296,7 @@ function flag.pays(frame)
     if(data == nil) then
         data={qid="", flag="Flag_of_None.svg", label=args[1], sitelink="$label", cio=""
             , genre="ms" , namelong="$label", gentileMS="$label",gentileFS="$label",gentileMP="$label",gentileFP="$label"}
-        reserror = reserror .. '<strong class="error">No pays parameter</strong>'
+        reserror = reserror .. '<strong class="error">Aucun pays paramétré</strong>'
     end   
      --on ajoute le gentillé en bas de casse
 	--data["gentileminiMS"]=mw.ustring.lower(data["gentileMS"]);
@@ -307,26 +307,26 @@ function flag.pays(frame)
         res=res .. _cletri(data["label"]);
     --end    
     if(align == 'left') then
-        res=res .. printIcon(data,image,args["area"],size,annee)..'&nbsp;';
+        res=res .. printIcon(data,image,args["domaine"],taille,annee)..'&nbsp;';
     end    
     if(args["cible"] ~= nil) then
         res=res .. args["cible"] .. '&nbsp;<span style="font-size:90%;" class="nowrap">(';
     end
-    if(link == 'oui' and data["label"] ~= '') then
-        res=res ..printData(data,args["area"],extra);
+    if(lien == 'oui' and data["label"] ~= '') then
+        res=res ..printData(data,args["domaine"],extra);
     end
     if(args["cible"] ~= nil) then
         res=res  .. ')</span>';
     end    
     if(align == 'right') then
-        res=res .. '&nbsp;' .. printIcon(data,image,args["area"],size,annee);
+        res=res .. '&nbsp;' .. printIcon(data,image,args["domaine"],taille,annee);
     end
     return res .. reserror;
 
 end
 
-function flag.Pays(frame)
-    return flag.pays(frame)
+function drapeau.Pays(frame)
+    return drapeau.pays(frame)
 end
 
-return flag
+return drapeau
