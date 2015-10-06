@@ -3,7 +3,7 @@
 local fun = {}
 
 function fun.metaBandeauAvertissement(frame)
-    local pframe = frame:getParent()
+    local pframe = frame:getRelative()
     local arguments = pframe.args
     return fun.do_metaBandeauAvertissement(arguments)
 end
@@ -43,7 +43,7 @@ function fun.do_metaBandeauAvertissement(arguments)
 end
 
 function fun.ebauche(frame)
-    local pframe = frame:getParent()
+    local pframe = frame:getRelative()
     local arguments = pframe.args
     return fun.do_ebauche(arguments)
 end
