@@ -296,7 +296,7 @@ function flag.pays(frame)
     if(data == nil) then
         data={qid="", flag="Flag_of_None.svg", label=args[1], sitelink="$label", cio=""
             , genre="ms" , namelong="$label", gentileMS="$label",gentileFS="$label",gentileMP="$label",gentileFP="$label"}
-        reserror = reserror .. '<strong class="error">Aucun pays paramétré</strong>'
+        reserror = reserror .. '<strong class="error">No pays parameter</strong>'
     end   
      --on ajoute le gentillé en bas de casse
 	--data["gentileminiMS"]=mw.ustring.lower(data["gentileMS"]);
