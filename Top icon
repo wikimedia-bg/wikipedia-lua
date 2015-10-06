@@ -2,10 +2,10 @@ local p = {}
 
 function p.main(frame)
 	local args = {}
-	local argsParent = frame:getParent().args
+	local argsRelative = frame:getRelative().args
 
 	--Empty parameters performed by Lua
-	for cle, val in pairs(argsParent) do
+	for cle, val in pairs(argsRelative) do
 		if val ~= '' then
 			args[cle] = mw.text.trim(val)
 		end
