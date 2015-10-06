@@ -27,7 +27,7 @@ function p._main(args)
 			args.image or 'Fairytale bookmark.png',
 			args.size or 20,
 			args.link or 'Модул:Top icon',
-			args['paramètre'] or '',
+			args['parameter'] or '',
 			args.text or 'Примерен текст',
 			args.text or 'Примерен текст'))
 
