@@ -53,19 +53,19 @@ function _latinise(tmparg)
             return tmparg;
 end
 
-function pagesInCategoryGlobal(pays,portail) 
+function pagesInCategoryGlobal(country,portal) 
 	local i = {}
- 	if (portail == nil) then
- 		portail=pays
+ 	if (portal == nil) then
+ 		portal=country
  	end
- 	i['portail']=portail
+ 	i['portal']=portal
  	
-	local catPortail='Портал:' .. portail
-	i['catPortail']='Категория:'..catPortail
-	i['articles']=mw.site.stats.pagesInCategory( catPortail, 'pages'  )
+	local catportal='Портал:' .. portal
+	i['catportal']='Категория:'..catportal
+	i['articles']=mw.site.stats.pagesInCategory( catportal, 'pages'  )
 	
 	
-	local l='sur Terre'
+	local l='on earth'
 	
 	local catgeo ='Article géolocalisé ' .. l
 	local catgeoQ1 ='Article de qualité géolocalisé ' .. l
@@ -85,29 +85,29 @@ function pagesInCategoryGlobal(pays,portail)
 	return i
 end
 
-function pagesInCategory(pays,portail) 
+function pagesInCategory(country,portal) 
 	local i = {}
- 	if (portail == nil) then
- 		portail=pays
+ 	if (portal == nil) then
+ 		portal=country
  	end
- 	i['portail']=portail
+ 	i['portal']=portal
  	
-	local paysId = gdata.idByName[_latinise(pays)]
-	local paysData =gdata.data[paysId]
+	local countryId = gdata.idByName[_latinise(country)]
+	local countryData =gdata.data[countryId]
 	
-	local catPortail='Портал:' .. portail
-	i['catPortail']='категория:'..catPortail
-	i['articles']=mw.site.stats.pagesInCategory( catPortail, 'pages'  )
+	local catportal='Портал:' .. portal
+	i['catportal']='категория:'..catportal
+	i['articles']=mw.site.stats.pagesInCategory( catportal, 'pages'  )
 	
-	local l=paysData.label
+	local l=countryData.label
 	--cas spéciaux
-	if(paysId==148) then
-		l=portail
+	if(countryId==148) then
+		l=portal
 	end
 	
-	local catgeo ='Article géolocalisé ' .. genre[paysData.genre].en .. ' ' .. l
-	local catgeoQ1 ='Article de qualité géolocalisé ' .. genre[paysData.genre].en .. ' ' .. l
-	local catgeoQ2 ='Bon article géolocalisé ' .. genre[paysData.genre].en .. ' ' .. l
+	local catgeo ='Article géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
+	local catgeoQ1 ='Article de qualité géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
+	local catgeoQ2 ='Bon article géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
 	i['catGeo']='Категория:'..catgeo
 	if mw.title.new('категория:'..catgeo).exists then
 		i['geo']=mw.site.stats.pagesInCategory( catgeo, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
@@ -133,15 +133,15 @@ function p.row(frame)
 	end
 	
 	local tab
-	if(args[1]=='Terre') then
+	if(args[1]=='Earth') then
 		tab=pagesInCategoryGlobal(args[1],args[2])
 	else
 		tab=pagesInCategory(args[1],args[2])
 	end
 		
-	return '|-\n'
-		..'|  [[Портал:'..tab['portail']..']]*'
-		..'|| [[:'..tab['catPortail'] .. '|' .. tab['articles'] ..']]'
+	return '|'
+		..'|  [[Портал:'..tab['portal']..']]*'
+		..'|| [[:'..tab['catportal'] .. '|' .. tab['articles'] ..']]'
 		..'|| [[:'..tab['catGeo'] .. '|' .. tab['geo'] ..']]'
 		..'|| '.. tab['geoRatio'] .. '%'
 		..'|| '.. tab['geoQ'] .. '\n'
