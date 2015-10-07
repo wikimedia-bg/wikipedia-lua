@@ -146,7 +146,7 @@ function p.renderList(data)
 	return tostring(root)
 end
 
-function p.renderTrackingCategories(args)
+function p.renderTrackingCategory(args)
 	local isDeprecated = false -- Tracks deprecated parameters.
 	for k, v in pairs(args) do
 		k = tostring(k)
@@ -157,7 +157,7 @@ function p.renderTrackingCategories(args)
 	end
 	local ret = ''
 	if isDeprecated then
-		ret = ret .. '[[Category:List templates with deprecated parameters]]'
+		ret = ret .. '[[Категория:Списък на шаблони със застарени параметри]]'
 	end
 	return ret
 end
