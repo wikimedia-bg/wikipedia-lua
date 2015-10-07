@@ -155,7 +155,7 @@ local linkCategorySuffix = {
 	zh_yuewiki = ' на кантонски',
 }
 
-function p.badgesCategories( frame )
+function p.badgesCategory( frame )
 	local entity = mw.wikibase.getEntityObject()
 	local wikitext = {}
 	local categoryNs = mw.site.namespaces[14].name
