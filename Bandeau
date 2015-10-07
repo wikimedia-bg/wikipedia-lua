@@ -70,7 +70,7 @@ function fun.do_ebauche(arguments)
 	local nameTheme = arguments[1]
 	local icons = {}
 	local subject = {}
-	local categories = {}
+	local category = {}
 	
 	-- Récupération des données sur tous les thèmes
 	while(arguments[index] ~= nil) do
@@ -102,10 +102,10 @@ function fun.do_ebauche(arguments)
 				end
 				-- Gestion de la catégorie
 				if(theme[3] ~= nil) then
-					categories[#categories+1] = theme[3]
+					category[#category+1] = theme[3]
 				else
 					-- Par défaut, la catégorie correspond au thème
-					categories[#categories+1] = nameTheme
+					category[#category+1] = nameTheme
 				end
 			end
 		else
@@ -164,9 +164,9 @@ function fun.do_ebauche(arguments)
 	local textCat = ""
 	-- Ne pas catégoriser si nocat est présent
 	if(arguments.nocat == nil) then
-		if(#categories > 0) then
-			for i = 1, #categories do
-				textCat = textCat .. "[[Категория:Мъничета " .. categories[i] .. "]]\n"
+		if(#category > 0) then
+			for i = 1, #category do
+				textCat = textCat .. "[[Категория:Мъничета " .. category[i] .. "]]\n"
 			end
 		else
 			textCat = "[[Категория:Мъничета]]\n"
