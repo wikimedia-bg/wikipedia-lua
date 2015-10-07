@@ -60,16 +60,16 @@ function pagesInCategoryGlobal(country,portal)
  	end
  	i['portal']=portal
  	
-	local catportal='Портал:' .. portal
+	local catportal='Портал:' .. portal .. '/Тематични статии'
 	i['catportal']='Категория:'..catportal
 	i['articles']=mw.site.stats.pagesInCategory( catportal, 'pages'  )
 	
 	
 	local l='on earth'
 	
-	local catgeo ='Article géolocalisé ' .. l
-	local catgeoQ1 ='Article de qualité géolocalisé ' .. l
-	local catgeoQ2 ='Bon article géolocalisé ' .. l
+	local catgeo ='Локализирани статии ' .. l
+	local catgeoQ1 ='Локализирани статии с етикет ' .. l
+	local catgeoQ2 ='Локализирани добри статии ' .. l
 	i['catGeo']='Категория:'..catgeo
 	if mw.title.new('категория:'..catgeo).exists then
 		i['geo']=mw.site.stats.pagesInCategory( catgeo, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
@@ -95,7 +95,7 @@ function pagesInCategory(country,portal)
 	local countryId = gdata.idByName[_latinise(country)]
 	local countryData =gdata.data[countryId]
 	
-	local catportal='Портал:' .. portal
+	local catportal='Портал:' .. portal .. '/Тематични статии'
 	i['catportal']='категория:'..catportal
 	i['articles']=mw.site.stats.pagesInCategory( catportal, 'pages'  )
 	
@@ -105,9 +105,9 @@ function pagesInCategory(country,portal)
 		l=portal
 	end
 	
-	local catgeo ='Article géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
-	local catgeoQ1 ='Article de qualité géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
-	local catgeoQ2 ='Bon article géolocalisé ' .. genre[countryData.genre].en .. ' ' .. l
+	local catgeo ='Локализирани статии ' .. genre[countryData.genre].en .. ' ' .. l
+	local catgeoQ1 ='Локализирани статии с етикет ' .. genre[countryData.genre].en .. ' ' .. l
+	local catgeoQ2 ='Локализирани добри статии ' .. genre[countryData.genre].en .. ' ' .. l
 	i['catGeo']='Категория:'..catgeo
 	if mw.title.new('категория:'..catgeo).exists then
 		i['geo']=mw.site.stats.pagesInCategory( catgeo, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ1, 'pages'  )+mw.site.stats.pagesInCategory( catgeoQ2, 'pages'  )
@@ -129,7 +129,7 @@ function p.row(frame)
 	
 	if(args[1] == nil) then
 		--entete
-		return '! Портал !! Общ брой !! Локализирани страници !! % !! Articles géolocalisés labélisés \n'
+		return '! Портал !! Общ брой !! Локализирани страници !! % !! Локализирани статии с етикет\n'
 	end
 	
 	local tab
