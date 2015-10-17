@@ -250,8 +250,12 @@ function p.getLabel( frame )
 		return ''
 	end
 
-	--Get entity
-	local entity = getEntityFromId( frame.args.entityId )
+	local id = frame.args["id"]
+	if not id then
+		id = frame.args.entityId
+	end
+
+	local entity = getEntityFromId(id)
 	if not entity then
 		return ''
 	end
