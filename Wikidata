@@ -451,9 +451,14 @@ function getValueOfClaim(claim, qualifierId, parameter)
 end
 
 function p.getSiteLink(frame)
-	local f = frame.args[1]
-	local entity = mw.wikibase.getEntity()
-	local link = entity:getSitelink( f )
+	local id = frame.args["id"]
+	local entity
+	if id then
+		entity = getEntityFromId(id)
+	else
+	 	entity = mw.wikibase.getEntity()
+	end
+	local link = entity:getSitelink(frame.args[1])
 	if not link then
 		return
 	end
