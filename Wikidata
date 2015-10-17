@@ -450,6 +450,16 @@ function getValueOfClaim(claim, qualifierId, parameter)
 	end
 end
 
+function p.getSiteLink(frame)
+	local f = frame.args[1]
+	local entity = mw.wikibase.getEntity()
+	local link = entity:getSitelink( f )
+	if not link then
+		return
+	end
+	return link
+end
+
 function getReferences(frame, claim)
 	local result = ""
 	-- traverse through all references
