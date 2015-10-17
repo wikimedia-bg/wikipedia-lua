@@ -1,7 +1,4 @@
-{{Подстраница с документация}}
-<!-- МОЛЯ ДОБАВЯЙТЕ КАТЕГОРИИТЕ В КРАЯ НА ТАЗИ СТРАНИЦА, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
-
-== Употреба ==
+== Примерно използване ==
 === getPageId ===
 * <code><nowiki>{{#invoke:Wikidata|getPageId}}</nowiki></code> → id-то на текущата страница в Уикиданни
 
@@ -24,8 +21,3 @@
 === getSiteLink ===
 * <code><nowiki>{{#invoke:Wikidata|getSiteLink|frwiki}}</nowiki></code> → френският МЕП за текущата страница
 * <code><nowiki>{{#invoke:Wikidata|getSiteLink|eswiki|id=Q12345}}</nowiki></code> → испанският МЕП за Q12345
-
-<includeonly>
-<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
-
-</includeonly>
