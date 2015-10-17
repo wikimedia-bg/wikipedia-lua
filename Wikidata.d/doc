@@ -7,8 +7,7 @@
 #* <code><nowiki>{{#invoke:Wikidata|claim|P580|1|mainsnak|datavalue|value|time}}</nowiki></code> → стойността на P580
 #* <code><nowiki>{{#invoke:Wikidata|claim|P141|references=1}}</nowiki></code> → стойността на първият източник на P141
 #* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойността на P574 за P225
-#* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → стойността на P574 за P225 в '''time''' формат 
-(<samp>0000-00-00T00:00:00Z</samp>)
+#* <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → P574 за P225 в '''time''' формат (<samp>0000-00-00T00:00:00Z</samp>)
 #formatStatements
 #* <code><nowiki>{{#invoke:Wikidata|formatStatements|property=P625|subvalue=latitude}}</nowiki></code> → стойността за latitude на P625
 #getSiteLink
