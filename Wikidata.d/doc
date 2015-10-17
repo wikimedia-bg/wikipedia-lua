@@ -1,6 +1,6 @@
 == Примерно използване ==
 #getLabel
-#* <code><nowiki>{{#invoke:Wikidata|getLabel|lang=fr}}</nowiki></code> → името на статията на френски език
+#* <code><nowiki>{{#invoke:Wikidata|getLabel|lang=fr}}</nowiki></code> → [[d:Help:Label|етикета]] на статията на френски език
 #claim
 #* <code><nowiki>{{#invoke:Wikidata|claim|P225}}</nowiki></code> → стойността на P225
 #* <code><nowiki>{{#invoke:Wikidata|claim|P301|parameter=numeric-id}}</nowiki></code> → стойността на P301 в '''numeric-id''' формат (<samp>Qxxxx</samp>)
