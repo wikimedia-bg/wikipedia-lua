@@ -227,6 +227,10 @@ function p.birth_date(frame)
 	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2]))
 end
 
+function p.test(frame)
+	return frame.args[1]
+end
+
 function p.death_date(frame)
 	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2]))
 end
