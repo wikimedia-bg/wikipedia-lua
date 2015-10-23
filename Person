@@ -21,25 +21,25 @@ function Date:isEmpty()
 end
 function Date:monthNameToNumber(monthName)
 	local map = {
-		["януари"] = 1,
-		["февруари"] = 2,
-		["март"]  = 3,
-		["април"] = 4,
-		["май"] = 5,
-		["юни"] = 6,
-		["юли"] = 7,
-		["август"] = 8,
-		["септември"] = 9,
-		["октомври"] = 10,
-		["ноември"] = 11,
-		["декември"] = 12
+	    ["January"] = {"януари", 1},
+	    ["February"] = {"февруари", 2},
+	    ["March"] = {"март", 3},
+	    ["April"] = {"април", 4},
+	    ["May"] = {"май", 5},
+	    ["June"] = {"юни", 6},
+	    ["July"] = {"юли", 7},
+	    ["August"] = {"август", 8},
+	    ["September"] = {"септември", 9},
+	    ["October"] = {"октомври", 10},
+	    ["November"] = {"ноември", 11},
+	    ["December"] = {"декември", 12}
 	}
 	return map[monthName] or nil
 end
 function Date:set(year, monthName, day)
 	self.year = year
-	self.monthName = monthName
-	self.month = self:monthNameToNumber(monthName)
+	self.monthName = self:monthNameToNumber(monthName)[1]
+	self.month = self:monthNameToNumber(monthName)[2]
 	self.day = day
 	return self
 end
