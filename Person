@@ -38,8 +38,11 @@ function Date:monthNameToNumber(monthName)
 end
 function Date:set(year, monthName, day)
 	self.year = year
-	self.monthName = self:monthNameToNumber(monthName)[1] or nil
-	self.month = self:monthNameToNumber(monthName)[2] or nil
+	local mn = self:monthNameToNumber(monthName)
+	if mn then
+		self.monthName = mn[1]
+		self.month = mn[2]
+	end
 	self.day = day
 	return self
 end
