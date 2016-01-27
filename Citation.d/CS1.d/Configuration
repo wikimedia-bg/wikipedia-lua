@@ -1,0 +1,891 @@
+
+local citation_config = {};
+
+-- override <code>...</code> styling to remove color, border, and padding.  <code> css is specified here:
+-- https://git.wikimedia.org/blob/mediawiki%2Fcore.git/69cd73811f7aadd093050dbf20ed70ef0b42a713/skins%2Fcommon%2FcommonElements.css#L199
+local code_style="color:inherit; border:inherit; padding:inherit;";
+
+--[[--------------------------< U N C A T E G O R I Z E D _ N A M E S P A C E S >------------------------------
+
+List of namespaces that should not be included in citation error categories.  Same as setting notracking = true by default
+
+Note: Namespace names should use underscores instead of spaces.
+
+]]
+local uncategorized_namespaces = { 'User', 'Talk', 'User_talk', 'Wikipedia_talk', 'File_talk', 'Template_talk',
+	'Help_talk', 'Category_talk', 'Portal_talk', 'Book_talk', 'Draft', 'Draft_talk', 'Education_Program_talk', 
+	'Module_talk', 'MediaWiki_talk' };
+
+local uncategorized_subpages = {'/[Ss]andbox', '/[Tt]estcases'};		-- list of Lua patterns found in page names of pages we should not categorize
+
+--[[--------------------------< M E S S A G E S >--------------------------------------------------------------
+
+Translation table
+
+The following contains fixed text that may be output as part of a citation.
+This is separated from the main body to aid in future translations of this
+module.
+
+]]
+
+local messages = {
+	['archived-dead'] = 'Archived from $1 on $2',
+	['archived-not-dead'] = '$1 from the original on $2',
+	['archived-missing'] = 'Archived from the original$1 on $2',
+	['archived'] = 'Archived',
+	['by'] = 'By',																-- contributions to authored works: introduction, foreword, afterword
+	['cartography'] = 'Cartography by $1',
+	['editor'] = 'ed.',
+	['editors'] = 'eds.', 
+	['edition'] = '($1 ed.)', 
+	['episode'] = 'Episode $1',
+	['et al'] = 'et al.', 
+	['in'] = 'In',																-- edited works
+	['inactive'] = 'inactive',
+	['inset'] = '$1 inset',
+	['lay summary'] = 'Lay summary',
+	['newsgroup'] = '[[Usenet newsgroup|Newsgroup]]:&nbsp;$1',
+	['original'] = 'the original',
+	['published'] = 'published $1',
+	['retrieved'] = 'Retrieved $1',
+	['season'] = 'Season $1', 
+	['section'] = '§ $1',
+	['sections'] = '§§ $1',
+	['series'] = 'Series $1',
+	['type'] = ' ($1)',															-- for titletype
+	['written'] = 'Written at $1',
+
+	['vol'] = '$1 Vol.&nbsp;$2',												-- $1 is sepc; bold journal style volume is in presentation{}
+	['vol-no'] = '$1 Vol.&nbsp;$2 no.&nbsp;$3',									-- sepc, volume, issue
+	['issue'] = '$1 No.&nbsp;$2',												-- $1 is sepc
+
+	['j-vol'] = '$1 $2',														-- sepc, volume; bold journal volume is in presentation{}
+	['j-issue'] = ' ($1)',
+
+	['nopp'] = '$1 $2';															-- page(s) without prefix; $1 is sepc
+
+	['p-prefix'] = "$1 p.&nbsp;$2",												-- $1 is sepc
+	['pp-prefix'] = "$1 pp.&nbsp;$2",											-- $1 is sepc
+	['j-page(s)'] = ': $1',														-- same for page and pages
+
+	['sheet'] = '$1 Sheet&nbsp;$2',												-- $1 is sepc
+	['sheets'] = '$1 Sheets&nbsp;$2',											-- $1 is sepc
+	['j-sheet'] = ': Sheet&nbsp;$1',
+	['j-sheets'] = ': Sheets&nbsp;$1',
+	
+	['subscription'] = '<span style="font-size:90%; color:#555">(subscription required (<span title="Sources are not required to be available online. Online sources do not have to be freely available. The site may require a paid subscription." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
+		'[[Category:Pages containing links to subscription-only content]]', 
+	
+	['registration']='<span style="font-size:90%; color:#555">(registration required (<span title="Sources are not required to be available online. Online sources do not have to be freely available. The site may require registration." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
+		'[[Category:Pages with login required references or sources]]',
+	
+	['language'] = '(in $1)', 
+	['via'] = " &ndash; via $1",
+	['event'] = 'Event occurs at',
+	['minutes'] = 'minutes in', 
+	
+	['parameter-separator'] = ', ',
+	['parameter-final-separator'] = ', and ',
+	['parameter-pair-separator'] = ' and ',
+	
+	-- Determines the location of the help page
+	['help page link'] = 'Help:CS1 errors',
+	['help page label'] = 'help',
+	
+	-- Internal errors (should only occur if configuration is bad)
+	['undefined_error'] = 'Called with an undefined error condition',
+	['unknown_manual_ID'] = 'Unrecognized manual ID mode',
+	['unknown_ID_mode'] = 'Unrecognized ID mode',
+	['unknown_argument_map'] = 'Argument map not defined for this variable',
+	['bare_url_no_origin'] = 'Bare url found but origin indicator is nil or empty',
+}
+
+--[[--------------------------< P R E S E N T A T I O N >------------------------------------------------------
+
+Fixed presentation markup.  Originally part of citation_config.messages it has been moved into its own, more semantically
+correct place.
+
+]]
+local presentation = 
+	{
+	-- Error output
+	-- .error class is specified at https://git.wikimedia.org/blob/mediawiki%2Fcore.git/9553bd02a5595da05c184f7521721fb1b79b3935/skins%2Fcommon%2Fshared.css#L538
+	-- .citation-comment class is specified at Help:CS1_errors#Controlling_error_message_display
+	['hidden-error'] = '<span style="display:none;font-size:100%" class="error citation-comment">$1</span>',
+	['visible-error'] = '<span style="font-size:100%" class="error citation-comment">$1</span>',
+
+	['accessdate'] = '<span class="reference-accessdate">$1$2</span>',			-- to allow editors to hide accessdate using personal css
+
+	['bdi'] = '<bdi$1>$2</bdi>',												-- bidirectional isolation used with |script-title= and the like
+
+	['format'] = ' <span style="font-size:85%;">($1)</span>',					-- for |format=, |chapter-format=, etc
+
+	['italic-title'] = "''$1''",
+
+	['kern-left'] = '<span style="padding-left:0.2em;">$1</span>$2',			-- spacing to use when title contains leading single or double quote mark
+	['kern-right'] = '$1<span style="padding-right:0.2em;">$2</span>',			-- spacing to use when title contains trailing single or double quote mark
+
+	['nowrap1'] = '<span class="nowrap">$1</span>',								-- for nowrapping an item: <span ...>yyyy-mm-dd</span>
+	['nowrap2'] = '<span class="nowrap">$1</span> $2',							-- for nowrapping portions of an item: <span ...>dd mmmm</span> yyyy (note white space)
+	
+	['parameter'] = '<code style="'..code_style..'">&#124;$1=</code>',
+
+	['quoted-text'] = '<q>$1</q>',												-- for wrapping |quote= content
+	['quoted-title'] = '"$1"',
+
+	['trans-italic-title'] = "&#91;''$1''&#93;",
+	['trans-quoted-title'] = "&#91;$1&#93;",
+	['vol-bold'] = ' <b>$1</b>',													-- for journal cites; for other cites ['vol'] in messages{}
+	}
+
+--[[--------------------------< A L I A S E S >----------------------------------------------------------------
+
+Aliases table for commonly passed parameters
+
+]]
+
+local aliases = {
+	['AccessDate'] = {'access-date', 'accessdate'},
+	['Agency'] = 'agency',
+	['AirDate'] = {'air-date', 'airdate'},
+	['ArchiveDate'] = {'archive-date', 'archivedate'},
+	['ArchiveFormat'] = 'archive-format',
+	['ArchiveURL'] = {'archive-url', 'archiveurl'},
+	['ASINTLD'] = {'ASIN-TLD', 'asin-tld'},
+	['At'] = 'at',
+	['Authors'] = {'authors', 'people', 'host', 'credits'},
+	['BookTitle'] = {'book-title', 'booktitle'},
+	['Callsign'] = {'call-sign', 'callsign'},									-- cite interview
+	['Cartography'] = 'cartography',
+	['Chapter'] = {'chapter', 'contribution', 'entry', 'article', 'section'},
+	['ChapterFormat'] = {'chapter-format', 'contribution-format', 'section-format'};
+	['ChapterURL'] = {'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl'},
+	['City'] = 'city',															-- cite interview
+	['Class'] = 'class',														-- cite arxiv and arxiv identifiers
+	['Coauthors'] = {'coauthors', 'coauthor'},									-- coauthor and coauthors are deprecated; remove after 1 January 2015?
+	['Collaboration'] = 'collaboration',
+	['Conference'] = {'conference', 'event'},
+	['ConferenceFormat'] = {'conference-format', 'event-format'},
+	['ConferenceURL'] = {'conference-url', 'conferenceurl', 'event-url', 'eventurl'},
+	['Contribution'] = 'contribution',											-- introduction, foreword, afterword, etc; required when |contributor= set
+	['Date'] = {'date', 'air-date', 'airdate'},
+	['DeadURL'] = {'dead-url', 'deadurl'},
+	['Degree'] = 'degree',
+	['DF'] = 'df',
+	['DisplayAuthors'] = {'display-authors', 'displayauthors'},
+	['DisplayEditors'] = {'display-editors', 'displayeditors'},
+	['Docket'] = 'docket',
+	['DoiBroken'] = {'doi-broken', 'doi-broken-date', 'doi-inactive-date', 'doi_brokendate', 'doi_inactivedate'},
+	['Edition'] = 'edition',
+	['Editors'] = 'editors',
+	['Embargo'] = 'embargo',
+	['Encyclopedia'] = {'encyclopedia', 'encyclopaedia'},						-- this one only used by citation
+	['Episode'] = 'episode',													-- cite serial only TODO: make available to cite episode?
+	['Format'] = 'format',
+	['ID'] = {'id', 'ID'},
+	['IgnoreISBN'] = {'ignore-isbn-error', 'ignoreisbnerror'},
+	['Inset'] = 'inset',
+	['Issue'] = {'issue', 'number'},
+	['Language'] = {'language', 'in'},
+	['LastAuthorAmp'] = {'last-author-amp', 'lastauthoramp'},
+	['LayDate'] = {'lay-date', 'laydate'},
+	['LayFormat'] = 'lay-format',
+	['LaySource'] = {'lay-source', 'laysource'},
+	['LayURL'] = {'lay-url', 'lay-summary', 'layurl', 'laysummary'},
+	['MailingList'] = {'mailinglist', 'mailing-list'},							-- cite mailing list only
+	['Map'] = 'map',															-- cite map only
+	['MapFormat'] = 'map-format',												-- cite map only
+	['MapURL'] = {'mapurl', 'map-url'},											-- cite map only
+	['MessageID'] = 'message-id',
+	['Minutes'] = 'minutes',
+	['Mode'] = 'mode',
+	['NameListFormat'] = 'name-list-format',
+	['Network'] = 'network',
+	['NoPP'] = {'no-pp', 'nopp'},
+	['NoTracking'] = {'template-doc-demo', 'template doc demo', 'no-cat', 'nocat', 
+		'no-tracking', 'notracking'},
+	['Number'] = 'number',														-- this case only for cite techreport
+	['OrigYear'] = {'orig-year', 'origyear'},
+	['Others'] = {'others', 'interviewer', 'interviewers'},
+	['Page'] = {'p', 'page'},
+	['Pages'] = {'pp', 'pages'},
+	['Periodical'] = {'journal', 'newspaper', 'magazine', 'work',
+		'website',  'periodical', 'encyclopedia', 'encyclopaedia', 'dictionary', 'mailinglist'},
+	['Place'] = {'place', 'location'},
+	['Program'] = 'program',													-- cite interview
+	['PostScript'] = 'postscript',
+	['PublicationDate'] = {'publicationdate', 'publication-date'},
+	['PublicationPlace'] = {'publication-place', 'publicationplace'},
+	['PublisherName'] = {'publisher', 'distributor', 'institution', 'newsgroup'},
+	['Quote'] = {'quote', 'quotation'},
+	['Ref'] = 'ref',
+	['RegistrationRequired'] = 'registration',
+	['Scale'] = 'scale',
+	['ScriptChapter'] = 'script-chapter',
+	['ScriptTitle'] = 'script-title',
+	['Section'] = 'section',
+	['Season'] = 'season',
+	['Sections'] = 'sections',													-- cite map only
+	['Series'] = {'series', 'version'},
+	['SeriesSeparator'] = 'series-separator',
+	['SeriesLink'] = {'series-link', 'serieslink'},
+	['SeriesNumber'] = {'series-number', 'series-no', 'seriesnumber', 'seriesno'},
+	['Sheet'] = 'sheet',														-- cite map only
+	['Sheets'] = 'sheets',														-- cite map only
+	['Station'] = 'station',
+	['SubscriptionRequired'] = 'subscription',
+	['Time'] = 'time',
+	['TimeCaption'] = {'time-caption', 'timecaption'},
+	['Title'] = 'title',
+	['TitleLink'] = {'title-link', 'episode-link', 'titlelink', 'episodelink'},
+	['TitleNote'] = 'department',
+	['TitleType'] = {'type', 'medium'},
+	['TransChapter'] = {'trans-chapter', 'trans_chapter'},
+	['TransMap'] = 'trans-map',													-- cite map only
+	['Transcript'] = 'transcript',
+	['TranscriptFormat'] = 'transcript-format',
+	['TranscriptURL'] = {'transcript-url', 'transcripturl'},
+	['TransTitle'] = {'trans-title', 'trans_title'},
+	['URL'] = {'url', 'URL'},
+	['Vauthors'] = 'vauthors',
+	['Veditors'] = 'veditors',
+	['Via'] = 'via',
+	['Volume'] = 'volume',
+	['Year'] = 'year',
+
+	['AuthorList-First'] = {"first#", "given#", "author-first#", "author#-first"},
+	['AuthorList-Last'] = {"last#", "author#", "surname#", "author-last#", "author#-last", "subject#"},
+	['AuthorList-Link'] = {"authorlink#", "author-link#", "author#-link", "subjectlink#", "author#link", "subject-link#", "subject#-link", "subject#link"},
+	['AuthorList-Mask'] = {"author-mask#", "authormask#", "author#mask", "author#-mask"},
+	
+	['ContributorList-First'] = {'contributor-first#','contributor#-first'},
+	['ContributorList-Last'] = {'contributor#', 'contributor-last#', 'contributor#-last'},
+	['ContributorList-Link'] = {'contributor-link#', 'contributor#-link'},
+	['ContributorList-Mask'] = {'contributor-mask#', 'contributor#-mask'},
+
+	['EditorList-First'] = {"editor-first#", "editor#-first", "editor-given#", "editor#-given"},
+	['EditorList-Last'] = {"editor#", "editor-last#", "editor#-last", "editor-surname#", "editor#-surname"},
+	['EditorList-Link'] = {"editor-link#", "editor#-link", "editorlink#", "editor#link"},
+	['EditorList-Mask'] = {"editor-mask#", "editor#-mask", "editormask#", "editor#mask"},
+	
+	['TranslatorList-First'] = {'translator-first#','translator#-first'},
+	['TranslatorList-Last'] = {'translator#', 'translator-last#', 'translator#-last'},
+	['TranslatorList-Link'] = {'translator-link#', 'translator#-link'},
+	['TranslatorList-Mask'] = {'translator-mask#', 'translator#-mask'},
+}
+
+--[[--------------------------< D E F A U L T S >--------------------------------------------------------------
+
+Default parameter values
+
+TODO: keep this?  Only one default?
+]]
+
+local defaults = {
+	['DeadURL'] = 'yes',
+}
+
+
+--[[--------------------------< V O L U M E ,  I S S U E ,  P A G E S >----------------------------------------
+
+These tables hold cite class values (from the template invocation) and identify those templates that support
+|volume=, |issue=, and |page(s)= parameters.  Cite conference and cite map require further qualification which
+is handled in the main module.
+
+]]
+
+local templates_using_volume = {'citation', 'audio-visual', 'book', 'conference', 'encyclopaedia', 'interview', 'journal', 'magazine', 'map', 'news', 'report', 'techreport'}
+local templates_using_issue = {'citation', 'conference', 'episode', 'interview', 'journal', 'magazine', 'map', 'news'}
+local templates_not_using_page = {'audio-visual', 'episode', 'mailinglist', 'newsgroup', 'podcast', 'serial', 'sign', 'speech'}
+
+
+
+--[[--------------------------< K E Y W O R D S >--------------------------------------------------------------
+
+This table holds keywords for those parameters that have defined sets of acceptible keywords.
+
+]]
+
+local keywords = {
+	['yes_true_y'] = {'yes', 'true', 'y'},										-- ignore-isbn-error, last-author-amp, no-tracking, nopp, registration, subscription
+	['deadurl'] = {'yes', 'true', 'y', 'no', 'unfit', 'usurped'},
+	['mode'] = {'cs1', 'cs2'},
+	['name-list-format'] = {'vanc'},
+	['contribution'] = {'afterword', 'foreword', 'introduction', 'preface'},	-- generic contribution titles that are rendered unquoted in the 'chapter' position
+	['date-format'] = {'dmy', 'dmy-all', 'mdy', 'mdy-all', 'ymd', 'ymd-all'}
+}
+
+
+--[[--------------------------< I N V I S I B L E _ C H A R A C T E R S >--------------------------------------
+
+This table holds non-printing or invisible characters indexed either by name or by Unicode group. Values are decimal
+representations of UTF-8 codes.  The table is organized as a table of tables because the lua pairs keyword returns
+table data in an arbitrary order.  Here, we want to process the table from top to bottom because the entries at
+the top of the table are also found in the ranges specified by the entries at the bottom of the table.
+
+This list contains patterns for templates like {{'}} which isn't an error but transcludes characters that are
+invisible.  These kinds of patterns must be recognized by the functions that use this list.
+
+Also here is a pattern that recognizes stripmarkers that begin and end with the delete characters.  The nowiki
+stripmarker is not an error but some others are because the parameter values that include them become part of the
+template's metadata before stripmarker replacement.
+
+]]
+
+local invisible_chars = {
+	{'replacement', '\239\191\189'},											-- U+FFFD, EF BF BD
+--	{'apostrophe', '&zwj;\226\128\138\039\226\128\139'},						-- apostrophe template: &zwj; hair space ' zero-width space; not an error
+	{'apostrophe', '\226\128\138\039\226\128\139'},								-- apostrophe template: hair space ' zero-width space; (as of 2015-12-11) not an error
+	{'zero width joiner', '\226\128\141'},										-- U+200D, E2 80 8D
+	{'zero width space', '\226\128\139'},										-- U+200B, E2 80 8B
+	{'hair space', '\226\128\138'},												-- U+200A, E2 80 8A
+	{'soft hyphen', '\194\173'},												-- U+00AD, C2 AD
+	{'horizontal tab', '\009'},													-- U+0009 (HT), 09
+	{'line feed', '\010'},														-- U+000A (LF), 0A
+	{'carriage return', '\013'},												-- U+000D (CR), 0D
+--	{'nowiki stripmarker', '\127UNIQ%-%-nowiki%-[%a%d]+%-QINU\127'},			-- nowiki stripmarker; not an error
+	{'stripmarker', '\127UNIQ%-%-(%a+)%-[%a%d]+%-QINU\127'},					-- stripmarker; may or may not be an error; capture returns the stripmaker type
+	{'delete', '\127'},															-- U+007F (DEL), 7F; must be done after stripmarker test
+	{'C0 control', '[\000-\008\011\012\014-\031]'},								-- U+0000–U+001F (NULL–US), 00–1F (except HT, LF, CR (09, 0A, 0D))
+	{'C1 control', '[\194\128-\194\159]'},										-- U+0080–U+009F (XXX–APC), C2 80 – C2 9F
+--	{'Specials', '[\239\191\185-\239\191\191]'},								-- U+FFF9-U+FFFF, EF BF B9 – EF BF BF
+--	{'Private use area', '[\238\128\128-\239\163\191]'},						-- U+E000–U+F8FF, EE 80 80 – EF A3 BF
+--	{'Supplementary Private Use Area-A', '[\243\176\128\128-\243\191\191\189]'},	-- U+F0000–U+FFFFD, F3 B0 80 80 – F3 BF BF BD
+--	{'Supplementary Private Use Area-B', '[\244\128\128\128-\244\143\191\189]'},	-- U+100000–U+10FFFD, F4 80 80 80 – F4 8F BF BD
+}
+
+
+--[[--------------------------< M A I N T E N A N C E _ C A T E G O R I E S >----------------------------------
+
+Here we name maintenance categories to be used in maintenance messages.
+
+]]
+
+local maint_cats = {
+	['ASIN'] = 'CS1 maint: ASIN uses ISBN',
+	['date_year'] = 'CS1 maint: Date and year',
+	['disp_auth_ed'] = 'CS1 maint: display-$1',									-- $1 is authors or editors
+	['embargo'] = 'CS1 maint: PMC embargo expired',
+	['english'] = 'CS1 maint: English language specified',
+	['etal'] = 'CS1 maint: Explicit use of et al.',
+	['extra_text'] = 'CS1 maint: Extra text',
+	['unknown_lang'] = 'CS1 maint: Unrecognized language',
+	['untitled'] = 'CS1 maint: Untitled periodical',
+	}
+
+--[[--------------------------< P R O P E R T I E S _ C A T E G O R I E S >------------------------------------
+
+Here we name properties categories
+
+]]
+
+local prop_cats = {
+	['foreign_lang_source'] = 'CS1 $1-language sources ($2)',					-- |language= categories; $1 is language name, $2 is ISO639-1 code
+	['script'] = 'CS1 uses foreign language script',							-- when language specified by |script-title=xx: doesn't have its own category
+	['script_with_name'] = 'CS1 uses $1-language script ($2)',					-- |script-title=xx: has matching category; $1 is language name, $2 is ISO639-1 code
+	}
+
+
+
+--[[--------------------------< T I T L E _ T Y P E S >--------------------------------------------------------
+
+Here we map a template's CitationClass to TitleType (default values for |type= parameter)
+
+]]
+
+local title_types = {
+	['AV-media-notes'] = 'Media notes',
+	['DVD-notes'] = 'Media notes',
+	['mailinglist'] = 'Mailing list',
+	['map'] = 'Map',
+	['podcast'] = 'Podcast',
+	['pressrelease'] = 'Press release',
+	['report'] = 'Report',
+	['techreport'] = 'Technical report',
+	['thesis'] = 'Thesis',
+	}
+
+--[[--------------------------< E R R O R _ C O N D I T I O N S >----------------------------------------------
+
+Error condition table
+
+The following contains a list of IDs for various error conditions defined in the code.  For each ID, we specify a
+text message to display, an error category to include, and whether the error message should be wrapped as a hidden comment.
+
+Anchor changes require identical changes to matching anchor in Help:CS1 errors
+
+]]
+
+local error_conditions = {
+	accessdate_missing_url = {
+		message = '<code style="'..code_style..'">&#124;access-date=</code> requires <code style="'..code_style..'">&#124;url=</code>',
+		anchor = 'accessdate_missing_url',
+		category = 'Pages using citations with accessdate and no URL',
+		hidden = true },
+	archive_missing_date = {
+		message = '<code style="'..code_style..'">&#124;archive-url=</code> requires <code style="'..code_style..'">&#124;archive-date=</code>',
+		anchor = 'archive_missing_date',
+		category = 'Pages with archiveurl citation errors',
+		hidden = false },
+	archive_missing_url = {
+		message = '<code style="'..code_style..'">&#124;archive-url=</code> requires <code style="'..code_style..'">&#124;url=</code>',
+		anchor = 'archive_missing_url',
+		category = 'Pages with archiveurl citation errors',
+		hidden = false },
+	arxiv_missing = {
+		message = '<code style="'..code_style..'">&#124;arxiv=</code> required',
+		anchor = 'arxiv_missing',
+		category = 'CS1 errors: arXiv',											-- same as bad arxiv
+		hidden = false },
+	arxiv_params_not_supported = {
+		message = 'Unsupported parameter(s) in cite arXiv',
+		anchor = 'arxiv_params_not_supported',
+		category = 'CS1 errors: arXiv',											-- same as bad arxiv
+		hidden = false },
+	bad_arxiv = {
+		message = 'Check <code style="'..code_style..'">&#124;arxiv=</code> value',
+		anchor = 'bad_arxiv',
+		category = 'CS1 errors: arXiv',
+		hidden = false },
+	bad_asin = {
+		message = 'Check <code style="'..code_style..'">&#124;asin=</code> value',
+		anchor = 'bad_asin',
+		category ='CS1 errors: ASIN',
+		hidden = false },
+	bad_date = {
+		message = 'Check date values in: <code style="'..code_style..'">$1</code>',
+		anchor = 'bad_date',
+		category = 'CS1 errors: dates',
+		hidden = false },
+	bad_doi = {
+		message = 'Check <code style="'..code_style..'">&#124;doi=</code> value',
+		anchor = 'bad_doi',
+		category = 'CS1 errors: DOI',
+		hidden = false },
+	bad_hdl = {
+		message = 'Check <code style="'..code_style..'">&#124;hdl=</code> value',
+		anchor = 'bad_hdl',
+		category = 'CS1 errors: HDL',
+		hidden = false },
+	bad_isbn = {
+		message = 'Check <code style="'..code_style..'">&#124;isbn=</code> value',
+		anchor = 'bad_isbn',
+		category = 'CS1 errors: ISBN',
+		hidden = false },
+	bad_ismn = {
+		message = 'Check <code style="'..code_style..'">&#124;ismn=</code> value',
+		anchor = 'bad_ismn',
+		category = 'CS1 errors: ISMN',
+		hidden = false },
+	bad_issn = {
+		message = 'Check <code style="'..code_style..'">&#124;$1issn=</code> value',
+		anchor = 'bad_issn',
+		category = 'CS1 errors: ISSN',
+		hidden = false },
+	bad_lccn = {
+		message = 'Check <code style="'..code_style..'">&#124;lccn=</code> value',
+		anchor = 'bad_lccn',
+		category = 'CS1 errors: LCCN',
+		hidden = false },
+	bad_message_id = {
+		message = 'Check <code style="'..code_style..'">&#124;message-id=</code> value',
+		anchor = 'bad_message_id',
+		category = 'CS1 errors: message-id',
+		hidden = false },
+	bad_ol = {
+		message = 'Check <code style="'..code_style..'">&#124;ol=</code> value',
+		anchor = 'bad_ol',
+		category = 'CS1 errors: OL',
+		hidden = false },
+	bad_paramlink = {															-- for |title-link=, |author/editor/translator-link=, |series-link=, |episode-link=
+		message = 'Check <code style="'..code_style..'">&#124;$1=</code> value',
+		anchor = 'bad_paramlink',
+		category = 'CS1 errors: parameter link',
+		hidden = false },
+	bad_pmc = {
+		message = 'Check <code style="'..code_style..'">&#124;pmc=</code> value',
+		anchor = 'bad_pmc',
+		category = 'CS1 errors: PMC',
+		hidden = false },
+	bad_pmid = {
+		message = 'Check <code style="'..code_style..'">&#124;pmid=</code> value',
+		anchor = 'bad_pmid',
+		category = 'CS1 errors: PMID',
+		hidden = false },
+	bad_url = {
+		message = 'Check <code style="'..code_style..'">$1</code> value',
+		anchor = 'bad_url',
+		category = 'Pages with URL errors',
+		hidden = false },
+	bare_url_missing_title = {
+		message = '$1 missing title',
+		anchor = 'bare_url_missing_title',
+		category = 'Pages with citations having bare URLs',
+		hidden = false },
+	chapter_ignored = {
+		message = '<code style="'..code_style..'">&#124;$1=</code> ignored',
+		anchor = 'chapter_ignored',
+		category = 'CS1 errors: chapter ignored',
+		hidden = false },
+	citation_missing_title = {
+		message = 'Missing or empty <code style="'..code_style..'">&#124;$1=</code>',
+		anchor = 'citation_missing_title',
+		category = 'Pages with citations lacking titles',
+		hidden = false },
+	cite_web_url = {															-- this error applies to cite web and to cite podcast
+		message = 'Missing or empty <code style="'..code_style..'">&#124;url=</code>',
+		anchor = 'cite_web_url',
+		category = 'Pages using web citations with no URL',
+		hidden = true },
+	coauthors_missing_author = {
+		message = '<code style="'..code_style..'">&#124;coauthors=</code> requires <code style="'..code_style..'">&#124;author=</code>',
+		anchor = 'coauthors_missing_author',
+		category = 'CS1 errors: coauthors without author',
+		hidden = false },
+	contributor_ignored = {
+		message = '<code style="'..code_style..'">&#124;contributor=</code> ignored</code>',
+		anchor = 'contributor_ignored',
+		category = 'CS1 errors: contributor',
+		hidden = false },
+	contributor_missing_required_param = {
+		message = '<code style="'..code_style..'">&#124;contributor=</code> requires <code style="'..code_style..'">&#124;$1=</code>',
+		anchor = 'contributor_missing_required_param',
+		category = 'CS1 errors: contributor',
+		hidden = false },
+	deprecated_params = {
+		message = 'Cite uses deprecated parameter <code style="'..code_style..'">&#124;$1=</code>',
+		anchor = 'deprecated_params',
+		category = 'Pages containing cite templates with deprecated parameters',
+		hidden = false },
+	empty_citation = {
+		message = 'Empty citation',
+		anchor = 'empty_citation',
+		category = 'Pages with empty citations',
+		hidden = false },
+	first_missing_last = {
+		message = '<code style="'..code_style..'">&#124;first$2=</code> missing <code style="'..code_style..'">&#124;last$2=</code> in $1',
+		anchor = 'first_missing_last',
+		category = 'CS1 errors: missing author or editor',
+		hidden = false },
+	format_missing_url = {
+		message = '<code style="'..code_style..'">&#124;$1=</code> requires <code style="'..code_style..'">&#124;$2=</code>',
+		anchor = 'format_missing_url',
+		category = 'Pages using citations with format and no URL',
+		hidden = true },
+	invalid_param_val = {
+		message = 'Invalid <code style="'..code_style..'">&#124;$1=$2</code>',
+		anchor = 'invalid_param_val',
+		category = 'CS1 errors: invalid parameter value',
+		hidden = false },
+	invisible_char = {
+		message = '$1 in $2 at position $3',
+		anchor = 'invisible_char',
+		category = 'CS1 errors: invisible characters',
+		hidden = false },
+	missing_name = {
+		message = 'Missing <code style="'..code_style..'">&#124;last$2=</code> in $1',
+		anchor = 'missing_name',
+		category = 'CS1 errors: missing author or editor',
+		hidden = false },
+	param_has_ext_link = {
+		message = 'External link in <code style="'..code_style..'">$1</code>',
+		anchor = 'param_has_ext_link',
+		category = 'CS1 errors: external links',
+		hidden = false },
+	parameter_ignored = {
+		message = 'Unknown parameter <code style="'..code_style..'">&#124;$1=</code> ignored',
+		anchor = 'parameter_ignored',
+		category = 'Pages with citations using unsupported parameters',
+		hidden = false },
+	parameter_ignored_suggest = {
+		message = 'Unknown parameter <code style="'..code_style..'">&#124;$1=</code> ignored (<code style="'..code_style..'">&#124;$2=</code> suggested)',
+		anchor = 'parameter_ignored_suggest',
+		category = 'Pages with citations using unsupported parameters',
+		hidden = false },
+	redundant_parameters = {
+		message = 'More than one of $1 specified',
+		anchor = 'redundant_parameters',
+		category = 'Pages with citations having redundant parameters',
+		hidden = false },
+	text_ignored = {
+		message = 'Text "$1" ignored',
+		anchor = 'text_ignored',
+		category = 'Pages with citations using unnamed parameters',
+		hidden = false },
+	trans_missing_title = {
+		message = '<code style="'..code_style..'">&#124;trans-$1=</code> requires <code style="'..code_style..'">&#124;$1=</code>',
+		anchor = 'trans_missing_title',
+		category = 'CS1 errors: translated title',
+		hidden = false },
+	vancouver = {
+		message = 'Vancouver style error',
+		anchor = 'vancouver',
+		category = 'CS1 errors: Vancouver style',
+		hidden = false },
+	wikilink_in_url = {
+		message = 'URL–wikilink conflict',										-- uses ndash
+		anchor = 'wikilink_in_url',
+		category = 'CS1 errors: URL–wikilink conflict',							-- uses ndash
+		hidden = false },
+}
+
+--[[--------------------------< I D _ H A N D L E R S >--------------------------------------------------------
+
+The following contains a list of values for various defined identifiers.  For each identifier we specify a
+variety of information necessary to properly render the identifier in the citation.
+
+	parameters: a list of parameter aliases for this identifier
+	link: Wikipedia article name
+	label: the alternate name to apply to link
+	mode: 	'manual' when there is a specific function in the code to handle the identifier;
+			'external' for identifiers that link outside of Wikipedia;
+	prefix: the first part of a url that will be concatenated with a second part which usually contains the identifier
+	encode: true if uri should be percent encoded; otherwise false
+	COinS: identifier link or keyword for use in COinS:
+		for identifiers registered at info-uri.info use: info:....
+		for identifiers that have COinS keywords, use the keyword: rft.isbn, rft.issn, rft.eissn
+		for others make a url using the value in prefix, use the keyword: pre (not checked; any text other than 'info' or 'rft' works here)
+		set to nil to leave the identifier out of the COinS
+	separator: character or text between label and the identifier in the rendered citation
+]]
+
+local id_handlers = {
+	['ARXIV'] = {
+		parameters = {'arxiv', 'ARXIV', 'eprint'}, 
+		link = 'arXiv',
+		label = 'arXiv',
+		mode = 'manual',
+		prefix = '//arxiv.org/abs/', 											-- protocol relative tested 2013-09-04
+		encode = false,
+		COinS = 'info:arxiv',
+		separator = ':',
+	},
+	['ASIN'] = {
+		parameters = { 'asin', 'ASIN' },	   
+		link = 'Amazon Standard Identification Number',
+		label = 'ASIN',
+		mode = 'manual',
+		prefix = '//www.amazon.',
+		COinS = nil,															-- no COinS for this id (needs thinking on implementation because |asin-tld=)
+		separator = '&nbsp;',
+		encode = false;
+	},
+	['BIBCODE'] = {
+		parameters = {'bibcode', 'BIBCODE'}, 
+		link = 'Bibcode',
+		label = 'Bibcode',
+		mode = 'external',
+		prefix = 'http://adsabs.harvard.edu/abs/',
+		encode = false,
+		COinS = 'info:bibcode',
+		separator = ':',
+	},
+	['DOI'] = {
+		parameters = { 'doi', 'DOI' },
+		link = 'Digital object identifier',
+		label = 'doi',
+		mode = 'manual',
+		prefix = '//dx.doi.org/',
+		COinS = 'info:doi',
+		separator = ':',
+		encode = true,
+	},
+	['EISSN'] = {
+		parameters = {'eissn', 'EISSN'}, 
+		link = 'International_Standard_Serial_Number#Electronic_ISSN',
+		label = 'eISSN',
+		mode = 'manual',
+		prefix = '//www.worldcat.org/issn/',
+		COinS = 'rft.eissn',
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['HDL'] = {
+		parameters = { 'hdl', 'HDL' },
+		link = 'Handle System',
+		label = 'hdl',
+		mode = 'manual',
+		prefix = '//hdl.handle.net/',
+		COinS = 'info:hdl',
+		separator = ':',
+		encode = true,
+	},
+	['ISBN'] = {
+		parameters = {'isbn', 'ISBN', 'isbn13', 'ISBN13'}, 
+		link = 'International Standard Book Number',
+		label = 'ISBN',
+		mode = 'manual',
+		prefix = 'Special:BookSources/',
+		COinS = 'rft.isbn',
+		separator = '&nbsp;',
+	},
+	['ISMN'] = {
+		parameters = {'ismn', 'ISMN'}, 
+		link = 'International Standard Music Number',
+		label = 'ISMN',
+		mode = 'manual',
+		prefix = '',															-- not currently used; 
+		COinS = 'nil',															-- nil because we can't use pre or rft or info:
+		separator = '&nbsp;',
+	},
+	['ISSN'] = {
+		parameters = {'issn', 'ISSN'}, 
+		link = 'International Standard Serial Number',
+		label = 'ISSN',
+		mode = 'manual',
+		prefix = '//www.worldcat.org/issn/',
+		COinS = 'rft.issn',
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['JFM'] = {
+		parameters = {'jfm', 'JFM'}, 
+		link = 'Jahrbuch über die Fortschritte der Mathematik',
+		label = 'JFM',
+		mode = 'external',
+		prefix = '//zbmath.org/?format=complete&q=an:',
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['JSTOR'] = {
+		parameters = {'jstor', 'JSTOR'}, 
+		link = 'JSTOR',
+		label = 'JSTOR',
+		mode = 'external',
+		prefix = '//www.jstor.org/stable/', 									-- protocol relative tested 2013-09-04
+		COinS = 'pre',															-- use prefix value
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['LCCN'] = {
+		parameters = {'LCCN', 'lccn'}, 
+		link = 'Library of Congress Control Number',
+		label = 'LCCN',
+		mode = 'manual',
+		prefix = '//lccn.loc.gov/', 											-- protocol relative tested 2015-12-28
+		COinS = 'info:lccn',													-- use prefix value
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['MR'] = {
+		parameters = {'MR', 'mr'}, 
+		link = 'Mathematical Reviews',
+		label = 'MR',
+		mode = 'external',
+		prefix = '//www.ams.org/mathscinet-getitem?mr=', 						-- protocol relative tested 2013-09-04
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['OCLC'] = {
+		parameters = {'OCLC', 'oclc'}, 
+		link = 'OCLC',
+		label = 'OCLC',
+		mode = 'external',
+		prefix = '//www.worldcat.org/oclc/',
+		COinS = 'info:oclcnum',
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['OL'] = {
+		parameters = { 'ol', 'OL' },
+		link = 'Open Library',
+		label = 'OL',
+		mode = 'manual',
+		prefix = '//openlibrary.org/',
+		COinS = nil,															-- no COinS for this id (needs thinking on implementation because /authors/books/works/OL)
+		separator = '&nbsp;',
+		encode = true,
+	},
+	['OSTI'] = {
+		parameters = {'OSTI', 'osti'}, 
+		link = 'Office of Scientific and Technical Information',
+		label = 'OSTI',
+		mode = 'external',
+		prefix = '//www.osti.gov/energycitations/product.biblio.jsp?osti_id=',	-- protocol relative tested 2013-09-04
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['PMC'] = {
+		parameters = {'PMC', 'pmc'}, 
+		link = 'PubMed Central',
+		label = 'PMC',
+		mode = 'manual',
+		prefix = '//www.ncbi.nlm.nih.gov/pmc/articles/PMC', 
+		suffix = " ",
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['PMID'] = {
+		parameters = {'PMID', 'pmid'}, 
+		link = 'PubMed Identifier',
+		label = 'PMID',
+		mode = 'manual',
+		prefix = '//www.ncbi.nlm.nih.gov/pubmed/',
+		COinS = 'info:pmid',
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['RFC'] = {
+		parameters = {'RFC', 'rfc'}, 
+		link = 'Request for Comments',
+		label = 'RFC',
+		mode = 'external',
+		prefix = '//tools.ietf.org/html/rfc',
+		COinS = 'pre',															-- use prefix value
+		encode = false,
+		separator = '&nbsp;',
+	},
+	['SSRN'] = {
+		parameters = {'SSRN', 'ssrn'}, 
+		link = 'Social Science Research Network',
+		label = 'SSRN',
+		mode = 'external',
+		prefix = '//ssrn.com/abstract=', 										-- protocol relative tested 2013-09-04
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['USENETID'] = {
+		parameters = {'message-id'},
+		link = 'Usenet',
+		label = 'Usenet:',
+		mode = 'manual',
+		prefix = 'news:',
+		encode = false,
+		COinS = 'pre',															-- use prefix value
+		separator = '&nbsp;',
+	},
+	['ZBL'] = {
+		parameters = {'ZBL', 'zbl'}, 
+		link = 'Zentralblatt MATH',
+		label = 'Zbl',
+		mode = 'external',
+		prefix = '//zbmath.org/?format=complete&q=an:',
+		COinS = 'pre',															-- use prefix value
+		encode = true,
+		separator = '&nbsp;',
+	},
+}
+
+return 	{
+	aliases = aliases,
+	defaults = defaults,
+	error_conditions = error_conditions,
+	id_handlers = id_handlers,
+	keywords = keywords,
+	invisible_chars = invisible_chars,
+	maint_cats = maint_cats,
+	messages = messages,
+	presentation = presentation,
+	prop_cats = prop_cats,
+	title_types = title_types,
+	uncategorized_namespaces = uncategorized_namespaces,
+	uncategorized_subpages = uncategorized_subpages,
+	templates_using_volume = templates_using_volume,
+	templates_using_issue = templates_using_issue,
+	templates_not_using_page = templates_not_using_page,
+	}
