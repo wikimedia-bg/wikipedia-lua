@@ -14,7 +14,7 @@
 --------------------------------------------------------------------------------
 
 -- Load required modules
-local yesno = require('Module:Yesno')
+local yesno = require('Модул:Yesno')
 
 -- Lazily load things we don't always need
 local mShared, mappings
@@ -140,10 +140,10 @@ function CategoryHandler:matchesBlacklist()
 	if self._usesCurrentTitle then
 		return self._data.currentTitleMatchesBlacklist
 	else
-		mShared = mShared or require('Module:Category handler/shared')
+		mShared = mShared or require('Модул:Category handler/shared')
 		return mShared.matchesBlacklist(
 			self.title.prefixedText,
-			mw.loadData('Module:Category handler/blacklist')
+			mw.loadData('Модул:Category handler/blacklist')
 		)
 	end
 end
@@ -160,7 +160,7 @@ function CategoryHandler:getNamespaceParameters()
 		return self._data.currentTitleNamespaceParameters
 	else
 		if not mappings then
-			mShared = mShared or require('Module:Category handler/shared')
+			mShared = mShared or require('Модул:Category handler/shared')
 			mappings = mShared.getParamMappings(true) -- gets mappings with mw.loadData
 		end
 		return mShared.getNamespaceParameters(
@@ -178,7 +178,7 @@ function CategoryHandler:namespaceParametersExist()
 		return true
 	end
 	if not mappings then
-		mShared = mShared or require('Module:Category handler/shared')
+		mShared = mShared or require('Модул:Category handler/shared')
 		mappings = mShared.getParamMappings(true) -- gets mappings with mw.loadData
 	end
 	for ns, params in pairs(mappings) do
@@ -243,7 +243,7 @@ function p._exportClasses()
 end
 
 function p._main(args, data)
-	data = data or mw.loadData('Module:Category handler/data')
+	data = data or mw.loadData('Модул:Category handler/data')
 	local handler = CategoryHandler.new(data, args)
 	if handler:isSuppressed() then
 		return nil
@@ -252,8 +252,8 @@ function p._main(args, data)
 end
 
 function p.main(frame, data)
-	data = data or mw.loadData('Module:Category handler/data')
-	local args = require('Module:Arguments').getArgs(frame, {
+	data = data or mw.loadData('Модул:Category handler/data')
+	local args = require('Модул:Arguments').getArgs(frame, {
 		wrappers = data.wrappers,
 		valueFunc = function (k, v)
 			v = trimWhitespace(v)
