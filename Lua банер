@@ -1,8 +1,8 @@
 -- This module implements the {{lua}} template.
 
-local yesno = require('Module:Yesno')
-local mList = require('Module:List')
-local mTableTools = require('Module:TableTools')
+local yesno = require('Модул:Yesno')
+local mList = require('Модул:List')
+local mTableTools = require('Модул:TableTools')
 local mMessageBox = require('Модул:Message Box')
 
 local p = {}
@@ -29,18 +29,18 @@ end
 function p.renderBox(modules)
 	local boxArgs = {}
 	if #modules < 1 then
-		boxArgs.text = '<strong class="error">Error: no modules specified</strong>'
+		boxArgs.text = '<strong class="error">Грешка: не са указани модули</strong>'
 	else
 		local moduleLinks = {}
 		for i, module in ipairs(modules) do
 			moduleLinks[i] = string.format('[[:%s]]', module)
 		end
 		local moduleList = mList.makeList('bulleted', moduleLinks)
-		boxArgs.text = 'Uses [[Wikipedia:Lua|Lua]]:\n' .. moduleList
+		boxArgs.text = 'Uses [[Уикипедия:Lua|Lua]]:\n' .. moduleList
 	end
 	boxArgs.type = 'notice'
 	boxArgs.small = true
-	boxArgs.image = '[[File:Lua-logo-nolabel.svg|30px|alt=Lua logo|link=Wikipedia:Lua]]'
+	boxArgs.image = '[[File:Lua-logo-nolabel.svg|30px|alt=Lua logo|link=Уикипедия:Lua]]'
 	return mMessageBox.main('mbox', boxArgs)
 end
 
@@ -70,20 +70,20 @@ function p.renderTrackingCategories(args, modules, titleObj)
 		local category = args.category
 		if not category then
 			local categories = {
-				['Module:String'] = 'Lua String-based templates',
-				['Module:Math'] = 'Templates based on the Math Lua module',
-				['Module:BaseConvert'] = 'Templates based on the BaseConvert Lua module',
-				['Module:Citation'] = 'Lua-based citation templates'
+				['Модул:String'] = 'Lua String-based templates',
+				['Модул:Math'] = 'Templates based on the Math Lua module',
+				['Модул:BaseConvert'] = 'Templates based on the BaseConvert Lua module',
+				['Модул:Citation'] = 'Lua-based citation templates'
 			}
-			categories['Module:Citation/CS1'] = categories['Module:Citation']
+			categories['Модул:Citation/CS1'] = categories['Модул:Citation']
 			category = modules[1] and categories[modules[1]]
-			category = category or 'Lua-based templates'
+			category = category or 'Шаблони, базирани на езика Luа'
 		end
 		cats[#cats + 1] = category
 	end
 	
 	for i, cat in ipairs(cats) do
-		cats[i] = string.format('[[Category:%s]]', cat)
+		cats[i] = string.format('[[Категория:%s]]', cat)
 	end
 	return table.concat(cats)
 end
