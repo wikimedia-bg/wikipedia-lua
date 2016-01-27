@@ -3,7 +3,7 @@
 local yesno = require('Module:Yesno')
 local mList = require('Module:List')
 local mTableTools = require('Module:TableTools')
-local mMessageBox = require('Модул:Bandeau')
+local mMessageBox = require('Module:Message Box')
 
 local p = {}
 
