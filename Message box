@@ -2,10 +2,10 @@
 -- {{mbox}}, {{ambox}}, {{imbox}}, {{tmbox}}, {{ombox}}, {{cmbox}} and {{fmbox}}.
 
 -- Load necessary modules.
-require('Module:No globals')
+require('Модул:No globals')
 local getArgs
-local categoryHandler = require('Module:Category handler')._main
-local yesno = require('Module:Yesno')
+local categoryHandler = require('Модул:Category handler')._main
+local yesno = require('Модул:Yesno')
 
 -- Get a language object for formatDate and ucfirst.
 local lang = mw.language.getContentLanguage()
@@ -114,9 +114,9 @@ function MessageBox:addCat(ns, cat, sort)
 		return nil
 	end
 	if sort then
-		cat = string.format('[[Category:%s|%s]]', cat, sort)
+		cat = string.format('[[Категория:%s|%s]]', cat, sort)
 	else
-		cat = string.format('[[Category:%s]]', cat)
+		cat = string.format('[[Категория:%s]]', cat)
 	end
 	self.categories[ns] = self.categories[ns] or {}
 	table.insert(self.categories[ns], cat)
@@ -185,7 +185,7 @@ function MessageBox:setParameters()
 				self.name,
 				'^[tT][eE][mM][pP][lL][aA][tT][eE][%s_]*:[%s_]*(.*)$'
 			) or self.name
-			templateName = 'Template:' .. templateName
+			templateName = 'Шаблон:' .. templateName
 			self.templateTitle = getTitleObject(templateName)
 		end
 		self.isTemplatePage = self.templateTitle
@@ -245,7 +245,7 @@ function MessageBox:setParameters()
 				)
 			end
 			if talkTitle and talkTitle.exists then
-				local talkText = 'Relevant discussion may be found on'
+				local talkText = 'Съответната дискусия не може да бъде намерена в'
 				if talkArgIsTalkPage then
 					talkText = string.format(
 						'%s [[%s|%s]].',
@@ -307,7 +307,7 @@ function MessageBox:setParameters()
 			local imageSize = self.isSmall
 				and (cfg.imageSmallSize or '30x30px')
 				or '40x40px'
-			self.imageLeft = string.format('[[File:%s|%s|link=|alt=]]', self.typeImage
+			self.imageLeft = string.format('[[Файл:%s|%s|link=|alt=]]', self.typeImage
 				or 'Imbox notice.png', imageSize)
 		end
 	end
@@ -348,7 +348,7 @@ function MessageBox:setMainspaceCategories()
 			self:addCat(0, catTitle)
 			catTitle = getTitleObject('Category:' .. catTitle)
 			if not catTitle or not catTitle.exists then
-				self:addCat(0, 'Articles with invalid date parameter in template')
+				self:addCat(0, 'Статии с невалидна дата в шаблона')
 			end
 		elseif mainCat and (not date or date == '') then
 			self:addCat(0, mainCat)
@@ -405,10 +405,10 @@ function MessageBox:setAllNamespaceCategories()
 	-- Set categories for all namespaces.
 	if self.invalidTypeError then
 		local allSort = (self.title.namespace == 0 and 'Main:' or '') .. self.title.prefixedText
-		self:addCat('all', 'Wikipedia message box parameter needs fixing', allSort)
+		self:addCat('all', 'Параметър на съобщителното каре се нуждае от корекция', allSort)
 	end
 	if self.isSubstituted then
-		self:addCat('all', 'Pages with incorrectly substituted templates')
+		self:addCat('all', 'Страници с неправилно заместени шаблони')
 	end
 end
 
@@ -441,7 +441,7 @@ function MessageBox:export()
 		root:tag('b')
 			:addClass('error')
 			:wikitext(string.format(
-				'Template <code>%s[[Template:%s|%s]]%s</code> has been incorrectly substituted.',
+				'Шаблонът <code>%s[[Шаблон:%s|%s]]%s</code> е неправилно заменен.',
 				mw.text.nowiki('{{'), self.name, self.name, mw.text.nowiki('}}')
 			))
 	end
@@ -539,7 +539,7 @@ function MessageBox:export()
 		root:tag('div')
 			:css('text-align', 'center')
 			:wikitext(string.format(
-				'This message box is using an invalid "type=%s" parameter and needs fixing.',
+				'Насточщото съпщително каре ползва невалиден "type=%s" параметър и се нуждае от корекция.',
 				self.type or ''
 			))
 	end
@@ -573,7 +573,7 @@ end
 function mt.__index(t, k)
 	return function (frame)
 		if not getArgs then
-			getArgs = require('Module:Arguments').getArgs
+			getArgs = require('Модул:Arguments').getArgs
 		end
 		return t.main(k, getArgs(frame, {trim = false, removeBlanks = false}))
 	end
