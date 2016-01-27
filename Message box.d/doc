@@ -41,11 +41,11 @@ local box = messageBox.main( boxType, {
 
 == Употреба чрез #invoke ==
 
-Освен <code>main</code> функцията, настоящия модул съдържа и функции за всеки отделен вид каре. Достъпа до които става посредством следния код <code><nowiki>{{#invoke:Message box|mbox|...}}</nowiki></code>, <code><nowiki>{{#invoke:Message box|ambox|...}}</nowiki></code> и т.н.
+Освен <code>main</code> функцията, настоящия модул съдържа и функции за всеки отделен вид каре. Достъпа до които става посредством следния код <code><nowiki>{{#invoke:Message box|mbox|...}}</nowiki></code>, <code><nowiki>{{#invoke:Message box|ambox|...}}</nowiki></code> и т.н. Така дадените изрази функционират при извикването им от други модули, но тъй като обработката на кода преминава първо през #invoke, то извикването им по този начин не по непродуктивно в сравнение с директното извикване на <code>main</code>.
 
 == Технически подробности ==
 
-Модулът ползва един и същ базов код за всеки от шаблоните описани по-горе; разликите между всеки един от тях са конфигурирани ползвайки данните от [[Модул:Message box/configuration]]. По-долу са дадени разни конфигурацинни опции заедно с тяхното значение:
+Модулът ползва един и същ базов код за всеки от шаблоните описани по-горе; разликите между всеки един от тях са конфигурирани ползвайки данните от [[Модул:Message box/configuration]]. По-долу са дадени разни конфигурационни опции заедно с тяхното значение:
 
 * <code>types</code> - a table containing data used by the type parameter of the message box. The table keys are the values that can be passed to the type parameter, and the table values are tables containing the class and the image used by that type.
 * <code>default</code> - the type to use if no value was passed to the type parameter, or if an invalid value was specified.
