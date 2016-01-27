@@ -1,0 +1,72 @@
+
+== Употреба ==
+
+За да ползвате настоящия модул в друг Lua модул, е необходимо първо да го заредите.
+
+<source lang="lua">
+local messageBox = require('Модул:Message box')
+</source>
+
+Използвайте <code>main</code> функцията, за да създадете съобщително каре (message box). Като самата функция приема два аргумента: първия е типа на карето (като символен низ), а втория е таблица съдържаща параметрите на карето.
+
+<source lang="lua">
+local box = messageBox.main( boxType, {
+    param1 = param1,
+    param2 = param2,
+    -- Още параметри...
+})
+</source>
+
+Достъпни са седен вида кутии:
+
+{| class="wikitable"
+! Тип на каре !! Шаблон !! Предназначение
+|-
+| <code>mbox</code> || {{tl|mbox}} || При съобщителни карета с множество [[Уикипедия:Именно пространство|Именни пространства (Namespaces)]]
+|-
+| <code>ambox</code> || {{tl|ambox}} || При съобщителни карета за статии
+|-
+| <code>cmbox</code> || {{tl|cmbox}} || При съобщителни карета за категории
+|-
+| <code>fmbox</code> || {{tl|fmbox}} || При съобщителни карета за горни и долни колонтитули на потребителски страници, както и за системни съощения
+|-
+| <code>imbox</code> || {{tl|imbox}} || При съобщителни карета за файлови [[Уикипедия:Именно пространство|Именни пространства (Namespaces)]]
+|-
+| <code>tmbox</code> || {{tl|tmbox}} || При съобщителни карета на беседи
+|-
+| <code>ombox</code> || {{tl|ombox}} || При съобщителни карета в други [[Уикипедия:Именно пространство|Именни пространства (Namespaces)]]
+|}
+
+За повече информация отностно параметрите им се обърнете към шаблона за съответното каре.
+
+== Употреба чрез #invoke ==
+
+Освен <code>main</code> функцията, настоящия модул съдържа и функции за всеки отделен вид каре. Достъпа до които става посредством следния код <code><nowiki>{{#invoke:Message box|mbox|...}}</nowiki></code>, <code><nowiki>{{#invoke:Message box|ambox|...}}</nowiki></code> и т.н.
+
+== Технически подробности ==
+
+Модулът ползва един и същ базов код за всеки от шаблоните описани по-горе; разликите между всеки един от тях са конфигурирани ползвайки данните от [[Модул:Message box/configuration]]. По-долу са дадени разни конфигурацинни опции заедно с тяхното значение:
+
+* <code>types</code> - a table containing data used by the type parameter of the message box. The table keys are the values that can be passed to the type parameter, and the table values are tables containing the class and the image used by that type.
+* <code>default</code> - the type to use if no value was passed to the type parameter, or if an invalid value was specified.
+* <code>showInvalidTypeError</code> - whether to show an error if the value passed to the type parameter was invalid.
+* <code>allowBlankParams</code> - usually blank values are stripped from parameters passed to the module. However, whitespace is preserved for the parameters included in the allowBlankParams table.
+* <code>allowSmall</code> - whether a small version of the message box can be produced with "small=yes".
+* <code>smallParam</code> - a custom name for the small parameter. For example, if set to "left" you can produce a small message box using "small=left".
+* <code>smallClass</code> - the class to use for small message boxes.
+* <code>substCheck</code> - whether to perform a subst check or not.
+* <code>classes</code> - an array of classes to use with the message box.
+* <code>usePlainlinksParam</code> - whether to allow "plainlinks=no" to turn off the plainlinks class.
+* <code>imageEmptyCell</code> - whether to use an empty {{tag|td}} cell if there is no image set. This is used to preserve spacing for message boxes with a width of less than 100% of the screen.
+* <code>imageEmptyCellStyle</code> - whether empty image cells should be styled.
+* <code>imageCheckBlank</code> - whether "image=blank" results in no image being displayed.
+* <code>imageSmallSize</code> - usually, images used in small message boxes are set to 30x30px. This sets a custom size.
+* <code>imageCellDiv</code> - whether to enclose the image in a div enforcing a maximum image size.
+* <code>useCollapsibleTextFields</code> - whether to use text fields that can be collapsed, i.e. "issue", "fix", "talk", etc. Currently only used in ambox.
+* <code>imageRightNone</code> - whether imageright=none results in no image being displayed on the right-hand side of the message box.
+* <code>sectionDefault</code> - the default name for the "section" parameter. Depends on <code>useCollapsibleTextFields</code>.
+* <code>allowMainspaceCategories</code> - allow categorisation in the main namespace.
+* <code>templateCategory</code> - the name of a category to be placed on the template page.
+* <code>templateCategoryRequireName</code> - whether the <code>name</code> parameter is required to display the template category.
+* <code>templateErrorCategory</code> - the name of the error category to be used on the template page.
+* <code>templateErrorParamsToCheck</code> - an array of parameter names to check. If any are absent, the <code>templateErrorCategory</code> is applied to the template page.
