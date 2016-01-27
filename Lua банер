@@ -36,7 +36,7 @@ function p.renderBox(modules)
 			moduleLinks[i] = string.format('[[:%s]]', module)
 		end
 		local moduleList = mList.makeList('bulleted', moduleLinks)
-		boxArgs.text = 'Uses [[Уикипедия:Lua|Lua]]:\n' .. moduleList
+		boxArgs.text = 'Ползва [[Уикипедия:Lua|Lua]]:\n' .. moduleList
 	end
 	boxArgs.type = 'notice'
 	boxArgs.small = true
