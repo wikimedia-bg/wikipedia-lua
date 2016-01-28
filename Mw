@@ -64,7 +64,7 @@ end
 
 -- FIXME: How much of the below is obsolete now that we have the mw.uri module?
 local url = {
-    server = "en.wikipedia.org",
+    server = "bg.wikipedia.org",
     -- Return a string encoded for use in a URL, equivalent to the parser function {{urlencode:}}.
     --   0-9A-Za-z --> no change
     --   -._       --> no change
