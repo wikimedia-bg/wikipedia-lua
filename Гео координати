@@ -1,4 +1,4 @@
--- this module implements [[Шаблон:Гео координати]]
+-- този модул прилага [[Шаблон:Гео координати]]
 
 local geobox_coor = {}
 
@@ -10,7 +10,7 @@ end
 -- see Module:Arguments for this function's documentation.
 local function makeInvokeFunc(funcName)
 	return function (frame)
-		local args = require('Module:Arguments').getArgs(frame, {
+		local args = require('Модул:Arguments').getArgs(frame, {
 			wrappers = 'Шаблон:Гео координати'
 		})
 		return geobox_coor[funcName](args, frame)
@@ -67,7 +67,7 @@ function geobox_coor._coord(args, frame)
 		local entity = mw.wikibase.getEntityObject()
 		if(entity and entity.claims	and entity.claims.P625
 			and entity.claims.P625[1].mainsnak.snaktype == 'value') then
-			local math_mod = require("Module:Math")
+			local math_mod = require("Модул:Math")
 			local precision = entity.claims.P625[1].mainsnak.datavalue.value.precision
 			local latitude = entity.claims.P625[1].mainsnak.datavalue.value.latitude
 			local longitude = entity.claims.P625[1].mainsnak.datavalue.value.longitude
