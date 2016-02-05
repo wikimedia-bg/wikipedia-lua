@@ -1,31 +1,29 @@
 --[[
-This module is intended to replace the functionality of {{Coord}} and related
-templates.  It provides several methods, including
+Този модул има за цел да замени функционалността на {{Coord}} и свързаните 
+шаблони.  Той предоставя няколко метода, включително:
 
-{{#Invoke:Coordinates | coord }} : General function formatting and displaying
-coordinate values.
+{{#Invoke:Координати | coord }} : Функция, която форматира и показва координати.
 
-{{#Invoke:Coordinates | dec2dms }} : Simple function for converting decimal
-degree values to DMS format.
+{{#Invoke:Координати | dec2dms }} : Функция, която превръща градуси записани 
+като десетична стойност във формат DMS.
 
-{{#Invoke:Coordinates | dms2dec }} : Simple function for converting DMS format
-to decimal degree format.
+{{#Invoke:Координати | dms2dec }} : Превръща DMS в десетична стойност.
 
 ]]
 
-math_mod = require( "Module:Math" );
+math_mod = require( "Модул:Math" );
 globalFrame = nil
 
 coordinates = {};
 
 --[[ Helper function, replacement for {{coord/display/title}} ]]
 function displaytitle (s, notes)
-    local l = "[[Geographic coordinate system|Coordinates]]: " .. s
+    local l = "[[Географска координтна система|Координати]]: " .. s
     local co = '<span id="coordinates">' .. l .. notes .. '</span>';
     return '<span style="font-size: small;">' .. co .. '</span>';
 end
 
---[[ Helper function, Replacement for {{coord/display/inline}} ]]
+--[[ функция Helper, заместител на {{coord/display/inline}} ]]
 function displayinline (s, notes)
     return s .. notes    
 end
