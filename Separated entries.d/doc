@@ -1,0 +1,12 @@
+{{Module other|{{Module rating |beta}}}}
+{{high-use|{{#ifeq:{{FULLPAGENAME}}|Template:Separated entries|30,000|930,000}}+}}
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+== Usage ==
+[[Модул:Separated entries]] служи като шаблон за <code>[[mw:Extension:Scribunto/Lua reference manual#mw.text.listToText|mw.text.listToText]]</code>. Той взема [[:en:variadic function|произволен брой]] аргументи и ги съединява заедно, използвайки {{Para|separator}}. {{Para|conjunction}} може да бъде дефиниран за използване между последния и пред-последния елемент. Водещите и крайните интервали се премахват; ако е необходимо {{Para|separator}} да съдържа интервали, използвайте HTML кода <code>&amp;#32;</code>. 
+
+ <nowiki>{{</nowiki>#invoke:{{BASEPAGENAME}}|''main''|separator=...}}
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
