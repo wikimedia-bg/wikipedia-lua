@@ -22,19 +22,19 @@ local current_page = mw.title.getCurrentTitle()
 local page_name = mw.uri.encode( current_page.prefixedText, 'WIKI' );
 local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_name .. '&params='
 
---[[ Helper function, replacement for {{coord/display/title}} ]]
+--[[ Помощна функция, замества {{coord/display/title}} ]]
 local function displaytitle(s, notes)
-	local l = "[[Географска координтна система|Координати]]: " .. s
+	local l = "[[Географска координатна система|Координати]]: " .. s
 	local co = '<span id="coordinates">' .. l .. notes .. '</span>';
 	return '<span style="font-size: small;">' .. co .. '</span>';
 end
 
---[[ Helper function, Replacement for {{coord/display/inline}} ]]
+--[[ Помощна функция, замества {{coord/display/inline}} ]]
 local function displayinline(s, notes)
 	return s .. notes	
 end
 
---[[ Helper function, used in detecting DMS formatting ]]
+--[[ Помощна функция, used in detecting DMS formatting ]]
 local function dmsTest(first, second)
 	if type(first) ~= 'string' or type(second) ~= 'string' then
 		return nil
@@ -54,7 +54,7 @@ local function makeInvokeFunc(funcName)
 	end
 end
 
---[[ Helper function, handle optional args. ]]
+--[[ Помощна функция, handle optional args. ]]
 local function optionalArg(arg, supplement)
 	return arg and arg .. supplement or ''
 end
@@ -157,13 +157,13 @@ local function specPrinter(args, coordinateSpec)
 		'[' .. coord_link .. uriComponents .. ' ' .. inner .. ']' .. '</span>'
 end
 
---[[ Helper function, convert decimal to degrees ]]
+--[[ Помощна функция, convert decimal to degrees ]]
 local function convert_dec2dms_d(coordinate)
 	local d = math_mod._round( coordinate, 0 ) .. "°"
 	return d .. ""
 end
 
---[[ Helper function, convert decimal to degrees and minutes ]]
+--[[ Помощна функция, convert decimal to degrees and minutes ]]
 local function convert_dec2dms_dm(coordinate)	
 	coordinate = math_mod._round( coordinate * 60, 0 );
 	local m = coordinate % 60;
@@ -173,7 +173,7 @@ local function convert_dec2dms_dm(coordinate)
 	return d .. string.format( "%02d′", m )
 end
 
---[[ Helper function, convert decimal to degrees, minutes, and seconds ]]
+--[[ Помощна функция, convert decimal to degrees, minutes, and seconds ]]
 local function convert_dec2dms_dms(coordinate)
 	coordinate = math_mod._round( coordinate * 60 * 60, 0 );
 	local s = coordinate % 60
@@ -186,7 +186,7 @@ local function convert_dec2dms_dms(coordinate)
 end
 
 --[[ 
-Helper function, convert decimal latitude or longitude to 
+Помощна функция, convert decimal latitude or longitude to 
 degrees, minutes, and seconds format based on the specified precision.  
 ]]
 local function convert_dec2dms(coordinate, firstPostfix, secondPostfix, precision)
