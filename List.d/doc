@@ -1,0 +1,181 @@
+{{module rating|beta}}
+
+Този модул извежда различни по вид списъци. В момента поддържа bulleted lists, unbulleted lists, horizontal lists, ordered lists (numbered or alphabetical), and horizontal ordered lists. It allows for easy css styling of the list or of the individual list items.
+
+== Употреба ==
+
+; Съкратена употреба
+
+{{pre2|<nowiki>{{</nowiki>#invoke:list<nowiki>|</nowiki>''function''<nowiki>|</nowiki>''first item''<nowiki>|</nowiki>''second item''<nowiki>|</nowiki>''third item''<nowiki>|</nowiki>...<nowiki>}}</nowiki>}}
+
+; Всички параметри
+
+{{pre2|
+<nowiki>{{</nowiki>#invoke:list<nowiki>|</nowiki>''function''
+<nowiki>|</nowiki>''first item''<nowiki>|</nowiki>''second item''<nowiki>|</nowiki>''third item''<nowiki>|</nowiki>...
+<nowiki>|start           = </nowiki>''start number for ordered lists''
+<nowiki>|type            = </nowiki>''type of numbering for ordered lists''
+<nowiki>|list_style_type = </nowiki>''type of marker for ordered lists (uses CSS)''
+<nowiki>|class           = </nowiki>''class''
+<nowiki>|style           = </nowiki>''style''
+<nowiki>|list_style      = </nowiki>''style for the list''
+<nowiki>|item_style      = </nowiki>''style for all list items''
+<nowiki>|item1_style     = </nowiki>''style for the first list item''<nowiki> |item2_style = </nowiki>''style for the second list item''<nowiki> |</nowiki>...
+<nowiki>|item1_value     = </nowiki>''value for the first list item''<nowiki> |item2_value = </nowiki>''value for the second list item''<nowiki> |</nowiki>...
+<nowiki>|indent          = </nowiki>''indent for horizontal lists''
+<nowiki>}}</nowiki>
+}}
+
+; Аргументи предавани от родителския шаблон
+
+{{pre2|<nowiki>{{</nowiki>#invoke:list<nowiki>|</nowiki>''function''<nowiki>}}</nowiki>}}
+
+; Функции
+
+{| class="wikitable"
+|-
+! Function name
+! Produces
+! Example output
+! Template using the function
+|-
+| <code>bulleted</code>
+| Bulleted lists
+| {{#invoke:list|bulleted|First item|Second item|Third item}}
+| {{tlx|bulleted list}}
+|-
+| <code>unbulleted</code>
+| Unbulleted lists
+| {{#invoke:list|unbulleted|First item|Second item|Third item}}
+| {{tlx|unbulleted list}}
+|-
+| <code>horizontal</code>
+| Horizontal bulleted lists| {{#invoke:list|horizontal|First item|Second item|Third item}}
+| {{tlx|hlist}}
+|-
+| <code>ordered</code>
+| Ordered lists (numbered lists and alphabetical lists)
+| {{#invoke:list|ordered|First item|Second item|Third item}}
+| {{tlx|ordered list}}
+|-
+| <code>horizontal_ordered</code>
+| Horizontal ordered lists
+| {{#invoke:list|horizontal_ordered|First item|Second item|Third item}}
+|
+|}
+
+== Параметри ==
+
+* Positional parameters (<code>1</code>, <code>2</code>, <code>3</code>...) - these are the list items. If no list items are present, the module will output nothing.
+* <code>start</code> - sets the start item for ordered lists. This can be a start number for numbered lists, or a start letter for alphabetical lists. Horizontal ordered lists only support numbers.
+* <code>type</code> - the type of marker used in ordered lists. Possible values are "1" for numbers (the default), "A" for uppercase letters, "a" for lowercase letters, "I" for uppercase [[Roman numerals]], and "i" for lowercase Roman numerals. Not supported in horizontal ordered lists. See also the <code>list_style_type</code> parameter.
+* <code>list_style_type</code> - the type of marker used in ordered lists. This uses CSS styling, and has more types available than the <code>type</code> parameter, which uses an [[html attribute]]. Possible values are listed at [http://www.w3schools.com/cssref/pr_list-style-type.asp W3schools' list-style-type page]. Support may vary by browser. <code>list-style-type</code> is an alias for this parameter.
+* <code>class</code> - a custom class for the {{tag|div}} tags surrounding the list, e.g. <code>plainlinks</code>.
+* <code>style</code> - a custom css style for the {{tag|div}} tags surrounding the list, e.g. <code>font-size: 90%;</code>.
+* <code>list_style</code> - a custom css style for the list itself. The format is the same as for the {{para|style}} parameter.
+* <code>item_style</code> - a custom css style for all of the list items (the {{tag|li}} tags). The format is the same as for the {{para|style}} parameter.
+* <code>item1_style</code>, <code>item2_style</code>, <code>item3_style</code>... - custom css styles for each of the list items. The format is the same as for the {{para|style}} parameter.
+* <code>item1_value</code>, <code>item2_value</code>, <code>item3_value</code>... - custom value for the given list item. List items following the one given will increment from the specified value. The value should be a positive integer. (Note that this option only has an effect on ordered lists.)
+* <code>indent</code> - this parameter indents the list, for horizontal and horizontal ordered lists only. The value must be a number, e.g. <code>2</code>. The indent is calculated in [[Em (typography)|em]], and is 1.6 times the value specified. If no indent is specified, the default is zero.
+
+== Примери ==
+
+; Bulleted lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|bulleted|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|bulleted|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|bulleted|First item|Second item|Third item|item_style=color:blue;}}</nowiki></code>
+| {{#invoke:list|bulleted|First item|Second item|Third item|item_style=color:blue;}}
+|-
+| <code><nowiki>{{#invoke:list|bulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}</nowiki></code>
+| {{#invoke:list|bulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}
+|}
+
+; Unbulleted lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item|item_style=color:blue;}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item|item_style=color:blue;}}
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}
+|}
+
+; Horizontal lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|horizontal|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|horizontal|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|horizontal|First item|Second item|Third item|indent=2}}</nowiki></code>
+| {{#invoke:list|horizontal|First item|Second item|Third item|indent=2}}
+|}
+
+; Unbulleted lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item|item_style=color:blue;}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item|item_style=color:blue;}}
+|-
+| <code><nowiki>{{#invoke:list|unbulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}</nowiki></code>
+| {{#invoke:list|unbulleted|First item|Second item|Third item|item1_style=background-color:yellow;|item2_style=background-color:silver;}}
+|}
+
+; Ordered lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|ordered|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|ordered|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|ordered|First item|Second item|Third item|start=3}}</nowiki></code>
+| {{#invoke:list|ordered|First item|Second item|Third item|start=3}}
+|-
+| <code><nowiki>{{#invoke:list|ordered|First item|Second item|Third item|type=i}</nowiki></code>
+| {{#invoke:list|ordered|First item|Second item|Third item|type=i}}
+|-
+| <code><nowiki>{{#invoke:list|ordered|First item|Second item|Third item|list_style_type=lower-greek}}</nowiki></code>
+| {{#invoke:list|ordered|First item|Second item|Third item|list_style_type=lower-greek}}
+|}
+
+; Horizontal ordered lists
+
+{| class="wikitable"
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:list|horizontal_ordered|First item|Second item|Third item}}</nowiki></code>
+| {{#invoke:list|horizontal_ordered|First item|Second item|Third item}}
+|-
+| <code><nowiki>{{#invoke:list|horizontal_ordered|First item|Second item|Third item|start=3}}</nowiki></code>
+| {{#invoke:list|horizontal_ordered|First item|Second item|Third item|start=3}}
+|-
+| <code><nowiki>{{#invoke:list|horizontal_ordered|First item|Second item|Third item|indent=2}}</nowiki></code>
+| {{#invoke:list|horizontal_ordered|First item|Second item|Third item|indent=2}}
+|}
+
+== Tracking/maintenance category ==
+* [[:Category:List templates with deprecated parameters]]
+
+== Вижте също ==
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
