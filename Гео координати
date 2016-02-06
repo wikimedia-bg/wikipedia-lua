@@ -22,15 +22,8 @@ local function coord_wrapper(frame, in_args)
 	return require('Модул:Координати').coord(frame)
 end
 
---geobox_coor.coord = makeInvokeFunc('_coord')
-function geobox_coor.coord(frame)
-	if frame == mw.getCurrentFrame() then
-		args = frame:getParent().args
-	else
-		args = frame
-	end
-	return geobox_coor._coord(args, frame)
-end
+geobox_coor.coord = makeInvokeFunc('_coord')
+
 function geobox_coor._coord(args, frame)
 	local tstr = args['9'] or 'type:other'
 	local dstr = isnotempty(args['title']) and 'inline,title' or 'inline'
