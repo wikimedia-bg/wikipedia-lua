@@ -1,4 +1,4 @@
--- This module implements the {{lua}} template.
+-- Този модул се използва от шаблона {{lua}}.
 
 local yesno = require('Модул:Yesno')
 local mList = require('Модул:List')
