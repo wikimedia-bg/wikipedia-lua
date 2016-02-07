@@ -53,7 +53,7 @@ function p.renderTrackingCategories(args, modules, titleObj)
 	
 	-- Категория грешки
 	if #modules < 1 then
-		cats[#cats + 1] = 'Lua templates with errors'
+		cats[#cats + 1] = 'Lua шаблони с грешки'
 	end
 	
 	-- Категория Lua шаблони
@@ -70,10 +70,10 @@ function p.renderTrackingCategories(args, modules, titleObj)
 		local category = args.category
 		if not category then
 			local categories = {
-				['Модул:String'] = 'Lua String-based templates',
-				['Модул:Math'] = 'Templates based on the Math Lua module',
-				['Модул:BaseConvert'] = 'Templates based on the BaseConvert Lua module',
-				['Модул:Citation'] = 'Lua-based citation templates'
+				['Модул:String'] = 'Lua шаблони базирани на Модул:String',
+				['Модул:Math'] = 'Lua шаблони базирани на Модул:Math',
+				['Модул:BaseConvert'] = 'Lua шаблони базирани на Модул:BaseConvert',
+				['Модул:Citation'] = 'Lua шаблони базирани на Модул:Citation'
 			}
 			categories['Модул:Citation/CS1'] = categories['Модул:Citation']
 			category = modules[1] and categories[modules[1]]
