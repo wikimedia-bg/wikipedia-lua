@@ -539,7 +539,7 @@ function MessageBox:export()
 		root:tag('div')
 			:css('text-align', 'center')
 			:wikitext(string.format(
-				'Насточщото съпщително каре ползва невалиден "type=%s" параметър и се нуждае от корекция.',
+				'Настоящото съобщително каре ползва невалиден "type=%s" параметър и се нуждае от корекция.',
 				self.type or ''
 			))
 	end
