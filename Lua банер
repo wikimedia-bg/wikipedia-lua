@@ -51,12 +51,12 @@ function p.renderTrackingCategories(args, modules, titleObj)
 	
 	local cats = {}
 	
-	-- Error category
+	-- Категория грешки
 	if #modules < 1 then
 		cats[#cats + 1] = 'Lua templates with errors'
 	end
 	
-	-- Lua templates category
+	-- Категория Lua шаблони
 	titleObj = titleObj or mw.title.getCurrentTitle()
 	local subpageBlacklist = {
 		doc = true,
@@ -77,7 +77,7 @@ function p.renderTrackingCategories(args, modules, titleObj)
 			}
 			categories['Модул:Citation/CS1'] = categories['Модул:Citation']
 			category = modules[1] and categories[modules[1]]
-			category = category or 'Шаблони, базирани на езика Luа'
+			category = category or 'Lua шаблони'
 		end
 		cats[#cats + 1] = category
 	end
