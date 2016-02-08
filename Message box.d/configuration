@@ -1,35 +1,35 @@
 --------------------------------------------------------------------------------
 --                          Message box configuration                         --
 --                                                                            --
--- This module contains configuration data for [[Module:Message box]].        --
+-- Настоящия модул съдържа конфигурационни данни за [[Модул:Message box]].    --
 --------------------------------------------------------------------------------
 
 return {
 	ambox = {
 		types = {
-			speedy = {
-				class = 'ambox-speedy',
-				image = 'Ambox warning pn.svg'
-			},
-			delete = {
-				class = 'ambox-delete',
-				image = 'Ambox warning pn.svg'
+			serious = {
+				class = 'ambox-serious',
+				image = 'Circle-style-warning.svg'
 			},
 			content = {
 				class = 'ambox-content',
-				image = 'Ambox important.svg'
+				image = 'Emblem-important.svg'
 			},
 			style = {
 				class = 'ambox-style',
-				image = 'Edit-clear.svg'
+				image = 'Broom icon.svg'
 			},
-			move = {
-				class = 'ambox-move',
+			merge = {
+				class = 'ambox-merge',
 				image = 'Merge-split-transwiki default.svg'
 			},
 			protection = {
 				class = 'ambox-protection',
 				image = 'Padlock-silver-medium.svg'
+			},
+			stub = {
+				class = 'ambox-stub',
+				image = 'M Puzzle.png'
 			},
 			notice = {
 				class = 'ambox-notice',
@@ -59,29 +59,29 @@ return {
 	
 	cmbox = {
 		types = {
-			speedy = {
-				class = 'cmbox-speedy',
-				image = 'Ambox warning pn.svg'
-			},
-			delete = {
-				class = 'cmbox-delete',
-				image = 'Ambox warning pn.svg'
+			serious = {
+				class = 'cmbox-serious',
+				image = 'Circle-style-warning.svg'
 			},
 			content = {
 				class = 'cmbox-content',
-				image = 'Ambox important.svg'
+				image = 'Emblem-important.svg'
 			},
 			style = {
 				class = 'cmbox-style',
 				image = 'Edit-clear.svg'
 			},
-			move = {
-				class = 'cmbox-move',
+			merge = {
+				class = 'cmbox-merge',
 				image = 'Merge-split-transwiki default.svg'
 			},
 			protection = {
 				class = 'cmbox-protection',
 				image = 'Padlock-silver-medium.svg'
+			},
+			stub = {
+				class = 'cmbox-stub',
+				image = 'M Puzzle.png'
 			},
 			notice = {
 				class = 'cmbox-notice',
@@ -99,7 +99,7 @@ return {
 		types = {
 			warning = {
 				class = 'fmbox-warning',
-				image = 'Ambox warning pn.svg'
+				image = 'Circle-style-warning.svg'
 			},
 			editnotice = {
 				class = 'fmbox-editnotice',
@@ -120,24 +120,20 @@ return {
 	
 	imbox = {
 		types = {
-			speedy = {
-				class = 'imbox-speedy',
-				image = 'Ambox warning pn.svg'
-			},
-			delete = {
-				class = 'imbox-delete',
-				image = 'Ambox warning pn.svg'
+			serious = {
+				class = 'imbox-serious',
+				image = 'Circle-style-warning.svg'
 			},
 			content = {
 				class = 'imbox-content',
-				image = 'Ambox important.svg'
+				image = 'Emblem-important.svg'
 			},
 			style = {
 				class = 'imbox-style',
 				image = 'Edit-clear.svg'
 			},
-			move = {
-				class = 'imbox-move',
+			merge = {
+				class = 'imbox-merge',
 				image = 'Merge-split-transwiki default.svg'
 			},
 			protection = {
@@ -168,29 +164,29 @@ return {
 	
 	ombox = {
 		types = {
-			speedy = {
-				class = 'ombox-speedy',
-				image = 'Ambox warning pn.svg'
-			},
-			delete = {
-				class = 'ombox-delete',
-				image = 'Ambox warning pn.svg'
+			serious = {
+				class = 'ombox-serious',
+				image = 'Circle-style-warning.svg'
 			},
 			content = {
 				class = 'ombox-content',
-				image = 'Ambox important.svg'
+				image = 'Emblem-important.svg'
 			},
 			style = {
 				class = 'ombox-style',
 				image = 'Edit-clear.svg'
 			},
-			move = {
-				class = 'ombox-move',
+			merge = {
+				class = 'ombox-merge',
 				image = 'Merge-split-transwiki default.svg'
 			},
 			protection = {
 				class = 'ombox-protection',
 				image = 'Padlock-silver-medium.svg'
+			},
+			stub = {
+				class = 'оmbox-stub',
+				image = 'M Puzzle.png'
 			},
 			notice = {
 				class = 'ombox-notice',
@@ -208,24 +204,20 @@ return {
 	
 	tmbox = {
 		types = {
-			speedy = {
-				class = 'tmbox-speedy',
-				image = 'Ambox warning pn.svg'
-			},
-			delete = {
-				class = 'tmbox-delete',
-				image = 'Ambox warning pn.svg'
+			serious = {
+				class = 'tmbox-serious',
+				image = 'Circle-style-warning.svg'
 			},
 			content = {
 				class = 'tmbox-content',
-				image = 'Ambox important.svg'
+				image = 'Emblem-important.svg'
 			},
 			style = {
 				class = 'tmbox-style',
 				image = 'Edit-clear.svg'
 			},
-			move = {
-				class = 'tmbox-move',
+			merge = {
+				class = 'tmbox-merge',
 				image = 'Merge-split-transwiki default.svg'
 			},
 			protection = {
