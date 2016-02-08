@@ -564,7 +564,7 @@ function p._exportClasses()
 end
 
 function p.main(boxType, args, cfgTables)
-	local box = MessageBox.new(boxType, args, cfgTables or mw.loadData('Потребител:Pl71/Модул:Message box/configuration'))
+	local box = MessageBox.new(boxType, args, cfgTables or mw.loadData('Pl71/Модул:Message box/configuration'))
 	box:setParameters()
 	box:setCategories()
 	return box:export()
