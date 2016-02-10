@@ -13,16 +13,16 @@ local SIprefixes = {
 	['G'] = { exponent =  9, name = 'giga' ,                  },
 	['M'] = { exponent =  6, name = 'mega' ,                  },
 	['k'] = { exponent =  3, name = 'kilo' ,                  },
-	['h'] = { exponent =  2, name = 'hecto',                  },
+	['h'] = { exponent =  2, name = 'хекто',                  },
 	['da']= { exponent =  1, name = 'deca' , name_us = 'deka' },
-	['d'] = { exponent = -1, name = 'deci' ,                  },
+	['d'] = { exponent = -1, name = 'деци' ,                  },
 	['c'] = { exponent = -2, name = 'centi',                  },
-	['m'] = { exponent = -3, name = 'milli',                  },
-	['μ'] = { exponent = -6, name = 'micro', prefix = 'µ'     },  -- key = 'GREEK SMALL LETTER MU' (U+03BC) utf-8 CE BC
-	['µ'] = { exponent = -6, name = 'micro',                  },  -- key = 'MICRO SIGN' (U+00B5) utf-8 C2 B5
-	['u'] = { exponent = -6, name = 'micro', prefix = 'µ'     },  -- not an SI prefix, but allow for people typing this
-	['n'] = { exponent = -9, name = 'nano' ,                  },
-	['p'] = { exponent =-12, name = 'pico' ,                  },
+	['m'] = { exponent = -3, name = 'мили',                  },
+	['μ'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- key = 'GREEK SMALL LETTER MU' (U+03BC) utf-8 CE BC
+	['µ'] = { exponent = -6, name = 'микро',                  },  -- key = 'MICRO SIGN' (U+00B5) utf-8 C2 B5
+	['u'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- not an SI prefix, but allow for people typing this
+	['n'] = { exponent = -9, name = 'нано' ,                  },
+	['p'] = { exponent =-12, name = 'пико' ,                  },
 	['f'] = { exponent =-15, name = 'femto',                  },
 	['a'] = { exponent =-18, name = 'atto' ,                  },
 	['z'] = { exponent =-21, name = 'zepto',                  },
