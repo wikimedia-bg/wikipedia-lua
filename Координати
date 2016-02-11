@@ -129,7 +129,7 @@ local function specPrinter(args, coordinateSpec)
 		geodeclong = (coordinateSpec["dec-long"] or 0) .. "°E"
 	end
 	
-	local geodechtml = '<span class="geo-dec" title="Maps, aerial photos, and other data for this location">'
+	local geodechtml = '<span class="geo-dec" title="Карти, снимки от въздуха и други данни за това място">'
 			 .. geodeclat .. ' '
 			 .. geodeclong
 			 .. '</span>'
