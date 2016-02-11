@@ -69,7 +69,7 @@ return {
 			},
 			style = {
 				class = 'cmbox-style',
-				image = 'Edit-clear.svg'
+				image = 'Broom icon.svg'
 			},
 			merge = {
 				class = 'cmbox-merge',
@@ -130,7 +130,7 @@ return {
 			},
 			style = {
 				class = 'imbox-style',
-				image = 'Edit-clear.svg'
+				image = 'Broom icon.svg'
 			},
 			merge = {
 				class = 'imbox-merge',
@@ -174,7 +174,7 @@ return {
 			},
 			style = {
 				class = 'ombox-style',
-				image = 'Edit-clear.svg'
+				image = 'Broom icon.svg'
 			},
 			merge = {
 				class = 'ombox-merge',
@@ -214,7 +214,7 @@ return {
 			},
 			style = {
 				class = 'tmbox-style',
-				image = 'Edit-clear.svg'
+				image = 'Broom icon.svg'
 			},
 			merge = {
 				class = 'tmbox-merge',
