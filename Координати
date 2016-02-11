@@ -20,7 +20,7 @@ local coordinates = {};
 
 local current_page = mw.title.getCurrentTitle()
 local page_name = mw.uri.encode( current_page.prefixedText, 'WIKI' );
-local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_name .. '&params='
+local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_name .. '&language=bg&params='
 
 --[[ Помощна функция, замества {{coord/display/title}} ]]
 local function displaytitle(s, notes)
