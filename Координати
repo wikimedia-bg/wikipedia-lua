@@ -106,7 +106,7 @@ local function specPrinter(args, coordinateSpec)
 		uriComponents = uriComponents .. "&title=" .. mw.uri.encode(coordinateSpec["name"])
 	end
 	
-	local geodmshtml = '<span class="geo-dms" title="Maps, aerial photos, and other data for this location">'
+	local geodmshtml = '<span class="geo-dms" title="Карти, снимки от въздуха и други данни за това място">'
 			 .. '<span class="latitude">' .. coordinateSpec["dms-lat"] .. '</span> '
 			 .. '<span class="longitude">' ..coordinateSpec["dms-long"] .. '</span>'
 			 .. '</span>'
