@@ -1,29 +1,27 @@
--- Text used by Module:Convert, for en.wikipedia.org (English).
--- This is a separate module to simplify translation for use on another wiki.
--- See [[:en:Template:Convert/Transwiki guide]] if copying to another wiki.
+-- Използва се от Модул:Convert
 
 -- Some units accept an SI prefix before the unit code, such as "kg" for kilogram.
 local SIprefixes = {
 	-- The prefix field is what the prefix should be, if different from the prefix used.
-	['Y'] = { exponent = 24, name = 'yotta',                  },
-	['Z'] = { exponent = 21, name = 'zetta',                  },
-	['E'] = { exponent = 18, name = 'exa'  ,                  },
-	['P'] = { exponent = 15, name = 'peta' ,                  },
-	['T'] = { exponent = 12, name = 'tera' ,                  },
-	['G'] = { exponent =  9, name = 'giga' ,                  },
-	['M'] = { exponent =  6, name = 'mega' ,                  },
-	['k'] = { exponent =  3, name = 'kilo' ,                  },
+	['Y'] = { exponent = 24, name = 'йота',                  },
+	['Z'] = { exponent = 21, name = 'зета',                  },
+	['E'] = { exponent = 18, name = 'екса'  ,                  },
+	['P'] = { exponent = 15, name = 'пета' ,                  },
+	['T'] = { exponent = 12, name = 'тера' ,                  },
+	['G'] = { exponent =  9, name = 'гига' ,                  },
+	['M'] = { exponent =  6, name = 'мега' ,                  },
+	['k'] = { exponent =  3, name = 'кило' ,                  },
 	['h'] = { exponent =  2, name = 'хекто',                  },
-	['da']= { exponent =  1, name = 'deca' , name_us = 'deka' },
+	['da']= { exponent =  1, name = 'дека' , name_us = 'deka' },
 	['d'] = { exponent = -1, name = 'деци' ,                  },
-	['c'] = { exponent = -2, name = 'centi',                  },
+	['c'] = { exponent = -2, name = 'санти',                  },
 	['m'] = { exponent = -3, name = 'мили',                  },
 	['μ'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- key = 'GREEK SMALL LETTER MU' (U+03BC) utf-8 CE BC
 	['µ'] = { exponent = -6, name = 'микро',                  },  -- key = 'MICRO SIGN' (U+00B5) utf-8 C2 B5
 	['u'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- not an SI prefix, but allow for people typing this
 	['n'] = { exponent = -9, name = 'нано' ,                  },
 	['p'] = { exponent =-12, name = 'пико' ,                  },
-	['f'] = { exponent =-15, name = 'femto',                  },
+	['f'] = { exponent =-15, name = 'фемто',                  },
 	['a'] = { exponent =-18, name = 'atto' ,                  },
 	['z'] = { exponent =-21, name = 'zepto',                  },
 	['y'] = { exponent =-24, name = 'yocto',                  },
@@ -73,7 +71,7 @@ local all_messages = {
 	--   regex = gsub_regex,
 	--   replace = gsub_table,
 	-- }                    Mouseover title text                           Link text               CatKey     Anchor
-	cvt_bad_num        = { 'Value "%s" must be a number'                , 'invalid number'      , 'option',  'invalid_number'       },
+	cvt_bad_num        = { 'Стойността "%s" трябва да е число'                , 'invalid number'      , 'option',  'invalid_number'       },
 	cvt_big_prec       = { 'Precision "%s" is too large'                , 'precision too large' , 'option',  'precision_too_large'  },
 	cvt_invalid_num    = { 'Number has overflowed'                      , 'number overflow'     , 'option',  'number_overflow'      },
 	cvt_no_num         = { 'Needs the number to be converted'           , 'needs a number'      , 'option',  'needs_number'         },
