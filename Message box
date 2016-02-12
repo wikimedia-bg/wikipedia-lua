@@ -253,7 +253,6 @@ function MessageBox:setParameters()
 						talk,
 						talkTitle.prefixedText
 					)
-					talkText.setTextScale(0.9)
 				else
 					talkText = string.format(
 						'%s [[%s#%s|беседата]].',
@@ -261,7 +260,6 @@ function MessageBox:setParameters()
 						talkTitle.prefixedText,
 						talk
 					)
-					talkText.setTextScale(0.9)
 				end
 				self.talk = talkText
 			end
