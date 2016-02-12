@@ -261,7 +261,8 @@ function MessageBox:setParameters()
 						talk
 					)
 				end
-				self.talk = talkText
+		        local tagStyle = 'style="font-size: 90%"'
+				self.talk = string.format("<span %s>%s</span>", tagStyle, talkText)
 			end
 		end
 
