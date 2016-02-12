@@ -245,7 +245,7 @@ function MessageBox:setParameters()
 				)
 			end
 			if talkTitle and talkTitle.exists then
-				local talkText = 'Съответната дискусия не може да бъде намерена в'
+				local talkText = ' Моля, вижте съответната дискусия на'
 				if talkArgIsTalkPage then
 					talkText = string.format(
 						'%s [[%s|%s]].',
@@ -255,7 +255,7 @@ function MessageBox:setParameters()
 					)
 				else
 					talkText = string.format(
-						'%s the [[%s#%s|talk page]].',
+						'%s [[%s#%s|беседата]].',
 						talkText,
 						talkTitle.prefixedText,
 						talk
