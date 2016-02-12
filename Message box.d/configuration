@@ -49,7 +49,7 @@ return {
 		imageCellDiv                = true,
 		useCollapsibleTextFields    = true,
 		imageRightNone              = true,
-		sectionDefault              = 'article',
+		sectionDefault              = 'Настоящата статия',
 		allowMainspaceCategories    = true,
 		templateCategory            = 'Меташаблони',
 	        templateCategoryRequireName = true,
