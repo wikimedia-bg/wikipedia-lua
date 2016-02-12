@@ -201,9 +201,9 @@ function MessageBox:setParameters()
 		else
 			local sect
 			if args.sect == '' then
-				sect = 'This ' .. (cfg.sectionDefault or 'page')
+				sect = '' .. (cfg.sectionDefault or 'страница')
 			elseif type(args.sect) == 'string' then
-				sect = 'This ' .. args.sect
+				sect = '' .. args.sect
 			end
 			local issue = args.issue
 			issue = type(issue) == 'string' and issue ~= '' and issue or nil
