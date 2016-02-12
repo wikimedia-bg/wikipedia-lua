@@ -1,6 +1,5 @@
--- Convert a value from one unit of measurement to another.
--- Example: {{convert|123|lb|kg}} --> 123 pounds (56 kg)
--- See [[:en:Template:Convert/Transwiki guide]] if copying to another wiki.
+-- Превръща стойност от една мерна единица в друга.
+-- Пример: {{convert|123|lb|kg}} --> 123 pounds (56 kg)
 
 local MINUS = '−'  -- Unicode U+2212 MINUS SIGN (UTF-8: e2 88 92)
 local abs = math.abs
@@ -318,7 +317,7 @@ local function message(mcode)
 		title = title:gsub('"', '&quot;')
 		return format(fmt, anchor, title, text, cat)
 	end
-	return 'Convert internal error: unknown message'
+	return 'Грешка в модула: неизвестно съобщение'
 end
 
 function add_warning(parms, level, key, text1, text2)  -- for forward declaration above
