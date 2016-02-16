@@ -326,8 +326,8 @@ local function parseDec( lat, long, format )
 	coordinateSpec["dec-long"] = long;
 
 	local mode = coordinates.determineMode( lat, long );
-	coordinateSpec["dms-lat"]  = convert_dec2dms( lat, "с.ш.", "S", mode)  -- {{coord/dec2dms|{{{1}}}|N|S|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}
-	coordinateSpec["dms-long"] = convert_dec2dms( long, "E", "W", mode)  -- {{coord/dec2dms|{{{2}}}|E|W|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}	
+	coordinateSpec["dms-lat"]  = convert_dec2dms( lat, "с.ш.", "ю.ш.", mode)  -- {{coord/dec2dms|{{{1}}}|N|S|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}
+	coordinateSpec["dms-long"] = convert_dec2dms( long, "и.д.", "з.д.", mode)  -- {{coord/dec2dms|{{{2}}}|E|W|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}	
 	
 	if format then
 		coordinateSpec.default = format
@@ -447,7 +447,7 @@ local function formatTest(args)
 		result, errors = parseDMS(args[1], args[2], nil, args[3], 
 			args[4], args[5], nil, args[6], args['format'])
 		if args[8] then
-			table.insert(errors, {'formatTest', 'Extra unexpected parameters'})
+			table.insert(errors, {'formatTest', 'Допълнителни неочаквани параметри'})
 		end
 		if not result then
 			return errorPrinter(errors)
