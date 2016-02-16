@@ -100,7 +100,7 @@ local function specPrinter(args, coordinateSpec)
 	local uriComponents = coordinateSpec["param"]
 	if uriComponents == "" then
 		-- RETURN error, should never be empty or nil
-		return "ERROR param was empty"
+		return "ГРЕШКА - липсва параметър"
 	end
 	if args["name"] then
 		uriComponents = uriComponents .. "&title=" .. mw.uri.encode(coordinateSpec["name"])
@@ -115,18 +115,18 @@ local function specPrinter(args, coordinateSpec)
 	local geodeclat
 	if lat < 0 then
 		-- FIXME this breaks the pre-existing precision
-		geodeclat = tostring(coordinateSpec["dec-lat"]):sub(2) .. "°S"
+		geodeclat = tostring(coordinateSpec["dec-lat"]):sub(2) .. "° ю.ш."
 	else
-		geodeclat = (coordinateSpec["dec-lat"] or 0) .. "°N"
+		geodeclat = (coordinateSpec["dec-lat"] or 0) .. "° с.ш."
 	end
 
 	local long = tonumber( coordinateSpec["dec-long"] ) or 0
 	local geodeclong
 	if long < 0 then
 		-- FIXME does not handle unicode minus
-		geodeclong = tostring(coordinateSpec["dec-long"]):sub(2) .. "°W" 
+		geodeclong = tostring(coordinateSpec["dec-long"]):sub(2) .. "° з.д." 
 	else
-		geodeclong = (coordinateSpec["dec-long"] or 0) .. "°E"
+		geodeclong = (coordinateSpec["dec-long"] or 0) .. "° и.д."
 	end
 	
 	local geodechtml = '<span class="geo-dec" title="Карти, снимки от въздуха и други данни за това място">'
@@ -458,7 +458,7 @@ local function formatTest(args)
 		result, errors = parseDMS(args[1], nil, nil, args[2], 
 			args[3], nil, nil, args[4], args.format)
 		if args[6] then
-			table.insert(errors, {'formatTest', 'Extra unexpected parameters'})
+			table.insert(errors, {'formatTest', 'Допълнителен неочакван параметър'})
 		end	
 		if not result then
 			return errorPrinter(errors)
