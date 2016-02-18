@@ -1,4 +1,4 @@
-require('Module:No globals')
+require('Модул:No globals')
 
 local p = {}
 
@@ -47,7 +47,7 @@ function p.getMapParams(map, frame)
 			end
 		end
 	else
-		error('Unable to find the specified location map definition. Neither "Module:Location map/data/' .. map .. '" nor "Template:Location map ' .. map .. '" exists', 2)
+		error('Неизвестна дефиниция на карта. Не съществува нито "Модул:ПК/data/' .. map .. '" нито "Шаблон:ПК ' .. map .. '"', 2)
 	end
 end
 
@@ -243,11 +243,11 @@ function p.bottom(frame, args, map)
 	end
 	if map('skew') ~= '' or map('lat_skew') ~= '' or map('crosses180') ~= '' or map('type') ~= '' then
 		mw.log('Removed parameter used in map definition ' .. map())
-		retval = retval .. '[[Category:Location maps with possible errors|Map using removed parameter]]'
+		retval = retval .. '[[Категория:Позиционни карти с възможни грешки|Карта с премахнат параметър]]'
 	end
 	if string.find(map('name'), '|', 1, true) then
 		mw.log('Pipe used in name of map definition ' .. map())
-		retval = retval .. '[[Category:Location maps with possible errors|Name containing pipe]]'
+		retval = retval .. '[[Категория:Позиционни карти с възможни грешки|Името съдържа вертикална черта]]'
 	end
 	if args.float == 'center' then
 		retval = retval .. '</div>'
@@ -328,7 +328,7 @@ end
 
 function p.mark(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'Template:Location map~'})
+		args = getArgs(frame, {wrappers = 'Шаблон:ПК~'})
 	end
 	if not map then
 		map = p.getMapParams(args[1], frame)
@@ -405,7 +405,7 @@ end
 
 function p.main(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'Template:Location map', valueFunc = p.valueFunc})
+		args = getArgs(frame, {wrappers = 'Шаблон:ПК', valueFunc = p.valueFunc})
 	end
 	if args.useWikidata == nil then
 		args.useWikidata = true
