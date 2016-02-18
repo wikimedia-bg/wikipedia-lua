@@ -369,7 +369,7 @@ function p.mark(frame, args, map)
 			mw.log('Parent is ' .. parent:getTitle())
 		end
 		mw.logObject(args, 'args')
-		builder:wikitext('[[Category:Location maps with possible errors|Page using removed parameter]]')
+		builder:wikitext('[[Категория:Позиционни карти с възможни грешки|Page using removed parameter]]')
 	end
 	if map('x') ~= '' then
 		x = tonumber(mw.ext.ParserFunctions.expr(map('x', { latitude, longitude })))
@@ -388,7 +388,7 @@ function p.mark(frame, args, map)
 			mw.log('Parent is ' .. parent:getTitle())
 		end
 		mw.logObject(args, 'args')
-		builder:wikitext('[[Category:Location maps with possible errors|Outside flag not set with mark outside map]]')
+		builder:wikitext('[[Категория:Позиционни карти с възможни грешки|Outside flag not set with mark outside map]]')
 	end
 	local mark = args.mark or map('mark')
 	if mark == '' then
@@ -418,7 +418,7 @@ function p.main(frame, args, map)
 			end
 			if #map == 1 then map = map[1] end
 		else
-			map = p.getMapParams('World', frame)
+			map = p.getMapParams('Земя', frame)
 		end
 	end
 	if type(map) == 'table' then
