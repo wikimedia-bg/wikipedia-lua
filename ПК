@@ -239,7 +239,7 @@ function p.bottom(frame, args, map)
 			mw.log('Parent is ' .. parent:getTitle())
 		end
 		mw.logObject(args, 'args')
-		retval = retval .. '[[Category:Location maps with possible errors|Page using removed parameter]]'
+		retval = retval .. '[[Категория:Позиционни карти с възможни грешки|Страница използваща премахнат параметър]]'
 	end
 	if map('skew') ~= '' or map('lat_skew') ~= '' or map('crosses180') ~= '' or map('type') ~= '' then
 		mw.log('Removed parameter used in map definition ' .. map())
@@ -352,15 +352,15 @@ function p.mark(frame, args, map)
 	end
 	local builder = mw.html.create()
 	if (not args.lon_deg) ~= (not args.lat_deg) then
-		builder:wikitext('[[Category:Location maps with different longitude and latitude precisions|Degrees]]')
+		builder:wikitext('[[Категория:Позиционни карти с различна точност на географската ширина и дължина|Градуси]]')
 	elseif (not args.lon_min) ~= (not args.lat_min) then
-		builder:wikitext('[[Category:Location maps with different longitude and latitude precisions|Minutes]]')
+		builder:wikitext('[[Категория:Позиционни карти с различна точност на географската ширина и дължина|Минути]]')
 	elseif (not args.lon_sec) ~= (not args.lat_sec) then
-		builder:wikitext('[[Category:Location maps with different longitude and latitude precisions|Seconds]]')
+		builder:wikitext('[[Категория:Позиционни карти с различна точност на географската ширина и дължина|Секунди]]')
 	elseif (not args.lon_dir) ~= (not args.lat_dir) then
-		builder:wikitext('[[Category:Location maps with different longitude and latitude precisions|Hemisphere]]')
+		builder:wikitext('[[Категория:Позиционни карти с различна точност на географската ширина и дължина|Полукълбо]]')
 	elseif (not args.long) ~= (not args.lat) then
-		builder:wikitext('[[Category:Location maps with different longitude and latitude precisions|Decimal]]')
+		builder:wikitext('[[Категория:Позиционни карти с различна точност на географската ширина и дължина|Десетични]]')
 	end
 	if args.skew or args.lon_shift or args.markhigh then
 		mw.log('Removed parameter used in invocation.')
@@ -369,7 +369,7 @@ function p.mark(frame, args, map)
 			mw.log('Parent is ' .. parent:getTitle())
 		end
 		mw.logObject(args, 'args')
-		builder:wikitext('[[Категория:Позиционни карти с възможни грешки|Page using removed parameter]]')
+		builder:wikitext('[[Категория:Позиционни карти с възможни грешки|Страница използваща премахнат параметър]]')
 	end
 	if map('x') ~= '' then
 		x = tonumber(mw.ext.ParserFunctions.expr(map('x', { latitude, longitude })))
@@ -385,7 +385,7 @@ function p.mark(frame, args, map)
 		mw.log('Mark placed outside map boundaries without outside flag set. x = ' .. x .. ', y = ' .. y)
 		local parent = frame:getParent()
 		if parent then
-			mw.log('Parent is ' .. parent:getTitle())
+			mw.log('Родителят е ' .. parent:getTitle())
 		end
 		mw.logObject(args, 'args')
 		builder:wikitext('[[Категория:Позиционни карти с възможни грешки|Outside flag not set with mark outside map]]')
@@ -405,7 +405,7 @@ end
 
 function p.main(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'Шаблон:ПК', valueFunc = p.valueFunc})
+		args = getArgs(frame, {wrappers = 'Шаблон:ПК-v2', valueFunc = p.valueFunc})
 	end
 	if args.useWikidata == nil then
 		args.useWikidata = true
