@@ -13,11 +13,11 @@ function p.getMapParams(map, frame)
 	if not map then
 		error('Трябва да укажете име на карта', 2)
 	end
-	local moduletitle = mw.title.new('Модул:ПК/data/' .. map)
+	local moduletitle = mw.title.new('Модул:ПК-v2/data/' .. map)
 	if not moduletitle then
 		error('"' .. map .. '" не е валидно име на карта', 2)
 	elseif moduletitle.exists then
-		local mapData = mw.loadData('Модул:ПК/data/' .. map)
+		local mapData = mw.loadData('Модул:ПК-v2/data/' .. map)
 		return function(name, params)
 			if name == nil then
 				return 'Модул:ПК/data/' .. map
@@ -405,7 +405,7 @@ end
 
 function p.main(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'Шаблон:ПК-v2', valueFunc = p.valueFunc})
+		args = getArgs(frame, {wrappers = 'Потребител:Pl71/ПК2', valueFunc = p.valueFunc})
 	end
 	if args.useWikidata == nil then
 		args.useWikidata = true
