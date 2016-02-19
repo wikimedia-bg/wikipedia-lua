@@ -272,7 +272,7 @@ function MessageBox:setParameters()
 		if args.date and args.date ~= '' then
 			date = args.date
 		elseif args.date == '' and self.isTemplatePage then
-			date = lang:formatDate('F Y')
+			date = lang:formatDate('j F Y')
 		end
 		if date then
 			self.date = string.format(" <small>''(%s)''</small>", date)
