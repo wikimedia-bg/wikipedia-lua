@@ -2,7 +2,7 @@ require('Модул:No globals')
 
 local p = {}
 
-local getArgs = require('Модул:Arguments-v2').getArgs
+local getArgs = require('Модул:Arguments').getArgs
 
 local function round(n, decimals)
 	local pow = 10^(decimals or 0)
