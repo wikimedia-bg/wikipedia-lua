@@ -405,7 +405,7 @@ end
 
 function p.main(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'Шаблон:ПК', valueFunc = p.valueFunc})
+		args = getArgs(frame, {wrappers = 'Шаблон:ПК-v2', valueFunc = p.valueFunc})
 	end
 	if args.useWikidata == nil then
 		args.useWikidata = true
