@@ -8,7 +8,7 @@ function p.usesProperty(frame)
 		local p_num = parent.args[ii] or ''
 		if p_num ~= '' then
 			local label = mw.wikibase.label(p_num) or "Няма етикет"
-			result = result .. "<li><b><i>[[d:Property:" .. p_num .. "|" .. label .. " <small>(" .. string.upper(p_num) .. ")</small>]]</i></b> (see [[d:Специални:Какво сочи насам/Property:" .. p_num .. "|използва]])</li>"
+			result = result .. "<li><b><i>[[d:Property:" .. p_num .. "|" .. label .. " <small>(" .. string.upper(p_num) .. ")</small>]]</i></b> (виж [[d:Special:WhatLinksHere/Property:" .. p_num .. "|използва]])</li>"
 			ii = ii + 1
 		else break
 		end
