@@ -32,7 +32,7 @@ function p.getMapParams(map, frame)
 	elseif mw.title.new('Шаблон:ПК ' .. map).exists then
 		local cache = {}
 		if type(frame) ~= 'table' or type(frame.expandTemplate) ~= 'function' then
-			error('A frame must be provided when using a legacy location map')
+			error('Трябва да задаете фрейм, когато ползвате стара версия на карта.')
 		end
 		return function(name, params)
 			if params then
@@ -192,7 +192,9 @@ function p.top(frame, args, map)
 		retval,
 		image,
 		width,
-		args.alt or ((args.label or mw.title.getCurrentTitle().text) .. ' is located in ' .. map('name')),
+		-- 'се намира във' също да се провери
+		args.alt or ((args.label or mw.title.getCurrentTitle().text) .. ' се намира в ' .. map('name')), 
+		
 		args.maplink and ('|link=' .. args.maplink) or ''
 	)
 	if args.overlay_image then
@@ -228,7 +230,7 @@ function p.bottom(frame, args, map)
 	if args.switcherLabel then
 		retval = retval .. '<span class="switcher-label" style="display:none">' .. args.switcherLabel .. '</span>'
 	elseif args.autoSwitcherLabel then
-		retval = retval .. '<span class="switcher-label" style="display:none">Show map of ' .. map('name') .. '</span>'
+		retval = retval .. '<span class="switcher-label" style="display:none">Карта на ' .. map('name') .. '</span>'
 	end
 	
 	retval = retval .. '</div></div>'
