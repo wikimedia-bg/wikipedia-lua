@@ -330,7 +330,7 @@ end
 
 function p.mark(frame, args, map)
 	if not args then
-		args = getArgs(frame, {wrappers = 'ПК точка-v2'}) --временно като версия 2
+		args = getArgs(frame, {wrappers = 'Шаблон:ПК точка-v2'}) --временно като версия 2
 	end
 	if not map then
 		map = p.getMapParams(args[1], frame)
