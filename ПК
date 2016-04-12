@@ -15,7 +15,7 @@ function p.getMapParams(map, frame)
 	end
 	local moduletitle = mw.title.new('Модул:ПК/data/' .. map)
 	if not moduletitle then
-		error('"' .. map .. '" не е валидно име на карта', 2)
+		error('"' .. remap .. '" не е валидно име на карта', 2)
 	elseif moduletitle.exists then
 		local mapData = mw.loadData('Модул:ПК/data/' .. map)
 		return function(name, params)
@@ -394,7 +394,7 @@ function p.mark(frame, args, map)
 	end
 	local mark = args.mark or map('mark')
 	if mark == '' then
-		mark = 'Red pog.svg'
+		mark = 'Locator_Dot.svg'
 	end
 	local marksize = tonumber(args.marksize) or tonumber(map('marksize')) or 8
 	local imageDiv = markImageDiv(mark, marksize, args.label or mw.title.getCurrentTitle().text, args.link or '', args.alt, args[2])
