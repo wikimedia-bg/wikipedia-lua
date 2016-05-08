@@ -51,9 +51,9 @@ return {
 		imageRightNone              = true,
 		sectionDefault              = 'Настоящата статия',
 		allowMainspaceCategories    = true,
-		templateCategory            = 'Меташаблони',
+		templateCategory            = 'Съобщителни кутии за статии',
 	        templateCategoryRequireName = true,
-		templateErrorCategory       = 'Меташаблони',
+		templateErrorCategory       = 'Съобщителни кутии за статии с липсващи параметри',
 		templateErrorParamsToCheck  = {'issue', 'fix', 'subst'}
 	},
 	
@@ -91,8 +91,7 @@ return {
 		default              = 'notice',
 		showInvalidTypeError = true,
 		classes              = {'plainlinks', 'cmbox'},
-		imageEmptyCell       = true,
-		templateCategory            = 'Меташаблони',
+		imageEmptyCell       = true
 	},
 	
 	fmbox = {
@@ -114,8 +113,7 @@ return {
 		showInvalidTypeError = true,
 		classes              = {'plainlinks', 'fmbox'},
 		imageEmptyCell       = false,
-		imageRightNone       = false,
-		templateCategory            = 'Меташаблони',
+		imageRightNone       = false
 	},
 	
 	imbox = {
@@ -159,7 +157,7 @@ return {
 		usePlainlinksParam   = true,
 		imageEmptyCell       = true,
 		below                = true,
-		templateCategory     = 'Меташаблони'
+		templateCategory     = 'Съобщителни кутии за файлове'
 	},
 	
 	ombox = {
@@ -198,8 +196,7 @@ return {
 		classes              = {'plainlinks', 'ombox'},
 		allowSmall           = true,
 		imageEmptyCell       = true,
-		imageRightNone       = true,
-		templateCategory            = 'Меташаблони',
+		imageRightNone       = true
 	},
 	
 	tmbox = {
@@ -236,6 +233,6 @@ return {
 		imageRightNone       = true,
 		imageEmptyCell       = true,
 		imageEmptyCellStyle  = true,
-		templateCategory     = 'Меташаблони'
+		templateCategory     = 'Съобщителни кутии за беседи'
 	}
 }
