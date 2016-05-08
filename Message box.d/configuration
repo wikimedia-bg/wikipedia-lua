@@ -51,7 +51,7 @@ return {
 		imageRightNone              = true,
 		sectionDefault              = 'Настоящата статия',
 		allowMainspaceCategories    = true,
-		templateCategory            = 'Съобщителни кутии за статии',
+		templateCategory            = 'Съобщителни карета за статии',
 	        templateCategoryRequireName = true,
 		templateErrorCategory       = 'Съобщителни карета за статии с липсващи параметри',
 		templateErrorParamsToCheck  = {'issue', 'fix', 'subst'}
