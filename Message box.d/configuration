@@ -53,7 +53,7 @@ return {
 		allowMainspaceCategories    = true,
 		templateCategory            = 'Съобщителни кутии за статии',
 	        templateCategoryRequireName = true,
-		templateErrorCategory       = 'Съобщителни кутии за статии с липсващи параметри',
+		templateErrorCategory       = 'Съобщителни карета за статии с липсващи параметри',
 		templateErrorParamsToCheck  = {'issue', 'fix', 'subst'}
 	},
 	
@@ -157,7 +157,7 @@ return {
 		usePlainlinksParam   = true,
 		imageEmptyCell       = true,
 		below                = true,
-		templateCategory     = 'Съобщителни кутии за файлове'
+		templateCategory     = 'Съобщителни карета за файлове'
 	},
 	
 	ombox = {
@@ -233,6 +233,6 @@ return {
 		imageRightNone       = true,
 		imageEmptyCell       = true,
 		imageEmptyCellStyle  = true,
-		templateCategory     = 'Съобщителни кутии за беседи'
+		templateCategory     = 'Съобщителни карета за беседи'
 	}
 }
