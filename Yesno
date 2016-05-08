@@ -2,13 +2,11 @@
 -- It works similarly to the template {{yesno}}.
 
 return function (val, default)
-	-- If your wiki uses non-ascii characters for any of "yes", "no", etc., you
-	-- should replace "val:lower()" with "mw.ustring.lower(val)" in the
-	-- following line.
-	val = type(val) == 'string' and val:lower() or val
+	val = type(val) == 'string' and val:ulower() or val
 	if val == nil then
 		return nil
-	elseif val == true 
+	elseif val == true
+		or val == 'да'
 		or val == 'yes'
 		or val == 'y'
 		or val == 'true'
@@ -16,6 +14,7 @@ return function (val, default)
 	then
 		return true
 	elseif val == false
+		or val == 'не'
 		or val == 'no'
 		or val == 'n'
 		or val == 'false'
