@@ -51,9 +51,9 @@ return {
 		imageRightNone              = true,
 		sectionDefault              = 'Настоящата статия',
 		allowMainspaceCategories    = true,
-		templateCategory            = 'Съобщителни кутии за статии',
+		templateCategory            = 'Уикипедия:Съобщителни кутии за статии',
 	        templateCategoryRequireName = true,
-		templateErrorCategory       = 'Съобщителни кутии за статии с липсващи параметри',
+		templateErrorCategory       = 'Уикипедия:Съобщителни кутии за статии с липсващи параметри',
 		templateErrorParamsToCheck  = {'issue', 'fix', 'subst'}
 	},
 	
@@ -157,7 +157,7 @@ return {
 		usePlainlinksParam   = true,
 		imageEmptyCell       = true,
 		below                = true,
-		templateCategory     = 'Съобщителни кутии за файлове'
+		templateCategory     = 'Уикипедия:Съобщителни кутии за файлове'
 	},
 	
 	ombox = {
@@ -233,6 +233,6 @@ return {
 		imageRightNone       = true,
 		imageEmptyCell       = true,
 		imageEmptyCellStyle  = true,
-		templateCategory     = 'Съобщителни кутии за беседи'
+		templateCategory     = 'Уикипедия:Съобщителни кутии за беседи'
 	}
 }
