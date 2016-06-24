@@ -7,17 +7,21 @@ return function (val, default)
 		return nil
 	elseif val == true
 		or val == 'да'
+		or val == 'д'
 		or val == 'yes'
 		or val == 'y'
 		or val == 'true'
+		or val == 'вярно'
 		or tonumber(val) == 1
 	then
 		return true
 	elseif val == false
 		or val == 'не'
+		or val == 'н'
 		or val == 'no'
 		or val == 'n'
 		or val == 'false'
+		or val == 'грешно'
 		or tonumber(val) == 0
 	then
 		return false
