@@ -9,21 +9,21 @@ return {
 -- Съобщението за грешка което ще върне при невалидно съкращение (не е низ или
 -- е празен низ). Приема следния параметър:
 -- $1 - броят съкращения в списъка с аргументи. (задължителен)
-['invalid-shortcut-error'] = 'shortcut #$1 was invalid (shortcuts must be ' ..
-	'strings of at least one character in length)',
+['invalid-shortcut-error'] = 'съкращението #$1 е невалидно (съкращенията трябва ' ..
+	'да са низове с дължина от поне една буква)',
 
--- Съобщението за грешка което ще върне при липса на съкращение или някакъво
--- друго съдържание за показване зададено от нас. (задължителен)
-['no-content-error'] = 'Error: no shortcuts were specified and the ' ..
+-- Съобщението за грешка което ще върне при липса на съкращение или някакво
+-- друго съдържание за показване, зададено от нас. (задължителен)
+['no-content-error'] = 'Грешка: не са въведени съкращения, а параметъра ' ..
 	mw.text.nowiki('|msg=') ..
-	' parameter was not set.',
+	' не е зададен.',
 
 -- Категорията която ще бъде добавена при съобщение за грешка no-content-error.
 -- (незадължителен)
-['no-content-error-category'] = 'Shortcut templates with missing parameters',
+['no-content-error-category'] = 'Шаблони за съкращения с липсващи параметри',
 
 -- Категорията която ще бъде добавена в случай, че съкращението описано в
 -- първия параметър не съществува. (незадължителен)
-['first-parameter-error-category'] = 'Wikipedia shortcut box first parameter needs fixing',
+['first-parameter-error-category'] = 'Първия параметър на каре със съкращения се нуждае от поправка',
 
 }
