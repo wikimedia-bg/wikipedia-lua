@@ -552,35 +552,4 @@ function p.claim(frame)
 	end
 end
 
-p.getPreferredValue = function(frame)
-	local args = getArgs(frame)
-	local propertyID = mw.text.trim(args[1] or args['propertyId'] or '')
-	local entityID = mw.text.trim(args[2] or args['entityId'] or '')
-	local entity = mw.wikibase.getEntityObject()
-	if entityID ~= '' then entity = mw.wikibase.getEntityObject(entityID) end
-	if entity == nil or entity.claims == nil then return nil end
-	local claims = entity.claims[propertyID]
-	if claims then
-		-- if wiki-linked value output as link if possible
-		if (claims[1] and claims[1].mainsnak.snaktype == "value") then
-			local out = {}
-			for k, v in pairs(claims) do
-				if (v.rank == 'preferred') then
-					local snakText = snakToString(v.mainsnak) .. p.outputReferences(v)
-
-					if snakText ~= "" then
-						out[#out + 1] = snakText
-					end
-				end
-			end
-			return table.concat(out, ", ")
-		else
-			return entity:formatPropertyValues(propertyID, mw.wikibase.entity.claimRanks.RANK_PREFERRED).value
-		end
-	else
-		return ""
-	end
-	return ""
-end
-
 return p
