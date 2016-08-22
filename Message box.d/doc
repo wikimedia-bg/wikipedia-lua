@@ -45,7 +45,7 @@ local box = messageBox.main( boxType, {
 
 == Технически подробности ==
 
-Модулът ползва един и същ базов код за всеки от шаблоните описани по-горе; разликите между всеки един от тях са конфигурирани ползвайки данните от [[Модул:Message box/configuration]]. По-долу са дадени разни конфигурационни опции заедно с тяхното значение:
+Модулът ползва един и същ базов код за всеки от шаблоните описани по-горе; разликите между всеки един от тях са конфигурирани ползвайки данните от [[Модул:Message box/configuration]]. По-долу е даден набор от конфигурационни опции заедно с тяхното значение:
 
 * <code>types</code> - a table containing data used by the type parameter of the message box. The table keys are the values that can be passed to the type parameter, and the table values are tables containing the class and the image used by that type.
 * <code>default</code> - the type to use if no value was passed to the type parameter, or if an invalid value was specified.
