@@ -244,7 +244,7 @@ function renderListRow(tbl, listnum)
 				.cssText(args.imagestyle)
 				.attr('rowspan', 2 * #listnums - 1)
 				.tag('div')
-					.wikitext(args.image)
+					.wikitext(addNewline(args.image))
 	end
 end
 
