@@ -17,6 +17,14 @@ function trim(s)
 	return (mw.ustring.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
+local function addNewline(s)
+    if s:match('^[*:;#]') or s:match('^{|') then
+        return '\n' .. s ..'\n'
+    else
+        return s
+    end
+end
+
 function addTableRow(tbl)
 	-- If any other rows have already been added, then we add a 2px gutter row.
 	if tableRowAdded then
@@ -232,7 +240,7 @@ function renderListRow(tbl, listnum)
 		.addClass(args.listclass)
 		.tag('div')
 			.css('padding', (listnum == 1 and args.list1padding) or args.listpadding or '0em 0.25em')
-			.wikitext(args['list' .. listnum])
+			.wikitext(addNewline(args['list' .. listnum]))
 
 	if listnum == 1 and args.image then
 		row
