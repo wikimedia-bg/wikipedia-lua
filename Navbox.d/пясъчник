@@ -232,7 +232,6 @@ function renderListRow(tbl, listnum)
 		.addClass(args.listclass)
 		.tag('div')
 			.css('padding', (listnum == 1 and args.list1padding) or args.listpadding or '0em 0.25em')
-			.newline()
 			.wikitext(args['list' .. listnum])
 
 	if listnum == 1 and args.image then
@@ -245,7 +244,6 @@ function renderListRow(tbl, listnum)
 				.cssText(args.imagestyle)
 				.attr('rowspan', 2 * #listnums - 1)
 				.tag('div')
-					.newline()
 					.wikitext(args.image)
 	end
 end
