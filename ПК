@@ -347,10 +347,10 @@ function p.mark(frame, args, map)
 		end
 	end
 	if not longitude then
-		error('Не е зададена стойност за географска ширина')
+		error('Не е зададена стойност за географска дължина')
 	end
 	if not latitude then
-		error('Не е зададена стойност за географска дължина')
+		error('Не е зададена стойност за географска ширина')
 	end
 	local builder = mw.html.create()
 	if (not args.lon_deg) ~= (not args.lat_deg) then
