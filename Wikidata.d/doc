@@ -6,6 +6,10 @@
 * <code><nowiki>{{#invoke:Wikidata|getLabel|lang=fr}}</nowiki></code> → [[d:Help:Label|етикета]] на френски език за текущата страница
 * <code><nowiki>{{#invoke:Wikidata|getLabel|lang=es|id=Q12345}}</nowiki></code> → етикета на испански език за Q12345
 
+=== descriptionIn ===
+* <code><nowiki>{{#invoke:Wikidata|descriptionIn}}</nowiki></code> → [[d:Help:Description|описанието]] за текущата страница на локалния език (български)
+* <code><nowiki>{{#invoke:Wikidata|descriptionIn|en}}</nowiki></code> → [[d:Help:Description|описанието]] за текущата страница на английски език
+
 === claim ===
 * <code><nowiki>{{#invoke:Wikidata|claim|P225}}</nowiki></code> → стойността на P225 за текущата страница
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|id=Q12345}}</nowiki></code> → стойността на P225 за Q12345
