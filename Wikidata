@@ -490,6 +490,13 @@ function getReferences(frame, claim)
 	return result
 end
 
+function p.descriptionIn(frame)
+	local langcode = frame.args[1]
+	local id = frame.args[2]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
+	-- return description of a Wikidata entity in the given language or the default language of this Wikipedia site
+	return mw.wikibase.getEntityObject(id).descriptions[langcode or wiki.langcode].value
+end
+
 function p.claim(frame)
 	local property = frame.args[1] or ""
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
