@@ -156,21 +156,22 @@ local linkCategorySuffix = {
 }
 
 function p.badgesCategory( frame )
-	local entity = mw.wikibase.getEntityObject()
+	local entity = mw.wikibase.getEntity()
 	local wikitext = {}
 	local categoryNs = mw.site.namespaces[14].name
-        if not entity then
-                return ''
-        end
-	
+	if not entity then
+		return ''
+	end
+
 	for siteid, linkTable in pairs( entity.sitelinks ) do
-		for i, badgeId in ipairs( entity.sitelinks[ siteid ].badges ) do
-			if badgesCategory[ badgeId ] then
-				local prefix = linkCategoryPrefix[ siteid ] or linkCategoryPrefix.default or ''
-				local main = badgesCategory[ badgeId ] or ''
-				local suffix = linkCategorySuffix[ siteid ] or linkCategorySuffix.default or ''
-				local category = string.format('[[%s:%s]]', categoryNs, prefix .. main .. suffix )
-				table.insert( wikitext, category )
+		if siteid ~= 'bgwiki' then
+			for i, badgeId in ipairs( linkTable.badges ) do
+				if badgesCategory[ badgeId ] then
+					local main = badgesCategory[ badgeId ]
+					local suffix = linkCategorySuffix[ siteid ] or linkCategorySuffix.default
+					local category = string.format('[[%s:%s]]', categoryNs, main .. suffix )
+					table.insert( wikitext, category )
+				end
 			end
 		end
 	end
