@@ -325,5 +325,4 @@ function flag.Country(frame)
 
 end
 
-
-return Flag
+return flag
