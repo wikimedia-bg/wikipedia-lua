@@ -325,4 +325,18 @@ function flag.Country(frame)
 
 end
 
+function flag.flag(frame)
+    local args = frame.args;
+    local wikidata = require("Модул:Wikidata");
+
+    entity = mw.wikibase.getEntityObject(frame.args[1]);
+    image = entity.claims["P41"][1].mainsnak.datavalue.value;
+
+    res = '<span class="flagicon">' ..
+                '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. 'alt' ..']]' ..
+            '</span>';
+
+    return res;
+end
+
 return flag
