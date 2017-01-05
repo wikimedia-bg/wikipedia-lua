@@ -325,8 +325,5 @@ function flag.Country(frame)
 
 end
 
-function flag.Country(frame)
-    return flag.Country(frame)
-end
 
 return Flag
