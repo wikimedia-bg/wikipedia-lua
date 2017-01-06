@@ -123,7 +123,7 @@ countryFlagByName['brunei']=921;
 countryFlagByCIO['BRU']=921;
 countryFlag[219]={group="country", qid="Q219", label="Bulgarie", sitelink="$label",cio="BUL",flag="Flag of Bulgaria.svg",warensign="Naval Ensign of Bulgaria.svg"
 	, genre="fs" , namelong="République de Bulgarie", gentileMS="Bulgare", gentileMP="Bulgares", gentileFS="Bulgare", gentileFP="Bulgares"}
-countryFlagByName['bulgarie']=219;
+countryFlagByName['българия']=219;
 countryFlagByCIO['BUL']=219;
 countryFlag[965]={group="country", qid="Q965", label="Burkina Faso", sitelink="$label",cio="BUR",flag="Flag of Burkina Faso.svg",warensign="$flag"
 	, genre="ms" , namelong="République du Burkina", gentileMS="Burkinabé", gentileMP="Burkinabés", gentileFS="Burkinabée", gentileFP="Burkinabées"}
