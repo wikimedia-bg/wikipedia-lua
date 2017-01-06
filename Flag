@@ -326,10 +326,14 @@ function flag.Country(frame)
 end
 
 function flag.flag(frame)
-    local args = frame.args;
-    local wikidata = require("Модул:Wikidata");
+    local qid = '';
+    if(frame.args[1]:sub(1,1) == 'Q') then
+      qid = frame.args[1];
+    else
+      qid = 'Q' .. gdata.idByName[mw.ustring.lower(frame.args[1])];
+    end
 
-    entity = mw.wikibase.getEntityObject(frame.args[1]);
+    entity = mw.wikibase.getEntityObject(qid);
     image = entity.claims["P41"][1].mainsnak.datavalue.value;
 
     res = '<span class="flagicon">' ..
