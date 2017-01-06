@@ -330,7 +330,7 @@ function flag.flag(frame)
     if(frame.args[1]:sub(1,1) == 'Q') then
       qid = frame.args[1];
     else
-      qid = 'Q' .. gdata.idByName[mw.ustring.lower(frame.args[1])];
+      qid = 'Q' .. gdata.qidByName[mw.ustring.lower(frame.args[1])];
     end
 
     entity = mw.wikibase.getEntityObject(qid);
