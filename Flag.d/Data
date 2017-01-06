@@ -1,1025 +1,266 @@
 local p = {}
-local countryFlag={}
-local countryFlagByName={}
-local countryFlagByCIO={}
+local qidByName={}
 --[[
 <!--Country principaux-->
 ]]--
-countryFlag[889]={group="country", qid="Q889", label="Afghanistan", sitelink="$label",cio="AFG",flag="Flag of Afghanistan.svg",warensign="$flag"
-    , genre="msa" , namelong="République islamique d'Afghanistan", gentileMS="Afghan", gentileMP="Afghans", gentileFS="Afghane", gentileFP="Afghanes"}
-countryFlagByName['afghanistan']=889;
-countryFlagByCIO['AFG']=889;
-countryFlag[258]={group="country", qid="Q258", label="Afrique du Sud", sitelink="$label",cio="RSA",flag="Flag of South Africa.svg",warensign="Naval Ensign of South Africa.svg"
-	, genre="fsa" , namelong="République d'Afrique du Sud", gentileMS="Sud-africain", gentileMP="Sud-africains", gentileFS="Sud-africaine", gentileFP="Sud-africaines"}
-countryFlagByName['afriquedusud']=258;
-countryFlagByCIO['RSA']=258;
-countryFlag[222]={group="country", qid="Q222", label="Albanie", sitelink="$label",cio="ALB",flag="Flag of Albania.svg",warensign="Naval Ensign of Albania.svg"
-	, genre="fsa" , namelong="République d'Albanie", gentileMS="Albanais", gentileMP="Albanais", gentileFS="Albanaise", gentileFP="Albanaises"}
-countryFlagByName['albanie']=222;
-countryFlagByCIO['ALB']=222;
-countryFlag[262]={group="country", qid="Q262", label="Algérie", sitelink="$label",cio="ALG",flag="Flag of Algeria.svg",warensign="Drapeau-marine.gif"
-	, genre="fsa" , namelong="République algérienne démocratique et populaire", gentileMS="Algérien", gentileMP="Algériens", gentileFS="Algérienne", gentileFP="Algériennes"}
-countryFlagByName['algerie']=262;
-countryFlagByCIO['ALG']=262;
-countryFlag[183]={group="country", qid="Q183", label="Allemagne", sitelink="$label",cio="GER",flag="Flag of Germany.svg",warensign="Naval Ensign of Germany.svg"
-	, genre="fsa" , namelong="République fédérale d'Allemagne", gentileMS="Allemand", gentileMP="Allemands", gentileFS="Allemande", gentileFP="Allemandes"}
-countryFlagByName['allemagne']=183;
-countryFlagByCIO['GER']=183;
-countryFlag[228]={group="country", qid="Q228", label="Andorre", sitelink="$label",cio="AND",flag="Flag of Andorra.svg",warensign="$flag"
-	, genre="msa" , namelong="Principauté d'Andorre", gentileMS="Andorran", gentileMP="Andorrans", gentileFS="Andorrane", gentileFP="Andorranes"}
-countryFlagByName['andorre']=228;
-countryFlagByCIO['AND']=228;
-countryFlag[916]={group="country", qid="Q916", label="Angola", sitelink="$label",cio="ANG",flag="Flag of Angola.svg",warensign="$flag"
-	, genre="msa" , namelong="République d'Angola", gentileMS="Angolais", gentileMP="Angolais", gentileFS="Angolaise", gentileFP="Angolaises"}
-countryFlagByName['angola']=916;
-countryFlagByCIO['ANG']=916;
-countryFlag[781]={group="country", qid="Q781", label="Antigua-et-Barbuda", sitelink="$label",cio="ANT",flag="Flag of Antigua and Barbuda.svg",warensign="$flag"
-	, genre="fsia" , namelong="$label", gentileMS="Antiguais", gentileMP="Antiguais", gentileFS="Antiguaise", gentileFP="Antiguaises"}
-countryFlagByName['antiguaetbarbuda']=781;
-countryFlagByCIO['ANT']=781;
-countryFlag[851]={group="country", qid="Q851", label="Arabie saoudite", sitelink="$label",cio="KSA",flag="Flag of Saudi Arabia.svg",warensign="Naval Ensign of Saudi Arabia.svg"
-	, genre="fsa" , namelong="Royaume d'Arabie saoudite", gentileMS="Saoudien", gentileMP="Saoudiens", gentileFS="Saoudienne", gentileFP="Saoudiennes"}
-countryFlagByName['arabiesaoudite']=851;
-countryFlagByCIO['KSA']=851;
-countryFlag[414]={group="country", qid="Q414", label="Argentine", sitelink="$label",cio="ARG",flag="Flag of Argentina.svg",warensign="$flag"
-	, genre="fsa" , namelong="République argentine", gentileMS="Argentin", gentileMP="Argentins", gentileFS="Argentine", gentileFP="Argentines"}
-countryFlagByName['argentine']=414;
-countryFlagByCIO['ARG']=414;
-countryFlag[399]={group="country", qid="Q399", label="Arménie", sitelink="$label",cio="ARM",flag="Flag of Armenia.svg",warensign="$flag"
-	, genre="fsa" , namelong="République d'Arménie", gentileMS="Arménien", gentileMP="Arméniens", gentileFS="Arménienne", gentileFP="Arméniennes"}
-countryFlagByName['armenie']=399;
-countryFlagByCIO['ARM']=399;
-countryFlag[408]={group="country", qid="Q408", label="Australie", sitelink="$label",cio="AUS",flag="Flag of Australia.svg",warensign="Naval Ensign of Australia.svg"
-	, genre="fsa" , namelong="Commonwealth d'Australie", gentileMS="Australien", gentileMP="Australiens", gentileFS="Australienne", gentileFP="Australiennes"}
-countryFlagByName['australie']=408;
-countryFlagByCIO['AUS']=408;
-countryFlag[40]={group="country", qid="Q40", label="Autriche", sitelink="$label",cio="AUT",flag="Flag of Austria.svg",warensign="Flag of Austria (State).svg"
-	, genre="fsa" , namelong="République d'Autriche", gentileMS="Autrichien", gentileMP="Autrichiens", gentileFS="Autrichienne", gentileFP="Autrichiennes"}
-countryFlagByName['autriche']=40;
-countryFlagByCIO['AUT']=40;
-countryFlag[227]={group="country", qid="Q227", label="Azerbaïdjan", sitelink="$label",cio="AZE",flag="Flag of Azerbaijan.svg",warensign="Naval Flag of Azerbaijan.svg"
-	, genre="msa" , namelong="République d'Azerbaïdjan", gentileMS="Azerbaïdjanais", gentileMP="Azerbaïdjanais", gentileFS="Azerbaïdjanaise", gentileFP="Azerbaïdjanaises"}
-countryFlagByName['azerbaidjan']=227;
-countryFlagByCIO['AZE']=227;
-countryFlag[778]={group="country", qid="Q778", label="Bahamas", sitelink="$label",cio="BAH",flag="Flag of the Bahamas.svg",warensign="Naval Ensign of the Bahamas.svg"
-	, genre="fp" , namelong="Commonwealth des Bahamas", gentileMS="Bahaméen", gentileMP="Bahaméens", gentileFS="Bahaméenne", gentileFP="Bahaméennes"}
-countryFlagByName['bahamas']=778;
-countryFlagByCIO['BAH']=778;
-countryFlag[398]={group="country", qid="Q398", label="Bahreïn", sitelink="$label",cio="BRN",flag="Flag of Bahrain.svg",warensign="$flag"
-	, genre="msi" , namelong="Royaume de Bahreïn", gentileMS="Bahreïnien", gentileMP="Bahreïniens", gentileFS="Bahreïnienne", gentileFP="Bahreïniennes"}
-countryFlagByName['bahrein']=398;
-countryFlagByCIO['BRN']=398;
-countryFlag[902]={group="country", qid="Q902", label="Bangladesh", sitelink="$label",cio="BAN",flag="Flag of Bangladesh.svg",warensign="Naval Ensign of Bangladesh.svg"
-	, genre="ms" , namelong="République populaire du Bangladesh", gentileMS="Bangladeshi", gentileMP="Bangladeshis", gentileFS="Bangladeshi", gentileFP="Bangladeshis"}
-countryFlagByName['bangladesh']=902;
-countryFlagByCIO['BAN']=902;
-countryFlag[244]={group="country", qid="Q244", label="Barbade", sitelink="$label",cio="BAR",flag="Flag of Barbados.svg",warensign="Naval Ensign of Barbados.svg"
-	, genre="fs" , namelong="$label", gentileMS="Barbadien", gentileMP="Barbadiens", gentileFS="Barbadienne", gentileFP="Barbadiennes"}
-countryFlagByName['barbade']=244;
-countryFlagByCIO['BAR']=244;
-countryFlag[31]={group="country", qid="Q31", label="Belgique", sitelink="$label",cio="BEL",flag="Flag of Belgium.svg",warensign="Naval Ensign of Belgium.svg"
-	, genre="fs" , namelong="Royaume de Belgique", gentileMS="Belge", gentileMP="Belges", gentileFS="Belge", gentileFP="Belges"}
-countryFlagByName['belgique']=31;
-countryFlagByCIO['BEL']=31;
-countryFlag[242]={group="country", qid="Q242", label="Belize", sitelink="$label",cio="BIZ",flag="Flag of Belize.svg",warensign="$flag"
-	, genre="ms" , namelong="$label", gentileMS="Bélizien", gentileMP="Béliziens", gentileFS="Bélizienne", gentileFP="Béliziennes"}
-countryFlagByName['belize']=242;
-countryFlagByCIO['BIZ']=242;
-countryFlag[962]={group="country", qid="Q962", label="Bénin", sitelink="$label",cio="BEN",flag="Flag of Benin.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Bénin", gentileMS="Béninois", gentileMP="Béninois", gentileFS="Béninoise", gentileFP="Béninoises"}
-countryFlagByName['benin']=962;
-countryFlagByCIO['BEN']=962;
-countryFlag[917]={group="country", qid="Q917", label="Bhoutan", sitelink="$label",cio="BHU",flag="Flag of Bhutan.svg",warensign="$flag"
-	, genre="ms" , namelong="Royaume du Bhoutan", gentileMS="Bhoutanais", gentileMP="Bhoutanais", gentileFS="Bhoutanaise", gentileFP="Bhoutanaises"}
-countryFlagByName['bhoutan']=917;
-countryFlagByCIO['BHU']=917;
-countryFlag[184]={group="country", qid="Q184", label="Biélorussie", sitelink="$label",cio="BLR",flag="Flag of Belarus.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Biélorussie", gentileMS="Biélorusse", gentileMP="Biélorusses", gentileFS="Biélorusse", gentileFP="Biélorusses"}
-countryFlagByName['bielorussie']=184;
-countryFlagByCIO['BLR']=184;
-countryFlag[836]={group="country", qid="Q836", label="Birmanie", sitelink="$label",cio="MYA",flag="Flag of Myanmar.svg",warensign="Naval Ensign of Myanmar.svg"
-	, genre="fs" , namelong="République de l'Union du Myanmar", gentileMS="Birman", gentileMP="Birmans", gentileFS="Birmane", gentileFP="Birmanes"}
-countryFlagByName['birmanie']=836;
-countryFlagByCIO['MYA']=836;
-countryFlag[750]={group="country", qid="Q750", label="Bolivie", sitelink="$label",cio="BOL",flag="Flag of Bolivia.svg",warensign="Naval Ensign of Bolivia.svg"
-	, genre="fs" , namelong="État plurinational de Bolivie", gentileMS="Bolivien", gentileMP="Boliviens", gentileFS="Bolivienne", gentileFP="Boliviennes"}
-countryFlagByName['bolivie']=750;
-countryFlagByCIO['BOL']=750;
-countryFlag[225]={group="country", qid="Q225", label="Bosnie-Herzégovine", sitelink="$label",cio="BIH",flag="Flag of Bosnia and Herzegovina.svg"
-	, genre="fs" , namelong="$label", gentileMS="Bosnien", gentileMP="Bosniens", gentileFS="Bosnien", gentileFP="Bosniens"}
-countryFlagByName['bosnieherzegovine']=225;
-countryFlagByCIO['BIH']=225;
-countryFlag[963]={group="country", qid="Q963", label="Botswana", sitelink="$label",cio="BOT",flag="Flag of Botswana.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Botswana", gentileMS="Botswanais", gentileMP="Botswanais", gentileFS="Botswanaise", gentileFP="Botswanaises"}
-countryFlagByName['botswana']=963;
-countryFlagByCIO['BOT']=963;
-countryFlag[155]={group="country", qid="Q155", label="Brésil", sitelink="$label",cio="BRA",flag="Flag of Brazil.svg",warensign="$flag"
-	, genre="ms" , namelong="République fédérative du Brésil", gentileMS="Brésilien", gentileMP="Brésiliens", gentileFS="Brésilienne", gentileFP="Brésiliennes"}
-countryFlagByName['bresil']=155;
-countryFlagByCIO['BRA']=155;
-countryFlag[921]={group="country", qid="Q921", label="Brunei", sitelink="$label",cio="BRU",flag="Flag of Brunei.svg",warensign="Naval Ensign of Brunei.svg"
-	, genre="msi" , namelong="Brunei Darussalam", gentileMS="Brunéien", gentileMP="Brunéiens", gentileFS="Brunéienne", gentileFP="Brunéiennes"}
-countryFlagByName['brunei']=921;
-countryFlagByCIO['BRU']=921;
-countryFlag[219]={group="country", qid="Q219", label="Bulgarie", sitelink="$label",cio="BUL",flag="Flag of Bulgaria.svg",warensign="Naval Ensign of Bulgaria.svg"
-	, genre="fs" , namelong="République de Bulgarie", gentileMS="Bulgare", gentileMP="Bulgares", gentileFS="Bulgare", gentileFP="Bulgares"}
-countryFlagByName['българия']=219;
-countryFlagByCIO['BUL']=219;
-countryFlag[965]={group="country", qid="Q965", label="Burkina Faso", sitelink="$label",cio="BUR",flag="Flag of Burkina Faso.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Burkina", gentileMS="Burkinabé", gentileMP="Burkinabés", gentileFS="Burkinabée", gentileFP="Burkinabées"}
-countryFlagByName['burkinafaso']=965;
-countryFlagByCIO['BUR']=965;
-countryFlag[967]={group="country", qid="Q967", label="Burundi", sitelink="$label",cio="BDI",flag="Flag of Burundi.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Burundi", gentileMS="Burundais", gentileMP="Burundais", gentileFS="Burundaise", gentileFP="Burundaises"}
-countryFlagByName['burundi']=967;
-countryFlagByCIO['BDI']=967;
-countryFlag[424]={group="country", qid="Q424", label="Cambodge", sitelink="$label",cio="CAM",flag="Flag of Cambodia.svg",warensign="$flag"
-	, genre="ms" , namelong="Royaume du Cambodge", gentileMS="Cambodgien", gentileMP="Cambodgiens", gentileFS="Cambodgienne", gentileFP="Cambodgiennes"}
-countryFlagByName['cambodge']=424;
-countryFlagByCIO['CAM']=424;
-countryFlag[1009]={group="country", qid="Q1009", label="Cameroun", sitelink="$label",cio="CMR",flag="Flag of Cameroon.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Cameroun", gentileMS="Camerounais", gentileMP="Camerounais", gentileFS="Camerounaise", gentileFP="Camerounaises"}
-countryFlagByName['cameroun']=1009;
-countryFlagByCIO['CMR']=1009;
-countryFlag[16]={group="country", qid="Q16", label="Canada", sitelink="$label",cio="CAN",flag="Flag of Canada.svg",warensign="Naval Ensign of Canada.svg"
-	, genre="ms" , namelong="Commonwealth du Canada", gentileMS="Canadien", gentileMP="Canadiens", gentileFS="Canadienne", gentileFP="Canadiennes"}
-countryFlagByName['canada']=16;
-countryFlagByCIO['CAN']=16;
-countryFlag[1011]={group="country", qid="Q1011", label="Cap-Vert", sitelink="$label",cio="CPV",flag="Flag of Cape Verde.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Cap-Vert", gentileMS="Cap-verdien", gentileMP="Cap-verdiens", gentileFS="Cap-verdienne", gentileFP="Cap-verdiennes"}
-countryFlagByName['capvert']=1011;
-countryFlagByCIO['CPV']=1011;
-countryFlag[929]={group="country", qid="Q929", label="République centrafricaine", sitelink="$label",cio="CAF",flag="Flag of the Central African Republic.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Centrafricain", gentileMP="Centrafricains", gentileFS="Centrafricaine", gentileFP="Centrafricaines"}
-countryFlagByName['centrafricaine']=929;countryFlagByName['republiquecentrafricaine']=929;
-countryFlagByCIO['CAF']=929;
-countryFlag[298]={group="country", qid="Q298", label="Chili", sitelink="$label",cio="CHI",flag="Flag of Chile.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Chili", gentileMS="Chilien", gentileMP="Chiliens", gentileFS="Chilienne", gentileFP="Chiliennes"}
-countryFlagByName['chili']=298;
-countryFlagByCIO['CHI']=298;
-countryFlag[148]={group="country", qid="Q148", label="Chine", sitelink="République populaire de Chine",cio="CHN",flag="Flag of the People's Republic of China.svg",warensign="Naval Ensign of the People's Republic of China.svg"
-	, genre="fs" , namelong="République populaire de Chine", gentileMS="Chinois", gentileMP="Chinois", gentileFS="Chinoise", gentileFP="Chinoises"}
-countryFlagByName['chine']=148;countryFlagByName['republiquepopulairedechine']=148;
-countryFlagByCIO['CHN']=148;
-countryFlag[229]={group="country", qid="Q229", label="Chypre", sitelink="$label (country)",cio="CYP",flag="Flag of Cyprus.svg",warensign="$flag"
-	, genre="fsi" , namelong="République de Chypre", gentileMS="Chypriote", gentileMP="Chypriotes", gentileFS="Chypriote", gentileFP="Chypriotes"}
-countryFlagByName['chypre']=229;
-countryFlagByCIO['CYP']=229;
-countryFlag[739]={group="country", qid="Q739", label="Colombie", sitelink="$label",cio="COL",flag="Flag of Colombia.svg",warensign="Naval Ensign of Colombia.svg"
-	, genre="fs" , namelong="République de Colombie", gentileMS="Colombien", gentileMP="Colombiens", gentileFS="Colombienne", gentileFP="Colombiennes"}
-countryFlagByName['colombie']=739;
-countryFlagByCIO['COL']=739;
-countryFlag[970]={group="country", qid="Q970", label="Comores", sitelink="$label (country)",cio="COM",flag="Flag of the Comoros.svg",warensign="$flag"
-	, genre="fp" , namelong="Union des Comores", gentileMS="Comorien", gentileMP="Comoriens", gentileFS="Comorienne", gentileFP="Comoriennes"}
-countryFlagByName['comores']=970;
-countryFlagByCIO['COM']=970;
-countryFlag[974]={group="country", qid="Q974", label="République démocratique du Congo", sitelink="$label",cio="COD",flag="Flag of the Democratic Republic of the Congo.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Congolais", gentileMP="Congolais", gentileFS="Congolaise", gentileFP="Congolaises"}
-countryFlagByName['congodemocratique']=974;countryFlagByName['republiquedemocratiqueducongo']=974;
-countryFlagByCIO['COD']=974;countryFlagByName['congokinshasa']=974 
-countryFlag[971]={group="country", qid="Q971", label="République du Congo", sitelink="$label",cio="CGO",flag="Flag of the Republic of the Congo.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Congolais", gentileMP="Congolais", gentileFS="Congolaise", gentileFP="Congolaises"}
-countryFlagByName['congo']=971;countryFlagByName['republiqueducongo']=971;countryFlagByName['congobrazzaville']=971 
-countryFlagByCIO['CGO']=971;
-countryFlag[423]={group="country", qid="Q423", label="Corée du Nord", sitelink="$label",cio="PRK",flag="Flag of North Korea.svg",warensign="Flag of the Korean People's Navy.svg"
-	, genre="fs" , namelong="République populaire démocratique de Corée", gentileMS="Nord-coréen", gentileMP="Nord-coréens", gentileFS="Nord-coréenne", gentileFP="Nord-coréennes"}
-countryFlagByName['coreedunord']=423;
-countryFlagByCIO['PRK']=423;
-countryFlag[884]={group="country", qid="Q884", label="Corée du Sud", sitelink="$label",cio="KOR",flag="Flag of South Korea.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Corée", gentileMS="Sud-coréen", gentileMP="Sud-coréens", gentileFS="Sud-coréenne", gentileFP="Sud-coréennes"}
-countryFlagByName['coreedusud']=884;
-countryFlagByCIO['KOR']=884;
-countryFlag[800]={group="country", qid="Q800", label="Costa Rica", sitelink="$label",cio="CRC",flag="Flag of Costa Rica.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Costa Rica", gentileMS="Costaricien", gentileMP="Costariciens", gentileFS="Costaricienne", gentileFP="Costariciennes"}
-countryFlagByName['costarica']=800;
-countryFlagByCIO['CRC']=800;
-countryFlag[1008]={group="country", qid="Q1008", label="Côte d'Ivoire", sitelink="$label",cio="CIV",flag="Flag of Cote d'Ivoire.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Côte d'Ivoire", gentileMS="Ivoirien", gentileMP="Ivoiriens", gentileFS="Ivoirienne", gentileFP="Ivoiriennes"}
-countryFlagByName['cotedivoire']=1008;
-countryFlagByCIO['CIV']=1008;
-countryFlag[224]={group="country", qid="Q224", label="Croatie", sitelink="$label",cio="CRO",flag="Flag of Croatia.svg",warensign="Naval Ensign of Croatia.svg"
-	, genre="fs" , namelong="République de Croatie", gentileMS="Croate", gentileMP="Croates", gentileFS="Croate", gentileFP="Croates"}
-countryFlagByName['croatie']=224;
-countryFlagByCIO['CRO']=224;
-countryFlag[241]={group="country", qid="Q241", label="Cuba", sitelink="$label",cio="CUB",flag="Flag of Cuba.svg",warensign="$flag"
-	, genre="fsi" , namelong="République de Cuba", gentileMS="Cubain", gentileMP="Cubains", gentileFS="Cubaine", gentileFP="Cubaines"}
-countryFlagByName['cuba']=241;
-countryFlagByCIO['CUB']=241;
-countryFlag[35]={group="country", qid="Q35", label="Danemark", sitelink="$label",cio="DEN",flag="Flag of Denmark.svg",warensign="Naval Ensign of Denmark.svg"
-	, genre="ms" , namelong="Royaume du Danemark", gentileMS="Danois", gentileMP="Danois", gentileFS="Danoise", gentileFP="Danoises"}
-countryFlagByName['danemark']=35;
-countryFlagByCIO['DEN']=35;
-countryFlag[977]={group="country", qid="Q977", label="Djibouti", sitelink="$label",cio="DJI",flag="Flag of Djibouti.svg",warensign="$flag"
-	, genre="msi" , namelong="République de Djibouti", gentileMS="Djiboutien", gentileMP="Djiboutiens", gentileFS="Djiboutienne", gentileFP="Djiboutiennes"}
-countryFlagByName['djibouti']=977;
-countryFlagByCIO['DJI']=977;
-countryFlag[786]={group="country", qid="Q786", label="République dominicaine", sitelink="$label",cio="DOM",flag="Flag of the Dominican Republic.svg",warensign="Naval Ensign of the Dominican Republic.svg"
-	, genre="fs" , namelong="$label", gentileMS="Dominicain", gentileMP="Dominicains", gentileFS="Dominicaine", gentileFP="Dominicaines"}
-countryFlagByName['dominicaine']=786;countryFlagByName['republiquedominicaine']=786;
-countryFlagByCIO['DOM']=786;
-countryFlag[784]={group="country", qid="Q784", label="Dominique", sitelink="$label (country)",cio="DMA",flag="Flag of Dominica.svg",warensign="$flag"
-	, genre="fs" , namelong="Commonwealth de la Dominique", gentileMS="Dominiquais", gentileMP="Dominiquais", gentileFS="Dominiquaise", gentileFP="Dominiquaises"}
-countryFlagByName['dominique']=784;
-countryFlagByCIO['DMA']=784;
-countryFlag[79]={group="country", qid="Q79", label="Égypte", sitelink="$label",cio="EGY",flag="Flag of Egypt.svg",warensign="Naval Ensign of Egypt.svg"
-	, genre="fsa" , namelong="République arabe d'Égypte", gentileMS="Égyptien", gentileMP="Égyptiens", gentileFS="Égyptienne", gentileFP="Égyptiennes"}
-countryFlagByName['egypte']=79;
-countryFlagByCIO['EGY']=79;
-countryFlag[878]={group="country", qid="Q878", label="Émirats arabes unis", sitelink="$label",cio="UAE",flag="Flag of the United Arab Emirates.svg",warensign="$flag"
-	, genre="mp" , namelong="État des Émirats arabes unis", gentileMS="Émirati", gentileMP="Émiratis", gentileFS="Émiratie", gentileFP="Émiraties"}
-countryFlagByName['emiratsarabesunis']=878;
-countryFlagByCIO['UAE']=878;
-countryFlag[736]={group="country", qid="Q736", label="Équateur", sitelink="$label (country)",cio="ECU",flag="Flag of Ecuador.svg",warensign="$flag"
-	, genre="msa" , namelong="République d'Équateur", gentileMS="Équatorien", gentileMP="Équatoriens", gentileFS="Équatorienne", gentileFP="Équatoriennes"}
-countryFlagByName['equateur']=736;
-countryFlagByCIO['ECU']=736;
-countryFlag[986]={group="country", qid="Q986", label="Érythrée", sitelink="$label",cio="ERI",flag="Flag of Eritrea.svg",warensign="$flag"
-	, genre="fsa" , namelong="République d'Érythrée", gentileMS="Érythréen", gentileMP="Érythréens", gentileFS="Érythréenne", gentileFP="Érythréennes"}
-countryFlagByName['erythree']=986;
-countryFlagByCIO['ERI']=986;
-countryFlag[29]={group="country", qid="Q29", label="Espagne", sitelink="$label",cio="ESP",flag="Flag of Spain.svg",warensign="$flag"
-	, genre="fsa" , namelong="Royaume d'Espagne", gentileMS="Espagnol", gentileMP="Espagnols", gentileFS="Espagnole", gentileFP="Espagnoles"}
-countryFlagByName['espagne']=29;
-countryFlagByCIO['ESP']=29;
-countryFlag[191]={group="country", qid="Q191", label="Estonie", sitelink="$label",cio="EST",flag="Flag of Estonia.svg",warensign="Naval Ensign of Estonia.svg"
-	, genre="fsa" , namelong="République d'Estonie", gentileMS="Estonien", gentileMP="Estoniens", gentileFS="Estonienne", gentileFP="Estoniennes"}
-countryFlagByName['estonie']=191;
-countryFlagByCIO['EST']=191;
-countryFlag[30]={group="country", qid="Q30", label="États-Unis", sitelink="$label",cio="USA",flag="Flag of the United States.svg",warensign="$flag"
-	, genre="mp" , namelong="États-Unis d'Amérique", gentileMS="Américain", gentileMP="Américains", gentileFS="Américaine", gentileFP="Américaines"}
-countryFlagByName['etatsunis']=30;
-countryFlagByCIO['USA']=30;
-countryFlag[115]={group="country", qid="Q115", label="Éthiopie", sitelink="$label",cio="ETH",flag="Flag of Ethiopia.svg",warensign="$flag"
-	, genre="fsa" , namelong="République fédérale démocratique d'Éthiopie", gentileMS="Éthiopien", gentileMP="Éthiopiens", gentileFS="Éthiopienne", gentileFP="Éthiopiennes"}
-countryFlagByName['ethiopie']=115;
-countryFlagByCIO['ETH']=115;
-countryFlag[712]={group="country", qid="Q712", label="Fidji", sitelink="$label",cio="FIJ",flag="Flag of Fiji.svg",warensign="Naval Ensign of Fiji.svg"
-	, genre="mp" , namelong="République des Fidji", gentileMS="Fidjien", gentileMP="Fidjiens", gentileFS="Fidjienne", gentileFP="Fidjiennes"}
-countryFlagByName['fidji']=712;
-countryFlagByCIO['FIJ']=712;
-countryFlag[33]={group="country", qid="Q33", label="Finlande", sitelink="$label",cio="FIN",flag="Flag of Finland.svg",warensign="Naval Ensign of Finland.svg"
-	, genre="fs" , namelong="République de Finlande", gentileMS="Finlandais", gentileMP="Finlandais", gentileFS="Finlandaise", gentileFP="Finlandaises"}
-countryFlagByName['finlande']=33;
-countryFlagByCIO['FIN']=33;
-countryFlag[142]={group="country", qid="Q142", label="France", sitelink="$label",cio="FRA",flag="Flag of France.svg",warensign="$flag"
-	, genre="fs" , namelong="République française", gentileMS="Français", gentileMP="Français", gentileFS="Française", gentileFP="Françaises"}
-countryFlagByName['france']=142;
-countryFlagByCIO['FRA']=142;
-countryFlag[1000]={group="country", qid="Q1000", label="Gabon", sitelink="$label",cio="GAB",flag="Flag of Gabon.svg",warensign="$flag"
-	, genre="ms" , namelong="République gabonaise", gentileMS="Gabonais", gentileMP="Gabonais", gentileFS="Gabonaise", gentileFP="Gabonaises"}
-countryFlagByName['gabon']=1000;
-countryFlagByCIO['GAB']=1000;
-countryFlag[1005]={group="country", qid="Q1005", label="Gambie", sitelink="$label",cio="GAM",flag="Flag of The Gambia.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Gambie", gentileMS="Gambien", gentileMP="Gambiens", gentileFS="Gambienne", gentileFP="Gambiennes"}
-countryFlagByName['gambie']=1005;
-countryFlagByCIO['GAM']=1005;
-countryFlag[230]={group="country", qid="Q230", label="Géorgie", sitelink="$label (country)",cio="GEO",flag="Flag of Georgia.svg",warensign="Naval Ensign of Georgia.svg"
-	, genre="fs" , namelong="République de Géorgie", gentileMS="Géorgien", gentileMP="Géorgiens", gentileFS="Géorgienne", gentileFP="Géorgiennes"}
-countryFlagByName['georgie']=230;
-countryFlagByCIO['GEO']=230;
-countryFlag[117]={group="country", qid="Q117", label="Ghana", sitelink="$label",cio="GHA",flag="Flag of Ghana.svg",warensign="Naval Ensign of Ghana.svg"
-	, genre="ms" , namelong="République du Ghana", gentileMS="Ghanéen", gentileMP="Ghanéens", gentileFS="Ghanéenne", gentileFP="Ghanéennes"}
-countryFlagByName['ghana']=117;
-countryFlagByCIO['GHA']=117;
-countryFlag[41]={group="country", qid="Q41", label="Grèce", sitelink="$label",cio="GRE",flag="Flag of Greece.svg",warensign="Naval Ensign of Greece.svg"
-	, genre="fs" , namelong="République hellénique", gentileMS="Grec", gentileMP="Grecs", gentileFS="Grecque", gentileFP="Grecques"}
-countryFlagByName['grece']=41;
-countryFlagByCIO['GRE']=41;
-countryFlag[769]={group="country", qid="Q769", label="Grenade", sitelink="$label (country)",cio="GRN",flag="Flag of Grenada.svg",warensign="Naval Ensign of Grenada.svg"
-	, genre="fs" , namelong="Grenade", gentileMS="Grenadien", gentileMP="Grenadiens", gentileFS="Grenadienne", gentileFP="Grenadiennes"}
-countryFlagByName['grenade']=769;
-countryFlagByCIO['GRN']=769;
-countryFlag[774]={group="country", qid="Q774", label="Guatemala", sitelink="$label",cio="GUA",flag="Flag of Guatemala.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Guatemala", gentileMS="Guatémaltèque", gentileMP="Guatémaltèques", gentileFS="Guatémaltèque", gentileFP="Guatémaltèques"}
-countryFlagByName['guatemala']=774;
-countryFlagByCIO['GUA']=774;
-countryFlag[1006]={group="country", qid="Q1006", label="Guinée", sitelink="$label",cio="GUI",flag="Flag of Guinea.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Guinée", gentileMS="Guinéen", gentileMP="Guinéens", gentileFS="Guinéenne", gentileFP="Guinéennes"}
-countryFlagByName['guinee']=1006;
-countryFlagByCIO['GUI']=1006;
-countryFlag[1007]={group="country", qid="Q1007", label="Guinée-Bissau", sitelink="$label",cio="GBS",flag="Flag of Guinea-Bissau.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Guinée-Bissau", gentileMS="Bissau-guinéen", gentileMP="Bissau-guinéens", gentileFS="Bissau-guinéenne", gentileFP="Bissau-guinéennes"}
-countryFlagByName['guineebissau']=1007;
-countryFlagByCIO['GBS']=1007;
-countryFlag[983]={group="country", qid="Q983", label="Guinée équatoriale", sitelink="$label",cio="GEQ",flag="Flag of Equatorial Guinea.svg",warensign="$flag"
-	, genre="fs" , namelong="équatoriale République de Guinée équatoriale", gentileMS="Équato-guinéen", gentileMP="Équato-guinéens", gentileFS="Équato-guinéenne", gentileFP="Équato-guinéennes"}
-countryFlagByName['guineeequatoriale']=983;
-countryFlagByCIO['GEQ']=983;
-countryFlag[734]={group="country", qid="Q734", label="Guyana", sitelink="$label",cio="GUY",flag="Flag of Guyana.svg",warensign="Naval Ensign of Guyana.svg"
-	, genre="ms" , namelong="République coopérative de Guyana", gentileMS="Guyanien", gentileMP="Guyaniens", gentileFS="Guyanienne", gentileFP="Guyaniennes"}
-countryFlagByName['guyana']=734;
-countryFlagByCIO['GUY']=734;
-countryFlag[790]={group="country", qid="Q790", label="Haïti", sitelink="$label",cio="HAI",flag="Flag of Haiti.svg",warensign="$flag"
-	, genre="msia" , namelong="République d'Haïti", gentileMS="Haïtien", gentileMP="Haïtiens", gentileFS="Haïtienne", gentileFP="Haïtiennes"}
-countryFlagByName['haiti']=790;
-countryFlagByCIO['HAI']=790;
-countryFlag[783]={group="country", qid="Q783", label="Honduras", sitelink="$label",cio="HON",flag="Flag of Honduras.svg",warensign="Naval Ensign of Honduras.svg"
-	, genre="ms" , namelong="République du Honduras", gentileMS="Hondurien", gentileMP="Honduriens", gentileFS="Hondurienne", gentileFP="Honduriennes"}
-countryFlagByName['honduras']=783;
-countryFlagByCIO['HON']=783;
-countryFlag[28]={group="country", qid="Q28", label="Hongrie", sitelink="$label",cio="HUN",flag="Flag of Hungary.svg",warensign="Naval Ensign of Hungary.svg"
-	, genre="fs" , namelong="République de Hongrie", gentileMS="Hongrois", gentileMP="Hongrois", gentileFS="Hongroise", gentileFP="Hongroises"}
-countryFlagByName['hongrie']=28;
-countryFlagByCIO['HUN']=28;
-countryFlag[668]={group="country", qid="Q668", label="Inde", sitelink="$label",cio="IND",flag="Flag of India.svg",warensign="Naval Ensign of India.svg"
-	, genre="fsa" , namelong="République de l'Inde", gentileMS="Indien", gentileMP="Indiens", gentileFS="Indienne", gentileFP="Indiennes"}
-countryFlagByName['inde']=668;
-countryFlagByCIO['IND']=668;
-countryFlag[252]={group="country", qid="Q252", label="Indonésie", sitelink="$label",cio="INA",flag="Flag of Indonesia.svg",warensign="$flag"
-	, genre="fsa" , namelong="République d'Indonésie", gentileMS="Indonésien", gentileMP="Indonésiens", gentileFS="Indonésienne", gentileFP="Indonésiennes"}
-countryFlagByName['indonesie']=252;
-countryFlagByCIO['INA']=252;
-countryFlag[796]={group="country", qid="Q796", label="Irak", sitelink="$label",cio="IRQ",flag="Flag of Iraq.svg",warensign="$flag"
-	, genre="msa" , namelong="République d'Irak", gentileMS="Irakien", gentileMP="Irakiens", gentileFS="Irakienne", gentileFP="Irakiennes"}
-countryFlagByName['irak']=796;countryFlagByName['iraq']=796
-countryFlagByCIO['IRQ']=796;
-countryFlag[794]={group="country", qid="Q794", label="Iran", sitelink="$label",cio="IRI",flag="Flag of Iran.svg",warensign="$flag"
-	, genre="msa" , namelong="République islamique d'Iran", gentileMS="Iranien", gentileMP="Iraniens", gentileFS="Iranienne", gentileFP="Iraniennes"}
-countryFlagByName['iran']=794;
-countryFlagByCIO['IRI']=794;
-countryFlag[27]={group="country", qid="Q27", label="Irlande", sitelink="$label (country)",cio="IRL",flag="Flag of Ireland.svg",warensign="$flag"
-	, genre="msa" , namelong="Irlande", gentileMS="Irlandais", gentileMP="Irlandais", gentileFS="Irlandaise", gentileFP="Irlandaises"}
-countryFlagByName['irlande']=27;
-countryFlagByCIO['IRL']=27;
-countryFlag[189]={group="country", qid="Q189", label="Islande", sitelink="$label",cio="ISL",flag="Flag of Iceland.svg",warensign="Flag of Iceland (state).svg"
-	, genre="fsa" , namelong="République d'Islande", gentileMS="Islandais", gentileMP="Islandais", gentileFS="Islandaise", gentileFP="Islandaises"}
-countryFlagByName['islande']=189;
-countryFlagByCIO['ISL']=189;
-countryFlag[801]={group="country", qid="Q801", label="Israël", sitelink="$label",cio="ISR",flag="Flag of Israel.svg",warensign="Naval Ensign of Israel.svg"
-	, genre="msiae" , namelong="État d'Israël", gentileMS="Israélien", gentileMP="Israéliens", gentileFS="Israélienne", gentileFP="Israéliennes"}
-countryFlagByName['israel']=801;
-countryFlagByCIO['ISR']=801;
-countryFlag[38]={group="country", qid="Q38", label="Italie", sitelink="$label",cio="ITA",flag="Flag of Italy.svg",warensign="Naval Ensign of Italy.svg"
-	, genre="fsa" , namelong="République italienne", gentileMS="Italien", gentileMP="Italiens", gentileFS="Italienne", gentileFP="Italiennes"}
-countryFlagByName['italie']=38;
-countryFlagByCIO['ITA']=38;
-countryFlag[766]={group="country", qid="Q766", label="Jamaïque", sitelink="$label",cio="JAM",flag="Flag of Jamaica.svg",warensign="Naval Ensign of Jamaica.svg"
-	, genre="fs" , namelong="$label", gentileMS="Jamaïcain", gentileMP="Jamaïcains", gentileFS="Jamaïcaine", gentileFP="Jamaïcaines"}
-countryFlagByName['jamaique']=766;
-countryFlagByCIO['JAM']=766;
-countryFlag[17]={group="country", qid="Q17", label="Japon", sitelink="$label",cio="JPN",flag="Flag of Japan.svg",warensign="Naval Ensign of Japan.svg"
-	, genre="ms" , namelong="État du Japon", gentileMS="Japonais", gentileMP="Japonais", gentileFS="Japonaise", gentileFP="Japonaises"}
-countryFlagByName['japon']=17;
-countryFlagByCIO['JPN']=17;
-countryFlag[810]={group="country", qid="Q810", label="Jordanie", sitelink="$label",cio="JOR",flag="Flag of Jordan.svg",warensign="Naval Ensign of Jordan.svg"
-	, genre="fs" , namelong="Royaume hachémite de Jordanie", gentileMS="Jordanien", gentileMP="Jordaniens", gentileFS="Jordanienne", gentileFP="Jordaniennes"}
-countryFlagByName['jordanie']=810;
-countryFlagByCIO['JOR']=810;
-countryFlag[232]={group="country", qid="Q232", label="Kazakhstan", sitelink="$label",cio="KAZ",flag="Flag of Kazakhstan.svg",warensign="Naval Ensign of Kazakhstan.svg"
-	, genre="ms" , namelong="République du Kazakhstan", gentileMS="Kazakh", gentileMP="Kazakhs", gentileFS="Kazakhe", gentileFP="Kazakhes"}
-countryFlagByName['kazakhstan']=232;
-countryFlagByCIO['KAZ']=232;
-countryFlag[114]={group="country", qid="Q114", label="Kenya", sitelink="$label",cio="KEN",flag="Flag of Kenya.svg",warensign="Naval Ensign of Kenya.svg"
-	, genre="ms" , namelong="République du Kenya", gentileMS="Kényan", gentileMP="Kényans", gentileFS="Kényane", gentileFP="Kényanes"}
-countryFlagByName['kenya']=114;
-countryFlagByCIO['KEN']=114;
-countryFlag[813]={group="country", qid="Q813", label="Kirghizistan", sitelink="$label",cio="KGZ",flag="Flag of Kyrgyzstan.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Kirghizistan", gentileMS="Kirghize", gentileMP="Kirghizes", gentileFS="Kirghize", gentileFP="Kirghizes"}
-countryFlagByName['kirghizistan']=813;
-countryFlagByCIO['KGZ']=813;
-countryFlag[710]={group="country", qid="Q710", label="Kiribati", sitelink="$label",cio="KIR",flag="Flag of Kiribati.svg",warensign="$flag"
-	, genre="mp" , namelong="République de Kiribati", gentileMS="Gilbertin", gentileMP="Gilbertins", gentileFS="Gilbertine", gentileFP="Gilbertines"}
-countryFlagByName['kiribati']=710;
-countryFlagByCIO['KIR']=710;
-countryFlag[817]={group="country", qid="Q817", label="Koweït", sitelink="$label",cio="KUW",flag="Flag of Kuwait.svg",warensign="$flag"
-	, genre="ms" , namelong="État du Koweït", gentileMS="Koweïtien", gentileMP="Koweïtiens", gentileFS="Koweïtienne", gentileFP="Koweïtiennes"}
-countryFlagByName['koweit']=817;
-countryFlagByCIO['KUW']=817;
-countryFlag[819]={group="country", qid="Q819", label="Laos", sitelink="$label",cio="LAO",flag="Flag of Laos.svg",warensign="$flag"
-	, genre="ms" , namelong="République démocratique populaire lao", gentileMS="Laotien", gentileMP="Laotiens", gentileFS="Laotienne", gentileFP="Laotiennes"}
-countryFlagByName['laos']=819;
-countryFlagByCIO['LAO']=819;
-countryFlag[1013]={group="country", qid="Q1013", label="Lesotho", sitelink="$label",cio="LES",flag="Flag of Lesotho.svg",warensign="$flag"
-	, genre="ms" , namelong="Royaume du Lesotho", gentileMS="Lésothien", gentileMP="Lésothiens", gentileFS="Lésothienne", gentileFP="Lésothiennes"}
-countryFlagByName['lesotho']=1013;
-countryFlagByCIO['LES']=1013;
-countryFlag[211]={group="country", qid="Q211", label="Lettonie", sitelink="$label",cio="LAT",flag="Flag of Latvia.svg",warensign="Naval Ensign of Latvia.svg"
-	, genre="fs" , namelong="République de Lettonie", gentileMS="Letton", gentileMP="Lettons", gentileFS="Lettonne", gentileFP="Lettonnes"}
-countryFlagByName['lettonie']=211;
-countryFlagByCIO['LAT']=211;
-countryFlag[822]={group="country", qid="Q822", label="Liban", sitelink="$label",cio="LIB",flag="Flag of Lebanon.svg",warensign="$flag"
-	, genre="ms" , namelong="République libanaise", gentileMS="Libanais", gentileMP="Libanais", gentileFS="Libanaise", gentileFP="Libanaises"}
-countryFlagByName['liban']=822;
-countryFlagByCIO['LIB']=822;
-countryFlag[1014]={group="country", qid="Q1014", label="Liberia", sitelink="$label",cio="LBR",flag="Flag of Liberia.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Liberia", gentileMS="Libérien", gentileMP="Libériens", gentileFS="Libérienne", gentileFP="Libériennes"}
-countryFlagByName['liberia']=1014;
-countryFlagByCIO['LBR']=1014;
-countryFlag[1016]={group="country", qid="Q1016", label="Libye", sitelink="$label",cio="LBA",flag="Flag of Libya.svg",warensign="Naval Ensign of Libya.svg"
-	, genre="fs" , namelong="République libyenne", gentileMS="Libyen", gentileMP="Libyens", gentileFS="Libyenne", gentileFP="Libyennes"}
-countryFlagByName['libye']=1016;
-countryFlagByCIO['LBA']=1016;
-countryFlag[347]={group="country", qid="Q347", label="Liechtenstein", sitelink="$label",cio="LIE",flag="Flag of Liechtenstein.svg",warensign="$flag"
-	, genre="ms" , namelong="Principauté du Liechtenstein", gentileMS="Liechtensteinois", gentileMP="Liechtensteinois", gentileFS="Liechtensteinoise", gentileFP="Liechtensteinoises"}
-countryFlagByName['liechtenstein']=347;
-countryFlagByCIO['LIE']=347;
-countryFlag[37]={group="country", qid="Q37", label="Lituanie", sitelink="$label",cio="LTU",flag="Flag of Lithuania.svg",warensign="Naval Ensign of Lithuania.svg"
-	, genre="fs" , namelong="République de Lituanie", gentileMS="Lituanien", gentileMP="Lituaniens", gentileFS="Lituanienne", gentileFP="Lituaniennes"}
-countryFlagByName['lituanie']=37;
-countryFlagByCIO['LTU']=37;
-countryFlag[32]={group="country", qid="Q32", label="Luxembourg", sitelink="$label (country)",cio="LUX",flag="Flag of Luxembourg.svg",warensign="$flag"
-	, genre="ms" , namelong="Grand-Duché de Luxembourg", gentileMS="Luxembourgeois", gentileMP="Luxembourgeois", gentileFS="Luxembourgeoise", gentileFP="Luxembourgeoises"}
-countryFlagByName['luxembourg']=32;
-countryFlagByCIO['LUX']=32;
-countryFlag[221]={group="country", qid="Q221", label="Macédoine", sitelink="$label (country)",cio="MKD",flag="Flag of Macedonia.svg",warensign="$flag"
-	, genre="fs" , namelong="Ancienne République yougoslave de Macédoine", gentileMS="Macédonien", gentileMP="Macédoniens", gentileFS="Macédonienne", gentileFP="Macédoniennes"}
-countryFlagByName['macedoine']=221;
-countryFlagByCIO['MKD']=221;
-countryFlag[1019]={group="country", qid="Q1019", label="Madagascar", sitelink="$label",cio="MAD",flag="Flag of Madagascar.svg",warensign="$flag"
-	, genre="msi" , namelong="République de Madagascar", gentileMS="Malgache", gentileMP="Malgaches", gentileFS="Malgache", gentileFP="Malgaches"}
-countryFlagByName['madagascar']=1019;
-countryFlagByCIO['MAD']=1019;
-countryFlag[833]={group="country", qid="Q833", label="Malaisie", sitelink="$label",cio="MAS",flag="Flag of Malaysia.svg",warensign="Naval Ensign of Malaysia.svg"
-	, genre="fs" , namelong="$label", gentileMS="Malaisien", gentileMP="Malaisiens", gentileFS="Malaisienne", gentileFP="Malaisiennes"}
-countryFlagByName['malaisie']=833;
-countryFlagByCIO['MAS']=833;
-countryFlag[1020]={group="country", qid="Q1020", label="Malawi", sitelink="$label",cio="MAW",flag="Flag of Malawi.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Malawi", gentileMS="Malawien", gentileMP="Malawiens", gentileFS="Malawienne", gentileFP="Malawiennes"}
-countryFlagByName['malawi']=1020;
-countryFlagByCIO['MAW']=1020;
-countryFlag[826]={group="country", qid="Q826", label="Maldives", sitelink="$label",cio="MDV",flag="Flag of Maldives.svg",warensign="$flag"
-	, genre="fp" , namelong="République des Maldives", gentileMS="Maldivien", gentileMP="Maldiviens", gentileFS="Maldivienne", gentileFP="Maldiviennes"}
-countryFlagByName['maldives']=826;
-countryFlagByCIO['MDV']=826;
-countryFlag[912]={group="country", qid="Q912", label="Mali", sitelink="$label",cio="MLI",flag="Flag of Mali.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Mali", gentileMS="Malien", gentileMP="Maliens", gentileFS="Malienne", gentileFP="Maliennes"}
-countryFlagByName['mali']=912;
-countryFlagByCIO['MLI']=912;
-countryFlag[233]={group="country", qid="Q233", label="Malte", sitelink="$label",cio="MLT",flag="Flag of Malta.svg",warensign="$flag"
-	, genre="fsi" , namelong="République de Malte", gentileMS="Maltais", gentileMP="Maltais", gentileFS="Maltaise", gentileFP="Maltaises"}
-countryFlagByName['malte']=233;
-countryFlagByCIO['MLT']=233;
-countryFlag[1028]={group="country", qid="Q1028", label="Maroc", sitelink="$label",cio="MAR",flag="Flag of Morocco.svg",warensign="Naval Ensign of Morocco.svg"
-	, genre="ms" , namelong="Royaume du Maroc", gentileMS="Marocain", gentileMP="Marocains", gentileFS="Marocaine", gentileFP="Marocaines"}
-countryFlagByName['maroc']=1028;
-countryFlagByCIO['MAR']=1028;
-countryFlag[709]={group="country", qid="Q709", label="Îles Marshall", sitelink="$label",cio="MHL",flag="Flag of the Marshall Islands.svg",warensign="$flag"
-	, genre="fp" , namelong="République des îles Marshall", gentileMS="Marshallais", gentileMP="Marshallais", gentileFS="Marshallaise", gentileFP="Marshallaises"}
-countryFlagByName['marshall']=709;countryFlagByName['ilesmarshall']=709;
-countryFlagByCIO['MHL']=709;
-countryFlag[1027]={group="country", qid="Q1027", label="Maurice", sitelink="$label (country)",cio="MRI",flag="Flag of Mauritius.svg",warensign="Naval Ensign of Mauritius.svg"
-	, genre="msi" , namelong="République de Maurice", gentileMS="Mauricien", gentileMP="Mauriciens", gentileFS="Mauricienne", gentileFP="Mauriciennes"}
-countryFlagByName['maurice']=1027;
-countryFlagByCIO['MRI']=1027;
-countryFlag[1025]={group="country", qid="Q1025", label="Mauritanie", sitelink="$label",cio="MTN",flag="Flag of Mauritania.svg",warensign="$flag"
-	, genre="fs" , namelong="République islamique de Mauritanie", gentileMS="Mauritanien", gentileMP="Mauritaniens", gentileFS="Mauritanienne", gentileFP="Mauritaniennes"}
-countryFlagByName['mauritanie']=1025;
-countryFlagByCIO['MTN']=1025;
-countryFlag[96]={group="country", qid="Q96", label="Mexique", sitelink="$label",cio="MEX",flag="Flag of Mexico.svg",warensign="$flag"
-	, genre="ms" , namelong="États-Unis mexicains", gentileMS="Mexicain", gentileMP="Mexicains", gentileFS="Mexicaine", gentileFP="Mexicaines"}
-countryFlagByName['mexique']=96;
-countryFlagByCIO['MEX']=96;
-countryFlag[702]={group="country", qid="Q702", label="Micronésie", sitelink="$label (country)",cio="FSM",flag="Flag of Micronesia.svg",warensign="$flag"
-	, genre="fs" , namelong="États fédérés de Micronésie", gentileMS="Micronésien", gentileMP="Micronésiens", gentileFS="Micronésienne", gentileFP="Micronésiennes"}
-countryFlagByName['micronesie']=702;
-countryFlagByCIO['FSM']=702;
-countryFlag[217]={group="country", qid="Q217", label="Moldavie", sitelink="$label",cio="MDA",flag="Flag of Moldova.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Moldavie", gentileMS="Moldave", gentileMP="Moldaves", gentileFS="Moldave", gentileFP="Moldaves"}
-countryFlagByName['moldavie']=217;
-countryFlagByCIO['MDA']=217;
-countryFlag[235]={group="country", qid="Q235", label="Monaco", sitelink="$label",cio="MON",flag="Flag of Monaco.svg",warensign="$flag"
-	, genre="msi" , namelong="Principauté de Monaco", gentileMS="Monégasque", gentileMP="Monégasques", gentileFS="Monégasque", gentileFP="Monégasques"}
-countryFlagByName['monaco']=235;
-countryFlagByCIO['MON']=235;
-countryFlag[711]={group="country", qid="Q711", label="Mongolie", sitelink="$label",cio="MGL",flag="Flag of Mongolia.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Mongol", gentileMP="Mongols", gentileFS="Mongole", gentileFP="Mongoles"}
-countryFlagByName['mongolie']=711;
-countryFlagByCIO['MGL']=711;
-countryFlag[236]={group="country", qid="Q236", label="Monténégro", sitelink="$label",cio="MNE",flag="Flag of Montenegro.svg",warensign="Flag of the Navy of Montenegro.svg"
-	, genre="ms" , namelong="$label", gentileMS="Monténégrin", gentileMP="Monténégrins", gentileFS="Monténégrine", gentileFP="Monténégrines"}
-countryFlagByName['montenegro']=236;
-countryFlagByCIO['MNE']=236;
-countryFlag[1029]={group="country", qid="Q1029", label="Mozambique", sitelink="$label",cio="MOZ",flag="Flag of Mozambique.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Mozambique", gentileMS="Mozambicain", gentileMP="Mozambicains", gentileFS="Mozambicaine", gentileFP="Mozambicaines"}
-countryFlagByName['mozambique']=1029;
-countryFlagByCIO['MOZ']=1029;
-countryFlag[1030]={group="country", qid="Q1030", label="Namibie", sitelink="$label",cio="NAM",flag="Flag of Namibia.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Namibie", gentileMS="Namibien", gentileMP="Namibiens", gentileFS="Namibienne", gentileFP="Namibiennes"}
-countryFlagByName['namibie']=1030;
-countryFlagByCIO['NAM']=1030;
-countryFlag[697]={group="country", qid="Q697", label="Nauru", sitelink="$label",cio="NRU",flag="Flag of Nauru.svg",warensign="$flag"
-	, genre="msi" , namelong="République de Nauru", gentileMS="Nauruan", gentileMP="Nauruans", gentileFS="Nauruane", gentileFP="Nauruanes"}
-countryFlagByName['nauru']=697;
-countryFlagByCIO['NRU']=697;
-countryFlag[837]={group="country", qid="Q837", label="Népal", sitelink="$label",cio="NEP",flag="Flag of Nepal.svg",warensign="$flag"
-	, genre="ms" , namelong="République démocratique fédérale du Népal", gentileMS="Népalais", gentileMP="Népalais", gentileFS="Népalaise", gentileFP="Népalaises"}
-countryFlagByName['nepal']=837;
-countryFlagByCIO['NEP']=837;
-countryFlag[811]={group="country", qid="Q811", label="Nicaragua", sitelink="$label",cio="NCA",flag="Flag of Nicaragua.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Nicaragua", gentileMS="Nicaraguayen", gentileMP="Nicaraguayens", gentileFS="Nicaraguayenne", gentileFP="Nicaraguayennes"}
-countryFlagByName['nicaragua']=811;
-countryFlagByCIO['NCA']=811;
-countryFlag[1032]={group="country", qid="Q1032", label="Niger", sitelink="$label",cio="NIG",flag="Flag of Niger.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Niger", gentileMS="Nigérien", gentileMP="Nigériens", gentileFS="Nigérienne", gentileFP="Nigériennes"}
-countryFlagByName['niger']=1032;
-countryFlagByCIO['NIG']=1032;
-countryFlag[1033]={group="country", qid="Q1033", label="Nigeria", sitelink="$label",cio="NGR",flag="Flag of Nigeria.svg",warensign="Naval Ensign of Nigeria.svg"
-	, genre="ms" , namelong="République fédérale du Nigeria", gentileMS="Nigérian", gentileMP="Nigérians", gentileFS="Nigériane", gentileFP="Nigérianes"}
-countryFlagByName['nigeria']=1033;
-countryFlagByCIO['NGR']=1033;
-countryFlag[20]={group="country", qid="Q20", label="Norvège", sitelink="$label",cio="NOR",flag="Flag of Norway.svg",warensign="Flag of Norway, state.svg"
-	, genre="fs" , namelong="Royaume de Norvège", gentileMS="Norvégien", gentileMP="Norvégiens", gentileFS="Norvégienne", gentileFP="Norvégiennes"}
-countryFlagByName['norvege']=20;
-countryFlagByCIO['NOR']=20;
-countryFlag[664]={group="country", qid="Q664", label="Nouvelle-Zélande", sitelink="$label",cio="NZL",flag="Flag of New Zealand.svg",warensign="Naval Ensign of New Zealand.svg"
-	, genre="fs" , namelong="Commonwealth de Nouvelle-Zélande", gentileMS="Néo-Zélandais", gentileMP="Néo-Zélandais", gentileFS="Néo-Zélandaise", gentileFP="Néo-Zélandaises"}
-countryFlagByName['nouvellezelande']=664;
-countryFlagByCIO['NZL']=664;
-countryFlag[842]={group="country", qid="Q842", label="Oman", sitelink="$label",cio="OMA",flag="Flag of Oman.svg",warensign="Naval Ensign of Oman.svg"
-	, genre="msia" , namelong="Sultanat d'Oman", gentileMS="Omani", gentileMP="Omanis", gentileFS="Omanie", gentileFP="Omanies"}
-countryFlagByName['oman']=842;
-countryFlagByCIO['OMA']=842;
-countryFlag[1036]={group="country", qid="Q1036", label="Ouganda", sitelink="$label",cio="UGA",flag="Flag of Uganda.svg",warensign="$flag"
-	, genre="msa" , namelong="République d'Ouganda", gentileMS="Ougandais", gentileMP="Ougandais", gentileFS="Ougandaise", gentileFP="Ougandaises"}
-countryFlagByName['ouganda']=1036;
-countryFlagByCIO['UGA']=1036;
-countryFlag[265]={group="country", qid="Q265", label="Ouzbékistan", sitelink="$label",cio="UZB",flag="Flag of Uzbekistan.svg",warensign="$flag"
-	, genre="msa" , namelong="République d'Ouzbékistan", gentileMS="Ouzb", gentileMP="Ouzbeks", gentileFS="Ouzbèke", gentileFP="Ouzbèkes"}
-countryFlagByName['ouzbekistan']=265;
-countryFlagByCIO['UZB']=265;
-countryFlag[843]={group="country", qid="Q843", label="Pakistan", sitelink="$label",cio="PAK",flag="Flag of Pakistan.svg",warensign="Naval Ensign of Pakistan.svg"
-	, genre="ms" , namelong="République islamique du Pakistan", gentileMS="Pakistanais", gentileMP="Pakistanais", gentileFS="Pakistanaise", gentileFP="Pakistanaises"}
-countryFlagByName['pakistan']=843;
-countryFlagByCIO['PAK']=843;
-countryFlag[695]={group="country", qid="Q695", label="Palaos", sitelink="$label",cio="PLW",flag="Flag of Palau.svg",warensign="$flag"
-	, genre="mp" , namelong="République des Palaos", gentileMS="Palauan", gentileMP="Palauans", gentileFS="Palauane", gentileFP="Palauanes"}
-countryFlagByName['palaos']=695;
-countryFlagByCIO['PLW']=695;
-countryFlag[804]={group="country", qid="Q804", label="Panama", sitelink="$label",cio="PAN",flag="Flag of Panama.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Panama", gentileMS="Panaméen", gentileMP="Panaméens", gentileFS="Panaméenne", gentileFP="Panaméennes"}
-countryFlagByName['panama']=804;
-countryFlagByCIO['PAN']=804;
-countryFlag[691]={group="country", qid="Q691", label="Papouasie-Nouvelle-Guinée", sitelink="$label",cio="PNG",flag="Flag of Papua New Guinea.svg",warensign="Naval Ensign of Papua New Guinea.svg"
-	, genre="fs" , namelong="État indépendant de Papouasie-Nouvelle-Guinée", gentileMS="Papouasien", gentileMP="Papouasiens", gentileFS="Papouasienne", gentileFP="Papouasiennes"}
-countryFlagByName['papouasienouvelleguinee']=691;
-countryFlagByCIO['PNG']=691;
-countryFlag[733]={group="country", qid="Q733", label="Paraguay", sitelink="$label",cio="PAR",flag="Flag of Paraguay.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Paraguay", gentileMS="Paraguayen", gentileMP="Paraguayens", gentileFS="Paraguayenne", gentileFP="Paraguayennes"}
-countryFlagByName['paraguay']=733;
-countryFlagByCIO['PAR']=733;
-countryFlag[55]={group="country", qid="Q55", label="country-Bas", sitelink="$label",cio="NED",flag="Flag of the Netherlands.svg",warensign="$flag"
-	, genre="mp" , namelong="Royaume des country-Bas", gentileMS="Néerlandais", gentileMP="Néerlandais", gentileFS="Néerlandaise", gentileFP="Néerlandaises"}
-countryFlagByName['countrybas']=55;
-countryFlagByCIO['NED']=55;
-countryFlag[419]={group="country", qid="Q419", label="Pérou", sitelink="$label",cio="PER",flag="Flag of Peru (state).svg",warensign="Flag of Peru (State).svg"
-	, genre="ms" , namelong="République du Pérou", gentileMS="Péruvien", gentileMP="Péruviens", gentileFS="Péruvienne", gentileFP="Péruviennes"}
-countryFlagByName['perou']=419;
-countryFlagByCIO['PER']=419;
-countryFlag[928]={group="country", qid="Q928", label="Philippines", sitelink="$label",cio="PHI",flag="Flag of the Philippines.svg",warensign="$flag"
-	, genre="fp" , namelong="République des Philippines", gentileMS="Philippin", gentileMP="Philippins", gentileFS="Philippine", gentileFP="Philippines"}
-countryFlagByName['philippines']=928;
-countryFlagByCIO['PHI']=928;
-countryFlag[36]={group="country", qid="Q36", label="Pologne", sitelink="$label",cio="POL",flag="Flag of Poland.svg",warensign="Naval Ensign of Poland.svg"
-	, genre="fs" , namelong="République de Pologne", gentileMS="Polonais", gentileMP="Polonais", gentileFS="Polonaise", gentileFP="Polonaises"}
-countryFlagByName['pologne']=36;
-countryFlagByCIO['POL']=36;
-countryFlag[45]={group="country", qid="Q45", label="Portugal", sitelink="$label",cio="POR",flag="Flag of Portugal.svg",warensign="$flag"
-	, genre="ms" , namelong="République portugaise", gentileMS="Portugais", gentileMP="Portugais", gentileFS="Portugaise", gentileFP="Portugaises"}
-countryFlagByName['portugal']=45;
-countryFlagByCIO['POR']=45;
-countryFlag[846]={group="country", qid="Q846", label="Qatar", sitelink="$label",cio="QAT",flag="Flag of Qatar.svg",warensign="$flag"
-	, genre="ms" , namelong="État du Qatar", gentileMS="Qatari", gentileMP="Qataris", gentileFS="Qatarie", gentileFP="Qataries"}
-countryFlagByName['qatar']=846;
-countryFlagByCIO['QAT']=846;
-countryFlag[218]={group="country", qid="Q218", label="Roumanie", sitelink="$label",cio="ROU",flag="Flag of Romania.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Roumain", gentileMP="Roumains", gentileFS="Roumaine", gentileFP="Roumaines"}
-countryFlagByName['roumanie']=218;
-countryFlagByCIO['ROU']=218;
-countryFlag[145]={group="country", qid="Q145", label="Royaume-Uni", sitelink="$label",cio="GBR",flag="Flag of the United Kingdom.svg",warensign="Naval Ensign of the United Kingdom.svg"
-	, genre="ms" , namelong="Royaume-Uni de Grande-Bretagne et d'Irlande du Nord", gentileMS="Britannique", gentileMP="Britanniques", gentileFS="Britannique", gentileFP="Britanniques"}
-countryFlagByName['royaumeuni']=145;
-countryFlagByCIO['GBR']=145;
-countryFlag[159]={group="country", qid="Q159", label="Russie", sitelink="$label",cio="RUS",flag="Flag of Russia.svg",warensign="Naval Ensign of Russia.svg"
-	, genre="fs" , namelong="Fédération de Russie", gentileMS="Russe", gentileMP="Russes", gentileFS="Russe", gentileFP="Russes"}
-countryFlagByName['russie']=159;
-countryFlagByCIO['RUS']=159;
-countryFlag[1037]={group="country", qid="Q1037", label="Rwanda", sitelink="$label",cio="RWA",flag="Flag of Rwanda.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Rwanda", gentileMS="Rwandais", gentileMP="Rwandais", gentileFS="Rwandaise", gentileFP="Rwandaises"}
-countryFlagByName['rwanda']=1037;
-countryFlagByCIO['RWA']=1037;
-countryFlag[763]={group="country", qid="Q763", label="Saint-Christophe-et-Niévès", sitelink="$label",cio="SKN",flag="Flag of Saint Kitts and Nevis.svg",warensign="Naval Ensign of Saint Kitts and Nevis.svg"
-	, genre="msi" , namelong="Fédération de Saint-Christophe-et-Niévès", gentileMS="Kittitien", gentileMP="Kittitiens", gentileFS="Kittitienne", gentileFP="Kittitiennes"}
-countryFlagByName['saintchristopheetnieves']=763;
-countryFlagByCIO['SKN']=763;
-countryFlag[760]={group="country", qid="Q760", label="Sainte-Lucie", sitelink="$label",cio="LCA",flag="Flag of Saint Lucia.svg",warensign="$flag"
-	, genre="fsi" , namelong="$label", gentileMS="Saint-Lucien", gentileMP="Saint-Luciens", gentileFS="Saint-Lucienne", gentileFP="Saint-Luciennes"}
-countryFlagByName['saintelucie']=760;
-countryFlagByCIO['LCA']=760;
-countryFlag[238]={group="country", qid="Q238", label="Saint-Marin", sitelink="$label",cio="SMR",flag="Flag of San Marino.svg",warensign="$flag"
-	, genre="msi" , namelong="République de Saint-Marin", gentileMS="Saint-Marinais", gentileMP="Saint-Marinais", gentileFS="Saint-Marinaise", gentileFP="Saint-Marinaises"}
-countryFlagByName['saintmarin']=238;
-countryFlagByCIO['SMR']=238;
-countryFlag[757]={group="country", qid="Q757", label="Saint-Vincent-et-les-Grenadines", sitelink="$label",cio="VIN",flag="Flag of Saint Vincent and the Grenadines.svg"
-	, genre="msi" , namelong="$label", gentileMS="Saint-Vincentais", gentileMP="Saint-Vincentais", gentileFS="Saint-Vincentaise", gentileFP="Saint-Vincentaises"}
-countryFlagByName['saintvincentetlesgrenadines']=757;
-countryFlagByCIO['VIN']=757;
-countryFlag[685]={group="country", qid="Q685", label="Salomon", sitelink="$label (country)",cio="SOL",flag="Flag of the Solomon Islands.svg",warensign="Naval Ensign of the Solomon Islands.svg"
-	, genre="mp" , namelong="Îles Salomon", gentileMS="Salomonais", gentileMP="Salomonais", gentileFS="Salomonaise", gentileFP="Salomonaises"}
-countryFlagByName['salomon']=685;countryFlagByName['ilessalomon']=685;
-countryFlagByCIO['SOL']=685;
-countryFlag[792]={group="country", qid="Q792", label="Salvador", sitelink="$label",cio="ESA",flag="Flag of El Salvador.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Salvador", gentileMS="Salvadorien", gentileMP="Salvadoriens", gentileFS="Salvadorienne", gentileFP="Salvadoriennes"}
-countryFlagByName['salvador']=792;
-countryFlagByCIO['ESA']=792;
-countryFlag[683]={group="country", qid="Q683", label="Samoa", sitelink="$label",cio="SAM",flag="Flag of Samoa.svg",warensign="$flag"
-	, genre="fp" , namelong="État indépendant des Samoa", gentileMS="Samoan", gentileMP="Samoans", gentileFS="Samoane", gentileFP="Samoanes"}
-countryFlagByName['samoa']=683;
-countryFlagByCIO['SAM']=683;
-countryFlag[1039]={group="country", qid="Q1039", label="Sao Tomé-et-Principe", sitelink="$label",cio="STP",flag="Flag of Sao Tome and Principe.svg",warensign="$flag"
-	, genre="msi" , namelong="République démocratique de Sao Tomé-et-Principe", gentileMS="Santoméen", gentileMP="Santoméens", gentileFS="Santoméenne", gentileFP="Santoméennes"}
-countryFlagByName['saotomeetprincipe']=1039;
-countryFlagByCIO['STP']=1039;
-countryFlag[1041]={group="country", qid="Q1041", label="Sénégal", sitelink="$label",cio="SEN",flag="Flag of Senegal.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Sénégal", gentileMS="Sénégalais", gentileMP="Sénégalais", gentileFS="Sénégalaise", gentileFP="Sénégalaises"}
-countryFlagByName['senegal']=1041;
-countryFlagByCIO['SEN']=1041;
-countryFlag[403]={group="country", qid="Q403", label="Serbie", sitelink="$label",cio="SRB",flag="Flag of Serbia.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Serbie", gentileMS="Serbe", gentileMP="Serbes", gentileFS="Serbe", gentileFP="Serbes"}
-countryFlagByName['serbie']=403;
-countryFlagByCIO['SRB']=403;
-countryFlag[1042]={group="country", qid="Q1042", label="Seychelles", sitelink="$label",cio="SEY",flag="Flag of the Seychelles.svg",warensign="$flag"
-	, genre="fp" , namelong="République des Seychelles", gentileMS="Seychellois", gentileMP="Seychellois", gentileFS="Seychelloise", gentileFP="Seychelloises"}
-countryFlagByName['seychelles']=1042;
-countryFlagByCIO['SEY']=1042;
-countryFlag[1044]={group="country", qid="Q1044", label="Sierra Leone", sitelink="$label",cio="SLE",flag="Flag of Sierra Leone.svg",warensign="Naval Ensign of Sierra Leone.svg"
-	, genre="fs" , namelong="République de Sierra Leone", gentileMS="Sierra-Léonais", gentileMP="Sierra-Léonais", gentileFS="Sierra-Léonaise", gentileFP="Sierra-Léonaises"}
-countryFlagByName['sierraleone']=1044;
-countryFlagByCIO['SLE']=1044;
-countryFlag[334]={group="country", qid="Q334", label="Singapour", sitelink="$label",cio="SIN",flag="Flag of Singapore.svg",warensign="Naval Ensign of Singapore.svg"
-	, genre="msi" , namelong="République de Singapour", gentileMS="Singapourien", gentileMP="Singapouriens", gentileFS="Singapourienne", gentileFP="Singapouriennes"}
-countryFlagByName['singapour']=334;
-countryFlagByCIO['SIN']=334;
-countryFlag[214]={group="country", qid="Q214", label="Slovaquie", sitelink="$label",cio="SVK",flag="Flag of Slovakia.svg",warensign="$flag"
-	, genre="fs" , namelong="République slovaque", gentileMS="Slovaque", gentileMP="Slovaques", gentileFS="Slovaque", gentileFP="Slovaques"}
-countryFlagByName['slovaquie']=214;
-countryFlagByCIO['SVK']=214;
-countryFlag[215]={group="country", qid="Q215", label="Slovénie", sitelink="$label",cio="SLO",flag="Flag of Slovenia.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Slovénie", gentileMS="Slovéne", gentileMP="Slovénes", gentileFS="Slovéne", gentileFP="Slovénes"}
-countryFlagByName['slovenie']=215;
-countryFlagByCIO['SLO']=215;
-countryFlag[1045]={group="country", qid="Q1045", label="Somalie", sitelink="$label",cio="SOM",flag="Flag of Somalia.svg",warensign="$flag"
-	, genre="fs" , namelong="République somalie", gentileMS="Somalien", gentileMP="Somaliens", gentileFS="Somalienne", gentileFP="Somaliennes"}
-countryFlagByName['somalie']=1045;
-countryFlagByCIO['SOM']=1045;
-countryFlag[1049]={group="country", qid="Q1049", label="Soudan", sitelink="$label",cio="SUD",flag="Flag of Sudan.svg",warensign="Naval Ensign of Sudan.svg"
-	, genre="ms" , namelong="République du Soudan", gentileMS="Soudanais", gentileMP="Soudanaiss", gentileFS="Soudanaise", gentileFP="Soudanaises"}
-countryFlagByName['soudan']=1049;
-countryFlagByCIO['SUD']=1049;
-countryFlag[958]={group="country", qid="Q958", label="Soudan du Sud", sitelink="$label",cio="",flag="Flag of South Sudan.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Soudan du Sud", gentileMS="Sud-Soudanais", gentileMP="Sud-Soudanaiss", gentileFS="Sud-Soudanaise", gentileFP="Sud-Soudanaises"}
-countryFlagByName['soudandusud']=958;countryFlagByName['sudsoudan']=958 
-countryFlagByCIO['']=958;
-countryFlag[854]={group="country", qid="Q854", label="Sri Lanka", sitelink="$label",cio="SRI",flag="Flag of Sri Lanka.svg",warensign="Naval Ensign of Sri Lanka.svg"
-	, genre="ms" , namelong="République démocratique socialiste de Sri Lanka", gentileMS="Srilankais", gentileMP="Srilankais", gentileFS="Srilankaise", gentileFP="Srilankaises"}
-countryFlagByName['srilanka']=854;
-countryFlagByCIO['SRI']=854;
-countryFlag[34]={group="country", qid="Q34", label="Suède", sitelink="$label",cio="SWE",flag="Flag of Sweden.svg",warensign="Naval Ensign of Sweden.svg"
-	, genre="fs" , namelong="Royaume de Suède", gentileMS="Suédois", gentileMP="Suédois", gentileFS="Suédoise", gentileFP="Suédoises"}
-countryFlagByName['suede']=34;
-countryFlagByCIO['SWE']=34;
-countryFlag[39]={group="country", qid="Q39", label="Suisse", sitelink="$label",cio="SUI",flag="Flag of Switzerland.svg",warensign="$flag"
-	, genre="fs" , namelong="Confédération suisse", gentileMS="Suisse", gentileMP="Suisses", gentileFS="Suisse", gentileFP="Suisses"}
-countryFlagByName['suisse']=39;
-countryFlagByCIO['SUI']=39;
-countryFlag[730]={group="country", qid="Q730", label="Suriname", sitelink="$label",cio="SUR",flag="Flag of Suriname.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Suriname", gentileMS="Surinamais", gentileMP="Surinamais", gentileFS="Surinamaise", gentileFP="Surinamaises"}
-countryFlagByName['suriname']=730;
-countryFlagByCIO['SUR']=730;
-countryFlag[1050]={group="country", qid="Q1050", label="Swaziland", sitelink="$label",cio="SWZ",flag="Flag of Swaziland.svg",warensign="$flag"
-	, genre="ms" , namelong="Royaume du Swaziland", gentileMS="Swazi", gentileMP="Swazis", gentileFS="Swazi", gentileFP="Swazis"}
-countryFlagByName['swaziland']=1050;
-countryFlagByCIO['SWZ']=1050;
-countryFlag[858]={group="country", qid="Q858", label="Syrie", sitelink="$label",cio="SYR",flag="Flag of Syria.svg",warensign="$flag"
-	, genre="fs" , namelong="République arabe syrienne", gentileMS="Syrien", gentileMP="Syriens", gentileFS="Syrienne", gentileFP="Syriennes"}
-countryFlagByName['syrie']=858;
-countryFlagByCIO['SYR']=858;
-countryFlag[863]={group="country", qid="Q863", label="Tadjikistan", sitelink="$label",cio="TJK",flag="Flag of Tajikistan.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Tadjikistan", gentileMS="Tadjik", gentileMP="Tadjiks", gentileFS="Tadjike", gentileFP="Tadjikes"}
-countryFlagByName['tadjikistan']=863;
-countryFlagByCIO['TJK']=863;
-countryFlag[924]={group="country", qid="Q924", label="Tanzanie", sitelink="$label",cio="TAN",flag="Flag of Tanzania.svg",warensign="$flag"
-	, genre="fs" , namelong="République unie de Tanzanie", gentileMS="Tanzanien", gentileMP="Tanzaniens", gentileFS="Tanzanienne", gentileFP="Tanzaniennes"}
-countryFlagByName['tanzanie']=924;
-countryFlagByCIO['TAN']=924;
-countryFlag[657]={group="country", qid="Q657", label="Tchad", sitelink="$label",cio="CHA",flag="Flag of Chad.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Tchad", gentileMS="Tchadien", gentileMP="Tchadiens", gentileFS="Tchadienne", gentileFP="Tchadiennes"}
-countryFlagByName['tchad']=657;
-countryFlagByCIO['CHA']=657;
-countryFlag[213]={group="country", qid="Q213", label="République tchèque", sitelink="$label",cio="CZE",flag="Flag of the Czech Republic.svg",warensign="$flag"
-	, genre="fs" , namelong="$label", gentileMS="Tchèque", gentileMP="Tchèques", gentileFS="Tchèque", gentileFP="Tchèques"}
-countryFlagByName['tcheque']=213;countryFlagByName['republiquetcheque']=213;
-countryFlagByCIO['CZE']=213;
-countryFlag[869]={group="country", qid="Q869", label="Thaïlande", sitelink="$label",cio="THA",flag="Flag of Thailand.svg",warensign="Naval Ensign of Thailand.svg"
-	, genre="fs" , namelong="Royaume de Thaïlande", gentileMS="Thaïlandais", gentileMP="Thaïlandais", gentileFS="Thaïlandaise", gentileFP="Thaïlandaises"}
-countryFlagByName['thailande']=869;
-countryFlagByCIO['THA']=869;
-countryFlag[574]={group="country", qid="Q574", label="Timor oriental", sitelink="$label",cio="TLS",flag="Flag of East Timor.svg",warensign="$flag"
-	, genre="ms" , namelong="République démocratique du Timor oriental", gentileMS="Est-Timorais", gentileMP="Est-Timorais", gentileFS="Est-Timoraise", gentileFP="Est-Timoraises"}
-countryFlagByName['timororiental']=574;
-countryFlagByCIO['TLS']=574;
-countryFlag[945]={group="country", qid="Q945", label="Togo", sitelink="$label",cio="TOG",flag="Flag of Togo.svg",warensign="$flag"
-	, genre="ms" , namelong="République togolaise", gentileMS="Togolais", gentileMP="Togolais", gentileFS="Togolaise", gentileFP="Togolaises"}
-countryFlagByName['togo']=945;
-countryFlagByCIO['TOG']=945;
-countryFlag[678]={group="country", qid="Q678", label="Tonga", sitelink="$label",cio="TGA",flag="Flag of Tonga.svg",warensign="Naval Ensign of Tonga.svg"
-	, genre="mp" , namelong="Royaume des Tonga", gentileMS="Tonguien", gentileMP="Tonguiens", gentileFS="Tonguienne", gentileFP="Tonguiennes"}
-countryFlagByName['tonga']=678;
-countryFlagByCIO['TGA']=678;
-countryFlag[754]={group="country", qid="Q754", label="Trinité-et-Tobago", sitelink="$label",cio="TRI",flag="Flag of Trinidad and Tobago.svg",warensign="Naval Ensign of Trinidad and Tobago.svg"
-	, genre="msi" , namelong="République de Trinité-et-Tobago", gentileMS="Trinidadien", gentileMP="Trinidadiens", gentileFS="Trinidadienne", gentileFP="Trinidadiennes"}
-countryFlagByName['triniteettobago']=754;
-countryFlagByCIO['TRI']=754;
-countryFlag[948]={group="country", qid="Q948", label="Tunisie", sitelink="$label",cio="TUN",flag="Flag of Tunisia.svg",warensign="$flag"
-	, genre="fs" , namelong="République tunisienne", gentileMS="Tunisien", gentileMP="Tunisiens", gentileFS="Tunisienne", gentileFP="Tunisiennes"}
-countryFlagByName['tunisie']=948;
-countryFlagByCIO['TUN']=948;
-countryFlag[874]={group="country", qid="Q874", label="Turkménistan", sitelink="$label",cio="TKM",flag="Flag of Turkmenistan.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Turkménistan", gentileMS="Turkmène", gentileMP="Turkmènes", gentileFS="Turkmène", gentileFP="Turkmènes"}
-countryFlagByName['turkmenistan']=874;
-countryFlagByCIO['TKM']=874;
-countryFlag[43]={group="country", qid="Q43", label="Turquie", sitelink="$label",cio="TUR",flag="Flag of Turkey.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Turquie", gentileMS="Turc", gentileMP="Turcs", gentileFS="Turque", gentileFP="Turques"}
-countryFlagByName['turquie']=43;
-countryFlagByCIO['TUR']=43;
-countryFlag[672]={group="country", qid="Q672", label="Tuvalu", sitelink="$label",cio="TUV",flag="Flag of Tuvalu.svg",warensign="$flag"
-	, genre="mp" , namelong="État des Tuvalu", gentileMS="Tuvaluan", gentileMP="Tuvaluans", gentileFS="Tuvaluane", gentileFP="Tuvaluanes"}
-countryFlagByName['tuvalu']=672;
-countryFlagByCIO['TUV']=672;
-countryFlag[212]={group="country", qid="Q212", label="Ukraine", sitelink="$label",cio="UKR",flag="Flag of Ukraine.svg",warensign="Naval Ensign of Ukraine.svg"
-	, genre="fsa" , namelong="République ukrainienne", gentileMS="Ukrainien", gentileMP="Ukrainiens", gentileFS="Ukrainienne", gentileFP="Ukrainiennes"}
-countryFlagByName['ukraine']=212;
-countryFlagByCIO['UKR']=212;
-countryFlag[77]={group="country", qid="Q77", label="Uruguay", sitelink="$label",cio="URU",flag="Flag of Uruguay.svg",warensign="$flag"
-	, genre="msa" , namelong="République orientale de l'Uruguay", gentileMS="Uruguayen", gentileMP="Uruguayens", gentileFS="Uruguayenne", gentileFP="Uruguayennes"}
-countryFlagByName['uruguay']=77;
-countryFlagByCIO['URU']=77;
-countryFlag[686]={group="country", qid="Q686", label="Vanuatu", sitelink="$label",cio="VAN",flag="Flag of Vanuatu.svg",warensign="Naval Ensign of Vanuatu.svg"
-	, genre="ms" , namelong="République de Vanuatu", gentileMS="Vanuatuan", gentileMP="Vanuatuans", gentileFS="Vanuatuane", gentileFP="Vanuatuanes"}
-countryFlagByName['vanuatu']=686;
-countryFlagByCIO['VAN']=686;
-countryFlag[237]={group="country", qid="Q237", label="Vatican", sitelink="$label",cio="",flag="Flag of the Vatican City.svg",warensign="$flag"
-	, genre="ms" , namelong="État de la Cité du Vatican", gentileMS="Vaticanais", gentileMP="Vaticanais", gentileFS="Vaticanaise", gentileFP="Vaticanaises"}
-countryFlagByName['vatican']=237;
-countryFlagByCIO['']=237;
-countryFlag[717]={group="country", qid="Q717", label="Venezuela", sitelink="$label",cio="VEN",flag="Flag of Venezuela (state).svg",warensign="Flag of Venezuela (State).svg"
-	, genre="ms" , namelong="République bolivarienne du Venezuela", gentileMS="Vénézuélien", gentileMP="Vénézuéliens", gentileFS="Vénézuélienne", gentileFP="Vénézuéliennes"}
-countryFlagByName['venezuela']=717;
-countryFlagByCIO['VEN']=717;
-countryFlag[881]={group="country", qid="Q881", label="Viêt Nam", sitelink="$label",cio="VIE",flag="Flag of Vietnam.svg",warensign="$flag"
-	, genre="ms" , namelong="République socialiste du Viêt Nam", gentileMS="Vietnamien", gentileMP="Vietnamiens", gentileFS="Vietnamienne", gentileFP="Vietnamiennes"}
-countryFlagByName['vietnam']=881;
-countryFlagByCIO['VIE']=881;
-countryFlag[805]={group="country", qid="Q805", label="Yémen", sitelink="$label",cio="YEM",flag="Flag of Yemen.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Yémen", gentileMS="Yéménite", gentileMP="Yéménites", gentileFS="Yéménite", gentileFP="Yéménites"}
-countryFlagByName['yemen']=805;
-countryFlagByCIO['YEM']=805;
-countryFlag[953]={group="country", qid="Q953", label="Zambie", sitelink="$label",cio="ZAM",flag="Flag of Zambia.svg",warensign="$flag"
-	, genre="fs" , namelong="République de Zambie", gentileMS="Zambien", gentileMP="Zambiens", gentileFS="Zambienne", gentileFP="Zambiennes"}
-countryFlagByName['zambie']=953;
-countryFlagByCIO['ZAM']=953;
-countryFlag[954]={group="country", qid="Q954", label="Zimbabwe", sitelink="$label",cio="ZIM",flag="Flag of Zimbabwe.svg",warensign="$flag"
-	, genre="ms" , namelong="République du Zimbabwe", gentileMS="Zimbabwéen", gentileMP="Zimbabwéens", gentileFS="Zimbabwéenne", gentileFP="Zimbabwéennes"}
-countryFlagByName['zimbabwe']=954;
-countryFlagByCIO['ZIM']=954;
 
+qidByName['афганистан']=889;
+qidByName['република южна африка']=258;qidByName['южноафриканска република']=258;qidByName['юар']=258;
+qidByName['албания']=222;
+qidByName['алжир']=262;
+qidByName['германия']=183;
+qidByName['андора']=228;
+qidByName['ангола']=916;
+qidByName['антигуа и барбуда']=781;
+qidByName['саудитска арабия']=851;
+qidByName['аржентина']=414;
+qidByName['армения']=399;
+qidByName['австралия']=408;
+qidByName['австрия']=40;
+qidByName['азербайджан']=227;
+qidByName['бахамски острови']=778;
+qidByName['бахрейн']=398;
+qidByName['бангладеш']=902;
+qidByName['барбадос']=244;
+qidByName['белгия']=31;
+qidByName['белиз']=242;
+qidByName['бенин']=962;
+qidByName['бутан']=917;
+qidByName['беларус']=184;
+qidByName['мианмар']=836;qidByName['бирма']=836;
+qidByName['боливия']=750;
+qidByName['босна и херцеговина']=225;
+qidByName['ботсвана']=963;
+qidByName['бразилия']=155;
+qidByName['бруней']=921;
+qidByName['българия']=219;
+qidByName['буркина фасо']=965;
+qidByName['бурунди']=967;
+qidByName['камбоджа']=424;
+qidByName['камерун']=1009;
+qidByName['канада']=16;
+qidByName['кабо верде']=1011;
+qidByName['централноафриканска република']=929;
+qidByName['чили']=298;
+qidByName['китай']=148;qidByName['китайска народна република']=148;
+qidByName['кипър']=229;
+qidByName['колумбия']=739;
+qidByName['коморски острови']=970;
+qidByName['демократична република конго']=974;
+qidByName['република конго']=971;
+qidByName['северна корея']=423;qidByName['кндр']=423;
+qidByName['южна корея']=884;
+qidByName['коста рика']=800;
+qidByName['кот д\'ивоар']=1008;
+qidByName['хърватия']=224;
+qidByName['куба']=241;
+qidByName['дания']=35;
+qidByName['джибути']=977;
+qidByName['доминиканска република']=786;
+qidByName['доминика']=784;
+qidByName['египет']=79;
+qidByName['обединени арабски емирства']=878;qidByName['оае']=878;
+qidByName['еквадор']=736;
+qidByName['еритрея']=986;
+qidByName['испания']=29;
+qidByName['естония']=191;
+qidByName['съединени американски щати']=30;qidByName['сащ']=30;
+qidByName['етиопия']=115;
+qidByName['фиджи']=712;
+qidByName['финландия']=33;
+qidByName['франция']=142;
+qidByName['габон']=1000;
+qidByName['гамбия']=1005;
+qidByName['грузия']=230;
+qidByName['гана']=117;
+qidByName['гърция']=41;
+qidByName['гренада']=769;
+qidByName['гватемала']=774;
+qidByName['гвинея']=1006;
+qidByName['гвинея-бисау']=1007;
+qidByName['екваториална гвинея']=983;
+qidByName['гвиана']=734;qidByName['гаяна']=734;
+qidByName['хаити']=790;
+qidByName['хондурас']=783;
+qidByName['унгария']=28;
+qidByName['индия']=668;
+qidByName['индонезия']=252;
+qidByName['ирак']=796;
+qidByName['иран']=794;
+qidByName['република ирландия']=27;qidByName['ирландия']=27;
+qidByName['исландия']=189;
+qidByName['израел']=801;
+qidByName['италия']=38;
+qidByName['ямайка']=766;
+qidByName['япония']=17;
+qidByName['йордания']=810;
+qidByName['казахстан']=232;
+qidByName['кения']=114;
+qidByName['киргизстан']=813;
+qidByName['кирибати']=710;
+qidByName['кувейт']=817;
+qidByName['лаос']=819;
+qidByName['лесото']=1013;
+qidByName['латвия']=211;
+qidByName['ливан']=822;
+qidByName['либерия']=1014;
+qidByName['либия']=1016;
+qidByName['лихтенщайн']=347;
+qidByName['литва']=37;
+qidByName['люксембург']=32;
+qidByName['република македония']=221;qidByName['македония']=221;
+qidByName['мадагаскар']=1019;
+qidByName['малайзия']=833;
+qidByName['малави']=1020;
+qidByName['малдиви']=826;qidByName['малдивски острови']=826;
+qidByName['мали']=912;
+qidByName['малта']=233;
+qidByName['мароко']=1028;
+qidByName['маршалови острови']=709;
+qidByName['мавриций']=1027;
+qidByName['мавритания']=1025;
+qidByName['мексико']=96;
+qidByName['микронезия']=702;
+qidByName['молдова']=217;qidByName['молдавия']=217;
+qidByName['монако']=235;
+qidByName['монголия']=711;
+qidByName['черна гора']=236;
+qidByName['мозамбик']=1029;
+qidByName['намибия']=1030;
+qidByName['науру']=697;
+qidByName['непал']=837;
+qidByName['никарагуа']=811;
+qidByName['нигер']=1032;
+qidByName['нигерия']=1033;
+qidByName['норвегия']=20;
+qidByName['нова зеландия']=664;
+qidByName['оман']=842;
+qidByName['уганда']=1036;
+qidByName['узбекистан']=265;
+qidByName['пакистан']=843;
+qidByName['палау']=695;
+qidByName['панама']=804;
+qidByName['папуа нова гвинея']=691;
+qidByName['парагвай']=733;
+qidByName['нидерландия']=55;
+qidByName['перу']=419;
+qidByName['филипини']=928;
+qidByName['полша']=36;
+qidByName['португалия']=45;
+qidByName['катар']=846;
+qidByName['румъния']=218;
+qidByName['великобритания']=145;qidByName['обединено кралство']=145;
+qidByName['русия']=159;
+qidByName['руанда']=1037;
+qidByName['сейнт китс и невис']=763;
+qidByName['сейнт лусия']=760;
+qidByName['сан марино']=238;
+qidByName['сейнт винсънт и гренадини']=757;
+qidByName['соломонови острови']=685;
+qidByName['салвадор']=792;
+qidByName['самоа']=683;
+qidByName['сао томе и принсипи']=1039;
+qidByName['сенегал']=1041;
+qidByName['сърбия']=403;
+qidByName['сейшели']=1042;qidByName['сейшелски острови']=1042;
+qidByName['сиера леоне']=1044;
+qidByName['сингапур']=334;
+qidByName['словакия']=214;
+qidByName['словения']=215;
+qidByName['сомалия']=1045;
+qidByName['судан']=1049;
+qidByName['южен судан']=958;
+qidByName['шри ланка']=854;
+qidByName['швеция']=34;
+qidByName['швейцария']=39;
+qidByName['суринам']=730;
+qidByName['свазиленд']=1050;
+qidByName['сирия']=858;
+qidByName['таджикистан']=863;
+qidByName['танзания']=924;
+qidByName['чад']=657;
+qidByName['чехия']=213;
+qidByName['тайланд']=869;
+qidByName['източен тимор']=574;
+qidByName['того']=945;
+qidByName['тонга']=678;
+qidByName['тринидад и тобаго']=754;
+qidByName['тунис']=948;
+qidByName['туркменистан']=874;
+qidByName['турция']=43;
+qidByName['тувалу']=672;
+qidByName['украйна']=212;
+qidByName['уругвай']=77;
+qidByName['вануату']=686;
+qidByName['ватикан']=237;
+qidByName['венецуела']=717;
+qidByName['виетнам']=881;
+qidByName['йемен']=805;
+qidByName['замбия']=953;
+qidByName['зимбабве']=954;
+qidByName['косово']=1246;
+qidByName['тайван']=865;qidByName['република китай']=865;
 
 --Territoires non autonomes
-countryFlag[25228]={group="nonautonome", qid='Q25228', label="Anguilla", sitelink='$label', cio='AIA', flag='Flag of Anguilla.svg',warensign='$flag'
-    , genre='fsia', namelong='$label', gentileMS='Anguillan',gentileFS='Anguillane',gentileMP='Anguillans',gentileFP='Anguillanes'}
-countryFlagByName['anguilla']=25228
-;countryFlagByCIO['AIA']=25228;
-countryFlag[23635]={group="nonautonome", qid='Q23635', label="Bermudes", sitelink='$label', cio='BER', flag='Flag of Bermuda.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Bermudien',gentileFS='Bermudienne',gentileMP='Bermudiens',gentileFP='Bermudiennes'}
-countryFlagByName['bermudes']=23635
-;countryFlagByCIO['BER']=23635;
-countryFlag[23681]={group="nonautonome", qid='Q23681', label="Chypre du Nord", sitelink='$label', cio='', flag='Flag of the Turkish Republic of Northern Cyprus.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Nord-Chypriote',gentileFS='Nord-Chypriote',gentileMP='Nord-Chypriotes',gentileFP='Nord-Chypriotes'}
-countryFlagByName['chypredunord']=23681
---;countryFlagByCIO['']=23681;
-countryFlag[5785]={group="nonautonome", qid='Q5785', label="Îles Caïmans", sitelink='$label', cio='CAY', flag='Flag of the Cayman Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Caïmanais',gentileFS='Caïmanaise',gentileMP='Caïmanais',gentileFP='Caïmanaises'}
-countryFlagByName['ilescaimans']=5785;countryFlagByName['caimans']=5785
-countryFlagByCIO['CAY']=5785;
-countryFlag[1410]={group="nonautonome", qid='Q1410', label="Gibraltar", sitelink='$label', cio='GIB', flag='Flag of Gibraltar.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Gibraltarien',gentileFS='Gibraltarienne',gentileMP='Gibraltariens',gentileFP='Gibraltariennes'}
-countryFlagByName['gibraltar']=1410
-;countryFlagByCIO['GIB']=1410;
-countryFlag[16635]={group="nonautonome", qid='Q16635', label="Guam", sitelink='$label', cio='GUM', flag='Flag of Guam.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Guamien',gentileFS='Guamienne',gentileMP='Guamiens',gentileFP='Guamiennes'}
-countryFlagByName['guam']=16635
-;countryFlagByCIO['GUM']=16635;
-countryFlag[9648]={group="nonautonome", qid='Q9648', label="Îles Malouines", sitelink='$label', cio='', flag='Flag of the Falkland Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Falklandais',gentileFS='Falklandaise',gentileMP='Falklandais',gentileFP='Falklandaises'}
-countryFlagByName['ilesmalouines']=9648;countryFlagByName['malouines']=9648;countryFlagByName['ilesfalkland']=9648;countryFlagByName['falkland']=9648;
---;countryFlagByCIO['']=9648;
-countryFlag[1246]={group="nonautonome", qid='Q1246', label="Kosovo", sitelink='$label', cio='KOS', flag='Flag of Kosovo.svg',warensign='$flag'
-    , genre='ms', namelong='$label', gentileMS='Kosovar',gentileFS='Kosovare',gentileMP='Kosovars',gentileFP='Kosovares'}
-countryFlagByName['kosovo']=1246
-;countryFlagByCIO['KOS']=1246;
-countryFlag[13353]={group="nonautonome", qid='Q13353', label="Montserrat", sitelink='Montserrat (Antilles)', cio='', flag='Flag of Montserrat.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Montserratien',gentileFS='Montserratienne',gentileMP='Montserratiens',gentileFP='Montserratiennes'}
-countryFlagByName['montserrat']=13353
---;countryFlagByCIO['']=13353;
-countryFlag[33788]={group="nonautonome", qid='Q33788', label="Nouvelle-Calédonie", sitelink='$label', cio='', flag=' Flag of France.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Néo-Calédonien',gentileFS='Néo-Calédonienne',gentileMP='Néo-Calédoniens',gentileFP='Néo-Calédoniennes'}
-countryFlagByName['nouvellecaledonie']=33788
---;countryFlagByCIO['']=33788;
-countryFlag[219060]={group="nonautonome", qid='Q219060', label="Autorité palestinienne", sitelink='Palestine', cio='PLE', flag=' Flag of Palestine.svg',warensign='$flag'
-    , genre='fsa', namelong='$label', gentileMS='Palestinien',gentileFS='Palestinienne',gentileMP='Palestiniens',gentileFP='Palestiniennes'}
-countryFlagByName['palestine']=219060
-;countryFlagByCIO['PLE']=219060;
-countryFlag[35672]={group="nonautonome", qid='Q35672', label="Îles Pitcairn", sitelink='$label', cio='', flag='Flag of the Pitcairn Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Pitcairnais',gentileFS='Pitcairnaise',gentileMP='Pitcairnais',gentileFP='Pitcairnaises'}
-countryFlagByName['pitcairn']=35672
---;countryFlagByCIO['']=219060;
-countryFlag[192184]={group="nonautonome", qid='Q192184', label="Sainte-Hélène, Ascension et Tristan da Cunha", sitelink='Sainte-Hélène, Ascension et Tristan da Cunha', cio='', flag='Flag of Saint Helena.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Sainte-Hélénien',gentileFS='Sainte-Hélénienne',gentileMP='Sainte-Héléniens',gentileFP='Sainte-Héléniennes'}
-countryFlagByName['saintehelene']=192184
---;countryFlagByCIO['']=192184;
-countryFlag[6250]={group="nonautonome", qid='Q6250', label="Sahara occidental", sitelink='République arabe sahraouie démocratique', cio='', flag='Flag of Western Sahara.svg',warensign='$flag'
-    , genre='ms', namelong='$label', gentileMS='Sahraoui',gentileFS='Sahraouie',gentileMP='Sahraouis',gentileFP='Sahraouies'}
-countryFlagByName['saharaoccidental']=6250
---;countryFlagByCIO['']=6250;
-countryFlag[16641]={group="nonautonome", qid='Q16641', label="Samoa américaines", sitelink='$label', cio='ASA', flag='Flag of American Samoa.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Samoan (USA)',gentileFS='Samoane (USA)',gentileMP='Samoans (USA)',gentileFP='Samoanes (USA)'}
-countryFlagByName['samoaamericaines']=16641
-;countryFlagByCIO['ASA']=16641;
-countryFlag[865]={group="nonautonome", qid='Q865', label="République de Chine", sitelink='République de Chine (Taïwan)', cio='ROC', flag='Flag of the Republic of China.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Taïwanais',gentileFS='Taïwanaise',gentileMP='Taïwanais',gentileFP='Taïwanaises'}
-countryFlagByName['republiquedechine']=865;countryFlagByName['taiwan']=865;
-countryFlagByCIO['ASA']=865;
-countryFlag[18221]={group="nonautonome", qid='Q18221', label="Îles Turques-et-Caïques", sitelink='$label', cio='TCA', flag='Flag of the Turks and Caicos Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Turques-et-Caïques-insulaire',gentileFS='Turques-et-Caïques-insulaire',gentileMP='Turques-et-Caïques-insulaires',gentileFP='Turques-et-Caïques-insulaires'}
-countryFlagByName['turquesetcaiques']=18221;countryFlagByName['ilesturquesetcaiques']=18221;
-countryFlagByCIO['TCA']=18221;
-countryFlag[11703]={group="nonautonome", qid='Q11703', label="Îles Vierges des États-Unis", sitelink='$label', cio='ISV', flag='Flag of the United States Virgin Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Insulaire des îles Vierges des États-Unis',gentileFS='Insulaire des îles Vierges des États-Unis',gentileMP='Insulaires des îles Vierges des États-Unis',gentileFP='Insulaires des îles Vierges des États-Unis'}
-countryFlagByName['viergesdesetatsunis']=11703;countryFlagByName['ilesviergesdesetatsunis']=11703
-countryFlagByCIO['ISV']=11703;
-countryFlag[25305]={group="nonautonome", qid='Q25305', label="Îles Vierges britanniques", sitelink='$label', cio='IVB', flag='Flag of the British Virgin Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Insulaire des Îles Vierges britanniques',gentileFS='Insulaire des Îles Vierges britanniques',gentileMP='Insulaires des Îles Vierges britanniques',gentileFP='Insulaires des Îles Vierges britanniques'}
-countryFlagByName['viergesbritanniques']=25305;countryFlagByName['ilesviergesbritanniques']=25305
-countryFlagByCIO['IVB']=25305;
+qidByName['ангуила']=25228
+qidByName['бермудски острови']=23635
+qidByName['северен кипър']=23681
+qidByName['кайманови острови']=5785;
+qidByName['гибралтар']=1410;
+qidByName['гуам']=16635;
+qidByName['фолкландски острови']=9648;
+qidByName['монсерат']=13353
+qidByName['нова каледония']=33788
+qidByName['палестина']=219060
+qidByName['питкерн']=35672
+qidByName['света елена']=192184
+qidByName['западна сахара']=6250
+qidByName['американска самоа']=16641
+qidByName['търкс и кайкос']=18221;
+qidByName['американски вирджински острови']=11703;
+qidByName['британски вирджински острови']=25305;
 
 --Dépendances-->
-countryFlag[5689]={group="dependance", qid='Q5689', label="Åland", sitelink='$label', cio='', flag='Flag of Åland.svg',warensign='$flag'
-    , genre='msia', namelong='$label', gentileMS='Aalandais',gentileFS='Aalandaise',gentileMP='Aalandais',gentileFP='Aalandaises'}
-countryFlagByName['aland']=5689;countryFlagByName['ilesdaland']=5689;
---;countryFlagByCIO['']=5689;
-countryFlag[21203]={group="dependance", qid='Q21203', label="Aruba", sitelink='$label', cio='ARU', flag='Flag of Aruba.svg',warensign='$flag'
-    , genre='msia', namelong='$label', gentileMS='Arubéen',gentileFS='Arubéenne',gentileMP='Arubéens',gentileFP='Arubéennes'}
-countryFlagByName['aruba']=xxx;
-countryFlagByCIO['ARU']=xxx;
-countryFlag[25263]={group="dependance", qid='Q25263', label="Açores", sitelink='$label', cio='', flag='Flag of the Azores.svg',warensign='$flag'
-    , genre='mp', namelong='$label', gentileMS='Açoréen',gentileFS='Açoréenne',gentileMP='Açoréens',gentileFP='Açoréennes'}
-countryFlagByName['acores']=25263;
---;countryFlagByCIO['']=25263;
-countryFlag[5813]={group="dependance", qid='Q5813', label="Îles Canaries", sitelink='$label', cio='', flag='Flag of the Canary Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Canarien',gentileFS='Canarienne',gentileMP='Canariens',gentileFP='Canariennes'}
-countryFlagByName['canaries']=5813;countryFlagByName['ilescanaries']=5813;
---;countryFlagByCIO['']=5813;
-countryFlag[5823]={group="dependance", qid='Q5823', label="Ceuta", sitelink='$label', cio='', flag='Flag Ceuta.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Ceutien',gentileFS='Ceutienne',gentileMP='Ceutiens',gentileFP='Ceutiennes'}
-countryFlagByName['ceuta']=5823;
---;countryFlagByCIO['']=5823;
-countryFlag[31063]={group="dependance", qid='Q31063', label="Île Christmas", sitelink='Île Christmas  (Australie)', cio='', flag='Flag of Christmas Island.svg',warensign='$flag'
-    , genre='fsa', namelong='$label', gentileMS='Insulaire de Christmas',gentileFS='Insulaire de Christmas',gentileMP='Insulaires de Christmas',gentileFP='Insulaires de Christmas'}
-countryFlagByName['christmas']=31063;countryFlagByName['ilechristmas']=31063;
---;countryFlagByCIO['']=31063;
-countryFlag[36004]={group="dependance", qid='Q36004', label="Îles Cocos", sitelink='$label', cio='', flag='Flag of the Cocos (Keeling) Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Insulaire des Cocos',gentileFS='Insulaire des Cocos',gentileMP='Insulaires des Cocos',gentileFP='Insulaires des Cocos'}
-countryFlagByName['cocos']=36004;countryFlagByName['ilescocos']=36004;
---;countryFlagByCIO['']=36004;
-countryFlag[26988]={group="dependance", qid='Q26988', label="Îles Cook", sitelink='$label', cio='COK', flag='Flag of the Cook Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Insulaire des Cook',gentileFS='Insulaire des Cook',gentileMP='Insulaires des Cook',gentileFP='Insulaires des Cook'}
-countryFlagByName['cook']=26988;countryFlagByName['ilescook']=26988;
-countryFlagByCIO['COK']=26988;
-countryFlag[25279]={group="dependance", qid='Q25279', label="Curaçao", sitelink='$label', cio='CUW', flag='Flag of Curaçao.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Curaçaoan',gentileFS='Curaçaoane',gentileMP='Curaçaoans',gentileFP='Curaçaoanes'}
-countryFlagByName['curacao']=25279;
-countryFlagByCIO['CUW']=25279;
-countryFlag[4628]={group="dependance", qid='Q4628', label="Îles Féroé ", sitelink='$label', cio='FRO', flag='Flag of the Faroe Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Féroïen',gentileFS='Féroïenne',gentileMP='Féroïens',gentileFP='Féroïennes'}
-countryFlagByName['feroe']=4628;countryFlagByName['ilesferoe']=4628;
-countryFlagByCIO['FRO']=4628;
-countryFlag[35086]={group="dependance", qid='Q35086', label="Géorgie du Sud-et-les Îles Sandwich du Sud", sitelink='$label', cio='', flag='Flag of South Georgia and the South Sandwich Islands.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='',gentileFS='',gentileMP='',gentileFP=''}
-countryFlagByName['georgiedusudetlesilessandwichdusud']=35086;countryFlagByName['georgiedusud']=35086;countryFlagByName['ilessandwichdusud']=35086;
---;countryFlagByCIO['']=35086;
-countryFlag[223]={group="dependance", qid='Q223', label="Groenland", sitelink='$label', cio='', flag='Flag of Greenland.svg',warensign='$flag'
-    , genre='ms', namelong='$label', gentileMS='Groenlandais',gentileFS='Groenlandaise',gentileMP='Groenlandais',gentileFP='Groenlandaises'}
-countryFlagByName['groenland']=223;
---;countryFlagByCIO['']=223;
-countryFlag[17012]={group="dependance", qid='Q17012', label="Guadeloupe", sitelink='$label', cio='GPE', flag='Flag of France.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Guadeloupéen',gentileFS='Guadeloupéenne',gentileMP='Guadeloupéens',gentileFP='Guadeloupéennes'}
-countryFlagByName['guadeloupe']=17012;
-countryFlagByCIO['GPE']=17012;
-countryFlag[25230]={group="dependance", qid='Q25230', label="Guernesey", sitelink='$label', cio='GGY', flag='Flag of Guernsey.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Guernesiais',gentileFS='Guernesiaise',gentileMP='Guernesiais',gentileFP='Guernesiaises'}
-countryFlagByName['guernesey']=25230;
-countryFlagByCIO['GGY']=25230;
-countryFlag[3769]={group="dependance", qid='Q3769', label="Guyane", sitelink='$label', cio='GYF', flag='Flag of France.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Guyanais',gentileFS='Guyanaise',gentileMP='Guyanais',gentileFP='Guyanaises'}
-countryFlagByName['guyane']=3769;countryFlagByName['guyanefrancaise']=3769;
-countryFlagByCIO['GYF']=3769;
-countryFlag[8646]={group="dependance", qid='Q8646', label="Hong Kong", sitelink='$label', cio='HKG', flag='Flag of Hong_Kong.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Hongkongais',gentileFS='Hongkongaise',gentileMP='Hongkongais',gentileFP='Hongkongaises'}
-countryFlagByName['hongkong']=8646;
-countryFlagByCIO['HKG']=8646;
-countryFlag[785]={group="dependance", qid='Q785', label="Jersey", sitelink='$label', cio='JEY', flag='Flag of Jersey.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Jersiais',gentileFS='Jersiaise',gentileMP='Jersiais',gentileFP='Jersiaises'}
-countryFlagByName['jersey']=785;
-countryFlagByCIO['JEY']=785;
-countryFlag[14773]={group="dependance", qid='Q14773', label="Macao", sitelink='$label', cio='MAC', flag='Flag_of_Macau.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Macanais',gentileFS='Macanaise',gentileMP='Macanais',gentileFP='Macanaises'}
-countryFlagByName['macao']=14773;
-countryFlagByCIO['MAC']=14773;
-countryFlag[26253]={group="dependance", qid='Q26253', label="Madère", sitelink='$label', cio='', flag='Flag of Madeira.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Madérien',gentileFS='Madérienne',gentileMP='Madériens',gentileFP='Madériennes'}
-countryFlagByName['madere']=26253;
---;countryFlagByCIO['']=26253;
-countryFlag[9676]={group="dependance", qid='Q9676', label="Île de Man", sitelink='$label', cio='IMN', flag='Flag of the Isle of Man.svg',warensign='$flag'
-    , genre='fsa', namelong='$label', gentileMS='Mannois',gentileFS='Mannoise',gentileMP='Mannois',gentileFP='Mannoises'}
-countryFlagByName['iledeman']=9676;countryFlagByName['man']=9676;
-countryFlagByCIO['IMN']=9676;
-countryFlag[16644]={group="dependance", qid='Q16644', label="Îles Mariannes du Nord", sitelink='$label', cio='NMI', flag='Flag of the Northern Mariana Islands.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Mariannais',gentileFS='Mariannaise',gentileMP='Mariannais',gentileFP='Mariannaises'}
-countryFlagByName['mariannesdunord']=16644;countryFlagByName['ilesmariannesdunord']=16644;
-countryFlagByCIO['NMI']=16644;
-countryFlag[17054]={group="dependance", qid='Q17054', label="Martinique", sitelink='$label', cio='MTQ', flag='Flag of France.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Martiniquais',gentileFS='Martiniquaise',gentileMP='Martiniquais',gentileFP='Martiniquaises'}
-countryFlagByName['martinique']=17054;
---;countryFlagByCIO['MTQ']=17054;
-countryFlag[17063]={group="dependance", qid='Q17063', label="Mayotte", sitelink='$label', cio='', flag='Flag of France.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Mahorais',gentileFS='Mahoraise',gentileMP='Mahorais',gentileFP='Mahoraises'}
-countryFlagByName['aaaa']=17063;
-countryFlagByCIO['MTQ']=17063;
-countryFlag[5831]={group="dependance", qid='Q5831', label="Melilla", sitelink='$label', cio='', flag='Flag of Melilla.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Mélillien',gentileFS='Mélillienne',gentileMP='Mélilliens',gentileFP='Mélilliennes'}
-countryFlagByName['melilla']=5831;
---;countryFlagByCIO['']=5831;
-countryFlag[34020]={group="dependance", qid='Q34020', label="Niue", sitelink='$label', cio='NIU', flag='Flag of Niue.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Niouéen',gentileFS='Niouéenne',gentileMP='Niouéens',gentileFP='Niouéennes'}
-countryFlagByName['aaaa']=34020;
---;countryFlagByCIO['']=34020;
-countryFlag[31057]={group="dependance", qid='Q31057', label="Île Norfolk", sitelink='$label', cio='', flag='Flag of Norfolk Island.svg',warensign='$flag'
-    , genre='fsa', namelong='$label', gentileMS='Norfolkais',gentileFS='Norfolkaise',gentileMP='Norfolkais',gentileFP='Norfolkaises'}
-countryFlagByName['norfolk']=31057;countryFlagByName['ilenorfolk']=31057;
---;countryFlagByCIO['']=31057;
-countryFlag[30971]={group="dependance", qid='Q30971', label="Polynésie française", sitelink='$label', cio='TAH', flag='Flag of French Polynesia.svg',warensign='$flag'
-    , genre='fs', namelong='$label', gentileMS='Francopolynésien',gentileFS='Francopolynésienne',gentileMP='Francopolynésiens',gentileFP='Francopolynésiennes'}
-countryFlagByName['polynésiefrançaise']=30971;countryFlagByName['tahiti']=30971;
-countryFlagByCIO['TAH']=30971;
-countryFlag[1183]={group="dependance", qid='Q1183', label="Porto Rico", sitelink='$label', cio='PUR', flag='Flag of Puerto Rico.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Portoricain',gentileFS='Portoricaine',gentileMP='Portoricains',gentileFP='Portoricaines'}
-countryFlagByName['portorico']=1183;
-countryFlagByCIO['PUR']=1183;
-countryFlag[17070]={group="dependance", qid='Q17070', label="La Réunion", sitelink='$label', cio='REU', flag='Flag of France.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Réunionnais',gentileFS='Réunionnaise',gentileMP='Réunionnais',gentileFP='Réunionnaises'}
-countryFlagByName['lareunion']=17070;countryFlagByName['reunion']=17070;
-countryFlagByCIO['REU']=17070;
-countryFlag[25362]={group="dependance", qid='Q25362', label="Saint-Barthélemy", sitelink='Saint-Barthélemy (Antilles françaises)', cio='', flag='Flag of France.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Saint-Barthéléminois',gentileFS='Saint-Barthéléminoise',gentileMP='Saint-Barthéléminois',gentileFP='Saint-Barthéléminoises'}
-countryFlagByName['saintbarthelemy']=25362;
---;countryFlagByCIO['']=25362;
-countryFlag[126125]={group="dependance", qid='Q126125', label="Saint-Martin", sitelink='Saint-Martin (Antilles françaises)', cio='SMT', flag='Flag of France.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Saint-Martinois',gentileFS='Saint-Martinoise',gentileMP='Saint-Martinois',gentileFP='Saint-Martinoises'}
-countryFlagByName['saintmartin']=126125;
-countryFlagByCIO['SMT']=126125;
-countryFlag[26273]={group="dependance", qid='Q26273', label="Saint-Martin", sitelink='Saint-Martin (country-Bas)', cio='SXM', flag='Flag of Sint Maarten.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Saint-Martineer',gentileFS='Saint-Martineer',gentileMP='Saint-Martineer',gentileFP='Saint-Martineer'}
-countryFlagByName['saintmartineen']=26273;
-countryFlagByCIO['SXM']=26273;
-countryFlag[34617]={group="dependance", qid='Q34617', label="Saint-Pierre-et-Miquelon", sitelink='$label', cio='', flag='Flag of France.svg',warensign='$flag'
-    , genre='msi', namelong='$label', gentileMS='Français de Saint-Pierre-et-Miquelon',gentileFS='Française de Saint-Pierre-et-Miquelon',gentileMP='Français de Saint-Pierre-et-Miquelon',gentileFP='Françaises de Saint-Pierre-et-Miquelon'}
-countryFlagByName['saintpierreetmiquelon']=34617;
---;countryFlagByCIO['']=34617;
-countryFlag[43448]={group="dependance", qid='Q43448', label="Territoire britannique de l'océan Indien", sitelink='$label', cio='', flag='Flag of the British Indian Ocean Territory.svg',warensign='$flag'
-    , genre='ms', namelong='$label', gentileMS='Chagossien',gentileFS='Chagossienne',gentileMP='Chagossiens',gentileFP='Chagossiennes'}
-countryFlagByName['territoirebritanniquedeloceanindien']=43448;countryFlagByName['chagos']=43448;
---;countryFlagByCIO['']=43448;
-countryFlag[36823]={group="dependance", qid='Q36823', label="Tokelau", sitelink='$label', cio='', flag='Flag of Tokelau.svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Tokelauan',gentileFS='Tokelauane',gentileMP='Tokelauans',gentileFP='Tokelauanes'}
-countryFlagByName['tokelau']=36823;
---;countryFlagByCIO['']=36823;
-countryFlag[35555]={group="dependance", qid='Q35555', label="Wallis-et-Futuna", sitelink='$label', cio='', flag='Flag of France.svg',warensign='$flag'
-    , genre='fsi', namelong='$label', gentileMS='Wallisien-et-Futunien',gentileFS='Wallisienne-et-Futunienne',gentileMP='Wallisiens-et-Futuniens',gentileFP='Wallisiennes-et-Futuniennes'}
-countryFlagByName['wallisetfutuna']=35555;
---;countryFlagByCIO['']=35555;
+qidByName['оландски острови']=5689;
+qidByName['аруба']=xxx;
+qidByName['азорски острови']=25263;
+qidByName['канарски острови']=5813;
+qidByName['сеута']=5823;
+qidByName['рождество']=31063;
+qidByName['кокосови острови']=36004;
+qidByName['кук']=26988;
+qidByName['кюрасао']=25279;
+qidByName['фарьорски острови']=4628;
+qidByName['южна джорджия и южни сандвичеви острови']=35086;
+qidByName['гренландия']=223;
+qidByName['гваделупа']=17012;
+qidByName['гърнзи']=25230;
+qidByName['френска гвиана']=3769;
+qidByName['хонконг']=8646;
+qidByName['джърси']=785;
+qidByName['макао']=14773;
+qidByName['мадейра']=26253;
+qidByName['ман']=9676;
+qidByName['северни мариански острови']=16644;
+qidByName['мартиника']=17054;
+qidByName['майот']=17063;
+qidByName['мелиля']=5831;
+qidByName['ниуе']=34020;
+qidByName['норфолк']=31057;
+qidByName['френска полинезия']=30971;
+qidByName['пуерто рико']=1183;
+qidByName['реюнион']=17070;
+qidByName['сен бартелми']=25362;
+qidByName['сен мартен']=126125;
+qidByName['синт мартен']=26273;
+qidByName['сен пиер и микелон']=34617;
+qidByName['британска индоокеанска територия']=43448;
+qidByName['токелау']=36823;
+qidByName['уолис и футуна']=35555;
 
 --Ancien country-->
-countryFlag[25227]={group="disparu", qid='Q25227', label="Antilles néerlandaises", sitelink='$label', cio='AHO', flag='Flag_of_the_Netherlands_Antilles_(1986-2010).svg',warensign='$flag'
-    , genre='fp', namelong='$label', gentileMS='Insulaire des Antilles néerlandaises',gentileFS='Insulaire des Antilles néerlandaises',gentileMP='Insulaires des Antilles néerlandaises',gentileFP='Insulaires des Antilles néerlandaises'}
-countryFlagByName['antillesneerlandaises']=25227;
-countryFlagByCIO['AHO']=25227;
+qidByName['нидерландси антили']=25227;
 
---fictif-->
-countryFlag[1751472]={group="fictif", qid="Q1751472", label='Bordurie', sitelink='Bordurie', cio="", flag="Borduriens flagga.svg",warensign="$flag"
-    , genre="fs", namelong="$label", gentileMS="Bordure",gentileFS="Bordure",gentileMP="Bordures",gentileFP="Bordures"}
-countryFlagByName['bordurie']=1751472;
-
-p.data=countryFlag;
-p.idByName=countryFlagByName;
-p.idByCIO=countryFlagByCIO;
+p.qidByName=qidByName;
 
 return p
