@@ -335,9 +335,10 @@ function flag.flag(frame)
 
     entity = mw.wikibase.getEntityObject(qid);
     image = entity.claims["P41"][1].mainsnak.datavalue.value;
+    link = 'link='..entity:getLabel()..'|';
 
     res = '<span class="flagicon">' ..
-                '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. 'alt' ..']]' ..
+                '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link .. 'alt' ..']]' ..
             '</span>';
 
     return res;
