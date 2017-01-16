@@ -1,328 +1,12 @@
---[[
-This module is intended to replace the functionality of {{flag}} and related
-templates.  It provides several methods, including
-]]
-
 flag = {};
---math_mod = mw.loadData( "Модул:Math" );
 
--- Chargement de la banque de données des langues avec gestion d'erreur.
-local gdata
-local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" )
+local gdata;
+local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" );
 if success then
-    gdata = resultat
+    gdata = resultat;
 else
-    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
-    gdata={}
-    gdata.data={};
-    gdata.idByName={};
-    gdata.idByCIO={};
-    gdata.data[142]={qid="Q142", flag="Flag_of_France.svg", label="France", sitelink="$label", cio="FRA", genre="fs"}
-    gdata.idByName['france']=142;
-    gdata.idByCIO['FRA']=142;
-end
-
-local gflag
-local success, resultat = pcall (mw.loadData, "Модул:Flag/Image" )
-if success then
-    gflag = resultat
-else
-    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
-    gflag={}
-    gflag.flag={};
-end
-
-local garea
-local success, resultat = pcall (mw.loadData, "Модул:Flag/Area" )
-if success then
-    garea = resultat
-else
-    -- Banque de données à minima en cas de bogue dans le Модул:Language/Data
-    garea={}
-    garea.arealist={
-     defaut = {regexp="[[$sitelink|$label]]" , desc="article sur le country"}
-     ,flag = {regexp="flag", desc=""}
-     }
-    garea.genre={ms={},msa={},msi={},msia={},fs={},fsa={},fsi={},fsia={},mp={},fp={}}
-    garea.jo={}
-end
-globalFrame = nil
-
-function _getFlag(image,aaaammjj,imagesecours)
-    local indexdate=(aaaammjj..mw.ustring.rep( 0, 8 )):sub (1, 8)
-    
-    if (indexdate ~= '00000000' and image~=nil) then       
-        for k,v in pairs( image) do
-            if v["debut"] <= indexdate and indexdate <= v["fin"] then
-                return v
-            end
-        end
-    end
-    if(image~=nil) then
-        d= image[1];
-    elseif(imagesecours["flag"]~=nil) then
-        local f=imagesecours["flag"]
-        d= {civilflag=f,stateflag=f,warflag=f,civilensign=f,stateensign=f,warensign=f};
-    else
-        local f="Flag_of_None.svg"
-        d= {civilflag=f,stateflag=f,warflag=f,civilensign=f,stateensign=f,warensign=f};
-    end
-    
-    return d;
-end
-
-function _getCompetition(c,aaaa)
-    local rep="";
-    if(c=="WK" or c=="световно") then
-        rep="Световно първенство по футбол"
-    elseif(c=="EC" or c=="европейско") then
-        rep="Европейско първенство по футбол"
-    elseif(c=="EWC") then
-        rep="Световен шампионат"
-    elseif(c=="CC" or c=="купа-на-конфедерациите") then
-        rep="Купа на конфедерациите"
-    elseif(c=="en" ) then
-        rep="en"
-    elseif(c=="jo" ) then
-        rep="Олимпийски игри"
-    elseif(c=="jp" ) then
-        rep="Параолимпийски игри"
-    end
-    
-    --edition
-    if(aaaa ~= nil and aaaa ~= "") then
-        if(c=="jo"  or c=="jp" ) then
-            local o=garea.jo["_"..aaaa];
-            if(o ~= nil) then
-                rep=rep.." "..o
-            end            
-        else
-            rep=rep.." "..aaaa
-        end
-    end
-
-    return rep
-end
---[[
-country
-
-Affiche le country accompagné de son flag {{flag2}}
-
-Usage:
-    {{ Invoke:flag | country | France }}
-    
-]]
-function printIcon(data,image,area,size,day)    
-    local border='';  
-    local alt='';
-    if data["flagborder"] ~= "no" then
-        border='border|'
-    end
-    
-    local datagenre=data["genre"] or "ms"
-    alt=string.gsub(garea.arealist["flag"]["regexp"], "%$(%w+)",garea.genre[datagenre])
-    alt=string.gsub(alt, "%$(%w+)", data)
-    alt=string.gsub(alt, "%$(%w+)", data) --dernière passe pour $name
-    
-    local file="$civilflag"  ;
-    if(garea.arealist[area]~=nil and garea.arealist[area]["flag"]~=nil) then
-        --flag adéquat
-        file=garea.arealist[area]["flag"]
-    end    
-    
-    pastimage=_getFlag(image,day,data)    
-    
-    file=string.gsub(file, "%$(%w+)", pastimage)
-    file=string.gsub(file, "%$(%w+)", pastimage)
-    
-    return '<span class="flagicon">' ..
-                '[[File:' .. file .. '|' .. size ..'px|' .. border .. alt ..']]' ..
-            '</span>';
-end
-
-function printData(text,area,extra)    
-    local target='';
-    local datagenre=text["genre"] or "ms"
-    if text["label"] ~= nil and garea.arealist[area] ~= nil then
-        target=string.gsub(garea.arealist[area]["regexp"], "%$(%w+)", garea.genre[datagenre])
-        target=string.gsub(target, "%$(%w+)", text)
-        target=string.gsub(target, "%$(%w+)", text) --dernière passe pour $name
-        target=string.gsub(target, "%$(%w+)", extra)
-        target=string.gsub(target, "%$(%w+)", "") --une toute dernière pour supprimer les non-attribués
-    end
-    --Cas spécial des ïles un Name commun avec un espace devant
-    --target=string.gsub(target, " République", " république") NON cf Usage_des_majuscules_en_français_lorsque_le_spécifique_est_un_adjectif
-    target=string.gsub(target, " Île", " île")
-    target=string.gsub(target, "'Île", "'île")
-    return target;
-end
-
-function _latinise_letters(tmparg)
-            --2>--remove case
-            tmparg=mw.ustring.lower(tmparg);
-            --2>--remove acccent
-            tmparg=mw.ustring.gsub(tmparg, "[áàâäãå]", "a");
-            tmparg=mw.ustring.gsub(tmparg, "[æ]", "ae");
-            tmparg=mw.ustring.gsub(tmparg, "[ç]", "c");
-            tmparg=mw.ustring.gsub(tmparg, "[éèêë]", "e");
-            tmparg=mw.ustring.gsub(tmparg, "[íìîï]", "i");
-            tmparg=mw.ustring.gsub(tmparg, "[ñ]", "n");
-            tmparg=mw.ustring.gsub(tmparg, "[óòôöõ]", "o");
-            tmparg=mw.ustring.gsub(tmparg, "[œ]", "oe");
-            tmparg=mw.ustring.gsub(tmparg, "[úùûü]", "u");
-            tmparg=mw.ustring.gsub(tmparg, "[ýÿ]", "y");
-
-            return tmparg;
-end
-
-function _latinise(tmparg)
-            --2>--remove case and accents
-            tmparg=_latinise_letters(tmparg);
-            --3>--remove ponct
-            tmparg=mw.ustring.gsub(tmparg, "[' -_]", "");
-            
-            return tmparg;
-end
-
-function _cletri(tmparg)
-    local country=tmparg;
-            --2>--remove case and accents
-            tmparg=_latinise_letters(tmparg);
-            --3>--remove ponct
-            tmparg=mw.ustring.gsub(tmparg, "['-_]", " ");
-            --4>--remove forme longue            
-            tmparg=mw.ustring.gsub(tmparg, "^republic ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^federation ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^union ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^island ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^from ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^of ", "");
-            tmparg=mw.ustring.gsub(tmparg, "^to ", "");
-            
-            return '<span class="datasortkey" data-sort-value="'..tmparg..'" style="display:none;">'..country..'</span>';
-end
-
-function flag.list(frame)
-    globalFrame = frame
-    local args = frame.args
-    local res="";
-    
-    if args[1] == nil then
-        local pFrame = frame:getRelative();
-        args = pFrame.args;
-        for k,v in pairs( frame.args ) do
-            args[k] = v;
-        end
-    end
-    if args[2] == nil then
-        args[2]=142 --France par défaut
-    end
-    
-
-    local extra={}
-    if(args[1]=='libelle') then    
-        res="{|class='wikitable sortable' \n!code!!descriptif!!exemple "..mw.wikibase.sitelink(gdata.data[142]["qid"] ).."!!exemple "..mw.wikibase.sitelink(gdata.data[31]["qid"] ).."!!exemple "..mw.wikibase.sitelink(gdata.data[30]["qid"] ).."\n|-\n"
-        for k,v in pairs( garea.arealist ) do
-            res= res .. "|<code>" .. k .. "<\code> ||".. v["desc"] .. "||" ..printData(gdata.data[142],k,extra) .. "||" ..printData(gdata.data[31],k,extra) .. "||" ..printData(gdata.data[30],k,extra) .. "\n|-\n"
-        end
-        res=res .. "|}"
-    end
-    if(args[1]=='country') then      
-        res="{|class='wikitable sortable' \n!Name!!Code CIO!!usage classique!!flag!!Équipe sportive (de football)!!Catégorie sport\n|-\n"
-        for k,v in pairs( gdata.data ) do
-            local cio=v["cio"] or ""
-		    if(args[3] == nil or v["group"] == args[3]) then
-            	res= res .. "|"..v["label"].."||<code>" .. cio .. "<\code> ||" .._cletri(v["label"])..printIcon(v,nil,"defaut",'20x15',"")..printData(v,"defaut",extra) .. "|| [[" ..printData(v,"flag",extra) .. "]] ||" ..printData(v,"football",extra) .. "||" ..printData(v,"sportcat",extra) .."\n|-\n"
-        	end
-        end
-        res=res .. "|}"
-    end
-    return res;
-
-end
-
-function flag.List(frame)
-    return flag.list(frame)
-end
-
-function flag.Country(frame)
-    globalFrame = frame
-    local args = frame.args
-    local tmparg;
-    if args[1] == nil then
-        local pFrame = frame:getRelative();
-        args = pFrame.args;
-        for k,v in pairs( frame.args ) do
-            args[k] = v;
-        end
-    end
-    
-    for i=1,10 do 
-        if args[i] == nil then 
-            args[i] = ""
-        else
-            --1>--remove whitespace
-            args[i]=args[i]:match( '^%s*(.-)%s*$' );
-        end        
-    end
-    local key=_latinise(args[1]);
-
-    --default
-    local size = args["size"] or '20x15'
-    if (args["area"] == nil) then args["area"] = 'defaut' else args["area"] = _latinise(args["area"]) end 
-    local align = args["align"] or 'left'
-    local link = args["link"] or 'yes'
-    local year = args[2] or args["year"] or ''    
-    local extra={}
-    if (args["competition"] ~= nil) then
-        extra["competition"] = " ".._getCompetition(_latinise(args["competition"]),args["edition"])
-    end
-    
-    local q=0;
-    local data;
-    if(#key==3) then
-        q=gdata.idByCIO[mw.ustring.upper(key)]
-    elseif(args["CIO"]~= nil) then
-        q=gdata.idByCIO[args["CIO"]]
-    else
-        q=gdata.idByName[key]        
-    end
-    local data=gdata.data[q];   
-    local image=gflag.flag[q];   
-    
-    local res='';
-    local reserror='';
-    --le country est inconnu !!
-    if(data == nil) then
-        data={qid="", flag="Flag_of_None.svg", label=args[1], sitelink="$label", cio=""
-            , genre="ms" , namelong="$label", gentileMS="$label",gentileFS="$label",gentileMP="$label",gentileFP="$label"}
-        reserror = reserror .. '<strong class="error">No country parametre</strong>'
-    end   
-     --on ajoute le gentillé en bas de casse
-	--data["gentileminiMS"]=mw.ustring.lower(data["gentileMS"]);
-	--data["gentileminiFS"]=mw.ustring.lower(data["gentileFS"]);
-	--data["gentileminiMP"]=mw.ustring.lower(data["gentileMP"]);
-	--data["gentileminiFP"]=mw.ustring.lower(data["gentileFP"]);
-    --clé automatique if(args["t"] == '1') then
-        res=res .. _cletri(data["label"]);
-    --end    
-    if(align == 'left') then
-        res=res .. printIcon(data,image,args["area"],size,year)..'&nbsp;';
-    end    
-    if(args["cible"] ~= nil) then
-        res=res .. args["cible"] .. '&nbsp;<span style="font-size:90%;" class="nowrap">(';
-    end
-    if(lien == 'yes' and data["label"] ~= '') then
-        res=res ..printData(data,args["area"],extra);
-    end
-    if(args["cible"] ~= nil) then
-        res=res  .. ')</span>';
-    end    
-    if(align == 'right') then
-        res=res .. '&nbsp;' .. printIcon(data,image,args["area"],size,year);
-    end
-    return res .. reserror;
-
+    gdata={};
+    gdata.qidByName={};
 end
 
 function flag.flag(frame)
@@ -330,16 +14,23 @@ function flag.flag(frame)
     if(frame.args[1]:sub(1,1) == 'Q') then
       qid = frame.args[1];
     else
-      qid = 'Q' .. gdata.qidByName[mw.ustring.lower(frame.args[1])];
+      qid = gdata.qidByName[mw.ustring.lower(frame.args[1])];
+        if(qid~=nil) then
+          qid = 'Q' .. gdata.qidByName[mw.ustring.lower(frame.args[1])];
+        end
     end
 
-    entity = mw.wikibase.getEntityObject(qid);
-    image = entity.claims["P41"][1].mainsnak.datavalue.value;
-    link = 'link='..entity:getLabel()..'|';
+    if(qid~=nil) then
+      entity = mw.wikibase.getEntityObject(qid);
+      image = entity.claims["P41"][1].mainsnak.datavalue.value;
+      link = 'link='..entity:getLabel()..'|';
 
-    res = '<span class="flagicon">' ..
+      res = '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link .. 'alt' ..']]' ..
             '</span>';
+    else
+      res = '';
+    end;
 
     return res;
 end
