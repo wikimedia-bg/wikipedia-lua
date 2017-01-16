@@ -1,5 +1,6 @@
 local p = {}
 local qidByName={}
+local qidByIso={}
 --[[
 <!--Country principaux-->
 ]]--
