@@ -265,10 +265,12 @@ qidByName['словакия']=214;
 qidByName['словения']=215;
 qidByName['соломонови острови']=685;
 qidByName['сомалия']=1045;
+qidByName['ссср']=15180;
 qidByName['судан']=1049;
 qidByName['суринам']=730;
 qidByName['съединени американски щати']=30;
 qidByName['сърбия']=403;
+qidByName['съюз на съветските социалистически републики']=15180;
 qidByName['таджикистан']=863;
 qidByName['тайван']=865;
 qidByName['тайланд']=869;
@@ -316,6 +318,9 @@ qidByName['южноафриканска република']=258;
 qidByName['ямайка']=766;
 qidByName['япония']=17;
 
+qidByIso['BGR'] = 219;
+
 p.qidByName=qidByName;
+p.qidByIso=qidByIso;
 
 return p
