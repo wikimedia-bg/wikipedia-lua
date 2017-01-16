@@ -7,18 +7,31 @@ if success then
 else
     gdata={};
     gdata.qidByName={};
+    gdata.qidByIso={};
 end
 
 function flag.flag(frame)
-    local qid = '';
-    if(frame.args[1]:sub(1,1) == 'Q') then
-      qid = frame.args[1];
-    else
-      qid = gdata.qidByName[mw.ustring.lower(frame.args[1])];
-        if(qid~=nil) then
-          qid = 'Q' .. gdata.qidByName[mw.ustring.lower(frame.args[1])];
-        end
-    end
+    local qid = nil;
+    local key = frame.args[1];
+
+    if(#key==3) then
+      qid = gdata.qidByIso[key];
+      if(qid~=nil) then
+        qid = 'Q' .. qid;
+      end;
+    end;
+
+    local key = mw.ustring.lower(key);
+    if(qid==nil) then
+      if(frame.args[1]:sub(1,1) == 'Q') then
+        qid = frame.args[1];
+      else
+        qid = gdata.qidByName[key];
+          if(qid~=nil) then
+            qid = 'Q' .. qid;
+          end
+      end
+    end;
 
     if(qid~=nil) then
       entity = mw.wikibase.getEntityObject(qid);
