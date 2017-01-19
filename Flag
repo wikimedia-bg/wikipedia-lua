@@ -37,11 +37,7 @@ end
 
 function flag.valid(frame)
     local qid = getqid(frame);
-    if (qid~=nil) then
-      return 1;
-    else
-      return 0;
-    end
+    return (qid~=nil);
 end
 
 function flag.flag(frame)
