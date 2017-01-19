@@ -10,7 +10,7 @@ else
     gdata.qidByIso={};
 end
 
-function flag.flag(frame)
+function getqid(frame)
     local qid = nil;
     local key = frame.args[1];
 
@@ -32,13 +32,23 @@ function flag.flag(frame)
           end
       end
     end;
+    return qid;
+end
+
+function flag.valid(frame)
+    local qid = getqid(frame);
+    return (qid~=nil);
+end
+
+function flag.flag(frame)
+    local qid = getqid(frame);
 
     if(qid~=nil) then
       local entity = mw.wikibase.getEntityObject(qid);
       local image = entity.claims["P41"][1].mainsnak.datavalue.value;
       local link = 'link='..entity:getLabel()..'|'..entity:getLabel();
 
-      res = '<span class="flagicon">' ..
+      local res = '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
             '</span>';
     else
