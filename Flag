@@ -53,7 +53,7 @@ function flag.flag(frame)
       local image = entity.claims["P41"][1].mainsnak.datavalue.value;
       local link = 'link='..entity:getLabel()..'|'..entity:getLabel();
 
-      local res = '<span class="flagicon">' ..
+      res = '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
             '</span>';
     end;
