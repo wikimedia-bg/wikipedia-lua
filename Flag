@@ -34,9 +34,9 @@ function flag.flag(frame)
     end;
 
     if(qid~=nil) then
-      entity = mw.wikibase.getEntityObject(qid);
-      image = entity.claims["P41"][1].mainsnak.datavalue.value;
-      link = 'link='..entity:getLabel()..'|'..entity:getLabel();
+      local entity = mw.wikibase.getEntityObject(qid);
+      local image = entity.claims["P41"][1].mainsnak.datavalue.value;
+      local link = 'link='..entity:getLabel()..'|'..entity:getLabel();
 
       res = '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
