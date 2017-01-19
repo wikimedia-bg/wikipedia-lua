@@ -46,6 +46,7 @@ end
 
 function flag.flag(frame)
     local qid = getqid(frame);
+    local res = '';
 
     if(qid~=nil) then
       local entity = mw.wikibase.getEntityObject(qid);
@@ -55,8 +56,6 @@ function flag.flag(frame)
       local res = '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
             '</span>';
-    else
-      res = '';
     end;
 
     return res;
