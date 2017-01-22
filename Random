@@ -24,8 +24,8 @@ cfg.seedRefreshRate = 60
 local p = {} -- For functions available from other Lua modules.
 local l = {} -- For functions not available from other Lua modules, but that need to be accessed using table keys.
 
-local yesno = require('Module:Yesno')
-local makeList = require('Module:List').makeList
+local yesno = require('Модул:Yesno')
+local makeList = require('Модул:List').makeList
 
 --------------------------------------------------------------------------------------
 -- Helper functions
