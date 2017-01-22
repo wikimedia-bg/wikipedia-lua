@@ -33,7 +33,7 @@ local makeList = require('Module:List').makeList
 
 local function raiseError(msg)
 	-- This helps to generate a wikitext error. It is the calling function's responsibility as to how to include it in the output.
-	return mw.ustring.format('<b class="error">[[Module:Random]] error: %s.</b>', msg)
+	return mw.ustring.format('<b class="error">[[Модул:Random]] error: %s.</b>', msg)
 end
 
 --------------------------------------------------------------------------------------
@@ -241,9 +241,9 @@ end
 --------------------------------------------------------------------------------------
 
 function l.html_list(args, listType)
-	-- Randomizes a list and turns it into an HTML list. Uses [[Module:List]].
+	-- Randomizes a list and turns it into an HTML list. Uses [[Модул:List]].
 	listType = listType or 'bulleted'
-	local listArgs = makeRandomList(args) -- Arguments for [[Module:List]].
+	local listArgs = makeRandomList(args) -- Arguments for [[Модул:List]].
 	for k, v in pairs(args) do
 		if type(k) == 'string' then
 			listArgs[k] = v
