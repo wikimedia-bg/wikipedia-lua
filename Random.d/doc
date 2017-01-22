@@ -1,0 +1,190 @@
+This module contains a number of functions that use random numbers. It can output random numbers, select a random item from a list, and reorder lists randomly. The randomly reordered lists can be output inline, or as various types of ordered and unordered lists. The available functions are outlined in more detail below.
+
+== Number ==
+
+The <code>number</code> function outputs a random number.
+
+ &#123;{#invoke:random|number|''m''|''n''|same=''yes''}}
+
+The arguments <code>m</code> and <code>n</code> may be omitted, but if specified must be convertible to integers.
+* With no arguments, returns a real number in the range <math>[0,1)</math>.
+* With one argument, returns an integer in the range <math>[1,m]</math>. <code>''m''</code> must be positive.
+* With two arguments, returns an integer in the range <math>[m,n]</math>. <code>''m''</code> and <code>''n''</code> can be either positive or negative. If <code>''m''</code> is greater than <code>''n''</code>, returns an integer in the range <math>[n,m]</math> instead.
+* If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the same random number is returned for each module call on a given page.
+
+'''Examples''' <small>({{purge|refresh|anchor=Number}})</small>
+
+* <code><nowiki>{{#invoke:random|number}}</nowiki></code> &rarr; {{#invoke:random|number}}
+* <code><nowiki>{{#invoke:random|number|100}}</nowiki></code> &rarr; {{#invoke:random|number|100}}
+* <code><nowiki>{{#invoke:random|number|-100|-50}}</nowiki></code> &rarr; {{#invoke:random|number|-100|-50}}
+* <code><nowiki>{{#invoke:random|number|100|same=yes}}</nowiki></code> &rarr; {{#invoke:random|number|100|same=yes}}
+* <code><nowiki>{{#invoke:random|number|100|same=yes}}</nowiki></code> &rarr; {{#invoke:random|number|100|same=yes}}
+
+<small>The documentation for this function is partly taken from the [[mw:Extension:Scribunto/Lua reference manual#math.random|Scribunto Lua reference manual]], which is in turn based on the [http://www.lua.org/manual/5.1/index.html Lua 5.1 Reference Manual], available under the [[MIT License]].</small>
+
+== Date ==
+
+The <code>date</code> function outputs a random date.
+
+ &#123;{#invoke:random|date|''timestamp1''|''timestamp2''|format=''date format''|same=''yes''}}
+
+* If no timestamp arguments are specified, the module outputs a random date in the current year.
+* If <code>''timestamp1''</code> and <code>''timestamp2''</code> are specified, the module outputs a random date between the two timestamps. <code>''timestamp1''</code> must be earlier than <code>''timestamp2''</code>.
+* If only <code>''timestamp1''</code>is specified, the module outputs a random date between the [[Unix epoch]] (1 Jan 1970) and the timestamp. <code>''timestamp1''</code> must not be earlier than 1 Jan 1970.
+* Formatting can be specified with the {{para|format}} parameter. The default formatting is "hh:mm, DD Month YYYY (UTC)" (the same as the default Wikipedia timestamp). 
+* The timestamps and the {{para|format}} parameter accept values compatible with the [[mw:Help:Extension:ParserFunctions##time|#time parser function]]. Please see the #time documentation for the full range of possible input values and formatting options.
+* If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the same date is returned for each module call on a given page.
+
+'''Examples''' <small>({{purge|refresh|anchor=Date}})</small>
+
+* <code><nowiki>{{#invoke:random|date}}</nowiki></code> &rarr; {{#invoke:random|date}}
+* <code><nowiki>{{#invoke:random|date|format=F j}}</nowiki></code> &rarr; {{#invoke:random|date|format=F j}}
+* <code><nowiki>{{#invoke:random|date|1 Jan 1980|31 Dec 1999}}</nowiki></code> &rarr; {{#invoke:random|date|1 Jan 1980|31 Dec 1999}}
+* <code><nowiki>{{#invoke:random|date|1st January 1500|1st January 3000|format=g:i a, l d M Y}}</nowiki></code> &rarr; {{#invoke:random|date|1st January 1500|1st January 3000|format=g:i a, l d M Y}}
+* <code><nowiki>{{#invoke:random|date|1970/06/01}}</nowiki></code> &rarr; {{#invoke:random|date|1970/06/01}}
+* <code><nowiki>{{#invoke:random|date|same=yes}}</nowiki></code> &rarr; {{#invoke:random|date|same=yes}}
+* <code><nowiki>{{#invoke:random|date|same=yes}}</nowiki></code> &rarr; {{#invoke:random|date|same=yes}}
+
+== Item ==
+
+The <code>item</code> function outputs a random item from a list.
+
+ &#123;{#invoke:random|item|''list item 1''|''list item 2''|''list item 3''|...|same=''yes''}}
+
+If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the same item is returned for each module call on a given page.
+
+'''Example''' <small>({{purge|refresh|anchor=Item}})</small>
+
+* <code><nowiki>{{#invoke:random|item|egg|beans|sausage|bacon|spam}}</nowiki></code> &rarr; {{#invoke:random|item|egg|beans|sausage|bacon|spam}}
+* <code><nowiki>{{#invoke:random|item|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|item|egg|beans|sausage|bacon|spam|same=yes}}
+* <code><nowiki>{{#invoke:random|item|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|item|egg|beans|sausage|bacon|spam|same=yes}}
+
+== List ==
+
+The <code>list</code> function outputs a list in a random order.
+
+ &#123;{#invoke:random|list|''list item 1''|''list item 2''|''list item 3''|...|sep=''separator''|limit=''number of items to display''|same=''yes''}}
+
+'''Named parameters'''
+* {{para|sep}} or {{para|separator}} - an optional separator for the list items. Some values are special; see the table below. 
+* {{para|limit}} - the maximum number of list items to display. The lowest possible is 0 and the highest possible is the length of the list.
+* {{para|same}} - if this is set to "yes", "y", "true", or "1", the list order is the same for each module call on a given page.
+
+{| class="wikitable"
+|+ Possible separator values
+|-
+! Code !! Output
+|-
+| <code>dot</code> || {{int:dot-separator}}
+|-
+| <code>pipe</code> 
+|| {{int:pipe-separator}}
+|-
+| <code>comma</code> || {{int:comma-separator}}
+|-
+| <code>tpt-languages</code> || {{int:tpt-languages-separator}}
+|-
+| <code>space</code> || ''a space''
+|-
+| <code>newline</code> || ''a newline character''
+|-
+| ''any other value'' || ''other values are used without modification''
+|}
+
+You cannot input spaces directly to the {{para|sep}} parameter due to limitations in MediaWiki's template syntax. However, it is possible to work around this by using [[HTML entities]]. You can use <code>&amp;#32;</code> to represent a normal space, and <code>&amp;nbsp;</code> to represent a [[non-breaking space]].
+
+'''Examples''' <small>({{purge|refresh|anchor=List}})</small>
+
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=dot}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=dot}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=space}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=space}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=;&amp;#32;}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=;&#32;}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=foo}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|sep=foo}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|limit=3}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|limit=3}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|same=yes}}
+* <code><nowiki>{{#invoke:random|list|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|list|egg|beans|sausage|bacon|spam|same=yes}}
+
+== Text list ==
+
+The <code>text_list</code> function outputs a list in a random order, text-style. In other words, it is like the <code>list</code> function, but with a different separator before the last item.
+
+ &#123;{#invoke:random|text_list|''list item 1''|''list item 2''|''list item 3''|...|sep=''separator''|conj=''conjunction''|limit=''number of items to display''|same=''yes''}}
+
+The separator can be specified with either the {{para|sep}} or {{para|separator}} parameters; its default value is "{{int:comma-separator}}". The conjunction can be specified with either the {{para|conj}} or {{para|conjunction}} parameters; its default value is " and ". The separator and the conjunction can be specified with the same values as the separator in the [[#List|list function]].
+
+The maximum number of list items to display can be set with the {{para|limit}} parameter. The lowest possible is 0 and the highest possible is the length of the list.
+
+If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the list order is the same for each module call on a given page.
+
+'''Examples''' <small>({{purge|refresh|anchor=Text list}})</small>
+
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam}}
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam|sep=;&amp;#32;}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam|sep=;&#32;}}
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam|sep=;&amp;#32;|conj=&amp;#32;or&amp;#32;}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam|sep=;&#32;|conj=&#32;or&#32;}}
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam|limit=3}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam|limit=3}}
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam|same=yes}}
+* <code><nowiki>{{#invoke:random|text_list|egg|beans|sausage|bacon|spam|same=yes}}</nowiki></code> &rarr; {{#invoke:random|text_list|egg|beans|sausage|bacon|spam|same=yes}}
+
+== HTML lists ==
+
+If you wish to output an HTML list in a random order, you can choose between five different functions: <code>bulleted_list</code>, <code>unbulleted_list</code>, <code>horizontal_list</code>, <code>ordered_list</code>, and <code>horizontal_ordered_list</code>. These functions all use [[Module:List]].
+
+{| class="wikitable"
+|-
+! Function name
+! Produces
+! Example code
+! Example output <small>({{purge|refresh|anchor=HTML lists}})</small>
+|-
+| <code>bulleted_list</code>
+| Bulleted lists
+| <code><nowiki>{{#invoke:random|bulleted_list|egg|sausage|spam}}</nowiki></code>
+| {{#invoke:random|bulleted_list|egg|sausage|spam}}
+|-
+| <code>unbulleted_list</code>
+| Unbulleted lists
+| <code><nowiki>{{#invoke:random|unbulleted_list|egg|sausage|spam}}</nowiki></code>
+| {{#invoke:random|unbulleted_list|egg|sausage|spam}}
+|-
+| <code>horizontal_list</code>
+| Horizontal bulleted lists
+| <code><nowiki>{{#invoke:random|horizontal_list|egg|sausage|spam}}</nowiki></code>
+| {{#invoke:random|horizontal_list|egg|sausage|spam}}
+|-
+| <code>ordered_list</code>
+| Ordered lists (numbered lists and alphabetical lists)
+| <code><nowiki>{{#invoke:random|ordered_list|egg|sausage|spam}}</nowiki></code>
+| {{#invoke:random|ordered_list|egg|sausage|spam}}
+|-
+| <code>horizontal_ordered_list</code>
+| Horizontal ordered lists
+| <code><nowiki>{{#invoke:random|horizontal_ordered_list|egg|sausage|spam}}</nowiki></code>
+| {{#invoke:random|horizontal_ordered_list|egg|sausage|spam}}
+|}
+
+; Basic usage
+
+ &#123;{#invoke:random|''function''|''list item 1''|''list item 2''|''list item 3''|...|limit=''number of items to display''|same=''yes''}}
+
+; All parameters
+
+{{pre2|
+<nowiki>{{</nowiki>#invoke:random<nowiki>|</nowiki>''function''
+<nowiki>|</nowiki>''first item''<nowiki>|</nowiki>''second item''<nowiki>|</nowiki>''third item''<nowiki>|</nowiki>...
+<nowiki>|start           = </nowiki>''start number for ordered lists''
+<nowiki>|type            = </nowiki>''type of marker for ordered lists''
+<nowiki>|list_style_type = </nowiki>''type of marker for ordered lists (uses CSS)''
+<nowiki>|class           = </nowiki>''class''
+<nowiki>|style           = </nowiki>''style''
+<nowiki>|list_style      = </nowiki>''style for the list''
+<nowiki>|item_style      = </nowiki>''style for all list items''
+<nowiki>|item_style1     = </nowiki>''style for the first list item''<nowiki> |item_style2 = </nowiki>''style for the second list item''<nowiki> |</nowiki>...
+<nowiki>|indent          = </nowiki>''indent for horizontal lists''
+<nowiki>}}</nowiki>
+}}
+
+The maximum number of list items to display can be set with the {{para|limit}} parameter. The lowest possible is 0 and the highest possible is the length of the list.
+
+If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the list order is the same for each module call on a given page.
+
+Please see [[Module:List]] for a full explanation of the other parameters.
