@@ -35,6 +35,28 @@ function getqid(frame)
     return qid;
 end
 
+local function startTime(claim)
+	local claimqualifs = claim.qualifiers
+	if not claimqualifs then
+		return nil
+	end
+	local vals = claimqualifs['P580']
+	if vals and (vals[1].snaktype == 'value') then
+		return vals[1].datavalue.value.time
+	end
+end
+
+local function endTime(claim)
+	local claimqualifs = claim.qualifiers
+	if not claimqualifs then
+		return nil
+	end
+	local vals = claimqualifs['P582']
+	if vals and (vals[1].snaktype == 'value') then
+		return vals[1].datavalue.value.time
+	end
+end
+
 function flag.valid(frame)
     local qid = getqid(frame);
     return (qid~=nil);
