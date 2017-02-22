@@ -12,7 +12,7 @@ end
 
 function getqid(frame)
     local qid = nil;
-    local key = frame.args[1];
+    local key = mw.text.trim(frame.args[1]);
 
     if(#key==3) then
       qid = gdata.qidByIso[key];
