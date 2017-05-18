@@ -14,12 +14,14 @@ local keywords = {
     group = 'group',
     xlegend = 'x legends',
     tooltip = 'tooltip',
+    accumulateTooltip = 'tooltip value accumulation',
     links = 'links',
     defcolor = 'default color',
     scalePerGroup = 'scale per group',
     unitsPrefix = 'units prefix',
     unitsSuffix = 'units suffix',
     groupNames = 'group names',
+    hideGroupLegends = 'hide group legends',
     slices = 'slices',
     slice = 'slice',
     radius = 'radius',
@@ -28,18 +30,19 @@ local keywords = {
 } -- here is what you want to translate
 
 local defColors = require "Module:Plotter/DefaultColors"
+local hideGroupLegends
 
 local function nulOrWhitespace( s )
     return not s or mw.text.trim( s ) == ''
 end
 
 local function createGroupList( tab, legends, cols )
-    if #legends > 1 then
+    if #legends > 1 and not hideGroupLegends then
         table.insert( tab, mw.text.tag( 'div' ) )
         local list = {}
-        local spanStyle = "padding:0 1em;background-color:%s;box-shadow:2px -1px 4px 0 silver;margin-right:1em;"
+        local spanStyle = "padding:0 1em;background-color:%s;border:1px solid %s;margin-right:1em;-webkit-print-color-adjust:exact;"
         for gi = 1, #legends do
-            local span = mw.text.tag( 'span', { style = string.format( spanStyle, cols[gi] ) }, '&nbsp;' ) .. ' '..  legends[gi]
+            local span = mw.text.tag( 'span', { style = string.format( spanStyle, cols[gi], cols[gi] ) }, '&nbsp;' ) .. ' '..  legends[gi]
             table.insert( list, mw.text.tag( 'li', {}, span ) )
         end
         table.insert( tab,
@@ -76,6 +79,7 @@ function pieChart( frame )
         end
         
         radius = getArg( 'radius', 150 )
+        hideGroupLegends = not nulOrWhitespace( args[keywords.hideGroupLegends] )
         local slicesStr = getArg( 'slices' )
         local prefix = getArg( 'unitsPrefix', '', '_', ' ' )
         local suffix = getArg( 'unitsSuffix', '', '_', ' ' )
@@ -107,7 +111,7 @@ function pieChart( frame )
     end
 
     function createImageMap()
-        addRes( '{{#tag:imagemap|', 'Image:Circle frame white.svg{{!}}' .. ( radius * 2 ) .. 'px' )
+        addRes( '{{#tag:imagemap|', 'Image:Circle frame.svg{{!}}' .. ( radius * 2 ) .. 'px' )
         addRes( unpack( imslices ) )
         addRes( 'desc none', '}}' )
     end
@@ -169,7 +173,7 @@ function pieChart( frame )
 
     analyzeParams()
     if #values == 0 then error( "no slices found - can't draw pie chart" ) end
-    addRes( mw.text.tag( 'div', { style = string.format( "max-width:%spx", radius * 2 ) } ) )
+    addRes( mw.text.tag( 'div', { class = 'chart', style = string.format( 'margin-top:0.5em;max-width:%spx;', radius * 2 ) } ) )
     addRes( mw.text.tag( 'div', { style = string.format( 'position:relative;min-width:%spx;min-height:%spx;max-width:%spx;overflow:hidden;', radius * 2, radius * 2, radius * 2 ) } ) )
     createSlices()
     addRes( mw.text.tag( 'div', { style = string.format( 'position:absolute;min-width:%spx;min-height:%spx;overflow:hidden;', radius * 2, radius * 2 ) } ) )
@@ -187,8 +191,8 @@ function barChart( frame )
     local args = frame.args -- can be changed to frame:getParent().args
     local values, xlegends, colors, tooltips, yscales = {}, {}, {}, {} ,{}, {}, {}
     local groupNames, unitsSuffix, unitsPrefix, links = {}, {}, {}, {}
-    local width, height, stack, delimiter = 500, 350, false, ':'
-    local chartWidth, chartHeight, defcolor, scalePerGroup
+    local width, height, stack, delimiter = 500, 350, false, args.delimiter or ':'
+    local chartWidth, chartHeight, defcolor, scalePerGroup, accumulateTooltip
 
 
     local numGroups, numValues
@@ -203,7 +207,7 @@ function barChart( frame )
                 for i = 2, numGroups do tab[i] = tab[1] end
             end
             if #tab > 0 and #tab ~= numGroups then
-                error ( keywords[name] .. ' should contain the same number of items as the number of groups (' .. numGroups .. ')')
+                error ( keywords[name] .. ' must contain the same number of items as the number of groups, but it contains ' .. #tab .. ' items and there are ' .. numGroups .. ' groups')
             end
         end
 
@@ -257,6 +261,8 @@ function barChart( frame )
             elseif k == keywords.stack then stack = true
             elseif k == keywords.scalePerGroup then scalePerGroup = true
             elseif k == keywords.defcolor then defcolor = v
+            elseif k == keywords.accumulateTooltip then accumulateTooltip = not nulOrWhitespace( v )
+            elseif k == keywords.hideGroupLegends then hideGroupLegends = not nulOrWhitespace( v )
             else
                 for keyword, tab in pairs( {
                     group = values,
@@ -283,7 +289,7 @@ function barChart( frame )
         return ordermag * top, top, ordermag
     end
 
-    function calcHeightLimits() -- if limits were passed by user, use ithem, otherwise calculate. for "stack" there's only one limet.
+    function calcHeightLimits() -- if limits were passed by user, use them, otherwise calculate. for "stack" there's only one limet.
         if stack then
             local sums = {}
             for _, group in pairs( values ) do
@@ -294,7 +300,7 @@ function barChart( frame )
         else
             for i, group in ipairs( values ) do yscales[i] = math.max( unpack( group ) ) end
         end
-        for i, scale in ipairs( yscales ) do yscales[i] = roundup( scale ) end
+        for i, scale in ipairs( yscales ) do yscales[i] = roundup( scale * 0.9999 ) end
         if not scalePerGroup then for i = 1, #values do yscales[i] = math.max( unpack( yscales ) ) end end
     end
 
@@ -307,7 +313,7 @@ function barChart( frame )
     end
 
     function calcHeights( gi, i, val )
-        local barHeight = math.floor( val / yscales[gi] * chartHeight + 0.5 ) -- add half to make it "round" insstead of "trunc"
+        local barHeight = math.floor( val / yscales[gi] * chartHeight + 0.5 ) -- add half to make it "round" instead of "trunc"
         local top, base = chartHeight - barHeight, 0
         if stack then
             local rawbase = 0
@@ -325,7 +331,7 @@ function barChart( frame )
 
     function calcx( gi, i )
         local setOffset, setWidth = groupBounds( i )
-        if stack then
+        if stack or numGroups == 1 then
             local barWidth = math.min( 38, math.floor( 0.8 * setWidth ) )
             return setOffset + (setWidth - barWidth) / 2, barWidth
         end
@@ -335,12 +341,13 @@ function barChart( frame )
         return left, barWidth
     end
 
-    function drawbar( gi, i, val )
-        local color, tooltip, custom = colors[gi] or defcolor or 'blue', tooltip( gi, i, val )
+    function drawbar( gi, i, val, ttval )
+        local color, tooltip, custom = colors[gi] or defcolor or 'blue', tooltip( gi, i, ttval or val )
         local left, barWidth = calcx( gi, i )
         local barHeight, top = calcHeights( gi, i, val )
-        local style = string.format("position:absolute;left:%spx;top:%spx;height:%spx;min-width:%spx;max-width:%spx;background-color:%s;box-shadow:2px -1px 4px 0 silver;overflow:hidden;",
-                        left, top, barHeight, barWidth, barWidth, color)
+        -- borders so it shows up when printing
+        local style = string.format("position:absolute;left:%spx;top:%spx;height:%spx;min-width:%spx;max-width:%spx;background-color:%s;-webkit-print-color-adjust:exact;border:1px solid %s;border-bottom:none;overflow:hidden;",
+                        left, top, barHeight-1, barWidth-2, barWidth-2, color, color)
         local link = links[gi] and links[gi][i] or ''
         local img = not nulOrWhitespace( link ) and mw.ustring.format( '[[File:Transparent.png|1000px|link=%s|%s]]', link, custom and tooltip or '' ) or ''
         table.insert( res, mw.text.tag( 'div', { style = style, title = tooltip, }, img ) )
@@ -391,20 +398,22 @@ function barChart( frame )
             if not nulOrWhitespace( xlegends[i] ) then
                 setOffset, setWidth = groupBounds( i )
                 -- setWidth = 0.85 * setWidth
-                table.insert( res, mw.text.tag( 'div', { style = string.format( legendDivStyleFormat, setOffset - 5, setWidth - 10, setWidth - 10 ) }, xlegends[i] or '' ) )
+                table.insert( res, mw.text.tag( 'div', { style = string.format( legendDivStyleFormat, setOffset + 5, setWidth - 10, setWidth - 10 ) }, xlegends[i] or '' ) )
                 table.insert( res, mw.text.tag( 'div', { style = string.format( tickDivstyleFormat, setOffset + setWidth / 2 ) }, '' ) )
             end
         end
     end
 
     function drawChart()
-        table.insert( res, mw.text.tag( 'div', { style = string.format( 'max-width:%spx;', width ) } ) )
+        table.insert( res, mw.text.tag( 'div', { class = 'chart', style = string.format( 'margin-top:1em;max-width:%spx;', width ) } ) )
         table.insert( res, mw.text.tag( 'div', { style = string.format("position:relative;min-height:%spx;min-width:%spx;max-width:%spx;", height, width, width ) } ) )
 
         table.insert( res, mw.text.tag( 'div', { style = string.format("float:right;position:relative;min-height:%spx;min-width:%spx;max-width:%spx;border-left:1px black solid;border-bottom:1px black solid;", chartHeight, chartWidth, chartWidth ) } ) )
+        local acum = stack and accumulateTooltip and {}
         for gi, group in pairs( values ) do
             for i, val in ipairs( group ) do
-                drawbar( gi, i, val )
+                if acum then acum[i] = ( acum[i] or 0 ) + val end
+                drawbar( gi, i, val, acum and acum[i] )
             end
         end
         table.insert( res, '</div>' )
