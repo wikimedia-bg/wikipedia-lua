@@ -363,7 +363,7 @@ function barChart( frame )
                     or top
             local valStyleStr =
                 single and 'position:absolute;height=20px;text-align:right;vertical-align:middle;width:%spx;top:%spx;padding:0 2px'
-                or 'position:absolute;height=20px;text-align:right;vertical-align:middle;width:%spx;top:%spx;left:3px;background-color:%s;color:white;font-weight:bold;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;padding:0 2px'
+                or 'position:absolute;height=20px;text-align:right;vertical-align:middle;width:%spx;top:%spx;left:3px;background-color:%s;color:white;font-weight:bold;word-break:keep-all;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;padding:0 2px'
             local notchStyleStr = 'position:absolute;height=1px;min-width:5px;top:%spx;left:%spx;border:1px solid %s;'
             for i = 1, numnotches do
                 local val = i / numnotches * yscale
