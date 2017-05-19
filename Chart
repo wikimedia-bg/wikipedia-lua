@@ -392,7 +392,7 @@ function barChart( frame )
 
     function drawXlegends()
         local setOffset, setWidth
-        local legendDivStyleFormat = "position:absolute;left:%spx;top:10px;min-width:%spx;max-width:-1px;text-align:center;vertical-align:top;"
+        local legendDivStyleFormat = "position:absolute;left:%spx;top:10px;min-width:%spx;text-align:center;vertical-align:top;"
         local tickDivstyleFormat = "position:absolute;left:%spx;height:10px;width:1px;border-left:1px solid black;"
         for i = 1, numValues do
             if not nulOrWhitespace( xlegends[i] ) then
