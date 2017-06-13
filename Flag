@@ -36,25 +36,29 @@ function getqid(frame)
 end
 
 local function startTime(claim)
+        res = "-3001-12-31T00:00:00Z"
 	local claimqualifs = claim.qualifiers
 	if not claimqualifs then
-		return ''
+		return res
 	end
 	local vals = claimqualifs['P580']
 	if vals and (vals[1].snaktype == 'value') then
 		return vals[1].datavalue.value.time
 	end
+        return res
 end
 
 local function endTime(claim)
+        res = "+3001-12-31T00:00:00Z"
 	local claimqualifs = claim.qualifiers
 	if not claimqualifs then
-		return ''
+		return res
 	end
 	local vals = claimqualifs['P582']
 	if vals and (vals[1].snaktype == 'value') then
-		return vals[1].datavalue.value.time
+		res = vals[1].datavalue.value.time
 	end
+        return res
 end
 
 local function splitWDdate(str) -- depuis datavalue.value.time de Wikidata, fonctionnerait aussi en utilisant simplement splitISO
