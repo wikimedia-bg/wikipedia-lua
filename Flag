@@ -1,0 +1,154 @@
+flag = {};
+
+local gdata;
+local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" );
+if success then
+    gdata = resultat;
+else
+    gdata={};
+    gdata.qidByName={};
+    gdata.qidByIso={};
+end
+
+function getqid(frame)
+    local qid = nil;
+    local key = mw.text.trim(frame.args[1]);
+
+    if(#key==3) then
+      qid = gdata.qidByIso[key];
+      if(qid~=nil) then
+        qid = 'Q' .. qid;
+      end;
+    end;
+
+    local key = mw.ustring.lower(key);
+    if(qid==nil) then
+      if(frame.args[1]:sub(1,1) == 'Q') then
+        qid = frame.args[1];
+      else
+        qid = gdata.qidByName[key];
+          if(qid~=nil) then
+            qid = 'Q' .. qid;
+          end
+      end
+    end;
+    return qid;
+end
+
+local function startTime(claim)
+        res = "-3001-12-31T00:00:00Z"
+	local claimqualifs = claim.qualifiers
+	if not claimqualifs then
+		return res
+	end
+	local vals = claimqualifs['P580']
+	if vals and (vals[1].snaktype == 'value') then
+		return vals[1].datavalue.value.time
+	end
+        return res
+end
+
+local function endTime(claim)
+        res = "+3001-12-31T00:00:00Z"
+	local claimqualifs = claim.qualifiers
+	if not claimqualifs then
+		return res
+	end
+	local vals = claimqualifs['P582']
+	if vals and (vals[1].snaktype == 'value') then
+		res = vals[1].datavalue.value.time
+	end
+        return res
+end
+
+local function splitWDdate(str) -- depuis datavalue.value.time de Wikidata, fonctionnerait aussi en utilisant simplement splitISO
+	local pattern = "(%W)(%d+)%-(%d+)%-(%d+)"
+	local era, year, month, day = str:match(pattern)
+	return era, year, month, day
+end
+
+local function splitISO(str)
+	local era, year, month, day
+	era = string.sub(str, 1, 1)
+	if tonumber(era) then
+		era = '+'
+	end
+	local f = string.gmatch(str, '%d+')
+	year, month, day = f(), f(), f()
+	return era, year, month, day
+end
+
+local function splitDate(orig, calendar)
+	if not orig then
+		return nil
+	end
+	if type(orig) == 'table' then
+		return orig
+	end
+	if type(orig) ~= 'string' then
+		return error("bad datatype for date, string expected, got " .. type(orig))
+	end
+	local era, y, m, d = splitWDdate(orig) 
+	if not era then
+		era, y, m, d = splitISO(orig)
+	end
+
+	y, m, d = tonumber(y or 1), tonumber(m or 1), tonumber(d or 1)
+	return {day = d, month = m, year = y, era = era, type = 'dateobject', calendar = calendar}
+end
+
+local function before(a, b) -- return true if b is before a or if at least one of a or b is missing
+	a = splitDate(a) 
+	b = splitDate(b)
+	if (not a) or (not b) then
+		return true
+	end
+	local order = {'era', 'year', 'month', 'day'}
+	for i, j in pairs(order) do
+		if b[j] < a[j] then
+			return true
+		elseif b[j] > a[j] then
+			return false
+		end
+	end
+	return true
+end
+
+local function atTime(claimlist, time)
+	for i, j in pairs(claimlist) do
+	  if (before(time, startTime(j)) and before(endTime(j), time)) then
+            return j;
+	  end
+	end
+	return nil;
+end
+
+function flag.valid(frame)
+    local qid = getqid(frame);
+    return (qid~=nil);
+end
+
+function flag.flag(frame)
+    local qid = getqid(frame);
+    local res = '';
+
+    if(qid~=nil) then
+      local entity = mw.wikibase.getEntityObject(qid);
+      local link = 'link='..entity:getLabel()..'|'..entity:getLabel();
+
+      local flaglist = entity.claims["P41"];
+      local flagitem = atTime(flaglist, frame.args[2]);
+      if (flagitem == nil) then
+        flagitem = flaglist[1];
+      end
+      local image = flagitem.mainsnak.datavalue.value;
+
+      res = '<span class="flagicon">' ..
+                '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
+            '</span>';
+    end;
+
+    return res;
+end
+
+return flag
