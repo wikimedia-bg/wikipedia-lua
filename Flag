@@ -123,6 +123,16 @@ local function atTime(claimlist, time)
 	return nil;
 end
 
+local function atMaxTime(claimlist)
+        local res = claimlist[1];
+	for i, j in pairs(claimlist) do
+	  if before(startTime(j), startTime(res)) then
+            res = j;
+	  end
+        end
+	return res;
+end
+
 function flag.valid(frame)
     local qid = getqid(frame);
     return (qid~=nil);
@@ -139,7 +149,7 @@ function flag.flag(frame)
       local flaglist = entity.claims["P41"];
       local flagitem = atTime(flaglist, frame.args[2]);
       if (flagitem == nil) then
-        flagitem = flaglist[1];
+        flagitem = atMaxTime(flaglist);
       end
       local image = flagitem.mainsnak.datavalue.value;
 
