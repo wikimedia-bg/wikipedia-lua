@@ -10,7 +10,7 @@ else
     gdata.qidByIso={};
 end
 
-function getqid(frame)
+local function getqid(frame)
     local qid = nil;
     local key = mw.text.trim(frame.args[1]);
 
