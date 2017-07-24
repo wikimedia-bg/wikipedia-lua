@@ -468,6 +468,18 @@ function str.latin( frame )
     end
 end
 
+--[[ 
+    simple function to pipe string.rep to templates.
+]]
+
+function str.rep( frame )
+    local repetitions = tonumber( frame.args[2] )
+    if not repetitions then 
+        return str._error( 'function rep expects a number as second parameter, received "' .. ( frame.args[2] or '' ) .. '"' )
+    end
+    return string.rep( frame.args[1] or '', repetitions )
+end
+
 --[[
 Returns linked page from potential link
 ]]
