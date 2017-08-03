@@ -10,31 +10,6 @@ else
     gdata.qidByIso={};
 end
 
-local function getqid(frame)
-    local qid = nil;
-    local key = mw.text.trim(frame.args[1]);
-
-    if(#key==3) then
-      qid = gdata.qidByIso[key];
-      if(qid~=nil) then
-        qid = 'Q' .. qid;
-      end;
-    end;
-
-    local key = mw.ustring.lower(key);
-    if(qid==nil) then
-      if(frame.args[1]:sub(1,1) == 'Q') then
-        qid = frame.args[1];
-      else
-        qid = gdata.qidByName[key];
-          if(qid~=nil) then
-            qid = 'Q' .. qid;
-          end
-      end
-    end;
-    return qid;
-end
-
 local function startTime(claim)
         res = "-3001-12-31T00:00:00Z"
 	local claimqualifs = claim.qualifiers
@@ -133,13 +108,38 @@ local function atMaxTime(claimlist)
 	return res;
 end
 
+function flag.getqid(frame)
+    local qid = nil;
+    local key = mw.text.trim(frame.args[1]);
+
+    if(#key==3) then
+      qid = gdata.qidByIso[key];
+      if(qid~=nil) then
+        qid = 'Q' .. qid;
+      end;
+    end;
+
+    local key = mw.ustring.lower(key);
+    if(qid==nil) then
+      if(frame.args[1]:sub(1,1) == 'Q') then
+        qid = frame.args[1];
+      else
+        qid = gdata.qidByName[key];
+          if(qid~=nil) then
+            qid = 'Q' .. qid;
+          end
+      end
+    end;
+    return qid;
+end
+
 function flag.valid(frame)
-    local qid = getqid(frame);
+    local qid = flag.getqid(frame);
     return (qid~=nil);
 end
 
 function flag.flag(frame)
-    local qid = getqid(frame);
+    local qid = flag.getqid(frame);
     local res = '';
 
     if(qid~=nil) then
