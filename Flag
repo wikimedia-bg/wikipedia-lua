@@ -154,7 +154,7 @@ function flag.flag(frame)
       local image = flagitem.mainsnak.datavalue.value;
 
       res = '<span class="flagicon">' ..
-                '[[Файл:' .. image .. '|' .. '20' ..'px|border|' .. link ..']]' ..
+                '[[Файл:' .. image .. '|' .. frame.args[3] ..'px|border|' .. link ..']]' ..
             '</span>';
     end;
 
