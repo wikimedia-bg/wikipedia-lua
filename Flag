@@ -138,6 +138,30 @@ function flag.valid(frame)
     return (qid~=nil);
 end
 
+function flag.flagwithiso(frame)
+    local qid = flag.getqid(frame);
+    local res = '';
+
+    if(qid~=nil) then
+      local entity = mw.wikibase.getEntityObject(qid);
+      local label = entity:getLabel();
+      local link = 'link='..label..'|'..label;
+
+      local flaglist = entity.claims["P41"];
+      local flagitem = atTime(flaglist, frame.args[2]);
+      if (flagitem == nil) then
+        flagitem = atMaxTime(flaglist);
+      end
+      local image = flagitem.mainsnak.datavalue.value;
+
+      res = '<span class="flagicon">' ..
+                '[[Файл:' .. image .. '|' .. frame.args[3] ..'px|border|' .. link ..']]' ..
+            '</span>'..' [['..label..'|'..frame.args[1]..']]';
+    end;
+
+    return res;
+end
+
 function flag.flag(frame)
     local qid = flag.getqid(frame);
     local res = '';
