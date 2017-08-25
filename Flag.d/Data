@@ -887,6 +887,8 @@ qidByIso['YUG'] = 838261;
 qidByIso['ZAF'] = 258;
 qidByIso['ZMB'] = 953;
 qidByIso['ZWE'] = 954;
+qidByIso['USSR'] = 15180;  --[[ <!--not in ISO--> ]]--
+qidByIso['UkSSR']=133356;
 
 p.qidByName=qidByName;
 p.qidByIso=qidByIso;
