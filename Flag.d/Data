@@ -819,6 +819,7 @@ qidByIso['PSE'] = 407199;
 qidByIso['PYF'] = 30971;
 qidByIso['QAT'] = 846;
 qidByIso['REU'] = 17070;
+qidByIso['ROC'] = 865;  --[[ <!--not in ISO--> ]]--
 qidByIso['ROU'] = 218;
 qidByIso['RUS'] = 159;
 qidByIso['RWA'] = 1037;
