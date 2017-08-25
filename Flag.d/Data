@@ -840,6 +840,7 @@ qidByIso['SPM'] = 34617;
 qidByIso['SRB'] = 403;
 qidByIso['SSD'] = 958;
 qidByIso['STP'] = 1039;
+qidByIso['SUN'] = 15180;
 qidByIso['SUR'] = 730;
 qidByIso['SVK'] = 214;
 qidByIso['SVN'] = 215;
