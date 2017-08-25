@@ -864,6 +864,7 @@ qidByIso['TUR'] = 43;
 qidByIso['TUV'] = 672;
 qidByIso['TWN'] = 865;
 qidByIso['TZA'] = 924;
+qidByIso['UAR'] = 170468;  --[[ <!--not in ISO--> ]]--
 qidByIso['UGA'] = 1036;
 qidByIso['UKR'] = 212;
 qidByIso['UMI'] = 16645;
