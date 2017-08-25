@@ -682,6 +682,7 @@ qidByIso['COL'] = 739;
 qidByIso['COM'] = 970;
 qidByIso['CPV'] = 1011;
 qidByIso['CRI'] = 800;
+qidByIso['CSK'] = 33946;
 qidByIso['CUB'] = 241;
 qidByIso['CUW'] = 25279;
 qidByIso['CXR'] = 31063;
