@@ -241,12 +241,24 @@ function nlaLink( id )
 	return '[//nla.gov.au/anbd.aut-an' .. id .. ' ' .. id .. ']' .. getCatForId( 'NLA' )
 end
 
+local function rkdartistsLink( id )
+	return '[https://rkd.nl/en/explore/artists/' .. id .. ' ' .. id .. ']' .. getCatForId( 'RKDartists' )
+end
+
 local function NLGIDLink( id )
     return '[http://nlg.okfn.gr/resource/authority/record' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
 end
 
+local function BNeditionLink( id )
+    return '[http://www.biblionet.gr/main.asp?page=showbook&bookid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'BiblioNet' )
+end
+
 local function BNpersonLink( id )
     return '[http://www.biblionet.gr/main.asp?page=showauthor&personsid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'BiblioNet' )
+end
+
+local function BNpublisherLink( id )
+    return '[http://www.biblionet.gr/com/' .. id .. ' ' .. id .. ']'.. getCatForId( 'BiblioNet' )
 end
 
 function getIdsFromWikidata( item, property )
@@ -323,8 +335,11 @@ local conf = {
     { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 1362, tlsLink },
     { 'SIKART', '[[SIKART]]', 781, sikartLink },
     { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
+    { 'RKDartists', '[[Недерландски институт за история на изкуството|RKD]]', 650, rkdartistsLink },
     { 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, NLGIDLink },
+    { 'BNed', '[[BiblioNet]]', 2187, BNeditionLink },
     { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
+    { 'BNpub', '[[BiblioNet]]', 2189, BNpublisherLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
