@@ -335,7 +335,7 @@ local conf = {
     { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 1362, tlsLink },
     { 'SIKART', '[[SIKART]]', 781, sikartLink },
     { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
-    { 'RKDartists', '[[Недерландски институт за история на изкуството|RKD]]', 650, rkdartistsLink },
+    { 'RKDartists', '[[Нидерландски институт за история на изкуството|RKD]]', 650, rkdartistsLink },
     { 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, NLGIDLink },
     { 'BNed', '[[BiblioNet]]', 2187, BNeditionLink },
     { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
