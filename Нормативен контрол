@@ -241,6 +241,10 @@ function nlaLink( id )
 	return '[//nla.gov.au/anbd.aut-an' .. id .. ' ' .. id .. ']' .. getCatForId( 'NLA' )
 end
 
+local function NLGIDLink( id )
+    return '[http://nlg.okfn.gr/resource/authority/record' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -315,6 +319,7 @@ local conf = {
     { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 1362, tlsLink },
     { 'SIKART', '[[SIKART]]', 781, sikartLink },
     { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
+    { 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, NLGIDLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
