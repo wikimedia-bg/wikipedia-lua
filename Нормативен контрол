@@ -245,6 +245,10 @@ local function NLGIDLink( id )
     return '[http://nlg.okfn.gr/resource/authority/record' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
 end
 
+local function BNpersonLink( id )
+    return '[http://www.biblionet.gr/main.asp?page=showauthor&personsid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'BiblioNet' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -320,6 +324,7 @@ local conf = {
     { 'SIKART', '[[SIKART]]', 781, sikartLink },
     { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
     { 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, NLGIDLink },
+    { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
