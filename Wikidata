@@ -499,6 +499,7 @@ end
 
 function p.claim(frame)
 	local property = frame.args[1] or ""
+	local claimId = frame.args[2]
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
 	local qualifierId = frame.args["qualifier"]
 	local parameter = frame.args["parameter"]
@@ -548,10 +549,11 @@ function p.claim(frame)
 		end
 		result = table.concat(result, list)
 	else
-		-- return first element
-		local claim = claims[sortindices[1]]
+		local claim = claims[sortindices[claimId and tonumber(claimId) or 1]]
 		result, error = getValueOfClaim(claim, qualifierId, parameter)
-		if result and references then result = result .. getReferences(frame, claim) end
+		if result and references then
+			result = result .. getReferences(frame, claim)
+		end
 	end
 
 	if result then return result else
