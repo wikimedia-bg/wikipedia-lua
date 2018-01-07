@@ -499,7 +499,7 @@ end
 
 function p.claim(frame)
 	local property = frame.args[1] or ""
-	local claimId = frame.args[2]
+	local claimId = frame.args[2] and tonumber(frame.args[2]) or 1
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
 	local qualifierId = frame.args["qualifier"]
 	local parameter = frame.args["parameter"]
@@ -516,7 +516,7 @@ function p.claim(frame)
 	end
 	-- fetch the first claim of satisfying the given property
 	local claims = findClaims(entity, property)
-	if not claims or not claims[1] then
+	if not claims or not claims[claimId] then
 		if showerrors then return formatError("property-not-found") else return default end
 	end
 
@@ -549,7 +549,7 @@ function p.claim(frame)
 		end
 		result = table.concat(result, list)
 	else
-		local claim = claims[sortindices[claimId and tonumber(claimId) or 1]]
+		local claim = claims[sortindices[claimId]]
 		result, error = getValueOfClaim(claim, qualifierId, parameter)
 		if result and references then
 			result = result .. getReferences(frame, claim)
