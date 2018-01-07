@@ -426,7 +426,7 @@ function getSnakValue(snak, parameter)
 	end
 end
 
-function getQualifierSnak(claim, qualifierId)
+function getQualifierSnaks(claim, qualifierId)
 	-- a "snak" is Wikidata terminology for a typed key/value pair
 	-- a claim consists of a main snak holding the main information of this claim,
 	-- as well as a list of attribute snaks and a list of references snaks
@@ -434,7 +434,9 @@ function getQualifierSnak(claim, qualifierId)
 		-- search the attribute snak with the given qualifier as key
 		if claim.qualifiers then
 			local qualifier = claim.qualifiers[qualifierId]
-			if qualifier then return qualifier[1] end
+			if qualifier then
+				return qualifier
+			end
 		end
 		return nil, formatError("qualifier-not-found")
 	else
@@ -443,12 +445,27 @@ function getQualifierSnak(claim, qualifierId)
 	end
 end
 
-function getValueOfClaim(claim, qualifierId, parameter)
+function getValueOfClaim(claim, qualifierId, parameter, language)
 	local error
-	local snak
-	snak, error = getQualifierSnak(claim, qualifierId)
-	if snak then
-		return getSnakValue(snak, parameter)
+	local snaks
+	snaks, error = getQualifierSnaks(claim, qualifierId)
+	if next(snaks) ~= nil then
+		for snak in snaks do
+			if snak.datatype == "monolingualtext" then
+				-- if the value is monolingual text search for the language
+				local currentLanguage = getSnakValue(snak, "language")
+				if language then
+					if currentLanguage == language then
+						return getSnakValue(snak, "text")
+					end
+				elseif currentLanguage == "bg" then
+					return getSnakValue(snak, "text")
+				end
+			else
+				-- returns the 1st entry if the value is not monolingual text
+				return getSnakValue(snak, parameter)
+			end
+		end
 	else
 		return nil, error
 	end
@@ -499,10 +516,11 @@ end
 
 function p.claim(frame)
 	local property = frame.args[1] or ""
-	local claimId = frame.args[2] and tonumber(frame.args[2]) or 1
+	local claimIndex = frame.args[2] and tonumber(frame.args[2]) or 1
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
 	local qualifierId = frame.args["qualifier"]
 	local parameter = frame.args["parameter"]
+	local language = frame.args["language"]
 	local list = frame.args["list"]
 	local references = frame.args["references"]
 	local showerrors = frame.args["showerrors"]
@@ -516,7 +534,7 @@ function p.claim(frame)
 	end
 	-- fetch the first claim of satisfying the given property
 	local claims = findClaims(entity, property)
-	if not claims or not claims[claimId] then
+	if not claims or not claims[claimIndex] then
 		if showerrors then return formatError("property-not-found") else return default end
 	end
 
@@ -542,15 +560,15 @@ function p.claim(frame)
 		result = {}
 		for idx in pairs(claims) do
 			local claim = claims[sortindices[idx]]
-			value, error = getValueOfClaim(claim, qualifierId, parameter)
+			value, error = getValueOfClaim(claim, qualifierId, parameter, language)
 			if not value and showerrors then value = error end
 			if value and references then value = value .. getReferences(frame, claim) end
 			result[#result + 1] = value
 		end
 		result = table.concat(result, list)
 	else
-		local claim = claims[sortindices[claimId]]
-		result, error = getValueOfClaim(claim, qualifierId, parameter)
+		local claim = claims[sortindices[claimIndex]]
+		result, error = getValueOfClaim(claim, qualifierId, parameter, language)
 		if result and references then
 			result = result .. getReferences(frame, claim)
 		end
