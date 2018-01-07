@@ -426,17 +426,15 @@ function getSnakValue(snak, parameter)
 	end
 end
 
-function getQualifierSnaks(claim, qualifierId)
+function getQualifierSnak(claim, qualifierId)
 	-- a "snak" is Wikidata terminology for a typed key/value pair
 	-- a claim consists of a main snak holding the main information of this claim,
 	-- as well as a list of attribute snaks and a list of references snaks
 	if qualifierId then
 		-- search the attribute snak with the given qualifier as key
 		if claim.qualifiers then
-			local qualifierSnaks = claim.qualifiers[qualifierId]
-			if qualifierSnaks then
-				return qualifierSnaks
-			end
+			local qualifier = claim.qualifiers[qualifierId]
+			if qualifier then return qualifier[1] end
 		end
 		return nil, formatError("qualifier-not-found")
 	else
@@ -448,7 +446,7 @@ end
 function getValueOfClaim(claim, qualifierId, parameter, language)
 	local error
 	local snak
-	snak, error = getQualifierSnaks(claim, qualifierId)[1]
+	snak, error = getQualifierSnak(claim, qualifierId)
 	if snak then
 		return getSnakValue(snak, parameter)
 	else
