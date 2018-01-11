@@ -1,0 +1,25 @@
+return {
+	coord                   = "P625",
+	-----------------------
+	author                  = "P50",
+	publisher               = "P123",
+	importedFrom            = "P143",
+	statedIn                = "P248",
+	pages                   = "P304",
+	languageOfWorkOrName    = "P407",
+	publicationDate         = "P577",
+	startTime               = "P580",
+	endTime                 = "P582",
+	chapter                 = "P792",
+	retrieved               = "P813",
+	referenceURL            = "P854",
+	sectionVerseOrParagraph = "P958",
+	archiveURL              = "P1065",
+	title                   = "P1476",
+	formatterURL            = "P1630",
+	quote                   = "P1683",
+	shortName               = "P1813",
+	language                = "P2439",
+	archiveDate             = "P2960",
+	column                  = "P3903"
+}
