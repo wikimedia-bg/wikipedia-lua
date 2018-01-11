@@ -1,7 +1,7 @@
 return {
 	coord                   = "P625",
 	-----------------------
-	author                  = "P50",
+	author                  = "70",
 	publisher               = "P123",
 	importedFrom            = "P143",
 	statedIn                = "P248",
