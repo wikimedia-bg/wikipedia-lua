@@ -16,8 +16,8 @@ local p = {
 		["edit-on-wikidata"] = "Edit this on Wikidata"
 	},
 	["numeric"] = {
-		["decimal-mark"] = ".",
-		["delimiter"]    = ","
+		["decimal-mark"] = ",",
+		["delimiter"]    = " "
 	},
 	["datetime"] = {
 		["prefixes"] = {
