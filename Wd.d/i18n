@@ -1,0 +1,118 @@
+-- The values and functions in this submodule should be localized per wiki.
+
+-- load submodule "aliasesP" that lives next to this submodule
+local aliasesP = mw.loadData((...):sub(1, (...):match('^.*()/') - 1).."/aliasesP")
+
+local p = {
+	["errors"] = {
+		["unknown-data-type"]          = "Unknown or unsupported datatype '$1'.",
+		["missing-required-parameter"] = "No required parameters defined, needing at least one",
+		["extra-required-parameter"]   = "Parameter '$1' must be defined as optional",
+		["no-function-specified"]      = "You must specify a function to call",  -- equal to the standard module error message
+		["main-called-twice"]          = 'The function "main" cannot be called twice',
+		["no-such-function"]           = 'The function "$1" does not exist'  -- equal to the standard module error message
+	},
+	["info"] = {
+		["edit-on-wikidata"] = "Edit this on Wikidata"
+	},
+	["numeric"] = {
+		["decimal-mark"] = ".",
+		["delimiter"]    = ","
+	},
+	["datetime"] = {
+		["prefixes"] = {
+			["decade-period"] = ""
+		},
+		["suffixes"] = {
+			["decade-period"] = "s",
+			["millennium"]    = " millennium",
+			["century"]       = " century",
+			["million-years"] = " million years",
+			["billion-years"] = " billion years",
+			["year"]          = " year",
+			["years"]         = " years"
+		},
+		["julian-calendar"] = "Julian calendar",  -- linked page title
+		["julian"]          = "Julian",
+		["BCE"]             = "BCE",
+		["CE"]              = "CE",
+		["common-era"]      = "Common Era"  -- linked page title
+	},
+	["coord"] = {
+		["latitude-north"] = "N",
+		["latitude-south"] = "S",
+		["longitude-east"] = "E",
+		["longitude-west"] = "W",
+		["degrees"]        = "°",
+		["minutes"]        = "'",
+		["seconds"]        = '"',
+		["separator"]      = ", "
+	},
+	["values"] = {
+		["unknown"] = "unknown",
+		["none"]    = "none"
+	},
+	["cite"] = {
+		["version"] = "2",  -- increase this each time the below parameters are changed to avoid conflict errors
+		["web"] = {
+			-- <= left side: all allowed reference properties for *web page sources* per https://www.wikidata.org/wiki/Help:Sources
+			-- => right side: corresponding parameter names in (equivalent of) [[:en:Template:Cite web]] (if non-existent, keep empty i.e. "")
+			[aliasesP.statedIn]             = "website",
+			[aliasesP.referenceURL]         = "url",
+			[aliasesP.publicationDate]      = "date",
+			[aliasesP.retrieved]            = "access-date",
+			[aliasesP.title]                = "title",
+			[aliasesP.archiveURL]           = "archive-url",
+			[aliasesP.archiveDate]          = "archive-date",
+			[aliasesP.languageOfWorkOrName] = "language",
+			[aliasesP.language]             = "language",  -- fallback option
+			[aliasesP.author]               = "author",  -- existence of author1, author2, author3, etc. is assumed
+			[aliasesP.publisher]            = "publisher",
+			[aliasesP.quote]                = "quote",
+			[aliasesP.pages]                = "pages"  -- extra option
+		},
+		["q"] = {
+			-- <= left side: all allowed reference properties for *sources other than web pages* per https://www.wikidata.org/wiki/Help:Sources
+			-- => right side: corresponding parameter names in (equivalent of) [[:en:Template:Cite Q]] (if non-existent, keep empty i.e. "")
+			[aliasesP.statedIn]                = "1",
+			[aliasesP.pages]                   = "pages",
+			[aliasesP.column]                  = "at",
+			[aliasesP.chapter]                 = "chapter",
+			[aliasesP.sectionVerseOrParagraph] = "section",
+			["external-id"]                    = "id",  -- used for any type of database property ID
+			[aliasesP.title]                   = "title",
+			[aliasesP.publicationDate]         = "date",
+			[aliasesP.retrieved]               = "access-date"
+		}
+	}
+}
+
+function p.getOrdinalSuffix(num)
+	if tostring(num):sub(-2,-2) == '1' then
+		return "th"  -- 10th, 11th, 12th, 13th, ... 19th
+	end
+	
+	num = tostring(num):sub(-1)
+	
+	if num == '1' then
+		return "st"
+	elseif num == '2' then
+		return "nd"
+	elseif num == '3' then
+		return "rd"
+	else
+		return "th"
+	end
+end
+
+function p.addDelimiters(n)
+	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
+	
+	if left and num and right then
+		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. p['numeric']['delimiter']):reverse()) .. right
+	else
+		return n
+	end
+end
+
+return p
