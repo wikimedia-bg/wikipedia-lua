@@ -1,4 +1,5 @@
--- The values and functions in this submodule should be localized per wiki.t
+-- The values and functions in this submodule should be localized per wiki.
+
 -- load submodule "aliasesP" that lives next to this submodule
 local aliasesP = mw.loadData((...):sub(1, (...):match('^.*()/') - 1).."/aliasesP")
 
