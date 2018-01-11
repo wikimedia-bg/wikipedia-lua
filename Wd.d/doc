@@ -1,0 +1,17 @@
+{{ombox|text=You might want to use one of the user-friendly wrapper templates {{t|Wikidata}} and {{t|WikidataOI}} instead of invoking this module directly.}}
+{{Wd/doc|prename=<nowiki/>#invoke:|prename_code=#invoke:|section==== Main class ===
+<table class="wikitable">
+<tr>
+<th>Command</th>
+<th>Basic usage</th>
+<th>Description</th>
+</tr>
+<tr>
+<th style="text-align:left;"><code>main</code></th>
+<td>{{tnull|<nowiki/>#invoke:{{lc:{{ROOTPAGENAME}}}}|main|command|P1}}</td>
+<td>Intended for use by wrapper templates (around this module) to invoke one or more of the above commands, returning their respective output.
+<p>The parameters passed to the wrapper template are the ones that will be used by the module, e.g. {{tnull|wikidata|'''property'''|'''P1549'''}} → {{tnull|<nowiki/>#invoke:Wd|main}} → {{tnull|<nowiki/>#invoke:Wd|main|'''property'''|'''P1549'''}}.</p>
+<p>Therefore, any parameters set by the wrapper template itself will be discarded, e.g. {{tnull|wikidata|'''property'''|'''P1549'''}} → {{tnull|<nowiki/>#invoke:Wd|main|{{color|red|qualifier}}|{{color|red|P1082}}|{{color|red|P585}}}} → {{tnull|<nowiki/>#invoke:Wd|main|'''property'''|'''P1549'''}}.</p>
+</td>
+</tr>
+</table>}}
