@@ -660,7 +660,6 @@ end
 function Config:getUnitSymbol(id, raw, link, short)
 	local symbol = nil
 	local title = nil
-	local prefix= ""
 	local lang
 	
 	if not id then
@@ -674,7 +673,7 @@ function Config:getUnitSymbol(id, raw, link, short)
 	id = id:upper()  -- just to be sure
 
 	-- try unit symbol first
-	symbol = p._property({"P558", [p.args.eid] = id})  -- get unit symbol
+	symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id})  -- get unit symbol
 	
 	if symbol == "" then
 		symbol = nil
@@ -699,7 +698,7 @@ function Config:getUnitSymbol(id, raw, link, short)
 		end
 		
 		if title then
-			symbol = buildWikilink(prefix .. title, symbol)
+			symbol = buildWikilink(title, symbol)
 		end
 	end
 	
