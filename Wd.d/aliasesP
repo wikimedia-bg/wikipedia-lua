@@ -8,6 +8,7 @@ return {
 	pages                   = "P304",
 	languageOfWorkOrName    = "P407",
 	publicationDate         = "P577",
+	unitSymbol              = "P558",
 	startTime               = "P580",
 	endTime                 = "P582",
 	chapter                 = "P792",
