@@ -656,6 +656,56 @@ function Config:getLabel(id, raw, link, short)
 	return label
 end
 
+-- if id == nil then item connected to current page is used
+function Config:getUnitSymbol(id, raw, link, short)
+	local symbol = nil
+	local title = nil
+	local prefix= ""
+	local lang
+	
+	if not id then
+		id = mw.wikibase.getEntityIdForCurrentPage()
+		
+		if not id then
+			return ""
+		end
+	end
+	
+	id = id:upper()  -- just to be sure
+
+	-- try unit symbol first
+	symbol = p._property({"P558", [p.args.eid] = id})  -- get unit symbol
+	
+	if symbol == "" then
+		symbol = nil
+	end
+	
+	-- get label
+	if not symbol then
+		symbol, lang = mw.wikibase.getLabelWithLang(id)
+		
+		-- don't allow language fallback
+		if lang ~= self.langCode then
+			symbol = nil
+		end
+	end
+	
+	if not symbol then
+		symbol = ""
+	elseif link then
+		-- build a link if requested
+		if not title then
+			title = mw.wikibase.sitelink(id)
+		end
+		
+		if title then
+			symbol = buildWikilink(prefix .. title, symbol)
+		end
+	end
+	
+	return symbol
+end
+
 function Config:getEditIcon()
 	local value = ""
 	local prefix = ""
@@ -743,7 +793,7 @@ function Config:convertUnit(unit, raw, link, short, unitOnly)
 		if itemID == aliasesQ.percentage then
 			return "%"
 		else
-			label = self:getLabel(itemID, raw, link, short)
+			label = self:getUnitSymbol(itemID, raw, link, short)
 			
 			if label ~= "" then
 				return space .. label
