@@ -261,6 +261,10 @@ local function BNpublisherLink( id )
     return '[http://www.biblionet.gr/com/' .. id .. ' ' .. id .. ']'.. getCatForId( 'BiblioNet' )
 end
 
+local function freebaseLink( id )
+	return '[https://g.co/kg/' .. id .. ' ' .. id .. ']' .. getCatForId( 'Freebase' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -340,6 +344,7 @@ local conf = {
     { 'BNed', '[[BiblioNet]]', 2187, BNeditionLink },
     { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
     { 'BNpub', '[[BiblioNet]]', 2189, BNpublisherLink },
+    { 'Freebase', '[[:en:Freebase|Freebase]]', 646, freebaseLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
