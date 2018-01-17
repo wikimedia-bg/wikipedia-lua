@@ -262,7 +262,7 @@ local function BNpublisherLink( id )
 end
 
 local function freebaseLink( id )
-	return '[https://g.co/kg/' .. id .. ' ' .. id .. ']' .. getCatForId( 'Freebase' )
+	return '[https://g.co/kg' .. id .. ' ' .. id .. ']' .. getCatForId( 'Freebase' )
 end
 
 function getIdsFromWikidata( item, property )
