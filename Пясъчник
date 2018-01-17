@@ -1,0 +1,9 @@
+p = {};
+
+local wd = require("Модул:Wd");
+
+function p.main(frame)
+    return wd._properties({"raw", "qualifier", "raw", "qualifier", "raw", "normal+", frame.args[1], "P41", "P580", "P582"});
+end
+
+return p
