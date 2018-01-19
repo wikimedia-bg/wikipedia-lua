@@ -49,7 +49,6 @@ function flag.getqid(key)
       end;
     end;
 
-    key = mw.ustring.lower(key);
     if((qid==nil) and (key:sub(1,1) == 'Q')) then
       qid = key;
     end
@@ -64,7 +63,7 @@ function flag.flag(frame)
     local width = mw.text.trim(frame.args[3]);
     local link = '';
 
-    qid = gdata.qidByName[subject];
+    qid = gdata.qidByName[mw.ustring.lower(subject)];
     if(qid~=nil) then
       qid = 'Q' .. qid;
       link = subject;
