@@ -13,14 +13,14 @@ else
 end
 
 local function flagAtTime(flagliststr, time, default)
-        local flaglist = split(flagliststr, ";");
+        local flaglist = mw.text.split(flagliststr, ";");
         local flagitemstr = "";
         local flagitem = {};
 
 	for i, j in pairs(flaglist) do
           flagitemstr = mw.text.trim(j);
           if (flagitemstr ~= '') then
-            flagitem = split(flagitemstr, "/");
+            flagitem = mw.text.split(flagitemstr, "/");
             for key, value in pairs(flagitem) do
               flagitem[key] = mw.text.trim(value);
             end
