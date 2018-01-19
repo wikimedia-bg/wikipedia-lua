@@ -12,7 +12,7 @@ else
     gdata.qidByIso={};
 end
 
-local function flagAtTime(flagliststr, time, default)
+local function flagAtTime(flagliststr, time)
         local flaglist = mw.text.split(flagliststr, ";");
         local flagitemstr = "";
         local flagitem = {};
@@ -36,7 +36,7 @@ local function flagAtTime(flagliststr, time, default)
           end
 	end
 
-	return default;
+	return '';
 end
 
 function flag.getqid(frame)
@@ -70,14 +70,17 @@ function flag.flag(frame)
     local width = mw.text.trim(frame.args[3]);
 
     if(qid~=nil) then
+      local image = '';
       local link = wd._title({qid});
       link = 'link='..link..'|'..link;
 
-      local image = wd._property({"raw", qid, "P41"});
       if ((time ~= nil) and (time ~= '')) then
-        image = flagAtTime(wd._properties({"raw", "qualifier", "raw", "qualifier", "raw", "normal+", qid, "P41", "P580", "P582", format="%p/[%q1]/[%q2];"}), time, image);
+        image = flagAtTime(wd._properties({"raw", "qualifier", "raw", "qualifier", "raw", "normal+", qid, "P41", "P580", "P582", format="%p/[%q1]/[%q2];"}), time);
       end
-
+      if (image == '') then
+        image = wd._property({"raw", qid, "P41"});
+      end
+  
       return '<span class="flagicon">' ..
                 '[[Файл:' .. image .. '|' .. width ..'px|border|' .. link ..']]' ..
             '</span>';
