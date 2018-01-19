@@ -39,9 +39,8 @@ local function flagAtTime(flagliststr, time)
 	return '';
 end
 
-function flag.getqid(frame)
+function flag.getqid(key)
     local qid = nil;
-    local key = mw.text.trim(frame.args[1]);
 
     if(#key==3) then
       qid = gdata.qidByIso[key];
@@ -50,29 +49,34 @@ function flag.getqid(frame)
       end;
     end;
 
-    local key = mw.ustring.lower(key);
-    if(qid==nil) then
-      if(frame.args[1]:sub(1,1) == 'Q') then
-        qid = frame.args[1];
-      else
-        qid = gdata.qidByName[key];
-          if(qid~=nil) then
-            qid = 'Q' .. qid;
-          end
-      end
-    end;
+    key = mw.ustring.lower(key);
+    if((qid==nil) and (key:sub(1,1) == 'Q')) then
+      qid = key;
+    end
+
     return qid;
 end
 
 function flag.flag(frame)
-    local qid = flag.getqid(frame);
+    local qid = nil;
+    local subject = mw.text.trim(frame.args[1]);
     local time = mw.text.trim(frame.args[2]);
     local width = mw.text.trim(frame.args[3]);
+    local link = '';
+
+    qid = gdata.qidByName[subject];
+    if(qid~=nil) then
+      qid = 'Q' .. qid;
+      link = subject;
+    else
+      qid = flag.getqid(subject);
+    end
 
     if(qid~=nil) then
       local image = '';
-      local link = wd._title({qid});
-      link = 'link='..link..'|'..link;
+      if (link == '') then
+        link = wd._title({qid});
+      end
 
       if ((time ~= nil) and (time ~= '')) then
         image = flagAtTime(wd._properties({"raw", "qualifier", "raw", "qualifier", "raw", "normal+", qid, "P41", "P580", "P582", format="%p/[%q1]/[%q2];"}), time);
@@ -82,7 +86,7 @@ function flag.flag(frame)
       end
   
       return '<span class="flagicon">' ..
-                '[[Файл:' .. image .. '|' .. width ..'px|border|' .. link ..']]' ..
+                '[[Файл:' .. image .. '|' .. width ..'px|border|' .. 'link='..link..'|'..link ..']]' ..
             '</span>';
     end;
     return '';
