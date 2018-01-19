@@ -1,3 +1,4 @@
+flag = {};
 
 local wd = require("Модул:Wd");
 
@@ -9,7 +10,9 @@ else
     gdata={};
     gdata.qidByName={};
     gdata.qidByIso={};
-end function flagAtTime(flagliststr, time, default)
+end
+
+local function flagAtTime(flagliststr, time, default)
         local flaglist = split(flagliststr, ";");
         local flagitemstr = "";
         local flagitem = {};
@@ -24,7 +27,7 @@ end function flagAtTime(flagliststr, time, default)
             if ((flagitem[2] == nil) or (flagitem[2] == '')) then
               flagitem[2] = '0000-00-00';
             end
-            if ((flagitem[3] == ul) or (flagitem[3] == '')) then
+            if ((flagitem[3] == nil) or (flagitem[3] == '')) then
               flagitem[3] = '9999-99-99';
             end
             if ((time >= flagitem[2]) and (time <= flagitem[3])) then
@@ -37,7 +40,7 @@ end function flagAtTime(flagliststr, time, default)
 end
 
 function flag.getqid(frame)
- qid = nil;
+    local qid = nil;
     local key = mw.text.trim(frame.args[1]);
 
     if(#key==3) then
@@ -81,3 +84,5 @@ function flag.flag(frame)
     end;
     return '';
 end
+
+return flag
