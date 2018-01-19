@@ -10,9 +10,7 @@ else
     gdata={};
     gdata.qidByName={};
     gdata.qidByIso={};
-end
-
-local function flagAtTime(flagliststr, time, default)
+end function flagAtTime(flagliststr, time, default)
         local flaglist = split(flagliststr, ";");
         local flagitemstr = "";
         local flagitem = {};
