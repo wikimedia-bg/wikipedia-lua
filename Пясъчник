@@ -82,5 +82,3 @@ function flag.flag(frame)
     end;
     return '';
 end
-
-return flag
