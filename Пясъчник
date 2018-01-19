@@ -1,4 +1,3 @@
-flag = {};
 
 local wd = require("Модул:Wd");
 
