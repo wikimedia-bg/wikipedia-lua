@@ -4,7 +4,6 @@ local gdata;
 local success, resultat = pcall (mw.loadData, "Модул:Flag/Data" );
 if success then
     gdata = resultat;
-else
     gdata={};
     gdata.qidByName={};
     gdata.qidByIso={};
