@@ -15,7 +15,7 @@ return {
 	retrieved               = "P813",
 	referenceURL            = "P854",
 	sectionVerseOrParagraph = "P958",
-	archiveURL              = "P1065",
+	archiveURL              = "P165",
 	title                   = "P1476",
 	formatterURL            = "P1630",
 	quote                   = "P1683",
