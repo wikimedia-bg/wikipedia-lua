@@ -14,7 +14,8 @@ end
 
 local function flagAtTime(flagliststr, time)
         local flaglist = mw.text.split(flagliststr, ";");
-        local flagitemstr = ""; flagitem = {};
+        local flagitemstr = "";
+        local flagitem = {};
 
 	for i, j in pairs(flaglist) do
           flagitemstr = mw.text.trim(j);
