@@ -5,7 +5,7 @@ return {
 	publisher               = "P123",
 	importedFrom            = "P143",
 	statedIn                = "P248",
-	pages                   = "P304",
+	pages                   = "P35",
 	languageOfWorkOrName    = "P407",
 	publicationDate         = "P577",
 	unitSymbol              = "P558",
