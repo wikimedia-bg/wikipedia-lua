@@ -521,7 +521,7 @@ function p.claim(frame)
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
 	local qualifierId = frame.args["qualifier"]
 	local parameter = frame.args["parameter"]
-	local language = frame.args["language"]
+	local language = frame.args["lang"]
 	local list = frame.args["list"]
 	local references = frame.args["references"]
 	local showerrors = frame.args["showerrors"]
