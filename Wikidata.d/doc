@@ -22,7 +22,7 @@
 * <code><nowiki>{{#invoke:Wikidata|claim|P18|3|qualifier=P74|lang=ja}}</nowiki></code> → P74 на японски (при '''monolingual''' стойности; български по подразбиране) за третата стойност на P18
 
 === formatStatements ===
-* <code><nowiki>{{#invoke:Wikidata|formatStatements|property=p18|first=1}}</nowiki></code> → първата стойност на P18
+* <code><nowiki>{{#invoke:Wikidata|formatStatements|property=p18|first=1}}</nowiki></code> → първата стойност на P18 (припокрива: <code><nowiki>{{#invoke:Wikidata|claim|P18}}</nowiki></code>)
 * <code><nowiki>{{#invoke:Wikidata|formatStatements|property=P625|subvalue=latitude}}</nowiki></code> → стойността за latitude на P625
 
 === getSiteLink ===
