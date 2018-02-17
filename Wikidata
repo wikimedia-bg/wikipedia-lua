@@ -515,6 +515,20 @@ function p.getDescription(frame)
 	return mw.wikibase.getEntityObject(id).descriptions[langcode or wiki.langcode].value
 end
 
+function p.count(frame)
+	local property = frame.args[1] or ""
+	local id = frame.args["id"]
+	local entity = mw.wikibase.getEntityObject(id)
+	local claims = findClaims(entity, property)
+	
+	local count = 0
+	if claims ~= nil then
+	   for _ in pairs(claims) do count = count + 1 end
+	end
+	
+	return count;
+end
+
 function p.claim(frame)
 	local property = frame.args[1] or ""
 	local claimIndex = frame.args[2] and tonumber(frame.args[2]) or 1
