@@ -505,7 +505,7 @@ function getReferences(frame, claim)
 			end
 		end
 		if refparts then result = result .. frame:extensionTag("ref", refparts) end
-		if ref == 3 then break end	-- get no more than 3 references
+		if ref == #refs - 2 then break end	-- get no more than 3 references
 	end
 	return result
 end
