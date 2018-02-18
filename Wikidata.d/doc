@@ -15,7 +15,7 @@
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|id=Q12345}}</nowiki></code> → стойността на P225 за Q12345
 * <code><nowiki>{{#invoke:Wikidata|claim|P301|parameter=numeric-id}}</nowiki></code> → стойността на P301 в '''numeric-id''' формат (<samp>Qxxxx</samp>)
 * <code><nowiki>{{#invoke:Wikidata|claim|P580|1|mainsnak|datavalue|value|time}}</nowiki></code> → първата (по подразбиране) стойност на P580
-* <code><nowiki>{{#invoke:Wikidata|claim|P141|references=1}}</nowiki></code> → стойността на всички източници за P141
+* <code><nowiki>{{#invoke:Wikidata|claim|P141|references=1}}</nowiki></code> → стойността заедно с всички източници за P141
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойността на P574 за P225
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → P574 за P225 в '''time''' формат (<samp>0000-00-00T00:00:00Z</samp>)
 * <code><nowiki>{{#invoke:Wikidata|claim|P18|2|qualifier=P21}}</nowiki></code> → P21 за втората стойност на P18
