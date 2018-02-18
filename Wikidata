@@ -489,11 +489,12 @@ end
 
 function getReferences(frame, claim)
 	local result = ""
-	-- traverse through all references
-	for ref in pairs(claim.references or {}) do
+	local refs = claim.references or {};
+	-- traverse through all references in reversed order
+	for ref = #refs, 1, -1 do
 		local refparts
 		-- traverse through all parts of the current reference
-		for snakkey, snakval in orderedpairs(claim.references[ref].snaks or {}, claim.references[ref]["snaks-order"]) do
+		for snakkey, snakval in orderedpairs(refs[ref].snaks or {}, refs[ref]["snaks-order"]) do
 			if refparts then refparts = refparts .. ", " else refparts = "" end
 			-- output the label of the property of the reference part, e.g. "imported from" for P143
 			refparts = refparts .. tostring(mw.wikibase.label(snakkey)) .. ": "
@@ -504,7 +505,7 @@ function getReferences(frame, claim)
 			end
 		end
 		if refparts then result = result .. frame:extensionTag("ref", refparts) end
-		if ref == 3 then break end	-- get only 3 references
+		if ref == 3 then break end	-- get no more than 3 references
 	end
 	return result
 end
