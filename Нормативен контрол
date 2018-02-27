@@ -265,6 +265,10 @@ local function freebaseLink( id )
 	return '[https://g.co/kg' .. id .. ' ' .. id .. ']' .. getCatForId( 'Freebase' )
 end
 
+local function jstorLink( id )
+	return '[https://www.jstor.org/topic/' .. id .. ' ' .. id .. ']' .. getCatForId( 'JSTOR' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -345,6 +349,7 @@ local conf = {
     { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
     { 'BNpub', '[[BiblioNet]]', 2189, BNpublisherLink },
     { 'Freebase', '[[:en:Freebase|Freebase]]', 646, freebaseLink },
+    { 'JSTOR', '[[JSTOR]]', 3827, jstorLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
