@@ -398,9 +398,11 @@ function findClaims(entity, property)
 		return entity.claims[property]
 	else
 		-- otherwise, iterate over all properties, fetch their labels and compare this to the given property name
-		for k, v in pairs(entity.claims) do
-			if mw.wikibase.label(k) == property then return v end
+		property = mw.wikibase.resolvePropertyId(property)
+		if property then
+			return entity.claims[property]
 		end
+
 		return
 	end
 end
