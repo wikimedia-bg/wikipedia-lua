@@ -489,19 +489,19 @@ function MessageBox:export()
 		-- The message box uses advanced text parameters that allow things to be
 		-- collapsible. At the moment, only ambox uses this.
 		textCell:cssText(self.textstyle or nil)
-		local textCellSpan = textCell:tag('span')
-		textCellSpan
+		local textCellDiv = textCell:tag('div')
+		textCellDiv
 			:addClass('mbox-text-span')
 			:wikitext(self.issue or nil)
 		if not self.isSmall then
-			textCellSpan:tag('span')
+			textCellDiv:tag('span')
 				:addClass('hide-when-compact')
 				:wikitext(self.talk and (' ' .. self.talk) or nil)
 				:wikitext(self.fix and (' ' .. self.fix) or nil)
 		end
-		textCellSpan:wikitext(self.date and (' ' .. self.date) or nil)
+		textCellDiv:wikitext(self.date and (' ' .. self.date) or nil)
 		if not self.isSmall then
-			textCellSpan
+			textCellDiv
 				:tag('span')
 				:addClass('hide-when-compact')
 				:wikitext(self.info and (' ' .. self.info) or nil)
