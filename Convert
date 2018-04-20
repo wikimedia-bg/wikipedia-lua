@@ -13,8 +13,10 @@ local usub = ustring.sub
 -- Configuration options to keep magic values in one location.
 -- Conversion data and message text are defined in separate modules.
 local config, maxsigfig
-local numdot  -- must be '.' or ',' or a character which works in a regex
-local numsep, numsep_remove, numsep_remove2
+local numdot = ','   -- must be '.' or ',' or a character which works in a regex
+local numsep = ' '   -- non-breaking space between groups
+local numsep_remove = ' '
+local numsep_remove2 = ' '
 local data_code, all_units
 local text_code
 local varname        -- can be a code to use variable names that depend on value
