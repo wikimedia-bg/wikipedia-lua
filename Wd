@@ -37,6 +37,8 @@ p.nameCommands = {
 
 p.flags = {
 	linked        = "linked",
+	lat_only      = "latitude",
+	lon_only      = "longitude",
 	short         = "short",
 	raw           = "raw",
 	multilanguage = "multilanguage",
@@ -179,6 +181,8 @@ function State.new(cfg)
 	stt.puncMark = {}
 	
 	stt.linked = false
+	stt.lat_only = false
+	stt.lon_only = false
 	stt.rawValue = false
 	stt.shortName = false
 	stt.anyLanguage = false
@@ -803,7 +807,7 @@ function Config:convertUnit(unit, raw, link, short, unitOnly)
 	return ""
 end
 
-function Config:getValue(snak, raw, link, short, anyLang, unitOnly, noSpecial)
+function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, unitOnly, noSpecial)
 	if snak.snaktype == 'value' then
 		local datatype = snak.datavalue.type
 		local subtype = snak.datatype
@@ -1123,6 +1127,12 @@ function Config:getValue(snak, raw, link, short, anyLang, unitOnly, noSpecial)
 			latitude = datavalue['latitude']
 			longitude = datavalue['longitude']
 			
+			if lat_only then
+				return latitude
+			elseif lon_only then
+				return longitude
+			end
+			
 			if latitude < 0 then
 				latDirection = latDirectionS
 				latDirectionEN = latDirectionEN_S
@@ -1337,7 +1347,13 @@ function Config:processFlag(flag)
 		flag = mw.text.trim(flag)
 	end
 	
-	if flag == p.flags.linked then
+	if flag == p.flags.lat_only then
+		self.curState.lat_only = true
+		return true
+	elseif flag == p.flags.lon_only then
+		self.curState.lon_only = true
+		return true
+	elseif flag == p.flags.linked then
 		self.curState.linked = true
 		return true
 	elseif flag == p.flags.raw then
@@ -1629,7 +1645,7 @@ end
 
 -- level 1 hook
 function State:getProperty(claim)
-	local value = {self.conf:getValue(claim.mainsnak, self.rawValue, self.linked, self.shortName, self.anyLanguage, self.unitOnly)}  -- create one value object
+	local value = {self.conf:getValue(claim.mainsnak, self.rawValue, self.linked, self.lat_only, self.lon_only, self.shortName, self.anyLanguage, self.unitOnly)}  -- create one value object
 	
 	if #value > 0 then
 		return {value}  -- wrap the value object in an array and return it
@@ -1654,7 +1670,7 @@ end
 
 -- level 2 hook
 function State:getQualifier(snak)
-	local value = {self.conf:getValue(snak, self.rawValue, self.linked, self.shortName, self.anyLanguage, self.unitOnly)}  -- create one value object
+	local value = {self.conf:getValue(snak, self.rawValue, self.linked, self.lat_only, self.lon_only, self.shortName, self.anyLanguage, self.unitOnly)}  -- create one value object
 	
 	if #value > 0 then
 		return {value}  -- wrap the value object in an array and return it
