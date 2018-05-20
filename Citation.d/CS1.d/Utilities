@@ -12,15 +12,15 @@ local z = {
 --[[--------------------------< F O R W A R D   D E C L A R A T I O N S >--------------------------------------
 ]]
 
-local cfg;																		-- table of tables imported from slected Module:Citation/CS1/Configuration
+local cfg;																		-- table of tables imported from selected Module:Citation/CS1/Configuration
 
 
 --[[--------------------------< I S _ S E T >------------------------------------------------------------------
 
 Returns true if argument is set; false otherwise. Argument is 'set' when it exists (not nil) or when it is not an empty string.
-This function is global because it is called from both this module and from Date validation
 
 ]]
+
 local function is_set( var )
 	return not (var == nil or var == '');
 end
@@ -61,8 +61,30 @@ end
 Wraps error messages with css markup according to the state of hidden.
 
 ]]
+
 local function error_comment( content, hidden )
 	return substitute( hidden and cfg.presentation['hidden-error'] or cfg.presentation['visible-error'], content );
+end
+
+
+--[=[-------------------------< M A K E _ W I K I L I N K >----------------------------------------------------
+
+Makes a wikilink; when bot link and display text is provided, returns a wikilink in the form [[L|D]]; if only
+link is provided, returns a wikilink in the form [[L]]; if neither are provided or link is omitted, returns an
+empty string.
+
+]=]
+
+local function make_wikilink (link, display)
+	if is_set (link) then
+		if is_set (display) then
+			return table.concat ({'[[', link, '|', display, ']]'});
+		else
+			return table.concat ({'[[', link, ']]'});
+		end
+	else
+		return '';
+	end
 end
 
 
@@ -72,6 +94,7 @@ Sets an error condition and returns the appropriate error message.  The actual p
 the responsibility of the calling function.
 
 ]]
+
 local function set_error( error_id, arguments, raw, prefix, suffix )
 	local error_state = cfg.error_conditions[ error_id ];
 	
@@ -79,16 +102,33 @@ local function set_error( error_id, arguments, raw, prefix, suffix )
 	suffix = suffix or "";
 	
 	if error_state == nil then
-		error( cfg.messages['undefined_error'] );
+		error( cfg.messages['undefined_error'] );								-- because missing error handler in Module:Citation/CS1/Configuration
 	elseif is_set( error_state.category ) then
 		table.insert( z.error_categories, error_state.category );
 	end
 	
 	local message = substitute( error_state.message, arguments );
-	
-	message = message .. " ([[" .. cfg.messages['help page link'] .. 
-		"#" .. error_state.anchor .. "|" ..
-		cfg.messages['help page label'] .. "]])";
+
+	message = table.concat (
+		{
+		message,
+		' (',
+		make_wikilink (
+			table.concat (
+				{
+				cfg.messages['help page link'],
+				'#',
+				error_state.anchor
+				}),
+			cfg.messages['help page label']),
+		')'
+		});
+
+--	message = table.concat ({message, ' (', substitute (cfg.presentation['wikilink'], 
+--		{cfg.messages['help page link'] .. '#' .. error_state.anchor, cfg.messages['help page label']}), ')'});
+--	message = message .. " ([[" .. cfg.messages['help page link'] .. 
+--		"#" .. error_state.anchor .. "|" ..
+--		cfg.messages['help page label'] .. "]])";
 	
 	z.error_ids[ error_id ] = true;
 	if in_array( error_id, { 'bare_url_missing_title', 'trans_missing_title' } )
@@ -184,8 +224,8 @@ local function safe_for_italics( str )
 	if not is_set(str) then
 		return str;
 	else
-		if str:sub(1,1) == "'" then str = "<span />" .. str; end
-		if str:sub(-1,-1) == "'" then str = str .. "<span />"; end
+		if str:sub(1,1) == "'" then str = "<span></span>" .. str; end
+		if str:sub(-1,-1) == "'" then str = str .. "<span></span>"; end
 		
 		-- Remove newlines as they break italics.
 		return str:gsub( '\n', ' ' );
@@ -266,12 +306,56 @@ end
 
 Gets the display text from a wikilink like [[A|B]] or [[B]] gives B
 
+The str:gsub() returns either A|B froma [[A|B]] or B from [[B]] or B from B (no wikilink markup).
+
+In l(), l:gsub() removes the link and pipe (if they exist); the second :gsub() trims white space from the label
+if str was wrapped in wikilink markup.  Presumably, this is because without wikimarkup in str, there is no match
+in the initial gsub, the replacement function l() doesn't get called.
+
 ]=]
 
 local function remove_wiki_link (str)
 	return (str:gsub( "%[%[([^%[%]]*)%]%]", function(l)
 		return l:gsub( "^[^|]*|(.*)$", "%1" ):gsub("^%s*(.-)%s*$", "%1");
 	end));
+end
+
+
+--[=[-------------------------< I S _ W I K I L I N K >--------------------------------------------------------
+
+Determines if str is a wikilink, extracts, and returns the the wikilink type, link text, and display text parts.
+If str is a complex wikilink ([[L|D]]):
+	returns wl_type 2 and D and L from [[L|D]];
+if str is a simple wikilink ([[D]])
+	returns wl_type 1 and D from [[D]] and L as empty string;
+if not a wikilink:
+	returns wl_type 0, str as D, and L as empty string.
+
+trims leading and trailing white space and pipes from L and D ([[L|]] and [[|D]] are accepted by MediaWiki and
+treated like [[D]]; while [[|D|]] is not accepted by MediaWiki, here, we accept it and return D without the pipes).
+
+]=]
+
+local function is_wikilink (str)
+	local D, L
+	local wl_type = 2;															-- assume that str is a complex wikilink [[L|D]]
+
+	L, D = str:match ('%[%[([^|]+)|([^%]]+)%]%]');								-- get L and D from [[L|D]] 
+
+	if not is_set (D) then														-- if no separate link
+		D = str:match ('%[%[([^%]]*)|*%]%]');									-- get D from [[D]]
+		wl_type = 1; 
+	end
+	
+	if not is_set (D) then														-- no wikilink markup
+		D = str;																-- return the string as D
+		wl_type = 0;															-- but say that it is not a wikilink
+	end
+	
+	D = mw.text.trim (D, '%s|');												-- trim white space and pipe characters 
+	L = L and mw.text.trim (L, '%s|');
+	
+	return wl_type, D, L or '';
 end
 
 
@@ -283,6 +367,7 @@ Sets local cfg table to same (live or sandbox) as that used by the other modules
 
 local function set_selected_modules (cfg_table_ptr)
 	cfg = cfg_table_ptr;
+	
 end
 
 
@@ -295,9 +380,11 @@ return {																		-- return exported functions and tables
 	set_error = set_error,
 	select_one = select_one,
 	add_maint_cat = add_maint_cat,
-	wrap_style = wrap_style;
-	safe_for_italics = safe_for_italics;
-	remove_wiki_link = remove_wiki_link;
-	set_selected_modules = set_selected_modules;
+	wrap_style = wrap_style,
+	safe_for_italics = safe_for_italics,
+	remove_wiki_link = remove_wiki_link,
+	is_wikilink = is_wikilink,
+	make_wikilink = make_wikilink,
+	set_selected_modules = set_selected_modules,
 	z = z,
 	}
