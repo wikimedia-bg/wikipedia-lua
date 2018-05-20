@@ -5,6 +5,7 @@ local citation_config = {};
 -- https://git.wikimedia.org/blob/mediawiki%2Fcore.git/69cd73811f7aadd093050dbf20ed70ef0b42a713/skins%2Fcommon%2FcommonElements.css#L199
 local code_style="color:inherit; border:inherit; padding:inherit;";
 
+
 --[[--------------------------< U N C A T E G O R I Z E D _ N A M E S P A C E S >------------------------------
 
 List of namespaces that should not be included in citation error categories.  Same as setting notracking = true by default
@@ -13,10 +14,11 @@ Note: Namespace names should use underscores instead of spaces.
 
 ]]
 local uncategorized_namespaces = { 'User', 'Talk', 'User_talk', 'Wikipedia_talk', 'File_talk', 'Template_talk',
-	'Help_talk', 'Category_talk', 'Portal_talk', 'Book_talk', 'Draft', 'Draft_talk', 'Education_Program_talk', 
+	'Help_talk', 'Category_talk', 'Portal_talk', 'Book_talk', 'Draft', 'Draft_talk', 'Education_Program_talk',
 	'Module_talk', 'MediaWiki_talk' };
 
 local uncategorized_subpages = {'/[Ss]andbox', '/[Tt]estcases'};		-- list of Lua patterns found in page names of pages we should not categorize
+
 
 --[[--------------------------< M E S S A G E S >--------------------------------------------------------------
 
@@ -36,22 +38,24 @@ local messages = {
 	['by'] = 'By',																-- contributions to authored works: introduction, foreword, afterword
 	['cartography'] = 'Cartography by $1',
 	['editor'] = 'ed.',
-	['editors'] = 'eds.', 
-	['edition'] = '($1 ed.)', 
+	['editors'] = 'eds.',
+	['edition'] = '($1 ed.)',
 	['episode'] = 'Episode $1',
-	['et al'] = 'et al.', 
+	['et al'] = 'et al.',
 	['in'] = 'In',																-- edited works
 	['inactive'] = 'inactive',
 	['inset'] = '$1 inset',
+	['interview'] = 'Interview with $1',										
 	['lay summary'] = 'Lay summary',
 	['newsgroup'] = '[[Usenet newsgroup|Newsgroup]]:&nbsp;$1',
 	['original'] = 'the original',
-	['published'] = 'published $1',
+	['published'] = ' (published $1)',
 	['retrieved'] = 'Retrieved $1',
-	['season'] = 'Season $1', 
+	['season'] = 'Season $1',
 	['section'] = '§ $1',
 	['sections'] = '§§ $1',
 	['series'] = 'Series $1',
+	['translated'] = 'Translated by $1',
 	['type'] = ' ($1)',															-- for titletype
 	['written'] = 'Written at $1',
 
@@ -73,16 +77,16 @@ local messages = {
 	['j-sheet'] = ': Sheet&nbsp;$1',
 	['j-sheets'] = ': Sheets&nbsp;$1',
 	
-	['subscription'] = '<span style="font-size:90%; color:#555">(subscription required (<span title="Sources are not required to be available online. Online sources do not have to be freely available. The site may require a paid subscription." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
-		'[[Category:Pages containing links to subscription-only content]]', 
+	['subscription'] = '<span style="font-size:90%; color:#555">(Subscription required (<span title="The site requires a paid subscription to access this page." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
+		'[[Category:Pages containing links to subscription-only content]]',
 	
-	['registration']='<span style="font-size:90%; color:#555">(registration required (<span title="Sources are not required to be available online. Online sources do not have to be freely available. The site may require registration." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
+	['registration']='<span style="font-size:90%; color:#555">(Registration required (<span title="The site requires registration to access this page." style="border-bottom:1px dotted;cursor:help">help</span>))</span>' ..
 		'[[Category:Pages with login required references or sources]]',
 	
-	['language'] = '(in $1)', 
+	['language'] = '(in $1)',
 	['via'] = " &ndash; via $1",
 	['event'] = 'Event occurs at',
-	['minutes'] = 'minutes in', 
+	['minutes'] = 'minutes in',
 	
 	['parameter-separator'] = ', ',
 	['parameter-final-separator'] = ', and ',
@@ -98,7 +102,8 @@ local messages = {
 	['unknown_ID_mode'] = 'Unrecognized ID mode',
 	['unknown_argument_map'] = 'Argument map not defined for this variable',
 	['bare_url_no_origin'] = 'Bare url found but origin indicator is nil or empty',
-}
+	}
+
 
 --[[--------------------------< P R E S E N T A T I O N >------------------------------------------------------
 
@@ -106,6 +111,7 @@ Fixed presentation markup.  Originally part of citation_config.messages it has b
 correct place.
 
 ]]
+
 local presentation = 
 	{
 	-- Error output
@@ -118,16 +124,36 @@ local presentation =
 
 	['bdi'] = '<bdi$1>$2</bdi>',												-- bidirectional isolation used with |script-title= and the like
 
+	['cite'] = '<cite class="$1">$2</cite>';									-- |ref= not set so no id="..." attribute
+	['cite-id'] = '<cite id="$1" class="$2">$3</cite>';							-- for use when |ref= is set
+
 	['format'] = ' <span style="font-size:85%;">($1)</span>',					-- for |format=, |chapter-format=, etc
+	
+																				-- various access levels, for |access=, |doi-access=, |arxiv=, ...
+																				-- narrow no-break space &#8239; may work better than nowrap css. Or not? browser support?
+
+	['access-signal'] = '<span class="plainlinks">$1&#8239;$2</span>',			-- external link with appropriate lock icon
+		['free'] = '[[File:Lock-green.svg|9px|link=|alt=Freely accessible|Freely accessible]]',
+		['registration'] = '[[File:Lock-blue-alt-2.svg|9px|link=|alt=Free registration required|Free registration required]]',
+		['limited'] = '[[File:Lock-blue-alt-2.svg|9px|link=|alt=Free access subject to limited trial, subscription normally required|Free access subject to limited trial, subscription normally required]]',
+		['subscription'] = '[[File:Lock-red-alt.svg|9px|link=|alt=Paid subscription required|Paid subscription required]]',
 
 	['italic-title'] = "''$1''",
 
 	['kern-left'] = '<span style="padding-left:0.2em;">$1</span>$2',			-- spacing to use when title contains leading single or double quote mark
 	['kern-right'] = '$1<span style="padding-right:0.2em;">$2</span>',			-- spacing to use when title contains trailing single or double quote mark
 
+																				-- these for simple wikilinked titles [["text]], [[text"]] and [["text"]]
+																				-- span wraps entire wikilink
+	['kern-wl-left'] = '<span style="padding-left:0.2em;">$1</span>',			-- when title contains leading single or double quote mark
+	['kern-wl-right'] = '<span style="padding-right:0.2em;">$1</span>',			-- when title contains trailing single or double quote mark
+	['kern-wl-both'] = '<span style="padding-left:0.2em;padding-right:0.2em;">$1</span>',	-- when title contains leading and trailing single or double quote marks
+
 	['nowrap1'] = '<span class="nowrap">$1</span>',								-- for nowrapping an item: <span ...>yyyy-mm-dd</span>
 	['nowrap2'] = '<span class="nowrap">$1</span> $2',							-- for nowrapping portions of an item: <span ...>dd mmmm</span> yyyy (note white space)
-	
+
+	['ocins'] = '<span title="$1" class="Z3988"><span style="display:none;">&nbsp;</span></span>',		-- Note: Using display: none on the COinS span breaks some clients
+
 	['parameter'] = '<code style="'..code_style..'">&#124;$1=</code>',
 
 	['quoted-text'] = '<q>$1</q>',												-- for wrapping |quote= content
@@ -135,9 +161,10 @@ local presentation =
 
 	['trans-italic-title'] = "&#91;''$1''&#93;",
 	['trans-quoted-title'] = "&#91;$1&#93;",
-	['vol-bold'] = ' <b>$1</b>',													-- for journal cites; for other cites ['vol'] in messages{}
+	['vol-bold'] = '$1 <b>$2</b>',												-- sepc, volume; for bold journal cites; for other cites ['vol'] in messages{}
 	}
 
+	
 --[[--------------------------< A L I A S E S >----------------------------------------------------------------
 
 Aliases table for commonly passed parameters
@@ -155,27 +182,25 @@ local aliases = {
 	['At'] = 'at',
 	['Authors'] = {'authors', 'people', 'host', 'credits'},
 	['BookTitle'] = {'book-title', 'booktitle'},
-	['Callsign'] = {'call-sign', 'callsign'},									-- cite interview
 	['Cartography'] = 'cartography',
 	['Chapter'] = {'chapter', 'contribution', 'entry', 'article', 'section'},
 	['ChapterFormat'] = {'chapter-format', 'contribution-format', 'section-format'};
 	['ChapterURL'] = {'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl'},
-	['City'] = 'city',															-- cite interview
+	['ChapterUrlAccess'] = 'chapter-url-access',
 	['Class'] = 'class',														-- cite arxiv and arxiv identifiers
-	['Coauthors'] = {'coauthors', 'coauthor'},									-- coauthor and coauthors are deprecated; remove after 1 January 2015?
 	['Collaboration'] = 'collaboration',
 	['Conference'] = {'conference', 'event'},
 	['ConferenceFormat'] = {'conference-format', 'event-format'},
 	['ConferenceURL'] = {'conference-url', 'conferenceurl', 'event-url', 'eventurl'},
 	['Contribution'] = 'contribution',											-- introduction, foreword, afterword, etc; required when |contributor= set
-	['Date'] = {'date', 'air-date', 'airdate'},
+	['Date'] = 'date',
 	['DeadURL'] = {'dead-url', 'deadurl'},
 	['Degree'] = 'degree',
 	['DF'] = 'df',
 	['DisplayAuthors'] = {'display-authors', 'displayauthors'},
 	['DisplayEditors'] = {'display-editors', 'displayeditors'},
 	['Docket'] = 'docket',
-	['DoiBroken'] = {'doi-broken', 'doi-broken-date', 'doi-inactive-date', 'doi_brokendate', 'doi_inactivedate'},
+	['DoiBroken'] = {'doi-broken', 'doi-broken-date', 'doi-inactive-date'},
 	['Edition'] = 'edition',
 	['Editors'] = 'editors',
 	['Embargo'] = 'embargo',
@@ -186,6 +211,7 @@ local aliases = {
 	['IgnoreISBN'] = {'ignore-isbn-error', 'ignoreisbnerror'},
 	['Inset'] = 'inset',
 	['Issue'] = {'issue', 'number'},
+	['Interviewers'] = 'interviewers',
 	['Language'] = {'language', 'in'},
 	['LastAuthorAmp'] = {'last-author-amp', 'lastauthoramp'},
 	['LayDate'] = {'lay-date', 'laydate'},
@@ -202,17 +228,16 @@ local aliases = {
 	['NameListFormat'] = 'name-list-format',
 	['Network'] = 'network',
 	['NoPP'] = {'no-pp', 'nopp'},
-	['NoTracking'] = {'template-doc-demo', 'template doc demo', 'no-cat', 'nocat', 
+	['NoTracking'] = {'template-doc-demo', 'no-cat', 'nocat',
 		'no-tracking', 'notracking'},
 	['Number'] = 'number',														-- this case only for cite techreport
 	['OrigYear'] = {'orig-year', 'origyear'},
-	['Others'] = {'others', 'interviewer', 'interviewers'},
+	['Others'] = 'others',
 	['Page'] = {'p', 'page'},
 	['Pages'] = {'pp', 'pages'},
 	['Periodical'] = {'journal', 'newspaper', 'magazine', 'work',
 		'website',  'periodical', 'encyclopedia', 'encyclopaedia', 'dictionary', 'mailinglist'},
 	['Place'] = {'place', 'location'},
-	['Program'] = 'program',													-- cite interview
 	['PostScript'] = 'postscript',
 	['PublicationDate'] = {'publicationdate', 'publication-date'},
 	['PublicationPlace'] = {'publication-place', 'publicationplace'},
@@ -240,13 +265,14 @@ local aliases = {
 	['TitleLink'] = {'title-link', 'episode-link', 'titlelink', 'episodelink'},
 	['TitleNote'] = 'department',
 	['TitleType'] = {'type', 'medium'},
-	['TransChapter'] = {'trans-chapter', 'trans_chapter'},
+	['TransChapter'] = 'trans-chapter',
 	['TransMap'] = 'trans-map',													-- cite map only
 	['Transcript'] = 'transcript',
 	['TranscriptFormat'] = 'transcript-format',
 	['TranscriptURL'] = {'transcript-url', 'transcripturl'},
-	['TransTitle'] = {'trans-title', 'trans_title'},
+	['TransTitle'] = 'trans-title',
 	['URL'] = {'url', 'URL'},
+	['UrlAccess'] = {'url-access'},
 	['Vauthors'] = 'vauthors',
 	['Veditors'] = 'veditors',
 	['Via'] = 'via',
@@ -258,8 +284,8 @@ local aliases = {
 	['AuthorList-Link'] = {"authorlink#", "author-link#", "author#-link", "subjectlink#", "author#link", "subject-link#", "subject#-link", "subject#link"},
 	['AuthorList-Mask'] = {"author-mask#", "authormask#", "author#mask", "author#-mask"},
 	
-	['ContributorList-First'] = {'contributor-first#','contributor#-first'},
-	['ContributorList-Last'] = {'contributor#', 'contributor-last#', 'contributor#-last'},
+	['ContributorList-First'] = {'contributor-first#', 'contributor#-first', 'contributor-given#', 'contributor#-given'},
+	['ContributorList-Last'] = {'contributor#', 'contributor-last#', 'contributor#-last', 'contributor-surname#', 'contributor#-surname'},
 	['ContributorList-Link'] = {'contributor-link#', 'contributor#-link'},
 	['ContributorList-Mask'] = {'contributor-mask#', 'contributor#-mask'},
 
@@ -268,11 +294,37 @@ local aliases = {
 	['EditorList-Link'] = {"editor-link#", "editor#-link", "editorlink#", "editor#link"},
 	['EditorList-Mask'] = {"editor-mask#", "editor#-mask", "editormask#", "editor#mask"},
 	
-	['TranslatorList-First'] = {'translator-first#','translator#-first'},
-	['TranslatorList-Last'] = {'translator#', 'translator-last#', 'translator#-last'},
+	['InterviewerList-First'] = {'interviewer-first#', 'interviewer#-first'},
+	['InterviewerList-Last'] = {'interviewer#', 'interviewer-last#', 'interviewer#-last'},
+	['InterviewerList-Link'] = {'interviewer-link#', 'interviewer#-link'},
+	['InterviewerList-Mask'] = {'interviewer-mask#', 'interviewer#-mask'},
+
+	['TranslatorList-First'] = {'translator-first#', 'translator#-first', 'translator-given#', 'translator#-given'},
+	['TranslatorList-Last'] = {'translator#', 'translator-last#', 'translator#-last', 'translator-surname#', 'translator#-surname'},
 	['TranslatorList-Link'] = {'translator-link#', 'translator#-link'},
 	['TranslatorList-Mask'] = {'translator-mask#', 'translator#-mask'},
-}
+	}
+
+
+--[[--------------------------< S P E C I A L   C A S E   T R A N S L A T I O N S >----------------------------
+
+This table is primarily here to support internationalization.  Translations in this table are used, for example,
+when an error message, category name, etc is extracted from the English alias key.  There may be other cases where
+this translation table may be useful.
+
+]]
+
+local special_case_translation = {
+	['AuthorList'] = "authors list",											-- these for multiple names maint categories
+	['ContributorList'] = "contributors list",
+	['EditorList'] = "editors list",
+	['InterviewerList'] = "interviewers list",
+	['TranslatorList'] = "translators list",
+	
+	['authors'] = "authors",													-- used in get_display_authors_editors()
+	['editors'] = "editors",
+	}
+
 
 --[[--------------------------< D E F A U L T S >--------------------------------------------------------------
 
@@ -286,6 +338,41 @@ local defaults = {
 }
 
 
+--[[--------------------------< D A T E _ N A M E S >----------------------------------------------------------
+
+This table of tables lists local language date names and fallback English date names.  The code in Date_validation
+will look first in the local table for valid date names.  If date names are not found in the local table, the code
+will look in the English table.
+
+Because citations can be copied to the local wiki from en.wiki, the English is required when the date-name translation
+function date_name_xlate() is used.
+
+In these tables, season numbering is defined by ISO DIS 8601:2016 part 2 §4.7 'Divisions of a year'.  The standard
+defines various divisions using numbers 21-41.  cs1|2 only supports generic seasons.  ISO DIS 8601:2016 does support
+the distinction between north and south hemispere seasons but cs1|2 has no way to make that distinction.
+
+The standard does not address 'named' dates so, for the purposes of cs1|2, Christmas is defined here as 99, which
+should be out of the ISO DIS 8601:2016 range of uses for a while.
+
+]]
+
+local date_names = {
+	['en'] = {			-- English
+		['long']	= {['January']=1, ['February']=2, ['March']=3, ['April']=4, ['May']=5, ['June']=6, ['July']=7, ['August']=8, ['September']=9, ['October']=10, ['November']=11, ['December']=12};
+		['short']	= {['Jan']=1, ['Feb']=2, ['Mar']=3, ['Apr']=4, ['May']=5, ['Jun']=6, ['Jul']=7, ['Aug']=8, ['Sep']=9, ['Oct']=10, ['Nov']=11, ['Dec']=12};
+		['season']	= {['Winter']=24, ['Spring']=21, ['Summer']=22, ['Fall']=23, ['Autumn']=23};
+		['named']	= {['Christmas']=99};
+		},
+	['local'] = {		-- replace these English date names with the local language equivalents
+		['long']	= {['January']=1, ['February']=2, ['March']=3, ['April']=4, ['May']=5, ['June']=6, ['July']=7, ['August']=8, ['September']=9, ['October']=10, ['November']=11, ['December']=12};
+		['short']	= {['Jan']=1, ['Feb']=2, ['Mar']=3, ['Apr']=4, ['May']=5, ['Jun']=6, ['Jul']=7, ['Aug']=8, ['Sep']=9, ['Oct']=10, ['Nov']=11, ['Dec']=12};
+		['season']	= {['Winter']=24, ['Spring']=21, ['Summer']=22, ['Fall']=23, ['Autumn']=23};
+		['named']	= {['Christmas']=99};
+		},
+	['local_digits'] = {['0'] = '0', ['1'] = '1', ['2'] = '2', ['3'] = '3', ['4'] = '4', ['5'] = '5', ['6'] = '6', ['7'] = '7', ['8'] = '8', ['9'] = '9'};	-- used to convert local language digits to Western 0-9
+	}
+
+
 --[[--------------------------< V O L U M E ,  I S S U E ,  P A G E S >----------------------------------------
 
 These tables hold cite class values (from the template invocation) and identify those templates that support
@@ -294,10 +381,9 @@ is handled in the main module.
 
 ]]
 
-local templates_using_volume = {'citation', 'audio-visual', 'book', 'conference', 'encyclopaedia', 'interview', 'journal', 'magazine', 'map', 'news', 'report', 'techreport'}
+local templates_using_volume = {'citation', 'audio-visual', 'book', 'conference', 'encyclopaedia', 'interview', 'journal', 'magazine', 'map', 'news', 'report', 'techreport', 'thesis'}
 local templates_using_issue = {'citation', 'conference', 'episode', 'interview', 'journal', 'magazine', 'map', 'news'}
 local templates_not_using_page = {'audio-visual', 'episode', 'mailinglist', 'newsgroup', 'podcast', 'serial', 'sign', 'speech'}
-
 
 
 --[[--------------------------< K E Y W O R D S >--------------------------------------------------------------
@@ -308,12 +394,28 @@ This table holds keywords for those parameters that have defined sets of accepti
 
 local keywords = {
 	['yes_true_y'] = {'yes', 'true', 'y'},										-- ignore-isbn-error, last-author-amp, no-tracking, nopp, registration, subscription
-	['deadurl'] = {'yes', 'true', 'y', 'no', 'unfit', 'usurped'},
-	['mode'] = {'cs1', 'cs2'},
+--	['deadurl'] = {'yes', 'true', 'y', 'no', 'unfit', 'usurped', 'unfit no archive', 'usurped no archive'},		-- hidden 2016-04-10; see Help_talk:Citation_Style_1#Recycled_urls
+	['deadurl'] = {'yes', 'true', 'y', 'no', 'unfit', 'usurped', 'bot: unknown'},
+	['mode'] = {'cs1', 'cs2', 'mla'},
 	['name-list-format'] = {'vanc'},
 	['contribution'] = {'afterword', 'foreword', 'introduction', 'preface'},	-- generic contribution titles that are rendered unquoted in the 'chapter' position
-	['date-format'] = {'dmy', 'dmy-all', 'mdy', 'mdy-all', 'ymd', 'ymd-all'}
+	['date-format'] = {'dmy', 'dmy-all', 'mdy', 'mdy-all', 'ymd', 'ymd-all'},
+	['url-access'] = {'subscription', 'limited', 'registration'}, 	   -- access level of a URL (subscription required, limited access, free registration required), free to read by default
+    ['id-access'] = {'free'},                                          -- access level of an identifier (free to read), subscription required (or no full text) by default
 }
+
+
+--[[--------------------------< S T R I P M A R K E R S >------------------------------------------------------
+
+Common pattern definition location for stripmarkers so that we don't have to go hunting for them if (when)
+MediaWiki changes their form.
+
+]]
+
+local stripmarkers = {
+	['any'] = '\127[^\127]*UNIQ%-%-(%a+)%-[%a%d]+%-QINU[^\127]*\127',			-- capture returns name of stripmarker
+	['math'] = '\127[^\127]*UNIQ%-%-math%-[%a%d]+%-QINU[^\127]*\127'			-- math stripmarkers used in coins_cleanup() and coins_replace_math_stripmarker()
+	}
 
 
 --[[--------------------------< I N V I S I B L E _ C H A R A C T E R S >--------------------------------------
@@ -334,8 +436,6 @@ template's metadata before stripmarker replacement.
 
 local invisible_chars = {
 	{'replacement', '\239\191\189'},											-- U+FFFD, EF BF BD
---	{'apostrophe', '&zwj;\226\128\138\039\226\128\139'},						-- apostrophe template: &zwj; hair space ' zero-width space; not an error
-	{'apostrophe', '\226\128\138\039\226\128\139'},								-- apostrophe template: hair space ' zero-width space; (as of 2015-12-11) not an error
 	{'zero width joiner', '\226\128\141'},										-- U+200D, E2 80 8D
 	{'zero width space', '\226\128\139'},										-- U+200B, E2 80 8B
 	{'hair space', '\226\128\138'},												-- U+200A, E2 80 8A
@@ -343,8 +443,7 @@ local invisible_chars = {
 	{'horizontal tab', '\009'},													-- U+0009 (HT), 09
 	{'line feed', '\010'},														-- U+000A (LF), 0A
 	{'carriage return', '\013'},												-- U+000D (CR), 0D
---	{'nowiki stripmarker', '\127UNIQ%-%-nowiki%-[%a%d]+%-QINU\127'},			-- nowiki stripmarker; not an error
-	{'stripmarker', '\127UNIQ%-%-(%a+)%-[%a%d]+%-QINU\127'},					-- stripmarker; may or may not be an error; capture returns the stripmaker type
+	{'stripmarker', stripmarkers.any},											-- stripmarker; may or may not be an error; capture returns the stripmaker type
 	{'delete', '\127'},															-- U+007F (DEL), 7F; must be done after stripmarker test
 	{'C0 control', '[\000-\008\011\012\014-\031]'},								-- U+0000–U+001F (NULL–US), 00–1F (except HT, LF, CR (09, 0A, 0D))
 	{'C1 control', '[\194\128-\194\159]'},										-- U+0080–U+009F (XXX–APC), C2 80 – C2 9F
@@ -352,7 +451,43 @@ local invisible_chars = {
 --	{'Private use area', '[\238\128\128-\239\163\191]'},						-- U+E000–U+F8FF, EE 80 80 – EF A3 BF
 --	{'Supplementary Private Use Area-A', '[\243\176\128\128-\243\191\191\189]'},	-- U+F0000–U+FFFFD, F3 B0 80 80 – F3 BF BF BD
 --	{'Supplementary Private Use Area-B', '[\244\128\128\128-\244\143\191\189]'},	-- U+100000–U+10FFFD, F4 80 80 80 – F4 8F BF BD
-}
+	}
+
+
+-- Indic script makes use of zero width joiner as a character modifier so zwj characters must be left in.  This
+-- pattern covers all of the unicode characters for these languages:
+--	Devanagari					0900–097F – https://unicode.org/charts/PDF/U0900.pdf
+--		Devanagari extended		A8E0–A8FF – https://unicode.org/charts/PDF/UA8E0.pdf
+--	Bengali						0980–09FF – https://unicode.org/charts/PDF/U0980.pdf
+--	Gurmukhi					0A00–0A7F – https://unicode.org/charts/PDF/U0A00.pdf
+--	Gujarati					0A80–0AFF – https://unicode.org/charts/PDF/U0A80.pdf
+--	Oriya						0B00–0B7F – https://unicode.org/charts/PDF/U0B00.pdf
+--	Tamil						0B80–0BFF – https://unicode.org/charts/PDF/U0B80.pdf
+--	Telugu						0C00–0C7F – https://unicode.org/charts/PDF/U0C00.pdf
+--	Kannada						0C80–0CFF – https://unicode.org/charts/PDF/U0C80.pdf
+--	Malayalam					0D00–0D7F – https://unicode.org/charts/PDF/U0D00.pdf
+-- plus the not-necessarily Indic scripts for Sinhala and Burmese:
+--  Sinhala						0D80-0DFF - https://unicode.org/charts/PDF/U0D80.pdf
+--	Myanmar						1000-109F - https://unicode.org/charts/PDF/U1000.pdf
+--		Myanmar extended A		AA60-AA7F - https://unicode.org/charts/PDF/UAA60.pdf
+--		Myanmar extended B		A9E0-A9FF - https://unicode.org/charts/PDF/UA9E0.pdf
+-- the pattern is used by has_invisible_chars() and coins_cleanup()
+-- TODO: find a better place for this?
+
+local indic_script = '[\224\164\128-\224\181\191\224\163\160-\224\183\191\225\128\128-\225\130\159\234\167\160-\234\167\191\234\169\160-\234\169\191]';
+
+--[[--------------------------< L A N G U A G E S >------------------------------------------------------------
+
+This table is used to hold ISO 639-1 two-character language codes that apply only to |script-title= and |script-chapter=
+
+]]
+
+local script_lang_codes = {
+	'am', 'ar', 'be', 'bg', 'bn', 'bs', 'dv', 'el', 'fa',						-- ISO 639-1 codes only for |script-title= and |script-chapter=
+	'gu', 'he', 'hy', 'ja', 'ka', 'kn', 'ko', 'ku',
+	'mk', 'ml', 'mn', 'mr', 'my', 'ps', 'ru', 'sd',
+	'sr', 'tg', 'th', 'uk', 'ug', 'ur', 'yi', 'zh'
+	};
 
 
 --[[--------------------------< M A I N T E N A N C E _ C A T E G O R I E S >----------------------------------
@@ -363,15 +498,27 @@ Here we name maintenance categories to be used in maintenance messages.
 
 local maint_cats = {
 	['ASIN'] = 'CS1 maint: ASIN uses ISBN',
+	['authors'] = 'CS1 maint: Uses authors parameter',
+	['bot:_unknown'] = 'CS1 maint: BOT: original-url status unknown',
+	['date_format'] = 'CS1 maint: Date format',
 	['date_year'] = 'CS1 maint: Date and year',
-	['disp_auth_ed'] = 'CS1 maint: display-$1',									-- $1 is authors or editors
+	['disp_auth_ed'] = 'CS1 maint: display-$1',									-- $1 is authors or editors; gets value from special_case_translation table
+	['editors'] = 'CS1 maint: Uses editors parameter',
 	['embargo'] = 'CS1 maint: PMC embargo expired',
 	['english'] = 'CS1 maint: English language specified',
 	['etal'] = 'CS1 maint: Explicit use of et al.',
 	['extra_text'] = 'CS1 maint: Extra text',
+	['extra_text_names'] = 'CS1 maint: Extra text: $1',							-- $1 is <name>s list; gets value from special_case_translation table
+	['ignore_isbn_err'] = 'CS1 maint: Ignored ISBN errors',
+	['interviewers'] = 'CS1 maint: Uses interviewers parameter',
+	['missing_pipe'] = 'CS1 maint: Missing pipe',
+	['mult_names'] = 'CS1 maint: Multiple names: $1',							-- $1 is <name>s list; gets value from special_case_translation table
+	['pmc_format'] = 'CS1 maint: PMC format',
+	['unfit'] = 'CS1 maint: Unfit url',
 	['unknown_lang'] = 'CS1 maint: Unrecognized language',
 	['untitled'] = 'CS1 maint: Untitled periodical',
 	}
+
 
 --[[--------------------------< P R O P E R T I E S _ C A T E G O R I E S >------------------------------------
 
@@ -381,10 +528,11 @@ Here we name properties categories
 
 local prop_cats = {
 	['foreign_lang_source'] = 'CS1 $1-language sources ($2)',					-- |language= categories; $1 is language name, $2 is ISO639-1 code
+	['foreign_lang_source_2'] = 'CS1 foreign language sources (ISO 639-2)|$1',	-- |language= category; a cat for ISO639-2 languages; $1 is the ISO 639-2 code
 	['script'] = 'CS1 uses foreign language script',							-- when language specified by |script-title=xx: doesn't have its own category
 	['script_with_name'] = 'CS1 uses $1-language script ($2)',					-- |script-title=xx: has matching category; $1 is language name, $2 is ISO639-1 code
+	['jul_greg_uncertainty'] = 'CS1: Julian–Gregorian uncertainty',				-- probably temporary cat to identify scope of template with dates 1 October 1582 – 1 January 1926
 	}
-
 
 
 --[[--------------------------< T I T L E _ T Y P E S >--------------------------------------------------------
@@ -395,7 +543,7 @@ Here we map a template's CitationClass to TitleType (default values for |type= p
 
 local title_types = {
 	['AV-media-notes'] = 'Media notes',
-	['DVD-notes'] = 'Media notes',
+	['interview'] = 'Interview',
 	['mailinglist'] = 'Mailing list',
 	['map'] = 'Map',
 	['podcast'] = 'Podcast',
@@ -404,6 +552,7 @@ local title_types = {
 	['techreport'] = 'Technical report',
 	['thesis'] = 'Thesis',
 	}
+
 
 --[[--------------------------< E R R O R _ C O N D I T I O N S >----------------------------------------------
 
@@ -432,6 +581,11 @@ local error_conditions = {
 		anchor = 'archive_missing_url',
 		category = 'Pages with archiveurl citation errors',
 		hidden = false },
+	archive_url = {
+		message = '<code style="'..code_style..'">&#124;archive-url=</code> is malformed: $1',
+		anchor = 'archive_url',
+		category = 'Pages with archiveurl citation errors',
+		hidden = false },
 	arxiv_missing = {
 		message = '<code style="'..code_style..'">&#124;arxiv=</code> required',
 		anchor = 'arxiv_missing',
@@ -452,6 +606,21 @@ local error_conditions = {
 		anchor = 'bad_asin',
 		category ='CS1 errors: ASIN',
 		hidden = false },
+	bad_bibcode = {
+		message = 'Check <code style="'..code_style..'">&#124;bibcode=</code> $1',
+		anchor = 'bad_bibcode',
+		category = 'CS1 errors: bibcode',
+		hidden = false },
+	bad_biorxiv = {
+		message = 'Check <code style="'..code_style..'">&#124;biorxiv=</code> value',
+		anchor = 'bad_biorxiv',
+		category = 'CS1 errors: bioRxiv',
+		hidden = false },
+	bad_citeseerx = {
+		message = 'Check <code style="'..code_style..'">&#124;citeseerx=</code> value',
+		anchor = 'bad_citeseerx',
+		category = 'CS1 errors: citeseerx',
+		hidden = false },
 	bad_date = {
 		message = 'Check date values in: <code style="'..code_style..'">$1</code>',
 		anchor = 'bad_date',
@@ -468,7 +637,7 @@ local error_conditions = {
 		category = 'CS1 errors: HDL',
 		hidden = false },
 	bad_isbn = {
-		message = 'Check <code style="'..code_style..'">&#124;isbn=</code> value',
+		message = 'Check <code style="'..code_style..'">&#124;isbn=</code> value: $1',
 		anchor = 'bad_isbn',
 		category = 'CS1 errors: ISBN',
 		hidden = false },
@@ -482,15 +651,25 @@ local error_conditions = {
 		anchor = 'bad_issn',
 		category = 'CS1 errors: ISSN',
 		hidden = false },
+	bad_jfm = {
+		message = 'Check <code style="'..code_style..'">&#124;jfm=</code> value',
+		anchor = 'bad_jfm',
+		category = 'CS1 errors: JFM',
+		hidden = false },
 	bad_lccn = {
 		message = 'Check <code style="'..code_style..'">&#124;lccn=</code> value',
 		anchor = 'bad_lccn',
 		category = 'CS1 errors: LCCN',
 		hidden = false },
-	bad_message_id = {
+	bad_usenet_id = {
 		message = 'Check <code style="'..code_style..'">&#124;message-id=</code> value',
 		anchor = 'bad_message_id',
 		category = 'CS1 errors: message-id',
+		hidden = false },
+	bad_mr = {
+		message = 'Check <code style="'..code_style..'">&#124;mr=</code> value',
+		anchor = 'bad_mr',
+		category = 'CS1 errors: MR',
 		hidden = false },
 	bad_ol = {
 		message = 'Check <code style="'..code_style..'">&#124;ol=</code> value',
@@ -512,15 +691,35 @@ local error_conditions = {
 		anchor = 'bad_pmid',
 		category = 'CS1 errors: PMID',
 		hidden = false },
+	bad_oclc = {
+		message = 'Check <code style="'..code_style..'">&#124;oclc=</code> value',
+		anchor = 'bad_oclc',
+		category = 'CS1 errors: OCLC',
+		hidden = false },
+	bad_ssrn = {
+		message = 'Check <code style="'..code_style..'">&#124;ssrn=</code> value',
+		anchor = 'bad_ssrn',
+		category = 'CS1 errors: SSRN',
+		hidden = false },
 	bad_url = {
-		message = 'Check <code style="'..code_style..'">$1</code> value',
+		message = 'Check $1 value',
 		anchor = 'bad_url',
 		category = 'Pages with URL errors',
+		hidden = false },
+	bad_zbl = {
+		message = 'Check <code style="'..code_style..'">&#124;zbl=</code> value',
+		anchor = 'bad_zbl',
+		category = 'CS1 errors: ZBL',
 		hidden = false },
 	bare_url_missing_title = {
 		message = '$1 missing title',
 		anchor = 'bare_url_missing_title',
 		category = 'Pages with citations having bare URLs',
+		hidden = false },
+	biorxiv_missing = {
+		message = '<code style="'..code_style..'">&#124;biorxiv=</code> required',
+		anchor = 'biorxiv_missing',
+		category = 'CS1 errors: bioRxiv',										-- same as bad bioRxiv
 		hidden = false },
 	chapter_ignored = {
 		message = '<code style="'..code_style..'">&#124;$1=</code> ignored',
@@ -532,16 +731,16 @@ local error_conditions = {
 		anchor = 'citation_missing_title',
 		category = 'Pages with citations lacking titles',
 		hidden = false },
+	citeseerx_missing = {
+		message = '<code style="'..code_style..'">&#124;citeseerx=</code> required',
+		anchor = 'citeseerx_missing',
+		category = 'CS1 errors: citeseerx',										-- same as bad citeseerx
+		hidden = false },
 	cite_web_url = {															-- this error applies to cite web and to cite podcast
 		message = 'Missing or empty <code style="'..code_style..'">&#124;url=</code>',
 		anchor = 'cite_web_url',
 		category = 'Pages using web citations with no URL',
 		hidden = true },
-	coauthors_missing_author = {
-		message = '<code style="'..code_style..'">&#124;coauthors=</code> requires <code style="'..code_style..'">&#124;author=</code>',
-		anchor = 'coauthors_missing_author',
-		category = 'CS1 errors: coauthors without author',
-		hidden = false },
 	contributor_ignored = {
 		message = '<code style="'..code_style..'">&#124;contributor=</code> ignored</code>',
 		anchor = 'contributor_ignored',
@@ -555,7 +754,7 @@ local error_conditions = {
 	deprecated_params = {
 		message = 'Cite uses deprecated parameter <code style="'..code_style..'">&#124;$1=</code>',
 		anchor = 'deprecated_params',
-		category = 'Pages containing cite templates with deprecated parameters',
+		category = 'CS1 errors: deprecated parameters',
 		hidden = false },
 	empty_citation = {
 		message = 'Empty citation',
@@ -586,6 +785,11 @@ local error_conditions = {
 		message = 'Missing <code style="'..code_style..'">&#124;last$2=</code> in $1',
 		anchor = 'missing_name',
 		category = 'CS1 errors: missing author or editor',
+		hidden = false },
+	param_access_requires_param = {
+		message = '<code style="'..code_style..'">&#124;$1-access=</code> requires <code style="'..code_style..'">&#124;$1=</code>',
+		anchor = 'param_access_requires_param',
+		category = 'CS1 errors: param-access',
 		hidden = false },
 	param_has_ext_link = {
 		message = 'External link in <code style="'..code_style..'">$1</code>',
@@ -618,7 +822,7 @@ local error_conditions = {
 		category = 'CS1 errors: translated title',
 		hidden = false },
 	vancouver = {
-		message = 'Vancouver style error',
+		message = 'Vancouver style error: $1',
 		anchor = 'vancouver',
 		category = 'CS1 errors: Vancouver style',
 		hidden = false },
@@ -627,7 +831,8 @@ local error_conditions = {
 		anchor = 'wikilink_in_url',
 		category = 'CS1 errors: URL–wikilink conflict',							-- uses ndash
 		hidden = false },
-}
+	}
+
 
 --[[--------------------------< I D _ H A N D L E R S >--------------------------------------------------------
 
@@ -647,11 +852,15 @@ variety of information necessary to properly render the identifier in the citati
 		for others make a url using the value in prefix, use the keyword: pre (not checked; any text other than 'info' or 'rft' works here)
 		set to nil to leave the identifier out of the COinS
 	separator: character or text between label and the identifier in the rendered citation
+	access: use this parameter to set the access level for all instances of this identifier.
+			the value must be a valid access level for an identifier (see ['id-access'] in this file).
+	custom_access: to enable custom access level for an identifier, set this parameter
+			to the parameter that should control it (normally 'id-access')
 ]]
 
 local id_handlers = {
 	['ARXIV'] = {
-		parameters = {'arxiv', 'ARXIV', 'eprint'}, 
+		parameters = {'arxiv', 'eprint'},
 		link = 'arXiv',
 		label = 'arXiv',
 		mode = 'manual',
@@ -659,9 +868,10 @@ local id_handlers = {
 		encode = false,
 		COinS = 'info:arxiv',
 		separator = ':',
+		access = 'free',														-- free to read
 	},
 	['ASIN'] = {
-		parameters = { 'asin', 'ASIN' },	   
+		parameters = { 'asin', 'ASIN' },
 		link = 'Amazon Standard Identification Number',
 		label = 'ASIN',
 		mode = 'manual',
@@ -671,27 +881,51 @@ local id_handlers = {
 		encode = false;
 	},
 	['BIBCODE'] = {
-		parameters = {'bibcode', 'BIBCODE'}, 
+		parameters = {'bibcode'},
 		link = 'Bibcode',
 		label = 'Bibcode',
-		mode = 'external',
+		mode = 'manual',
 		prefix = 'http://adsabs.harvard.edu/abs/',
 		encode = false,
 		COinS = 'info:bibcode',
 		separator = ':',
+		custom_access = 'bibcode-access',
+	},
+	['BIORXIV'] = {
+		parameters = {'biorxiv'},
+		link = 'bioRxiv',
+		label = 'bioRxiv',
+		mode = 'manual',
+		prefix = '//doi.org/10.1101/',
+		COinS = 'pre',															-- use prefix value
+		access = 'free',														-- free to read
+		encode = true,
+		separator = '&nbsp;',
+	},
+	['CITESEERX'] = {
+		parameters = {'citeseerx'},
+		link = 'CiteSeerX',
+		label = 'CiteSeerX',
+		mode = 'manual',														-- manual for custom validation of the "doi"
+		prefix = '//citeseerx.ist.psu.edu/viewdoc/summary?doi=',
+		COinS =  'pre',															-- use prefix value
+		access = 'free',														-- free to read
+		encode = true,
+		separator = '&nbsp;',
 	},
 	['DOI'] = {
 		parameters = { 'doi', 'DOI' },
 		link = 'Digital object identifier',
 		label = 'doi',
 		mode = 'manual',
-		prefix = '//dx.doi.org/',
+		prefix = '//doi.org/',
 		COinS = 'info:doi',
 		separator = ':',
 		encode = true,
+		custom_access = 'doi-access',
 	},
 	['EISSN'] = {
-		parameters = {'eissn', 'EISSN'}, 
+		parameters = {'eissn', 'EISSN'},
 		link = 'International_Standard_Serial_Number#Electronic_ISSN',
 		label = 'eISSN',
 		mode = 'manual',
@@ -709,9 +943,10 @@ local id_handlers = {
 		COinS = 'info:hdl',
 		separator = ':',
 		encode = true,
+		custom_access = 'hdl-access',
 	},
 	['ISBN'] = {
-		parameters = {'isbn', 'ISBN', 'isbn13', 'ISBN13'}, 
+		parameters = {'isbn', 'ISBN', 'isbn13', 'ISBN13'},
 		link = 'International Standard Book Number',
 		label = 'ISBN',
 		mode = 'manual',
@@ -720,16 +955,16 @@ local id_handlers = {
 		separator = '&nbsp;',
 	},
 	['ISMN'] = {
-		parameters = {'ismn', 'ISMN'}, 
+		parameters = {'ismn', 'ISMN'},
 		link = 'International Standard Music Number',
 		label = 'ISMN',
 		mode = 'manual',
-		prefix = '',															-- not currently used; 
+		prefix = '',															-- not currently used;
 		COinS = 'nil',															-- nil because we can't use pre or rft or info:
 		separator = '&nbsp;',
 	},
 	['ISSN'] = {
-		parameters = {'issn', 'ISSN'}, 
+		parameters = {'issn', 'ISSN'},
 		link = 'International Standard Serial Number',
 		label = 'ISSN',
 		mode = 'manual',
@@ -739,17 +974,17 @@ local id_handlers = {
 		separator = '&nbsp;',
 	},
 	['JFM'] = {
-		parameters = {'jfm', 'JFM'}, 
+		parameters = {'jfm', 'JFM'},
 		link = 'Jahrbuch über die Fortschritte der Mathematik',
 		label = 'JFM',
-		mode = 'external',
+		mode = 'manual',
 		prefix = '//zbmath.org/?format=complete&q=an:',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
 	},
 	['JSTOR'] = {
-		parameters = {'jstor', 'JSTOR'}, 
+		parameters = {'jstor', 'JSTOR'},
 		link = 'JSTOR',
 		label = 'JSTOR',
 		mode = 'external',
@@ -757,9 +992,10 @@ local id_handlers = {
 		COinS = 'pre',															-- use prefix value
 		encode = false,
 		separator = '&nbsp;',
+		custom_access = 'jstor-access',
 	},
 	['LCCN'] = {
-		parameters = {'LCCN', 'lccn'}, 
+		parameters = {'LCCN', 'lccn'},
 		link = 'Library of Congress Control Number',
 		label = 'LCCN',
 		mode = 'manual',
@@ -769,20 +1005,20 @@ local id_handlers = {
 		separator = '&nbsp;',
 	},
 	['MR'] = {
-		parameters = {'MR', 'mr'}, 
+		parameters = {'MR', 'mr'},
 		link = 'Mathematical Reviews',
 		label = 'MR',
-		mode = 'external',
+		mode = 'manual',
 		prefix = '//www.ams.org/mathscinet-getitem?mr=', 						-- protocol relative tested 2013-09-04
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
 	},
 	['OCLC'] = {
-		parameters = {'OCLC', 'oclc'}, 
+		parameters = {'OCLC', 'oclc'},
 		link = 'OCLC',
 		label = 'OCLC',
-		mode = 'external',
+		mode = 'manual',
 		prefix = '//www.worldcat.org/oclc/',
 		COinS = 'info:oclcnum',
 		encode = true,
@@ -797,9 +1033,10 @@ local id_handlers = {
 		COinS = nil,															-- no COinS for this id (needs thinking on implementation because /authors/books/works/OL)
 		separator = '&nbsp;',
 		encode = true,
+		custom_access = 'ol-access',
 	},
 	['OSTI'] = {
-		parameters = {'OSTI', 'osti'}, 
+		parameters = {'OSTI', 'osti'},
 		link = 'Office of Scientific and Technical Information',
 		label = 'OSTI',
 		mode = 'external',
@@ -807,20 +1044,22 @@ local id_handlers = {
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
+		custom_access = 'osti-access',
 	},
 	['PMC'] = {
-		parameters = {'PMC', 'pmc'}, 
+		parameters = {'PMC', 'pmc'},
 		link = 'PubMed Central',
 		label = 'PMC',
 		mode = 'manual',
-		prefix = '//www.ncbi.nlm.nih.gov/pmc/articles/PMC', 
+		prefix = '//www.ncbi.nlm.nih.gov/pmc/articles/PMC',
 		suffix = " ",
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
+		access = 'free',														-- free to read
 	},
 	['PMID'] = {
-		parameters = {'PMID', 'pmid'}, 
+		parameters = {'PMID', 'pmid'},
 		link = 'PubMed Identifier',
 		label = 'PMID',
 		mode = 'manual',
@@ -830,7 +1069,7 @@ local id_handlers = {
 		separator = '&nbsp;',
 	},
 	['RFC'] = {
-		parameters = {'RFC', 'rfc'}, 
+		parameters = {'RFC', 'rfc'},
 		link = 'Request for Comments',
 		label = 'RFC',
 		mode = 'external',
@@ -838,16 +1077,18 @@ local id_handlers = {
 		COinS = 'pre',															-- use prefix value
 		encode = false,
 		separator = '&nbsp;',
+		access = 'free',														-- free to read
 	},
 	['SSRN'] = {
-		parameters = {'SSRN', 'ssrn'}, 
+		parameters = {'SSRN', 'ssrn'},
 		link = 'Social Science Research Network',
 		label = 'SSRN',
-		mode = 'external',
+		mode = 'manual',
 		prefix = '//ssrn.com/abstract=', 										-- protocol relative tested 2013-09-04
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
+		access = 'free',														-- always free to read
 	},
 	['USENETID'] = {
 		parameters = {'message-id'},
@@ -860,28 +1101,34 @@ local id_handlers = {
 		separator = '&nbsp;',
 	},
 	['ZBL'] = {
-		parameters = {'ZBL', 'zbl'}, 
+		parameters = {'ZBL', 'zbl'},
 		link = 'Zentralblatt MATH',
 		label = 'Zbl',
-		mode = 'external',
+		mode = 'manual',
 		prefix = '//zbmath.org/?format=complete&q=an:',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
 	},
-}
+	}
+
 
 return 	{
 	aliases = aliases,
+	special_case_translation = special_case_translation,
 	defaults = defaults,
+	date_names = date_names,
 	error_conditions = error_conditions,
 	id_handlers = id_handlers,
 	keywords = keywords,
+	stripmarkers=stripmarkers,
 	invisible_chars = invisible_chars,
+	indic_script = indic_script,
 	maint_cats = maint_cats,
 	messages = messages,
 	presentation = presentation,
 	prop_cats = prop_cats,
+	script_lang_codes = script_lang_codes,
 	title_types = title_types,
 	uncategorized_namespaces = uncategorized_namespaces,
 	uncategorized_subpages = uncategorized_subpages,
