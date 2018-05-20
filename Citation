@@ -83,36 +83,7 @@ function createTag(t, frame)
     end
 end
 
---[[
-This is a clone of mw.text.nowiki.  When the mw.text library is installed,
-this can be replaced by a call to that library. ]]
-function nowiki( s )
-    -- string.gsub is safe here, because we're only caring about ASCII chars
-    s = string.gsub( s, '["&\'<=>%[%]{|}]', {
-        ['"'] = '&#34;',
-        ['&'] = '&#38;',
-        ["'"] = '&#39;',
-        ['<'] = '&#60;',
-        ['='] = '&#61;',
-        ['>'] = '&#62;',
-        ['['] = '&#91;',
-        [']'] = '&#93;',
-        ['{'] = '&#123;',
-        ['|'] = '&#124;',
-        ['}'] = '&#125;',
-    } )
-    s = string.sub( string.gsub( '\n' .. s, '\n[#*:;]', {
-        ["\n#"] = "\n&#35;",
-        ["\n*"] = "\n&#42;",
-        ["\n:"] = "\n&#58;",
-        ["\n;"] = "\n&#59;",
-    } ), 2 )
-    s = string.gsub( s, '://', '&#58;//' )
-    s = string.gsub( s, 'ISBN ', 'ISBN&#32;' )
-    s = string.gsub( s, 'RFC ', 'RFC&#32;' )
 
-    return s
-end
 
 function externallinkid(args)
     local sep = args.separator or "&nbsp;"
@@ -123,7 +94,7 @@ function externallinkid(args)
     end
     
     local t0 = onlyinprint(args.label .. sep .. args.id)
-    local t1 = hideinprint("[[" .. args.link .. "|" .. args.label .. "]]" .. sep .. "[" .. args.prefix .. url_string .. args.suffix .. " " .. nowiki(args.id) .. "]")
+    local t1 = hideinprint("[[" .. args.link .. "|" .. args.label .. "]]" .. sep .. "[" .. args.prefix .. url_string .. args.suffix .. " " .. mw.text.nowiki(args.id) .. "]")
     
     return t0 .. t1
 end
@@ -136,7 +107,7 @@ function doi(id, inactive, nocat)
         cat = cat .. "[[Category:Pages with DOIs inactive since " .. selectyear(inactive) .. "]]"
         inactive = " (inactive " .. inactive .. ")" 
     else 
-        text = externallinkid({link="Digital object identifier",label="doi",prefix="http://dx.doi.org/",id=id,separator=":"})
+        text = externallinkid({link="Digital object identifier",label="doi",prefix="https://doi.org/",id=id,separator=":"})
         inactive = "" 
     end
     if ( string.sub(id,1,3) ~= "10." ) then
@@ -328,7 +299,7 @@ end
 function z.ISSN(frame)
     local pframe = frame:getParent()
     local Name = pframe.args[1] or ""
-    return hideinprint("[[International Standard Serial Number|ISSN]]&nbsp;[http://www.worldcat.org/search?fq=x0:jrnl&q=n2:" .. Name .. " " .. Name .. "]")
+    return hideinprint("[[International Standard Serial Number|ISSN]]&nbsp;[https://www.worldcat.org/search?fq=x0:jrnl&q=n2:" .. Name .. " " .. Name .. "]")
 end
 
 -- This is used by templates such as {{SfnRef}} to create the (encoded) anchor name for a Harvard cross-reference hyperlink.
