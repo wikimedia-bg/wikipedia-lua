@@ -1,0 +1,198 @@
+--Please insert new suggestions in alphabetical order
+--The form is ['incorrect'] = 'correct',
+
+suggestions = {
+	['accessmonth'] = 'access-date', -- no longer supported by us, but still by citation templates mirrored in foreign WPs; can be emulated using 'access-date'
+	['accesso'] = 'access-date', --  Italian
+	['accessyear'] = 'access-date', -- no longer supported by us, but still by citation templates mirrored in foreign WPs; can be emulated using 'access-date'
+	['address'] = 'location',
+	['année'] = 'year', -- French
+	['año'] = 'year',
+	['año-original'] = 'orig-year',
+	['añoacceso'] = 'access-date', -- Spanish
+	['annoaccesso'] = 'access-date', --Italian
+	['annodiaccesso'] = 'access-date', --Italian
+	['apellido'] = 'last', -- Spanish
+	['archiv-datum'] = 'archive-date', -- German
+	['archive date'] = 'archive-date',
+	['archiv-url'] = 'archive-url', -- German
+	['archive url'] = 'archive-url', -- Spanish
+	['artist'] = 'others',
+	['auflage'] = 'edition', -- German
+	['auteur'] = 'author', -- French
+	['auther'] = 'author',
+	['author link'] = 'author-link', -- Polish
+	['author link2'] = 'author2-link', -- Polish
+	['autor'] = 'authors', -- German (singular and plural)
+	['autore'] = 'author', -- Italian
+	['autthor'] = 'author',
+	['band'] = 'volume', -- German
+	['chapter_title'] = 'chapter',
+	['cita'] = 'quote', -- Spanish
+	['citazione'] = 'quote', -- Italian
+	['coauthor'] = 'author',
+	['coauthors'] = 'author',
+	['coautores'] = 'author', -- Spanish
+	['coautori'] = 'author', -- Italian
+	['cognome'] = 'last', -- Italian
+	['consulté le'] = 'access-date', -- French
+	['czasopismo'] = 'journal', -- Polish
+	['data'] = 'date', -- Polish, Italian
+	['dataarchivio'] = 'archive-date', -- Italian
+	['data dostępu'] = 'access-date', -- Polish
+	['datum'] = 'date', -- German
+	['deadlink'] = 'dead-url',
+	['distributor'] = 'publisher',
+	['dnb'] = 'id', -- German (as 'id={{DNB-IDN|...}}') (not yet supported by us directly)
+	['éditeur'] = 'editor', -- French
+	['editon'] = 'edition',
+	['editoin'] = 'edition',
+	['editorial'] = 'publisher',
+	['en ligne le'] = 'archive-date', -- French
+	['encyclopædia'] = 'encyclopedia',
+	['enlaceautor'] = 'author-link', -- Spanish
+	['fecha'] = 'date', -- Spanish
+	['fechaacceso'] = 'access-date', -- Spanish
+	['fechaarchivo'] = 'archive-date', -- Spanish
+	['filetype'] = 'format',
+	['first 1'] = 'first1',
+	['foramt'] = 'format',
+	['formato'] = 'format', -- Spanish, Italian, Polish
+	['frist'] = 'first',
+	['herausgeber'] = 'editors', -- German (singular and plural)
+	['idioma'] = 'language', -- Spanish, Italian
+	['imię'] = 'first', -- Polish
+	['isbnistformalfalsch'] = 'ignore-isbn-error', -- German
+	['isnb'] = 'isbn',
+	['jahr'] = 'year', -- German
+	['kapitel'] = 'chapter', -- German
+--	['kommentar'] = 'comment', -- German (not yet supported by us)
+	['lang'] = 'language',
+	['langauge'] = 'language',
+	['langue'] = 'language', -- French
+	['last 1'] = 'last1',
+	['lieu'] = 'location', -- French
+	['lingua'] = 'language', -- Italian
+	['lire en ligne'] = 'url', -- French
+	['lizenznummer'] = 'id', -- German (as 'id=License ...')
+	['loaction'] = 'location',
+	['locatoin'] = 'location',
+	['lugar'] = 'location', -- Spanish
+	['miejsce'] = 'location', -- Polish
+	['miesiąc'] = 'date', -- Polish
+	['mois'] = 'date', -- French
+	['monat'] = 'date', -- German
+--	['name'] = 'author', -- 'name' is often erroneously used for 'title' and 'work' as well, so no suggestion is better than a wrong suggestion
+	['nazwisko'] = 'last', -- Polish
+	['nespaper'] = 'newspaper',
+	['newpaper'] = 'newspaper',
+	['news'] = 'newspaper',
+	['nom'] = 'last', -- French
+	['nom1'] = 'last1', -- French
+	['nombre'] = 'first', -- Spanish
+	['nome'] = 'first', -- Italian
+	['nummer'] = 'number', -- German
+	['obra'] = 'work', -- Spanish
+	['odpowiedzialność'] = 'agency', -- Polish
+	['offline'] = 'dead-url', -- German
+	['online'] = 'url', -- German (not a direct replacement, but can be emulated)
+	['opublikowany'] = 'agency', -- Polish
+	['opera'] = 'work', -- Italian
+	['origdate'] = 'orig-year',
+	['originaljahr'] = 'orig-year', -- German
+	['originalort'] = 'location', -- German (if 'ort' is specified at the same time, the latter should be put in 'publication-place')
+	['originalsprache'] = 'language', -- German
+	['originaltitel'] = 'title', -- German (if 'originaltitel' is specified, any possible contents of 'title' should be put in 'trans-title')
+	['ort'] = 'location', -- German
+	['other'] = 'others',
+	['oznaczenie'] = 'agency', -- Polish
+	['pagees'] = 'pages',
+	['página'] = 'page', -- Spanish, Italian
+	['páginas'] = 'pages', -- Spanish, Italian
+	['passage'] = 'pages', -- French
+	['pagina'] = 'pages', -- Italian
+	['pagine'] = 'pages', -- Italian
+	['périodique'] = 'publisher', -- French
+	['plublisher'] = 'publisher',
+	['pmcid'] = 'pmc',
+	['praca'] = 'work', -- Polish
+	['prénom'] = 'first', -- French
+	['prénom1'] = 'first1', -- French
+	['ps'] = 'postscript',
+	['pub'] = 'publisher',
+	['pulbication-place'] = 'publication-place',
+	['reihe'] = 'series', -- German
+	['retrieved'] = 'access-date',
+	['rok'] = 'date', -- Polish
+	['sammelwerk'] = 'work', -- German
+	['seiten'] = 'pages', -- German
+	['seria'] = 'series', -- Polish
+	['série'] = 'work', -- French *RECHECK*
+	['service'] = 'agency',
+	['sitioweb'] = 'website', --Spanish
+	['stron'] = 'page', -- Polish
+	['strony'] = 'pages', -- Polish
+	['spalten'] = 'at', -- German (not a direct replacement, but can be emulated)
+	['sprache'] = 'language', -- German
+	['suscripción'] = 'subscription', -- Spanish, Polish
+	['tag'] = 'date', -- German
+	['tile'] = 'title',
+	['tite'] = 'title',
+	['titel'] = 'title', -- German
+	['titel-p'] = 'title', -- German ('postscript=none' should be added as well)
+	['titelerg'] = 'contribution', -- German (not a direct replacement, but can be emulated)
+	['titolo'] = 'title', -- Spanish, Italian
+	['titre'] = 'title', -- French
+	['títle'] = 'title',
+	['título'] = 'title', -- Spanish
+	['transchapter'] = 'trans-chapter',
+	['translator'] = 'others',
+	['transtitle'] = 'trans-title',
+	['typ'] = 'author-mask', -- German (not a direct replacement, but the only valid argument 'typ=wl' can be emulated using 'author-mask')
+	['tytuł'] = 'title', -- Polish
+	['ubicación'] = 'location', -- Spanish
+	['urlarchivo'] = 'archive-url', -- Spanish
+	['urlarchivio'] = 'archive-url', -- Italian
+	['urn'] = 'id', -- German (as 'id={{URN|...}}') (not yet supported by us directly)
+	['übersetzer'] = 'translator', -- German (singular and plural)
+	['verlag'] = 'publisher', -- German
+	['vol'] = 'volume', 
+	['volumen'] = 'volume', -- Spanish
+	['werk'] = 'work', -- German
+	['werkerg'] = 'contribution', -- German (not a direct replacement, but can be emulated)
+	['wkautore'] = 'author-link', -- Italian
+	['wolumin'] = 'volume', -- Polish
+	['wydanie'] = 'number', -- Polish
+	['wydawca'] = 'publisher', -- French
+	['zaprezentowany'] = 'publisher', -- French
+	['zdb'] = 'id', -- German (as 'id={{ZDB|...}}') (not yet supported by us directly)
+	['zitat'] = 'quote', -- German
+	['zugriff'] = 'access-date', -- German
+}
+
+
+--[[--------------------------< P A T T E R N S >--------------------------------------------------------------
+
+Here we use Lua patterns to make suggestions.  The form is ['pattern'] = 'correct',
+
+Lua patterns are not regex though they are similar.  The escape character is '%', not '\'.  For more information about
+lua patterns, see: Extension:Scribunto/Lua_reference_manual#Patterns
+
+Patterns should probably always include the '^' and '$' anchor assertions to prevent a partial match from incorrectly
+suggesting the wrong parameter name.  For instance, the pattern 'a[utho]+r' matches 'author' in the no-longer-supported
+parameter |author-separator= so the code suggests '|author='; the same pattern also matches the no-longer-supported
+parameter |separator= (returning 'ator') so again, the code suggests '|author='.
+
+One capture is supported, typically the enumerator from an enumerated parameter (the '6' in |author6=, etc.)  The value from the
+capture replaces $1 in the 'correct' value.
+
+]]
+
+local patterns = {
+	['^ac+es+ ?d?a?t?e?$'] = 'access-date',
+	['^a[utho]+r$'] = 'author',
+	['^a[utho]+r(%d+)$'] = 'author$1', -- enumerated
+	['^pu[blish]+ers?$'] = 'publisher',
+	}
+
+return {suggestions = suggestions, patterns=patterns};
