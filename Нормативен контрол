@@ -269,6 +269,10 @@ local function jstorLink( id )
 	return '[https://www.jstor.org/topic/' .. id .. ' ' .. id .. ']' .. getCatForId( 'JSTOR' )
 end
 
+local function newwLink( id )
+	return '[http://resources.huygens.knaw.nl/womenwriters/vre/persons/' .. id .. ' ' .. id .. ']' .. getCatForId( 'NEWW' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -350,6 +354,7 @@ local conf = {
     { 'BNpub', '[[BiblioNet]]', 2189, BNpublisherLink },
     { 'Freebase', '[[:en:Freebase|Freebase]]', 646, freebaseLink },
     { 'JSTOR', '[[JSTOR]]', 3827, jstorLink },
+    { 'NEWW', 'NEWW Women Writers', 2533, newwLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
