@@ -273,6 +273,10 @@ local function newwLink( id )
 	return '[http://resources.huygens.knaw.nl/womenwriters/vre/persons/' .. id .. ' ' .. id .. ']' .. getCatForId( 'NEWW' )
 end
 
+local function fastLink( id )
+	return '[https://experimental.worldcat.org/fast/' .. id .. '/]' .. getCatForId( 'FAST' )
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -355,6 +359,7 @@ local conf = {
     { 'Freebase', '[[:en:Freebase|Freebase]]', 646, freebaseLink },
     { 'JSTOR', '[[JSTOR]]', 3827, jstorLink },
     { 'NEWW', 'NEWW Women Writers', 2533, newwLink },
+    { 'FAST', 'FAST', 2163, fastLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
