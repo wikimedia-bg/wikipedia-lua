@@ -274,7 +274,7 @@ local function newwLink( id )
 end
 
 local function fastLink( id )
-	return '[https://experimental.worldcat.org/fast/' .. id .. '/]' .. getCatForId( 'FAST' )
+	return '[https://experimental.worldcat.org/fast/' .. id .. '/ ' .. id .. ']' .. getCatForId( 'FAST' )
 end
 
 function getIdsFromWikidata( item, property )
