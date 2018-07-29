@@ -277,6 +277,10 @@ local function fastLink( id )
 	return '[https://experimental.worldcat.org/fast/' .. id .. '/ ' .. id .. ']' .. getCatForId( 'FAST' )
 end
 
+local function aatLink( id )
+	return '[http://vocab.getty.edu/page/aat/' .. id .. ' ' .. id .. ']' .. getCatForId( 'AAT')
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -360,6 +364,7 @@ local conf = {
     { 'JSTOR', '[[JSTOR]]', 3827, jstorLink },
     { 'NEWW', 'NEWW Women Writers', 2533, newwLink },
     { 'FAST', 'FAST', 2163, fastLink },
+    { 'AAT', 'Art & Architecture Thesaurus', 1014, aatLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
