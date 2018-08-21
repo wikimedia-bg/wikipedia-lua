@@ -107,7 +107,7 @@ function p._userbox(args)
 	data.idClass = args['id-class']
 
 	-- Get info values.
-	data.info = "'''" .. (args.info or args[2]) .. "'''"
+	data.info = args.info or args[2]
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoHeight = checkNumAndAddSuffix(args['id-h'], 45, 'px')
@@ -147,7 +147,7 @@ p['_userbox-2'] = function (args)
 	data.idOtherParams = args['id1-other']
 
 	-- Get info values.
-	data.info = "'''" .. (args.info or args[2]) .. "'''"
+	data.info = args.info or args[2]
 	data.infoTextAlign = args['info-a'] or 'center'
 	data.infoFontSize = checkNumAndAddSuffix(args['info-s'], 8, 'pt')
 	data.infoColor = args['info-fc'] or args[7] or 'black'
@@ -242,6 +242,7 @@ function p.render(data)
 			:css('background', data.idBackgroundColor)
 			:css('text-align', data.idTextAlign)
 			:css('font-size', data.idFontSize)
+			:css('font-weight', 'bold')
 			:css('color', data.idColor)
 			:css('padding', data.idPadding)
 			:css('line-height', data.idLineHeight)
@@ -275,6 +276,7 @@ function p.render(data)
 			:css('background', data.id2BackgroundColor)
 			:css('text-align', data.id2TextAlign)
 			:css('font-size', data.id2FontSize)
+			:css('font-weight', 'bold')
 			:css('color', data.id2Color)
 			:css('padding', data.id2Padding)
 			:css('line-height', data.id2LineHeight)
