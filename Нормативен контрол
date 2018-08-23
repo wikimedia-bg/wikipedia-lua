@@ -369,7 +369,7 @@ local conf = {
     { 'NEWW', 'NEWW Women Writers', 2533, newwLink },
     { 'FAST', 'FAST', 2163, fastLink },
     { 'AAT', 'Art & Architecture Thesaurus', 1014, aatLink },
-    { 'Koninklijke', '[[Национална библиотека на Нидерландия]]', 1006, koninklijkeLink },
+    { 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, koninklijkeLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
