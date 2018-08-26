@@ -285,6 +285,10 @@ local function koninklijkeLink( id )
 	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']' .. getCatForId( 'Koninklijke')
 end
 
+local function openLibraryLink( id )
+	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']' .. getCatForId( 'OpenLibrary')
+end
+
 function getIdsFromWikidata( item, property )
     local ids = {}
     if not item.claims[property] then
@@ -370,6 +374,7 @@ local conf = {
     { 'FAST', 'FAST', 2163, fastLink },
     { 'AAT', 'Art & Architecture Thesaurus', 1014, aatLink },
     { 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, koninklijkeLink },
+    { 'OpenLibrary', 'Open Library', 648, openLibraryLink },
 }
 
 -- Check that the Wikidata item has this property-->value before adding it
