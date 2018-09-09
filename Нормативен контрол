@@ -246,7 +246,7 @@ local function rkdartistsLink( id )
 end
 
 local function NLGIDLink( id )
-    return '[http://nlg.okfn.gr/resource/authority/record' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
+    return '[https://catalogue.nlg.gr/Authority/Record?id=au.' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
 end
 
 local function BNeditionLink( id )
