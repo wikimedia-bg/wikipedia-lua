@@ -163,7 +163,7 @@ function UnitTester:run(frame_arg)
         result_table = result_table .. "|}\n\n"
     end
 
-    return (num_failures == 0 and "<font color=\"#008000\">'''All tests passed.'''</font>" or "<font color=\"#800000\">'''" .. num_failures .. " tests failed.'''</font>") .. "\n\n" .. frame:preprocess(result_table)
+    return (num_failures == 0 and "<span style=\"color:#008000\">'''All tests passed.'''</span>" or "<span style=\"color:#800000\">'''" .. num_failures .. " tests failed.'''</span>") .. "\n\n" .. frame:preprocess(result_table)
 end
 
 function UnitTester:new()
