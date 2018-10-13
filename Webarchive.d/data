@@ -58,8 +58,8 @@ used only with serviceName(), this table holds the two generic tail-text prefixe
 ]]
 
 local prefixes = {
-	at = 'at',
-	atthe = 'at the',
+	at = 'в',
+	atthe = 'в',
 	}
 
 
