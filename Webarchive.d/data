@@ -34,23 +34,6 @@ local excepted_pages = {														-- these pages will be categorized if set 
 	}
 
 
---[[--------------------------< C A T E G O R I E S >----------------------------------------------------------
-
-this is a table of all categories supported by Module:Webarchive
-
-]]
-
-local categories = {
-	archiveis = 'Category:Webarchive template archiveis links',
-	error = 'Category:Webarchive template errors',
-	other = 'Category:Webarchive template other archives',
-	unknown = 'Category:Webarchive template unknown archives',
-	warning = 'Category:Webarchive template warnings',
-	wayback = 'Category:Webarchive template wayback links',
-	webcite = 'Category:Webarchive template webcite links',
-	}
-
-
 --[[--------------------------< P R E F I X E S >--------------------------------------------------------------
 
 used only with serviceName(), this table holds the two generic tail-text prefixes specified by services['<service name>'][1]
