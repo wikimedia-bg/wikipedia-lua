@@ -18,48 +18,48 @@ function viafLink( id )
 end
 
 function kulturnavLink( id )
-    return '[http://kulturnav.org/language/en/' .. id .. ' id]' 
+    return '[http://kulturnav.org/language/en/' .. id .. ' id]'
 end
 
 function sikartLink( id )
-    return '[http://www.sikart.ch/KuenstlerInnen.aspx?id=' .. id .. '&lng=en ' .. id .. ']' 
+    return '[http://www.sikart.ch/KuenstlerInnen.aspx?id=' .. id .. '&lng=en ' .. id .. ']'
 end
 
 function tlsLink( id )
 	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'WIKI') end)
-    return '[http://tls.theaterwissenschaft.ch/wiki/' .. id2 .. ' ' .. id .. ']' 
+    return '[http://tls.theaterwissenschaft.ch/wiki/' .. id2 .. ' ' .. id .. ']'
 end
 
 
 function ciniiLink( id )
-    return '[http://ci.nii.ac.jp/author/' .. id .. '?l=en ' .. id .. ']' 
+    return '[http://ci.nii.ac.jp/author/' .. id .. '?l=en ' .. id .. ']'
 end
 
 function bneLink( id )
-    return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id=' .. id .. ' ' .. id .. ']' 
+    return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id=' .. id .. ' ' .. id .. ']'
 end
 
 
 function uscongressLink( id )
-    return '[http://bioguide.congress.gov/scripts/biodisplay.pl?index=' .. id .. ' ' .. id .. ']' 
+    return '[http://bioguide.congress.gov/scripts/biodisplay.pl?index=' .. id .. ' ' .. id .. ']'
 end
 
 function narapersonLink( id )
-    return '[http://research.archives.gov/person/' .. id .. ' ' .. id .. ']' 
+    return '[http://research.archives.gov/person/' .. id .. ' ' .. id .. ']'
 end
 
 function naraorganizationLink( id )
-    return '[http://research.archives.gov/organization/' .. id .. ' ' .. id .. ']' 
+    return '[http://research.archives.gov/organization/' .. id .. ' ' .. id .. ']'
 end
 
 function botanistLink( id )
 	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'PATH') end)
-    return '[http://www.ipni.org/ipni/advAuthorSearch.do?find_abbreviation=' .. id2 .. ' ' .. id .. ']' 
+    return '[http://www.ipni.org/ipni/advAuthorSearch.do?find_abbreviation=' .. id2 .. ' ' .. id .. ']'
 end
 
 function mgpLink( id )
     -- TODO Implement some sanity checking regex
-    return '[http://www.genealogy.ams.org/id.php?id=' .. id .. ' ' .. id .. ']' 
+    return '[http://www.genealogy.ams.org/id.php?id=' .. id .. ' ' .. id .. ']'
 end
 
 function rslLink( id )
@@ -76,7 +76,7 @@ function leonoreLink( id )
 	   not string.match( id, '^19800035/%d%d?%d?%d?/%d%d?%d?%d?%d?$' ) then
         return false
     end
-    return '[//www.culture.gouv.fr/public/mistral/leonore_fr?ACTION=CHERCHER&FIELD_1=COTE&VALUE_1=' .. id .. ' ' .. id .. ']' 
+    return '[//www.culture.gouv.fr/public/mistral/leonore_fr?ACTION=CHERCHER&FIELD_1=COTE&VALUE_1=' .. id .. ' ' .. id .. ']'
 end
 
 function sbnLink( id )
@@ -87,25 +87,25 @@ function sbnLink( id )
 end
 
 function nkcLink( id )
-	return '[http://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica=' .. id .. '&CON_LNG=ENG ' .. id .. ']' 
+	return '[http://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
 end
 
 function nclLink( id )
     if not string.match( id, '^%d+$' ) then
         return false
     end
-    return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence=' .. id .. '&CON_LNG=ENG ' .. id .. ']' 
+    return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
 end
 
 function ndlLink( id )
-	return '[http://id.ndl.go.jp/auth/ndlna/' .. id .. ' ' .. id .. ']' 
+	return '[http://id.ndl.go.jp/auth/ndlna/' .. id .. ' ' .. id .. ']'
 end
 
 function sudocLink( id )
     if not string.match( id, '^%d%d%d%d%d%d%d%d[%dxX]$' ) then
         return false
     end
-    return '[http://www.idref.fr/' .. id .. ' ' .. id .. ']' 
+    return '[http://www.idref.fr/' .. id .. ' ' .. id .. ']'
 end
 
 function hlsLink( id )
@@ -337,7 +337,7 @@ local conf = {
     { 'ORCID', '[[ORCID]]', 496, orcidLink },
     { 'GND', '[[Колективен нормативен архив|GND]]', 227, gndLink },
     { 'SELIBR', '[[LIBRIS|SELIBR]]', 906, selibrLink },
-    { 'SUDOC', '[[Система за университетска документацията на Франция|SUDOC]]', 269, sudocLink },    
+    { 'SUDOC', '[[Система за университетска документацията на Франция|SUDOC]]', 269, sudocLink },
     { 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, bnfLink },
     { 'BPN', '[[Биографичен портал|BPN]]', 651, bpnLink },
     { 'RID', '[[ResearcherID]]', 1053, ridLink },
@@ -346,13 +346,13 @@ local conf = {
     { 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, hlsLink },
     { 'LIR', '[[Швейцарски исторически лексикон#Творби|LIR]]', 886, lirLink },
     { 'MBA', '[[MusicBrainz]]', 434, mbLink },
-    { 'MGP', '[[Математическа генеалогия|MGP]]', 549, mgpLink },    
+    { 'MGP', '[[Математическа генеалогия|MGP]]', 549, mgpLink },
     { 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, nlaLink },
     { 'NDL', '[[Национална парламентарна библиотека (Япония)|NDL]]', 349, ndlLink },
     { 'NCL', '[[Националнa централна библиотека (Тайван)|NCL]]', 1048, nclLink },
     { 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, nkcLink },
-    { 'Léonore', '[[:fr:Base Léonore|Léonore]]', 640, leonoreLink }, 
-    { 'SBN', '[[:it:Istituto centrale per il catalogo unico delle biblioteche italiane e per le informazioni bibliografiche|ICCU]]', 396, sbnLink },     
+    { 'Léonore', '[[:fr:Base Léonore|Léonore]]', 640, leonoreLink },
+    { 'SBN', '[[:it:Istituto centrale per il catalogo unico delle biblioteche italiane e per le informazioni bibliografiche|ICCU]]', 396, sbnLink },
     { 'RLS', '[[Руска държавна библиотека|RLS]]', 947, rslLink },
     { 'Botanist', '[[Авторски цитат (ботаника)|Botanist]]', 428, botanistLink },
     { 'NARA-person', '[[Национално управление на архивите и документите на САЩ|NARA]]', 1222, narapersonLink },
@@ -398,7 +398,7 @@ reqs['MBA'] = {
     { 31, 130857 }, -- instance of -> DJ
     { 106, 158852 }, -- occupation -> conductor
     { 31, 158852 }, -- instance of -> conductor
-    { 31, 215380 }, -- instance of -> band 
+    { 31, 215380 }, -- instance of -> band
     { 31, 5741069 }, -- instance of -> rock band
 }
 
