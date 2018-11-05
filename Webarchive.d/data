@@ -41,13 +41,13 @@ this is a table of all categories supported by Module:Webarchive
 ]]
 
 local categories = {
-	archiveis = 'Category:Webarchive template archiveis links',
-	error = 'Category:Webarchive template errors',
-	other = 'Category:Webarchive template other archives',
-	unknown = 'Category:Webarchive template unknown archives',
-	warning = 'Category:Webarchive template warnings',
-	wayback = 'Category:Webarchive template wayback links',
-	webcite = 'Category:Webarchive template webcite links',
+	archiveis = 'Категория:Шаблон Webarchive, използващ връзки от Archive.is',
+	error = 'Категория:Грешки в шаблон Webarchive',
+	other = 'Категория:Шаблон Webarchive, използващ връзки от други архивиращи сайтове',
+	unknown = 'Категория:Шаблон Webarchive, използващ връзки от непознати архивиращи сайтове',
+	warning = 'Категория:Предупреждения в шаблон Webarchive',
+	wayback = 'Категория:Шаблон Webarchive, използващ връзки от Wayback Machine',
+	webcite = 'Категория:Шаблон Webarchive, използващ връзки от WebCite',
 	}
 
 
@@ -79,12 +79,12 @@ this is a table of tables for archive services.  Each service table has:
 ]=]
 
 local services = {
-	['archive.is'] = {false, 'Archive.is', nil, 'archiveis', categories.archiveis},
-	['archive.ec'] = {false, 'Archive.is', nil, 'archiveis', categories.archiveis},
-	['archive.fo'] = {false, 'Archive.is', nil, 'archiveis', categories.archiveis},
-	['archive.li'] = {false, 'Archive.is', nil, 'archiveis', categories.archiveis},
-	['archive.org'] = {true, 'Wayback Machine', nil, 'wayback', categories.wayback},
-	['archive.today'] = {false, 'Archive.is', nil, 'archiveis', categories.archiveis},
+	['archive.is'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
+	['archive.ec'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
+	['archive.fo'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
+	['archive.li'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
+	['archive.org'] = {true, ':en:Wayback Machine', 'Wayback Machine', 'wayback', categories.wayback},
+	['archive.today'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
 	['archive-it.org'] = {false, 'Archive-It', nil, 'archiveit'},
 	['arquivo.pt'] = {true, nil, 'Portuguese Web Archive'},
 	['bibalex.org'] = {false, 'Bibliotheca Alexandrina#Internet Archive partnership', 'Bibliotheca Alexandrina'},
@@ -111,7 +111,7 @@ local services = {
 	['webarchive.loc.gov'] = {true, 'Library of Congress', nil, 'locwebarchives', nil, 'Web Archives'},
 	['webarchive.org.uk'] = {true, 'UK Web Archive'},
 	['webcache.googleusercontent.com'] = {false, nil, 'Google Cache'},
-	['webcitation.org'] = {false, 'WebCite', nil, 'webcite', categories.webcite},
+	['webcitation.org'] = {false, ':en:WebCite', 'WebCite', 'webcite', categories.webcite},
 	['webharvest.gov'] = {true, 'National Archives and Records Administration'},
 	['webrecorder.io'] = {false, 'webrecorder.io'},
 	['wikiwix.com'] = {false, nil, 'Wikiwix'},
@@ -126,13 +126,13 @@ for internationalzation
 ]]
 
 local s_text = {
-	addlarchives = 'Additional archives',
-	addlpages = 'Additional pages archived&nbsp;on',							-- TODO why the &nbsp; there? replace with regular space?
-	Archive_index = 'Archive index',
-	Archived = 'Archived',
-	archived = 'archived',
-	archive = 'archive',
-	Page = 'Page',
+	addlarchives = 'Допълнителни архиви',
+	addlpages = 'Допълнителни страници архивирани на',
+	Archive_index = 'Архивен индекс',
+	Archived = 'Архив на оригинала от',
+	archived = 'архив на оригинала от',
+	archive = 'архив',
+	Page = 'Страница',
 	}
 
 
@@ -143,28 +143,28 @@ these tables hold error and warning message text
 ]]
 
 local err_warn_msgs = {
-	date_err = '[Date error]',													-- decodeWebciteDate, decodeWaybackDate, decodeArchiveisDate
-	date_miss = '[Date missing]',												-- parseExtraArgs
-	ts_short = '[Timestamp date length]',										-- decodeWaybackDate timestamp less than 8 digits
-	ts_date = '[Timestamp date invalid]',										-- decodeWaybackDate timestamp not a valid date
-	unknown_url = '[Error: unknown archive URL]',								-- serviceName
-	unnamed_params = '[Positional parameters ignored]',
+	date_err = '[Грешка в датата]',												-- decodeWebciteDate, decodeWaybackDate, decodeArchiveisDate
+	date_miss = '[Липсва дата]',												-- parseExtraArgs
+	ts_short = '[Твърде кратък времеви отпечатък]',								-- decodeWaybackDate timestamp less than 8 digits
+	ts_date = '[Невалиден времеви отпечатък]',									-- decodeWaybackDate timestamp not a valid date
+	unknown_url = '[Грешка: Неизвестен URL на архива]',							-- serviceName
+	unnamed_params = '[Игнорирани позиционни параметри]',
 
 --warnings
-	mismatch = '<sup>[Date mismatch]</sup>',									-- webarchive
-	ts_len = '<sup>[Timestamp length]</sup>',									-- decodeWaybackDate, decodeArchiveisDate timestamp not 14 digits
-	ts_cal = '<sup>[Calendar]</sup>',											-- decodeWaybackDate timestamp has trailing splat
+	mismatch = '<sup>[Несъвпадение в датата]</sup>',							-- webarchive
+	ts_len = '<sup>[Дължина на времевия отпечатък]</sup>',						-- decodeWaybackDate, decodeArchiveisDate timestamp not 14 digits
+	ts_cal = '<sup>[Календар]</sup>',											-- decodeWaybackDate timestamp has trailing splat
 	}
 
 
 local crit_err_msgs = {															-- critical error messages
-	conflicting = 'Conflicting |$1= and |$2=',
-	empty = 'Empty url',
+	conflicting = 'Конфликт в |$1= и |$2=',
+	empty = 'Празен URL',
 --	iabot1 = 'https://web.http',												-- TODO: these iabot bugs perportedly fixed; removing these causes lua script error
 --	iabot2 = 'Invalid URL',														-- at Template:Webarchive/testcases/Production; resolve that before deleting these messages
-	invalid_url = 'Invalid URL',
-	ts_nan = 'Timestamp not a number',
-	unknown = 'Unknown problem. Please report on template talk page',
+	invalid_url = 'Невалиден URL',
+	ts_nan = 'Времевият отпечатък не е число',
+	unknown = 'Неизвестен проблем. Моля, пишете на беседата на шаблона',
 	}
 
 
