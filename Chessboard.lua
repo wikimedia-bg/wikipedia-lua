@@ -2,9 +2,9 @@ local p = {}
 
 local function comment_empty( row, col, colchar )
 	if ((row + col) % 2 == 1) then
-		return 'бяло поле ' .. colchar[col] .. row
+		return 'бяло поле ' .. colchar[col]
 	else
-		return 'черно поле ' .. colchar[col] .. row
+		return 'черно поле ' .. colchar[col]
 	end
 end
 
