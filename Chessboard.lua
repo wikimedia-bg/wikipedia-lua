@@ -90,12 +90,12 @@ local function image_square( img_empty, pc, row, col, size )
 	end
 	local caseName = piece .. color .. colorSquare
 
-	if fullpiecenames[piece .. colorLower] or (colornames[colorLower] and piecenames[piece]) then
+	if fullpiecenames[piece .. colorLower] or symnames[piece .. colorLower] or (colornames[colorLower] and piecenames[piece]) then
 		local piecename = nil
 		if fullpiecenames[piece .. colorLower] then
 			piecename = fullpiecenames[piece .. colorLower]
 		else
-			piecename = colornames[colorLower] .. ' ' .. piecenames[piece]
+			piecename = symnames[piece .. colorLower] or ( colornames[colorLower] .. ' ' .. piecenames[piece] )
 		end
 		alt = alt .. ' на поле '
 		if ((row + col) % 2 == 1) then
