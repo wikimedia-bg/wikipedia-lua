@@ -172,7 +172,7 @@ function chessboard(board_name, board_width, board_height, args, size, rev, lett
 		for k = 1,board_width do
 			root:tag('td')
 				:css('padding', '0')
-				:css('vartical-align', 'inherit')
+				:css('vertical-align', 'inherit')
 				:css('height', '18px')
 				:css('width', size .. 'px')
 				:wikitext(rev and letters[board_width+1-k] or letters[k])
