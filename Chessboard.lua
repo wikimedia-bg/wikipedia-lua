@@ -1,5 +1,5 @@
 local p = {}
-
+--[[
 local function comment_empty( row, col, colchar )
 	if ((row + col) % 2 == 1) then
 		return 'бяло поле ' .. colchar[col] .. row .. ''
@@ -7,6 +7,7 @@ local function comment_empty( row, col, colchar )
 		return 'черно поле ' .. colchar[col] .. row .. ''
 	end
 end
+]]--
 
 local function image_square( img_empty, pc, row, col, size )
 	local colornames = { l = 'бял', d = 'черен' }
