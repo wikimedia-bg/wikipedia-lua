@@ -2,9 +2,9 @@ local p = {}
 
 local function comment_empty( row, col, colchar )
 	if ((row + col) % 2 == 1) then
-		return 'бяло поле ' .. colchar[col .. row] .. ''
+		return 'бяло поле ' .. colchar[col] .. row .. ''
 	else
-		return 'черно поле ' .. colchar[col .. row] .. ''
+		return 'черно поле ' .. colchar[col] .. row .. ''
 	end
 end
 
@@ -113,7 +113,7 @@ local function image_square( img_empty, pc, row, col, size )
 		end
 	end
 
-	return '[[File:Chess ' .. caseName .. '45.svg|' .. size .. 'x' .. size .. 'px|alt=' .. alt .. '|link=]]'
+	return '[[File:Chess ' .. caseName .. '45.svg|' .. size .. 'x' .. size .. 'px|alt=' .. alt .. '|' .. alt .. '|link=]]'
 end
 	
 local function innerboard(args, size, rev)
