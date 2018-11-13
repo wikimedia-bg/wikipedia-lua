@@ -328,7 +328,7 @@ function p.board(frame)
 	local board_width = args.width or pargs.width or 8
 	local board_height = args.height or pargs.height or 8
 	local footer = args.footer or pargs.footer or args[board_width * board_height + 3] or pargs[board_width * board_height + 3] or ''
-	local footer_align = args.footer_align or pargs.footer_align or 'left'
+	local footer_align = args.footer_align or pargs.footer_align or args.falign or pargs.falign or 'left'
 	local align = (args.align or pargs.align or args[1] or pargs[1] or 'tright' ):lower()
 	local clear = args.clear or pargs.clear or ( align:match('tright') and 'right' ) or 'none'
 	local fen = args.fen or pargs.fen
