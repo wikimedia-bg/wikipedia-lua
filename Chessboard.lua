@@ -113,7 +113,7 @@ local function image_square( img_empty, pc, row, col, size )
 		end
 	end
 
-	return '[[File:Chess ' .. caseName .. '45.svg|' .. size .. 'x' .. size .. 'px|alt=' .. alt .. '|link=]]'
+	return '[[File:Chess ' .. caseName .. '45.svg|' .. size .. 'x' .. size .. 'px|alt=' .. alt .. '|' .. alt .. '|link=]]'
 end
 	
 local function innerboard(board_name, board_width, board_height, args, size, rev)
