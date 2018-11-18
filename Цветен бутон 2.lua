@@ -4,7 +4,7 @@ local p = {}
 
 function p.main(frame)
 	local args = require('Модул:Arguments').getArgs(frame, {
-		wrappers = 'Template:Clickable button 2'
+		wrappers = 'Шаблон:Цветен бутон 2'
 	})
 	return p.luaMain(args)
 end
