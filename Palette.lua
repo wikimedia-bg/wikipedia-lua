@@ -28,7 +28,7 @@ function Palette.listPalette( frame )
 	local function _paletteInconnue( i )
 		categories.paletteInconnue = categoriePaletteInconnue
 		local nomPalette = mw.text.trim( relativeArgs[i] )
-		return _erreur( 'Erreur : il n’existe pas de modèle {{[[Шаблон:Palette %s|Palette %s]]}} [[:en:Aide:Palette de navigation|(aide)]]', nomPalette, nomPalette )
+		return _erreur( 'Erreur : il n’existe pas de modèle {{[[Шаблон:Palette %s|Palette %s]]}} [[:fr:Aide:Palette de navigation|(aide)]]', nomPalette, nomPalette )
 	end
 
 	local function _paletteEnDouble ( i )
@@ -56,7 +56,6 @@ function Palette.listPalette( frame )
 		categories.tropDePalette = categorieTropDePalette
 		return _erreur( 'Erreur dans le [[Шаблон:Palette]] : trop de palettes (maximum : %s)', maxPalette )
 	end 
-	
 	
 	local boite = relativeArgs['titre boîte déroulante'] or relativeArgs['titre boite déroulante']
 	if boite then
@@ -119,6 +118,5 @@ function Palette.listPalette( frame )
 	
 	return wikiTable:concat()
 end
-
 
 return Palette
