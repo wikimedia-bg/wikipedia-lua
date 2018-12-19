@@ -234,15 +234,22 @@ function isAfterGregorianIntroduced(date)
 end
 
 function formatDate(vars, calendar)
+	-- The "Q" things are calendarmodels as returned by Wikidata queries.
+	-- For more information, see [[:wikidata:Help:Dates]].
+	local julian_items = {
+		["Q11184"] = true,
+		["Q1985786"] = true,
+		["юлиански"] = true,
+	}
+	local note = '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
+	local cat = '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
 	if vars == nil then
 		return ""
 	end
 	local output = wikifyDate(vars.date)
-	if calendar == "Q11184" or calendar == "Q1985786" then
-		if isAfterGregorianIntroduced(vars.date) then
-			output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
-			output = output .. '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
-		end
+	-- Equivalent to Python's "if calendar in julian_items".
+	if julian_items[calendar] and isAfterGregorianIntroduced(vars.date) then
+		output = output .. note .. cat
 	end
 	if vars.age then
 		output = output .. formatAgeSuffix(vars.age)
