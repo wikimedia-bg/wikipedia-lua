@@ -219,7 +219,7 @@ function isAfterGregorianIntroduced(date)
 	end
 	-- Not sure what comparison with nil would return so check if defined first.
 	-- Feel free to simplify if you know it's an overkill.
-	if date.year and tonumber(date.year) < 1582 then
+	if date.year and tonumber(date.year) < 1583 then
 		return false
 	end
 	if date.decade and tonumber(date.decade) < 1580 then
