@@ -208,24 +208,28 @@ function formatAgeSuffix(age)
 	return '<span class="noprint"> <small>('.. age .. ' г.)</small></span>'
 end
 
-function isBeforeGregorianIntroduced(date)
+function isAfterGregorianIntroduced(date)
 	-- Shouldn't be possible if calendarmodel is defined, but best be safe.
 	if date.unknown then
 		return false
 	end
+	-- All dates BC are definitely before Gregorian has been introduced.
+	if date.bce then
+		return false
+	end
 	-- Not sure what comparison with nil would return so check if defined first.
 	-- Feel free to simplify if you know it's an overkill.
-	if date.year and tonumber(date.year) >= 1582 then
+	if date.year and tonumber(date.year) < 1582 then
 		return false
 	end
-	if date.decade and tonumber(date.decade) >= 1580 then
+	if date.decade and tonumber(date.decade) < 1580 then
 		return false
 	end
-	if date.century and tonumber(date.century) >= 16 then
+	if date.century and tonumber(date.century) < 16 then
 		return false
 	end
 	
-	-- Before 1582, or the 1580s, or the 16th century.
+	-- After or in 1582, the 1580s, or the 16th century.
 	return true
 end
 
@@ -235,7 +239,7 @@ function formatDate(vars, calendar)
 	end
 	local output = wikifyDate(vars.date)
 	if calendar == "Q11184" or calendar == "Q1985786" then
-		if isBeforeGregorianIntroduced(vars.date) then
+		if isAfterGregorianIntroduced(vars.date) then
 			output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
 			output = output .. '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
 		end
