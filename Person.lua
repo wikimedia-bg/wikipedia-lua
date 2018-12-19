@@ -215,13 +215,13 @@ function isBeforeGregorianIntroduced(date)
 	end
 	-- Not sure what comparison with nil would return so check if defined first.
 	-- Feel free to simplify if you know it's an overkill.
-	if date.year and date.year >= 1582 then
+	if date.year and tonumber(date.year) >= 1582 then
 		return false
 	end
-	if date.decade and date.decade >= 1580 then
+	if date.decade and tonumber(date.decade) >= 1580 then
 		return false
 	end
-	if date.century and date.century >= 16 then
+	if date.century and tonumber(date.century) >= 16 then
 		return false
 	end
 	
