@@ -281,7 +281,7 @@ local function formatDatavalueQuantity(data, parameter)
 	if parameter then
 		return data[paramater]
 	elseif data.unit == "http://www.wikidata.org/entity/Q172540" then
-		return tonumber(data.amount) .. " лв."
+		return tonumber(data.amount) .. " лв"
 	else
 		return tonumber(data.amount)
 	end
