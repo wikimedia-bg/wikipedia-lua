@@ -229,7 +229,7 @@ function isAfterGregorianIntroduced(date)
 		return false
 	end
 	
-	-- After or in 1582, the 1580s, or the 16th century.
+	-- After or in 1583, the 1580s, or the 16th century.
 	return true
 end
 
