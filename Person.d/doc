@@ -3,23 +3,25 @@
 Модулът се използва по следния начин:
 
 '''Дата на раждане:'''
-<code><nowiki>{{#invoke:Person|birth_date|ДАТА НА РАЖДАНЕ|ДАТА НА СМЪРТ}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|birth_date|ДАТА НА РАЖДАНЕ|ДАТА НА СМЪРТ|КАЛЕНДАР}}</nowiki></code>
 
 '''Дата на смърт:'''
-<code><nowiki>{{#invoke:Person|death_date|ДАТА НА РАЖДАНЕ|ДАТА НА СМЪРТ}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|death_date|ДАТА НА РАЖДАНЕ|ДАТА НА СМЪРТ|КАЛЕНДАР}}</nowiki></code>
 
 Например:
 
 '''Дата на раждане:'''
-<code><nowiki>{{#invoke:Person|birth_date|18 юли 1837|18 февруари 1873}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|birth_date|18 юли 1837|18 февруари 1873|юлиански}}</nowiki></code>
 
 '''Дата на смърт:'''
-<code><nowiki>{{#invoke:Person|death_date|18 юли 1837|18 февруари 1873}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|death_date|18 юли 1837|18 февруари 1873|григориански}}</nowiki></code>
+
+''Забележка: при дати по Григорианския календар, параметърът „КАЛЕНДАР“ може и да бъде пропуснат.''
 
 Препоръчителният вариант е да се ползва информацията за [[d:Property:P569|година на раждане]] и [[d:Property:P570|смърт]] от [[Уикиданни]]:
 
 '''Дата на раждане:'''
-<code><nowiki>{{#invoke:Person|birth_date|{{#property:P569}}|{{#property:P570}}}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|birth_date|{{#property:P569}}|{{#property:P570}}|{{#invoke:Wikidata|claim|P569|parameter=calendarmodel}}}}</nowiki></code>
 
 '''Дата на смърт:'''
-<code><nowiki>{{#invoke:Person|death_date|{{#property:P569}}|{{#property:P570}}}}</nowiki></code>
+<code><nowiki>{{#invoke:Person|death_date|{{#property:P569}}|{{#property:P570}}|{{#invoke:Wikidata|claim|P570|parameter=calendarmodel}}}}</nowiki></code>
