@@ -208,11 +208,14 @@ function formatAgeSuffix(age)
 	return '<span class="noprint"> <small>('.. age .. ' г.)</small></span>'
 end
 
-function formatDate(vars)
+function formatDate(vars, calendar)
 	if vars == nil then
 		return ""
 	end
 	local output = wikifyDate(vars.date)
+	if calendar == "Q11184" then
+		output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
+	end
 	if vars.age then
 		output = output .. formatAgeSuffix(vars.age)
 	end
@@ -224,11 +227,11 @@ function formatDate(vars)
 end
 
 function p.birth_date(frame)
-	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2]))
+	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2]), frame.args[3])
 end
 
 function p.death_date(frame)
-	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2]))
+	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2]), frame.args[3])
 end
 
 return p
