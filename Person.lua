@@ -213,7 +213,7 @@ function formatDate(vars, calendar)
 		return ""
 	end
 	local output = wikifyDate(vars.date)
-	if calendar == "Q11184" then
+	if calendar == "Q11184" or calendar == "Q1985786" then
 		output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
 	end
 	if vars.age then
