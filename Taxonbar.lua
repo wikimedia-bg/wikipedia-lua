@@ -120,7 +120,7 @@ local function createRow( id, label, rawValue, link, withUid )
 		if withUid then outStr = outStr..' class="uid"' end
 		return outStr..'>' .. link .. '</span></span>\n'
 	else
-		return '* ' .. mw.text.tag('span', {class='error'}, 'Идентификатор ' .. id .. ' ' .. rawValue .. ' није валидан.') .. '\n'
+		return '* ' .. mw.text.tag('span', {class='error'}, 'The identifier ' .. id .. ' ' .. rawValue .. ' is not valid.') .. '\n'
 	end
 end
 
@@ -600,7 +600,7 @@ function p.authorityControlTaxon( frame )
 				end
 			end
 			--adjust navbox for number of rows
-			navboxParams['title'] = '[[:en:Help:Taxon identifiers|Идентификатори таксона]]'
+			navboxParams['title'] = '[[Help:Taxon identifiers|Taxon identifiers]]'
 			if rowCount > 2 then
 				navboxParams['navbar'] = 'plain'
 			else
@@ -608,9 +608,9 @@ function p.authorityControlTaxon( frame )
 				navboxParams['navbar'] = 'off'
 			end
 		elseif parentArgs['noTitle'..firstRow] then
-			navboxParams['group'..firstRow] = '[[:en:Help:Taxon identifiers|Идентификатори таксона]]'
+			navboxParams['group'..firstRow] = '[[Help:Taxon identifiers|Taxon identifiers]]'
 		else
-			navboxParams['group'..firstRow] = '[[:en:Help:Taxon identifiers|Идентификатори таксона]]<br />' .. navboxParams['group'..firstRow]
+			navboxParams['group'..firstRow] = '[[Help:Taxon identifiers|Taxon identifiers]]<br />' .. navboxParams['group'..firstRow]
 		end
 		
 		--return navbox
