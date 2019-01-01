@@ -1,0 +1,195 @@
+local p = {}
+
+--Database entry format: { parameter name, label to display, propertyId in Wikidata or URL }
+--
+-----------------------------------------------------------------------------------------------
+--| If propertyId is...    | then...                                                          |
+--|------------------------|------------------------------------------------------------------|
+--| a Wikidata property ID | it must be a number without quotes                               |
+--| an external URL        | it must be in quotes and begin with http://, https://, or //     |
+--|                        |   The ID should be represented by $1                             |
+--|                        |   (e.g. 'https://en.wikipedia.org/wiki/$1')                      |
+--| an interwiki URL       | put the interwiki name, a colon, and $1 in quotes (e.g. 'en:$1') |
+--| set to 0               | that database won't show unless forced; taxon link suppressed    |
+--| set to its negative    | that database won't show unless forced; taxon link allowed       |
+-----------------------------------------------------------------------------------------------
+p.databases = {
+	{ 'Wikidata', '[[Wikidata]]', 'Wikidata:$1' }, --for ordering purposes: 1st
+	{ 'Wikispecies', '[[Wikispecies]]', 'Wikispecies:$1' }, --for ordering purposes: 2nd (if available)
+	
+	--Wikidata properties for identifing taxa
+	{ 'ABA', '[[American Birding Association|ABA]]', 4526 },
+	{ 'ADW', '[[Animal Diversity Web|ADW]]', 4024 },
+	{ 'AFD', '[[Australian Faunal Directory|AFD]]', 6039 },
+	{ 'AfroMoths', 'AfroMoths', 6093 }, ---[[AfroMoths]] DNE
+	{ 'AlgaeBase', '[[AlgaeBase]]', 1348 },
+	{ 'AmphibiaWeb', '[[AmphibiaWeb]]', 5036 },
+	{ 'AntWeb', '[[AntWeb]]', 5299 },
+	{ 'AoI', 'AoI', 5003 }, ---[[Amphibians of India]] DNE
+	{ 'AoFP', 'AoFP', 6159 }, ---[[Atlas of Florida Plants]] DNE
+	{ 'APA', 'APA', 6137 }, ---[[Alabama Plant Atlas]] DNE
+	{ 'APDB', 'APDB', 2036 }, ---[[African Plant Database]] DNE
+	{ 'APNI', '[[Australian Plant Name Index|APNI]]', 5984 },
+	{ 'APSA', 'APSA', 2809 }, ---[[Australasian Pollen and Spore Atlas]] DNE
+	{ 'Araneae', 'Araneae', 3594 }, ---[[]] DNE
+	{ 'ARKive', '[[ARKive]]', 2833 },
+	{ 'ASW', '[[Amphibian Species of the World|ASW]]', 5354 },
+	{ 'Avibase', 'Avibase', 2026 }, ---[[]] DNE
+	{ 'BacDive', '[[BacDive]]', 2946 },
+	{ 'Bamona', 'BAMONA', 3398 }, ---[[Butterflies and Moths of North America]] DNE	
+	{ 'BHL', '[[Biodiversity Heritage Library|BHL]]', 687 },
+	{ 'BioLib', 'BioLib', 838 }, ---[[]] DNE
+	{ 'BirdLife', '[[BirdLife International|BirdLife]]', 5257 },
+	{ 'BirdLife-Australia', '[[BirdLife Australia|BirdLife-Australia]]', 6040 },
+	{ 'BOLD', '[[Barcode of Life Data Systems|BOLD]]', 3606 },
+	{ 'BTO', '[[British Trust for Ornithology|BTO]]', 4567 },
+	{ 'BugGuide', '[[BugGuide]]', 2464 },
+	{ 'ButMoth', '[[Natural History Museum#Butterflies and Moths of the World|ButMoth]]', 3060 },
+	{ 'Calflora', 'Calflora', 3420 }, ---[[]] DNE
+	{ 'Cal-IPC', 'Cal-IPC', 6176 }, ---[[California Invasive Plant Council]] DNE
+	{ 'Center', '[[Center for Biological Diversity|Center]]', 6003 },
+	{ 'CMS', '[[Convention on the Conservation of Migratory Species of Wild Animals|CMS]]', 6033 },
+	{ 'CNPS', '[[California Native Plant Society|CNPS]]', 4194 },
+	{ 'Cockroach Species File', 'Cockroach Species File', 6052 }, ---[[]] DNE
+	{ 'Conifers', 'Conifers.org', 1940 }, ---[[]] DNE
+	{ 'Coreoidea Species File', 'Coreoidea Species File', 6053 }, ---[[]] DNE
+	{ 'eBird', '[[eBird]]', 3444 },
+	{ 'Ecocrop', 'Ecocrop', 4753 }, ---[[]] DNE
+	{ 'ECOS', 'ECOS', 6030 }, ---[[Environmental Conservation Online System]] DNE
+	{ 'EoL', '[[Encyclopedia of Life|EoL]]', 830 },
+	{ 'EPPO', '[[EPPO Code|EPPO]]', 3031 },
+	{ 'EUNIS', '[[European Nature Information System|EUNIS]]', 6177 },
+	{ 'Euring', 'Euring', 3459 }, ---[[Euring number]] DNE
+	{ 'FaunaEuropaea', '[[Fauna Europaea]]', 1895 }, 
+	{ 'FaunaEuropaeaNew', '[[Fauna Europaea|Fauna Europaea (new)]]', 4807 }, 
+	{ 'FEIS', 'FEIS', 6044 }, ---[[Fire Effects Information System]] DNE
+	{ 'FishBase', '[[FishBase]]', 938 },
+	{ 'FloraBase', '[[FloraBase]]', 3101 },
+	{ 'FLOW', 'FLOW', 6096 }, ---[[Fulgoromorpha Lists On the Web]] DNE
+	{ 'FNA', '[[Flora of North America|FNA]]', 1727 },
+	{ 'FoAO', '[[Flora of Australia|FoAO]]', 3100 },
+	{ 'FoC', '[[Flora of China|FoC]]', 1747 },
+	{ 'FoIO', 'FoIO', 3795 }, ---[[Flora of Israel Online]] DNE, he.wiki link interferes with display
+	{ 'Fossilworks', '[[Fossilworks]]', 842 },
+	{ 'Fungorum', '[[Index Fungorum|Fungorum]]', 1391 },
+	{ 'GBIF', '[[Global Biodiversity Information Facility|GBIF]]', 846 },
+	{ 'GISD', '[[:fr:Global Invasive Species Database|GISD]]', 5626 }, ---closest match
+	{ 'GNAB', 'GNAB', 4715 }, ---[[Guide to North American Birds]] DNE
+	{ 'GONIAT', 'GONIAT', 5216 }, ---[[]] DNE
+	{ 'GrassBase', '[[GrassBase]]', 1832 },
+	{ 'GRIN', '[[Germplasm Resources Information Network|GRIN]]', 1421 },
+	{ 'IBC', '[[Handbook of the Birds of the World|IBC]]', 3099 },
+	{ 'ICTV', '[[International Committee on Taxonomy of Viruses|ICTV]]', 1076 },
+	{ 'iNaturalist', '[[iNaturalist]]', 3151 },
+	{ 'IPA', 'IPA', 6161 }, ---[[Invasive Plant Atlas of the United States]] DNE
+	{ 'IPNI', '[[International Plant Names Index|IPNI]]', 961 },
+	{ 'IRMNG', '[[Interim Register of Marine and Nonmarine Genera|IRMNG]]', 5055 },
+	{ 'ISC', '[[Invasive Species Compendium|ISC]]', 5698 },
+	{ 'ITIS', '[[Integrated Taxonomic Information System|ITIS]]', 815 },
+	{ 'IUCN', '[[IUCN Red List|IUCN]]', 627 },
+	{ 'LepIndex', '[[The Global Lepidoptera Names Index|LepIndex]]', 3064 },
+	{ 'LoB', 'LoB', 5862 }, ---[[Catalogue of Lepidoptera of Belgium]] DNE
+	{ 'LPSN', '[[List of Prokaryotic names with Standing in Nomenclature|LPSN]]', 1991 },
+	{ 'Mantodea Species File', 'Mantodea Species File', 6055 }, ---[[]] DNE
+	{ 'MichiganFlora', 'MichiganFlora', 6103 }, ---[[Michigan Flora]] DNE
+	{ 'MoBotPF', '[[Missouri Botanical Garden|MoBotPF]]', 6034 },
+	{ 'MoL', 'MoL', 6092 }, ---[[Map of Life]] DNE
+	{ 'MNHN', '[[National Museum of Natural History (France)|MNHN]]', 6046 },
+	{ 'MONA', '[[List of moths of North America|MONA]]', 4758 },
+	{ 'MSW', '[[Mammal Species of the World|MSW]]', 959 },
+	{ 'MycoBank', '[[MycoBank]]', 962 },
+	{ 'NAS', 'NAS', 6163 }, ---[[Nonindigenous Aquatic Species]] DNE
+	{ 'NBN', '[[National Biodiversity Network|NBN]]', 3240 },
+	{ 'NCBI', '[[National Center for Biotechnology Information|NCBI]]', 685 },
+	{ 'Neotropical', '[[Neotropical Birds Online|Neotropical]]', 6047 },
+	{ 'NOAA', '[[NOAA Fisheries|NOAA]]', 6049 },
+	{ 'NSWFlora', 'NSWFlora', 3130 }, ---[[New South Wales Flora]] DNE
+	{ 'NTFlora', '[[FloraNT|NTFlora]]', 5953 }, ---inconsistent property name/link
+	{ 'NZBO', 'NZBO', 6048 }, ---[[New Zealand Birds Online]] DNE
+	{ 'NZOR', 'NZOR', 2752 }, ---[[New Zealand Organisms Register]] DNE
+	{ 'Orthoptera Species File', 'Orthoptera Species File', 6050 }, ---[[]] DNE
+	{ 'Paldat', 'PalDat', 4122 }, ---[[Palynological Database]] DNE
+	{ 'Panartic', 'Panartic Flora', 2434 }, ---[[]] DNE
+	{ 'PfaF', '[[Plants for a Future|PfaF]]', 4301 },
+	{ 'PFI', 'PFI', 6114 }, ---[[Portal to the Flora of Italy]] DNE
+	{ 'Phasmida Species File', 'Phasmida Species File', 4855 }, ---[[]] DNE
+	{ 'PPE', 'PPE', 6061 }, ---[[Plant Parasites of Europe]] DNE
+	{ 'PlantList', '[[The Plant List|Plant List]]', 1070 },
+	{ 'PLANTS', '[[Natural Resources Conservation Service#Plants|PLANTS]]', 1772 },
+	{ 'Plazi', '[[Plazi]]', 1992 },
+	{ 'POWO', '[[Plants of the World Online|POWO]]', 5037 },
+	{ 'RD', '[[Reptile Database|RD]]', 5473 },
+	{ 'SANBI', '[[South African National Biodiversity Institute|SANBI]]', 6056 },
+	{ 'SCC', 'SCC', 6057 }, ---[[Systematic Catalog of Culicidae]] DNE
+	{ 'SeaLifeBase', '[[SeaLifeBase]]', 6018 },
+	{ 'SEINet', 'SEINet', 6209 }, ---[[]] DNE
+	{ 'Species+', '[[CITES|Species+]]', 2040 },
+	{ 'SPRAT', '[[Species Profile and Threats Database|SPRAT]]', 2455 },
+	{ 'Steere', '[[New York Botanical Garden|Steere]]', 6035 },
+	{ 'Tree of Life', '[[Tree of Life Web Project|Tree of Life]]', 5221 },
+	{ 'Tropicos', '[[Tropicos]]', 960 },
+	{ 'TSA', '[[:de:Tierstimmenarchiv|TSA]]', 5397 }, ---closest match
+	{ 'uBio', 'uBio', 4728 }, ---[[Universal Biological Indexer and Organizer]] DNE
+	{ 'VASCAN', 'VASCAN', 1745 }, ---[[Vascular Plants of Canada]] DNE
+	{ 'VicFlora', '[[National Herbarium of Victoria|VicFlora]]', 5945 }, ---closest match
+	{ 'Watson', 'Watson & Dallwitz', 1761 }, ---[[]] DNE
+	{ 'WCSP', '[[World Checklist of Selected Plant Families|WCSP]]', 3591 },
+	{ 'WiO', 'WiO', 6285 }, ---[[Weeds in Ontario]] DNE
+	{ 'WisFlora', 'WisFlora', 6227 }, ---[[Flora of Wisconsin]] DNE
+	{ 'WoI', 'WoI', 3746 }, ---[[Wildflowers of Israel]] DNE
+	{ 'WoRMS', '[[World Register of Marine Species|WoRMS]]', 850 },
+	{ 'WSC', '[[World Spider Catalog|WSC]]', 3288 },
+	{ 'Xeno-canto', '[[Xeno-canto]]', 2426 },
+	{ 'ZooBank', '[[ZooBank]]', 1746 },
+	
+	--URLs (parameter must be manually specified on each Wikipedia article)
+	{ 'eMonocot', '[[eMonocot]]', 'http://e-monocot.org/taxon/urn:kew.org:wcs:taxon:$1' },
+	{ 'emonocotfamily', '[[eMonocot]]', 'http://e-monocot.org/taxon/urn:kew.org:wcs:family:$1' },
+	{ 'WSC species', '[[World Spider Catalog]]', 'http://www.wsc.nmbe.ch/search?sFamily=&fMt=begin&sGenus=&gMt=begin&sSpecies=&sMt=begin&mMt=exact&multiPurpose=slsid&sMulti=$1' },
+	{ 'WSC genus', '[[World Spider Catalog]]', 'http://www.wsc.nmbe.ch/search?sFamily=&fMt=begin&sGenus=&gMt=begin&sSpecies=&sMt=begin&mMt=exact&multiPurpose=glsid&sMulti=$1' },
+	{ 'WSC family', '[[World Spider Catalog]]', 'http://www.wsc.nmbe.ch/search?sFamily=&fMt=begin&sGenus=&gMt=begin&sSpecies=&sMt=begin&mMt=exact&multiPurpose=flsid&sMulti=$1' },
+	
+	--hidden by default (usually b/c !English, see Taxonbar/doc#Excluded databases)
+	{ 'CoL-Taiwan', 'CoL-Taiwan', -3088 }, ---[[]] DNE
+	{ 'CONABIO', '[[CONABIO]]', -4902 },
+	{ 'CzechNDOP', '[[:cs:Agentura ochrany přírody a krajiny ČR|CzechNDOP]]', -5263 }, ---closest match
+	{ 'DFCA', 'DFCA', -6115 }, ---[[Digital Flora of Central Africa]] DNE
+	{ 'DORIS', "[[:fr:DORIS (FFESSM)|DORIS]]", -4630 }, ---closest match
+	{ 'Dyntaxa', 'Dyntaxa', -1939 }, ---[[]] DNE
+	{ 'EEO', 'EEO', -6043 }, ---[[Espèces Envahissantes Outre-mer]] DNE
+	{ 'FloraCatalana', 'FloraCatalana', -5179 }, ---[[]] DNE
+	{ 'FloraWeb', 'FloraWeb', -6094 }, ---[[]] DNE
+	{ 'FOIH', '[[Flemish organization for Immovable Heritage|FOIH]]', -4311 },
+	{ 'GTIBMA', 'GTIBMA', -6054 }, ---[[Groupe de travail Invasions biologiques en milieux aquatiques]] DNE
+	{ 'Hepaticarum', 'Index Hepaticarum', -2794 }, ---[[]] DNE
+	{ 'Oiseaux', '[[:fr:Oiseaux.net|Oiseaux]]', -6025 }, ---closest match
+	{ 'Plantarium', 'Plantarium', -3102 }, ---[[]] DNE
+	{ 'Soortenregister', '[[:nl:Nederlands Soortenregister|Soortenregister]]', -3405 }, ---closest match
+	{ 'TAXREF', 'TAXREF', -3186 }, ---[[]] DNE
+	{ 'TelaBotanica', '[[TelaBotanica]]', -3105 },
+	{ 'Titan', 'Titan', -4125 }, ---[[]] DNE
+	{ 'Verspreidingsatlas', 'Verspreidingsatlas', -6142 }, ---[[]] DNE
+	{ 'Vlinderstichting', 'Vlinderstichting', -3322 }, ---[[]] DNE
+	{ 'WikiAves', 'WikiAves', -4664 }, ---[[]] DNE
+}
+
+--Alias entry format: { alias, parameter name in p.databases }
+p.aliases = {
+	{ 'AlgeaBase', 'AlgaeBase' },
+	{ 'FE', 'FaunaEuropaea' },
+	{ 'FW', 'Fossilworks' },
+	{ 'grinurl', 'GRIN' },
+	{ 'indexfungorum', 'Fungorum' },
+	{ 'NameBank', 'uBio' },
+	{ 'PaleoDB', 'Fossilworks' },
+	{ 'PSF', 'Phasmida Species File' }, --temp alias for parameter update; remove after confirming no manual usage
+	{ 'species', 'Species+' },
+	{ 'TOL', 'Tree of Life'},
+	{ 'WCSPF', 'WCSP' },
+	{ 'wsc-gen', 'WSC genus' },
+	{ 'wsc-fam', 'WSC family' },
+	{ 'wsc-sp', 'WSC species'},
+	{ 'Xenocanto', 'Xeno-canto' },
+}
+
+return p
