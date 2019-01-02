@@ -1,7 +1,7 @@
-require('Module:No globals')
+require('Модул:No globals')
 
-local conf = require( 'Module:Taxonbar/conf' ) --configuration module
-local TaxonItalics = require('Module:TaxonItalics') --use a function from Module:TaxonItalics to italicize a taxon name
+local conf = require( 'Модул:Taxonbar/conf' ) --configuration module
+local TaxonItalics = require('Модул:TaxonItalics') --use a function from Module:TaxonItalics to italicize a taxon name
 
 --[[==========================================================================]]
 --[[                             Local functions                              ]]
@@ -116,11 +116,11 @@ end
 
 local function createRow( id, label, rawValue, link, withUid )
 	if link then
-		local outStr = '*<span style="white-space:nowrap;">' .. label .. ' <span'
+		local outStr = '*<span class="oneline">' .. label .. ' <span'
 		if withUid then outStr = outStr..' class="uid"' end
 		return outStr..'>' .. link .. '</span></span>\n'
 	else
-		return '* ' .. mw.text.tag('span', {class='error'}, 'The identifier ' .. id .. ' ' .. rawValue .. ' is not valid.') .. '\n'
+		return '* ' .. mw.text.tag('span', {class='error'}, 'Идентификаторът ' .. id .. ' ' .. rawValue .. ' не е валиден.') .. '\n'
 	end
 end
 
@@ -138,7 +138,7 @@ local p = {}
 --[[==========================================================================]]
 
 function p.authorityControlTaxon( frame )
-	local resolveEntity = require( 'Module:ResolveEntityId' )
+	local resolveEntity = require( 'Модул:ResolveEntityId' )
 	local parentArgs = copyTable(frame:getParent().args)
 	local currentTitle = mw.title.getCurrentTitle()
 	local currentEntityId = mw.wikibase.getEntityIdForCurrentPage()
@@ -149,8 +149,8 @@ function p.authorityControlTaxon( frame )
 	local tFroms = {} --non-sequential table of unique froms
 	local iFroms = 0 --integer size of tFroms, b/c Lua
 	local categories = {
-		'[[Category:Taxonbars without from parameter]]',
-		'[[Category:Taxonbars desynced from Wikidata]]',
+		'[[Категория:Таксонбар с from параметри]]',
+		'[[Категория:Таксонбар десинхронизиран с Уикиданни]]',
 		'', -- [3] placeholder for [[Category:Taxonbars using multiple manual Wikidata items]]
 		'', -- [4] placeholder for [[Category:Taxonbars with invalid from parameters]]
 		'', -- [5] placeholder for [[Category:Taxonbars using manual taxon IDs]]
@@ -186,7 +186,7 @@ function p.authorityControlTaxon( frame )
 	elseif resolveEntity._id(currentEntityId) then
 		currentItem = mw.wikibase.getEntity(currentEntityId)
 	else --currentEntityId == nil/unresolvable
-		categories[6] = '[[Category:Taxonbar pages requiring a Wikidata item]]'
+		categories[6] = '[[Категория:Страници с таксонбар, изискващи елементи в Уикиданни]]'
 	end
 	if currentItem then
 		local acceptable = {
@@ -202,7 +202,7 @@ function p.authorityControlTaxon( frame )
 		   ['Q857968'] = 'candidatus',                --lax
 		   ['Q17487588'] = 'unavailable combination', --lax
 		}
-		categories[11] = '[[Category:Taxonbars on possible non-taxon pages]]' --unset if acceptable found
+		categories[11] = '[[Категория:Таксонбар в страница с вероятна нетаксономична единица]]' --unset if acceptable found
 		for _, instanceOfState in pairs ( currentItem:getBestStatements('P31') ) do --instance of
 			local instanceOf = instanceOfState.mainsnak.datavalue.value.id
 			if acceptable[instanceOf] then
@@ -246,14 +246,14 @@ function p.authorityControlTaxon( frame )
 					--look for duplicate froms while we're here
 					if mw.ustring.find(v, '^Q%d') then
 						if tFroms[v] then
-							categories[8] = '[[Category:Taxonbars with duplicate from parameters]]'
+							categories[8] = '[[Категория:Таксонбар с дублирани from параметри]]'
 							tFroms[v] = tFroms[v] + 1
 						else
 							tFroms[v] = 1
 							iFroms = iFroms + 1
 						end
 						if iFroms == 2 then
-							categories[3] = '[[Category:Taxonbars using multiple manual Wikidata items]]'
+							categories[3] = '[[Категория:Таксонбар, използващи множество ръчно въведени елементи от Уикиданни]]'
 						end
 					end
 				elseif mw.ustring.sub(lowerk,1,5) == 'title' then
@@ -261,7 +261,7 @@ function p.authorityControlTaxon( frame )
 					if titleNumber and titleNumber >= fromTitleCount then fromTitleCount = titleNumber end
 				elseif mw.ustring.lower(v) ~= 'no' then
 					stringArgs = true
-					categories[5] = '[[Category:Taxonbars using manual taxon IDs]]'
+					categories[5] = '[[Категория:Таксонбар, използващ ръчно въведени идентификатори на таксон]]'
 				end
 			end
 		end
@@ -291,26 +291,29 @@ function p.authorityControlTaxon( frame )
 	local unknownParams = {}
 	for k, v in pairs( baseParentArgs ) do
 		if acceptableArgs[k] == nil then
-			categories[19] = '[[Category:Taxonbars with unknown parameters|' .. k ..']]'
+			categories[19] = '[[Категория:Таксонбар с неизвестни параметри|' .. k ..']]'
 			unknownParams[#unknownParams + 1] = k
 		end
 	end
 	--warn if unknown(s) present
 	if #unknownParams > 0 then
+		local unknplural = nil
 		local plural = nil
 		local itthem = nil
 		if #unknownParams == 1 then
-			plural = ''
-			itthem = 'it'
+			unknplural = 'ен'
+			plural = 'ър'
+			itthem = 'го'
 		else
-			plural = 's'
-			itthem = 'them'
+			unknplural = 'ни'
+			plural = 'ри'
+			itthem = 'ги'
 		end
 		if frame:preprocess( '{{REVISIONID}}' ) == '' then
-			errors = errors..'<div class="hatnote" style="color:red">'..
-				     '<strong>Warning:</strong> unknown parameter'..plural..' <strong>'..table.concat(unknownParams, ', ')..'</strong>.<br />'..
-				     'Please correct '..itthem..' or consider adding '..itthem..' to Wikidata.<br />'..
-				     'This message is only shown in preview.</div>'
+			errors = errors..'<div style="padding-left:1.6em; margin-bottom:0.5em; color:red">'..
+				     '<strong>Внимание:</strong> неизвест'..unknplural..' парамет'..plural..' <strong>'..table.concat(unknownParams, ', ')..'</strong>.<br />'..
+				     'Моля, коригирайте '..itthem..' или '..itthem..' добавете към Уикиданни.<br />'..
+				     'Това съобщение се показва при предварителен преглед.</div>'
 		end
 	end
 	
@@ -339,7 +342,7 @@ function p.authorityControlTaxon( frame )
 							fromTitleCount = fromTitleCount + 1
 							--append basionym & track
 							parentArgs['from'..fromTitleCount] = basionymId
-							categories[15] = '[[Category:Taxonbars with automatically added basionyms]]'
+							categories[15] = '[[Категория:Таксонбар с автоматично добавени базионими]]'
 							break
 	end	end	end	end	end	end
 	
@@ -368,7 +371,7 @@ function p.authorityControlTaxon( frame )
 							fromTitleCount = fromTitleCount + 1
 							--append orco & track
 							parentArgs['from'..fromTitleCount] = orcoId
-							categories[16] = '[[Category:Taxonbars with automatically added original combinations]]'
+							categories[16] = '[[Категория:Таксонбар с автоматично добавени оригинални комбинации]]'
 							break
 	end	end	end	end	end	end
 	
@@ -411,14 +414,14 @@ function p.authorityControlTaxon( frame )
 									fromTitleCount = fromTitleCount + 1
 									--append monotypic genus & track
 									parentArgs['from'..fromTitleCount] = parentMonoGenus
-									categories[17] = '[[Category:Taxonbars with automatically added monotypic genera]]'
+									categories[17] = '[[Категория:Таксонбар с автоматично добавени еднотипни родове]]'
 									break
 								end
 							end
 						end
 					end
 					if parentMonoGenus == nil or tFroms[parentMonoGenus] == nil then
-						categories[18] = '[[Category:Taxonbars of monotypic species missing genera]]'
+						categories[18] = '[[Категория:Таксонбар на монитопни видове с липсващи родове]]'
 						break
 					end
 				elseif taxonRank and taxonRank == 'Q34740' then --genus
@@ -433,7 +436,7 @@ function p.authorityControlTaxon( frame )
 	--Setup navbox
 	local navboxParams = {
 		name  = 'Taxonbar',
-		bodyclass = 'hlist',
+		bodyclass = 'hlist hlist-big',
 		listclass = '',
 		groupstyle = 'text-align: left;',
 	}
@@ -468,9 +471,9 @@ function p.authorityControlTaxon( frame )
 		else
 			if parentArgs['from'..f] then
 				categories[1] = ''
-				categories[4] = '[[Category:Taxonbars with invalid from parameters]]'
-				errors = errors .. mw.text.tag('strong', {class='error'}, 'Error: "' .. 
-				         parentArgs['from'..f] .. '" is not a valid Wikidata entity ID.<br />')				
+				categories[4] = '[[Категория:Таксонбар с невалидни from параметри]]'
+				errors = errors .. mw.text.tag('strong', {class='error'}, 'Грешка: „' .. 
+				         parentArgs['from'..f] .. '“ с невалиден идентификатор на Уикиданни обект .<br />')				
 			end
 		end
 		if label and label ~= '' then
@@ -507,9 +510,9 @@ function p.authorityControlTaxon( frame )
 								parentArgs[params[1]..f] = wikidataId
 							else
 								if v and v ~= 'no' and v ~= wikidataId then
-									categories[9] = '[[Category:Taxonbars with manual taxon IDs differing from Wikidata]]'
+									categories[9] = '[[Категория:Таксонбар с ръчно въведени идентификатори за таксони, различаващи се с тези от Уикиданни]]'
 								elseif v and v == wikidataId then
-									categories[10] = '[[Category:Taxonbars with manual taxon IDs identical to Wikidata]]'
+									categories[10] = '[[Категория:Таксонбар с ръчно въведени идентификатори за таксони, идентични с тези от Уикиданни]]'
 								end
 							end
 						end
@@ -532,11 +535,11 @@ function p.authorityControlTaxon( frame )
 					end
 				end
 				
-				if     sourceCount >= 40 then categories[21] = '[[Category:Taxonbars with 40+ taxon IDs]]'
-				elseif sourceCount >= 35 then categories[20] = '[[Category:Taxonbars with 35–39 taxon IDs]]' --endashes
-				elseif sourceCount >= 30 then categories[14] = '[[Category:Taxonbars with 30–34 taxon IDs]]'
-				elseif sourceCount >= 25 then categories[13] = '[[Category:Taxonbars with 25–29 taxon IDs]]'
-				elseif sourceCount >= 20 then categories[12] = '[[Category:Taxonbars with 20–24 taxon IDs]]'
+				if     sourceCount >= 40 then categories[21] = '[[Категория:Таксонбар с ≥40 идентификатора на таксони]]'
+				elseif sourceCount >= 35 then categories[20] = '[[Категория:Таксонбар с 35 – 39 идентификатора на таксони]]' --endashes
+				elseif sourceCount >= 30 then categories[14] = '[[Категория:Таксонбар с 30 – 34 идентификатора на таксони]]'
+				elseif sourceCount >= 25 then categories[13] = '[[Категория:Таксонбар с 25 – 29 идентификатора на таксони]]'
+				elseif sourceCount >= 20 then categories[12] = '[[Категория:Таксонбар с 20 – 24 идентификатора на таксони]]'
 				end
 				
 				--Generate navbox title
@@ -556,7 +559,7 @@ function p.authorityControlTaxon( frame )
 					end
 					navboxParams['list'..f] = table.concat( elements )
 				elseif currentEntityId then
-					categories[7] = '[[Category:Taxonbar pages without Wikidata taxon IDs]]'
+					categories[7] = '[[Категория:Страници, съдържащи такснобар без идентификатори на таксон от Уикиданни]]'
 				end
 				
 				--Categorize
@@ -573,7 +576,7 @@ function p.authorityControlTaxon( frame )
 	end --for f = 1, fromTitleCount, 1
 	
 	if rowCount > 0 then
-		local Navbox = require('Module:Navbox')
+		local Navbox = require('Модул:Navbox')
 		if rowCount > 1 then
 			--remove duplicates and move page title to top
 			local rowIDs = {}
@@ -600,7 +603,7 @@ function p.authorityControlTaxon( frame )
 				end
 			end
 			--adjust navbox for number of rows
-			navboxParams['title'] = '[[Help:Taxon identifiers|Taxon identifiers]]'
+			navboxParams['title'] = 'Таксон идентификатори'
 			if rowCount > 2 then
 				navboxParams['navbar'] = 'plain'
 			else
@@ -608,9 +611,9 @@ function p.authorityControlTaxon( frame )
 				navboxParams['navbar'] = 'off'
 			end
 		elseif parentArgs['noTitle'..firstRow] then
-			navboxParams['group'..firstRow] = '[[Help:Taxon identifiers|Taxon identifiers]]'
+			navboxParams['group'..firstRow] = 'Таксон идентификатори'
 		else
-			navboxParams['group'..firstRow] = '[[Help:Taxon identifiers|Taxon identifiers]]<br />' .. navboxParams['group'..firstRow]
+			navboxParams['group'..firstRow] = 'Таксон идентификатори<br />' .. navboxParams['group'..firstRow]
 		end
 		
 		--return navbox
