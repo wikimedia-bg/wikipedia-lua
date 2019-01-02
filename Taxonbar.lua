@@ -1,4 +1,4 @@
-require('Модул:No globals')
+-- require('Модул:No globals')
 
 local conf = require( 'Модул:Taxonbar/conf' ) --configuration module
 local TaxonItalics = require('Модул:TaxonItalics') --use a function from Module:TaxonItalics to italicize a taxon name
