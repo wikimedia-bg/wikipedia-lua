@@ -14,8 +14,8 @@ local p = {}
 --| set to its negative    | that database won't show unless forced; taxon link allowed       |
 -----------------------------------------------------------------------------------------------
 p.databases = {
-	{ 'Wikidata', '[[Уикиданни]]', 'Wikidata:$1' }, --for ordering purposes: 1st
-	{ 'Wikispecies', '[[Уикивидове]]', 'Wikispecies:$1' }, --for ordering purposes: 2nd (if available)
+	{ 'Wikispecies', '[[Уикивидове]]', 'Wikispecies:$1' }, --for ordering purposes: 1st (if available)
+	{ 'Wikidata', '[[Уикиданни]]', 'Wikidata:$1' }, --for ordering purposes: 2nd
 	
 	--Wikidata properties for identifing taxa
 	{ 'ABA', 'ABA', 4526 },
