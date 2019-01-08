@@ -1,467 +1,917 @@
-function getCatForId( id )
-    local title = mw.title.getCurrentTitle()
-    local namespace = title.namespace
-    if namespace == 0 then
-        return '[[Категория:Уикипедия:Статии с нормативен контрол (' .. id .. ')]]'
-    elseif namespace == 2 and not title.isSubpage then
-        return '[[Категория:Уикипедия:Потребителски страници с нормативен контрол (' .. id .. ')]]'
-    else
-        return '[[Категория:Уикипедия:Други страници с нормативен контрол (' .. id .. ')]]'
-    end
+local p = {}
+
+--[[==========================================================================]]
+--[[                            Category functions                            ]]
+--[[==========================================================================]]
+
+function p.getCatForId( id )
+	local title = mw.title.getCurrentTitle()
+	local namespace = title.namespace
+	local catName = ''
+	if namespace == 0 then
+		catName = 'Уикипедия:Статии с нормативен контрол (' .. id .. ')'
+	elseif namespace == 2 and not title.isSubpage then
+		catName = 'Уикипедия:Потребителски страници с нормативен контрол (' .. id .. ')'
+	else
+		catName = 'Уикипедия:Други страници с нормативен контрол (' .. id .. ')'
+	end
+	return '[[Категория:' .. catName .. ']]'
 end
 
-function viafLink( id )
-    if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[https://viaf.org/viaf/' .. id .. ' ' .. id .. ']' .. getCatForId( 'VIAF' )
+function p.redCatLink( catName ) --catName == 'Blah', not 'Category:Blah', not '[[Category:Blah]]'
+	if catName and catName ~= '' and mw.title.new(catName, 14).exists == false then
+		return '[[Категория:Страници с несъществуващи категории на нормативен контрол]]'
+	end
+	return ''
 end
 
-function kulturnavLink( id )
-    return '[http://kulturnav.org/language/en/' .. id .. ' id]'
+--[[==========================================================================]]
+--[[                      Property formatting functions                       ]]
+--[[==========================================================================]]
+
+function p.iaafLink( id )
+	--P1146's format regex: [1-9][0-9]* (e.g. 123)
+	if not string.match( id, '^[1-9]%d*$' ) then
+		return false
+	end
+	return '[https://www.iaaf.org/athletes/biographies/athcode='..id..' '..id..']'..p.getCatForId( 'IAAF' )
 end
 
-function sikartLink( id )
-    return '[http://www.sikart.ch/KuenstlerInnen.aspx?id=' .. id .. '&lng=en ' .. id .. ']'
+function p.viafLink( id )
+	--P214's format regex: [1-9]\d(\d{0,7}|\d{17,20}) (e.g. 123456789, 1234567890123456789012)
+	if not string.match( id, '^[1-9]%d%d?%d?%d?%d?%d?%d?%d?$' ) and
+	   not string.match( id, '^[1-9]%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://viaf.org/viaf/'..id..' '..id..']'..p.getCatForId( 'VIAF' )
 end
 
-function tlsLink( id )
-	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'WIKI') end)
-    return '[http://tls.theaterwissenschaft.ch/wiki/' .. id2 .. ' ' .. id .. ']'
+function p.kulturnavLink( id )
+	--P1248's format regex: [0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[http://kulturnav.org/'..id..' '..id..']'..p.getCatForId( 'KULTURNAV' ) --no https yet (10/2018)
 end
 
-
-function ciniiLink( id )
-    return '[http://ci.nii.ac.jp/author/' .. id .. '?l=en ' .. id .. ']'
+function p.sikartLink( id )
+	--P781's format regex: \d{7,9} (e.g. 123456789)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d?%d?$' ) then
+		return false
+	end
+	return '[http://www.sikart.ch/KuenstlerInnen.aspx?id='..id..'&lng=en '..id..']'..p.getCatForId( 'SIKART' ) --no https yet (10/2018)
 end
 
-function bneLink( id )
-    return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id=' .. id .. ' ' .. id .. ']'
+function p.tlsLink( id )
+	local id2 = id:gsub(' +', '_')
+	--P1362's format regex: \p{Lu}[\p{L}\d_',\.\-\(\)\*/–]{3,59} (e.g. Abcd)
+	local class = "[%a%d_',%.%-%(%)%*/–]"
+	local regex = "^%u"..string.rep(class, 3)..string.rep(class.."?", 56).."$"
+	if not mw.ustring.match( id2, regex ) then
+		return false
+	end
+	return '[http://tls.theaterwissenschaft.ch/wiki/'..id2..' '..id..']'..p.getCatForId( 'TLS' ) --no https yet (10/2018)
 end
 
-
-function uscongressLink( id )
-    return '[http://bioguide.congress.gov/scripts/biodisplay.pl?index=' .. id .. ' ' .. id .. ']'
+function p.ciniiLink( id )
+	--P271's format regex: DA\d{7}[\dX] (e.g. DA12345678)
+	if not string.match( id, '^DA%d%d%d%d%d%d%d[%dX]$' ) then
+		return false
+	end
+	return '[https://ci.nii.ac.jp/author/'..id..'?l=en '..id..']'..p.getCatForId( 'CINII' )
 end
 
-function narapersonLink( id )
-    return '[http://research.archives.gov/person/' .. id .. ' ' .. id .. ']'
+function p.bneLink( id )
+	--P950's format regex: (XX|FF|a)\d{4,7}|(bima|bimo|bica|bis[eo]|bivi|Mise|Mimo|Mima)\d{10} (e.g. XX1234567)
+	if not string.match( id, '^[XF][XF]%d%d%d%d%d?%d?%d?$' ) and
+	   not string.match( id, '^a%d%d%d%d%d?%d?%d?$' ) and
+	   not string.match( id, '^bi[mcsv][aoei]%d%d%d%d%d%d%d%d%d%d$' ) and
+	   not string.match( id, '^Mi[sm][eoa]%d%d%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id='..id..' '..id..']'..p.getCatForId( 'BNE' ) --no https yet (10/2018)
 end
 
-function naraorganizationLink( id )
-    return '[http://research.archives.gov/organization/' .. id .. ' ' .. id .. ']'
+function p.uscongressLink( id )
+	--P1157's format regex: [A-Z]00[01]\d{3} (e.g. A000123)
+	if not string.match( id, '^[A-Z]00[01]%d%d%d$' ) then
+		return false
+	end
+	return '[http://bioguide.congress.gov/scripts/biodisplay.pl?index='..id..' '..id..']'..p.getCatForId( 'USCongress' ) --no https yet (10/2018)
 end
 
-function botanistLink( id )
-	id2 = mw.ustring.gsub(id, '%s', function(s) return mw.uri.encode(s, 'PATH') end)
-    return '[http://www.ipni.org/ipni/advAuthorSearch.do?find_abbreviation=' .. id2 .. ' ' .. id .. ']'
+function p.naraLink( id )
+	--P1225's format regex: ^([1-9]\d{0,7})$ (e.g. 12345678)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://catalog.archives.gov/id/'..id..' '..id..']'..p.getCatForId( 'NARA' )
 end
 
-function mgpLink( id )
-    -- TODO Implement some sanity checking regex
-    return '[http://www.genealogy.ams.org/id.php?id=' .. id .. ' ' .. id .. ']'
+function p.botanistLink( id )
+	--P428's format regex: ('t )?(d')?(de )?(la )?(van (der )?)?(Ma?c)?(De)?(Di)?\p{Lu}?C?['\p{Ll}]*([-'. ]*(van )?(y )?(d[ae][nr]?[- ])?(Ma?c)?[\p{Lu}bht]?C?['\p{Ll}]*)*\.? ?f?\.? (e.g. L.)
+	--not easily/meaningfully implementable in Lua's regex since "(this)?" is not allowed...
+	if not mw.ustring.match( id, "^[%u%l%d%. '-]+$" ) then --better than nothing
+		return false
+	end
+	local id2 = id:gsub(' +', '%%20')
+	return '[https://www.ipni.org/ipni/advAuthorSearch.do?find_abbreviation='..id2..' '..id..']'..p.getCatForId( 'Botanist' )
 end
 
-function rslLink( id )
-    -- TODO Implement some sanity checking regex
-    return '[http://aleph.rsl.ru/F?func=find-b&find_code=SYS&adjacent=Y&local_base=RSL11&request=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
+function p.mgpLink( id )
+	--P549's format regex: \d{1,6} (e.g. 123456)
+	if not string.match( id, '^%d%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[http://www.genealogy.ams.org/id.php?id='..id..' '..id..']'..p.getCatForId( 'MGP' ) --no https yet (10/2018)
 end
 
-function leonoreLink( id )
--- Identifiants allant de LH/1/1 à LH/2794/54 (légionnaires)
--- Identifiants allant de C/0/1 à C/0/84 (84 légionnaires célèbres)
--- Identifiants allant de 19800035/1/1 à 19800035/385/51670 (légionnaires décédés entre 1954 et 1977, et quelques dossiers de légionnaires décédés avant 1954)
-    if not string.match( id, '^LH/%d%d?%d?%d?/%d%d?%d?$' ) and
-       not string.match( id, '^C/0/%d%d?$' ) and
-	   not string.match( id, '^19800035/%d%d?%d?%d?/%d%d?%d?%d?%d?$' ) then
-        return false
-    end
-    return '[//www.culture.gouv.fr/public/mistral/leonore_fr?ACTION=CHERCHER&FIELD_1=COTE&VALUE_1=' .. id .. ' ' .. id .. ']'
+function p.rslLink( id )
+	--P947's format regex: \d{1,9} (e.g. 123456789)
+	if not string.match( id, '^%d%d?%d?%d?%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[http://aleph.rsl.ru/F?func=find-b&find_code=SYS&adjacent=Y&local_base=RSL11&request='..id..'&CON_LNG=ENG '..id..']'..p.getCatForId( 'RSL' ) --no https yet (10/2018)
 end
 
-function sbnLink( id )
-    if not string.match( id, '^IT\\ICCU\\%d%d%d%d%d%d%d%d%d%d$' ) and not string.match( id, '^IT\\ICCU\\%u%u[%d%u]%u\\%d%d%d%d%d%d$' ) then
-        return false
-    end
-    return '[http://opac.sbn.it/opacsbn/opac/iccu/scheda_authority.jsp?bid=' .. id .. ' ' .. id .. ']'
+function p.leonoreLink( id )
+	--P640's format regex: LH/\d{1,4}/\d{1,3}|19800035/\d{1,4}/\d{1,5}(Bis)?|C/0/\d{1,2} (e.g. LH/2064/18)
+	if not id:match( '^LH/%d%d?%d?%d?/%d%d?%d?$' ) and             --IDs from       LH/1/1 to         LH/2794/54 (legionaries)
+	   not id:match( '^19800035/%d%d?%d?%d?/%d%d?%d?%d?%d?$' ) and --IDs from 19800035/1/1 to 19800035/385/51670 (legionnaires who died 1954-1977 & some who died < 1954)
+	   not id:match( '^C/0/%d%d?$' ) then                          --IDs from        C/0/1 to             C/0/84 (84 famous legionaries)
+		return false
+	end
+	return '[http://www.culture.gouv.fr/public/mistral/leonore_fr?ACTION=CHERCHER&FIELD_1=COTE&VALUE_1='..id..' '..id..']'..p.getCatForId( 'Léonore' ) --no https yet (10/2018)
 end
 
-function nkcLink( id )
-	return '[http://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
+function p.sbnLink( id )
+	--P396's format regex: IT\\ICCU\\(\d{10}|\D\D[\D\d]\D\\\d{6}) (e.g. IT\ICCU\CFIV\000163)
+	if not string.match( id, '^IT\\ICCU\\%d%d%d%d%d%d%d%d%d%d$' ) and
+	   not string.match( id, '^IT\\ICCU\\%u%u[%u%d]%u\\%d%d%d%d%d%d$' ) then --legacy: %u used here instead of %D (but the faulty ID cat is empty, out of ~12k uses)
+		return false
+	end
+	return '[https://opac.sbn.it/opacsbn/opac/iccu/scheda_authority.jsp?bid='..id..' '..id..']'..p.getCatForId( 'SBN' )
 end
 
-function nclLink( id )
-    if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence=' .. id .. '&CON_LNG=ENG ' .. id .. ']'
+function p.nkcLink( id )
+	--P691's format regex: [a-z]{2,4}[0-9]{2,14} (e.g. abcd12345678901234)
+	if not string.match( id, '^[a-z][a-z][a-z]?[a-z]?%d%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica='..id..'&CON_LNG=ENG '..id..']'..p.getCatForId( 'NKC' )
 end
 
-function ndlLink( id )
-	return '[http://id.ndl.go.jp/auth/ndlna/' .. id .. ' ' .. id .. ']'
+function p.nclLink( id )
+	--P1048's format regex: \d+ (e.g. 1081436)
+	if not string.match( id, '^%d+$' ) then
+		return false
+	end
+	return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence='..id..'&CON_LNG=ENG '..id..']'..p.getCatForId( 'NCL' ) --no https yet (10/2018)
 end
 
-function sudocLink( id )
-    if not string.match( id, '^%d%d%d%d%d%d%d%d[%dxX]$' ) then
-        return false
-    end
-    return '[http://www.idref.fr/' .. id .. ' ' .. id .. ']'
+function p.ndlLink( id )
+	--P349's format regex: 0?\d{8} (e.g. 012345678)
+	if not string.match( id, '^0?%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[https://id.ndl.go.jp/auth/ndlna/'..id..' '..id..']'..p.getCatForId( 'NDL' )
 end
 
-function hlsLink( id )
-    if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[http://www.hls-dhs-dss.ch/textes/f/F' .. id .. '.php ' .. id .. ']'
+function p.sudocLink( id )
+	--P269's format regex: (\d{8}[\dX]|) (e.g. 026927608)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d[%dxX]$' ) then --legacy: allow lowercase 'x'
+		return false
+	end
+	return '[https://www.idref.fr/'..id..' '..id..']'..p.getCatForId( 'SUDOC' )
 end
 
-function lirLink( id )
-    if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[http://www.e-lir.ch/e-LIR___Lexicon.' .. id .. '.450.0.html ' .. id .. ']'
+function p.hdsLink( id )
+	--P902's format regex: 50\d{3}|[1-4]\d{4}|[1-9]\d{0,3}| (e.g. 50123)
+	if not string.match( id, '^50%d%d%d$' ) and
+	   not string.match( id, '^[1-4]%d%d%d%d$' ) and
+	   not string.match( id, '^[1-9]%d?%d?%d?$' ) then
+		return false
+	end
+	return '[http://www.hls-dhs-dss.ch/textes/f/F'..id..'.php '..id..']'..p.getCatForId( 'HDS' ) --no https yet (10/2018)
 end
 
-function lccnLink( id )
-    local parts = splitLccn( id )
-    if not parts then
-        return false
-    end
-    id = parts[1] .. parts[2] .. append( parts[3], '0', 6 )
-    return '[http://id.loc.gov/authorities/names/' .. id .. ' ' .. id .. ']' .. getCatForId( 'LCCN' )
+function p.lirLink( id )
+	--P886's format regex: \d+ (e.g. 1)
+	if not string.match( id, '^%d+$' ) then
+		return false
+	end
+	return '[http://www.e-lir.ch/e-LIR___Lexicon.'..id..'.450.0.html '..id..']'..p.getCatForId( 'LIR' ) --no https yet (10/2018)
 end
 
-function mbLink( id )
-    -- TODO Implement some sanity checking regex
-    return '[//musicbrainz.org/artist/' .. id .. ' ' .. id .. ']' .. getCatForId( 'MusicBrainz' )
+function p.splitLccn( id )
+	--P244's format regex: (n|nb|nr|no|ns|sh)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6} (e.g. n78039510)
+	if id:match( '^%l%l?%l?%d%d%d%d%d%d%d%d%d?%d?$' ) then
+		id = id:gsub( '^(%l+)(%d+)(%d%d%d%d%d%d)$', '%1/%2/%3' )
+	end
+	if id:match( '^%l%l?%l?/%d%d%d?%d?/%d+$' ) then
+		return mw.text.split( id, '/' )
+	end
+	return false
 end
 
-function splitLccn( id )
-    if id:match( '^%l%l?%l?%d%d%d%d%d%d%d%d%d?%d?$' ) then
-        id = id:gsub( '^(%l+)(%d+)(%d%d%d%d%d%d)$', '%1/%2/%3' )
-    end
-    if id:match( '^%l%l?%l?/%d%d%d?%d?/%d+$' ) then
-         return mw.text.split( id, '/' )
-    end
-    return false
+function p.append(str, c, length)
+	while str:len() < length do
+		str = c .. str
+	end
+	return str
 end
 
-function append(str, c, length)
-    while str:len() < length do
-        str = c .. str
-    end
-    return str
+function p.lccnLink( id )
+	local parts = p.splitLccn( id ) --e.g. n78039510
+	if not parts then
+		return false
+	end
+	local lccnType = parts[1] ~= 'sh' and 'names' or 'subjects'
+	id = parts[1] .. parts[2] .. p.append( parts[3], '0', 6 )
+	return '[https://id.loc.gov/authorities/'..lccnType..'/'..id..' '..id..']'..p.getCatForId( 'LCCN' )
 end
 
-function isniLink( id )
-    id = validateIsni( id )
-    if not id then
-        return false
-    end
-    return '[http://isni.org/' .. id .. ' ' .. id:sub( 1, 4 ) .. ' ' .. id:sub( 5, 8 ) .. ' '  .. id:sub( 9, 12 ) .. ' '  .. id:sub( 13, 16 ) .. ']' .. getCatForId( 'ISNI' )
+function p.mbaLink( id )
+	--P434's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/artist/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbareaLink( id )
+	--P982's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/area/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbiLink( id )
+	--P1330's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/instrument/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mblLink( id )
+	--P966's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/label/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbpLink( id )
+	--P1004's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/place/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbrgLink( id )
+	--P436's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/release-group/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbsLink( id )
+	--P1407's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/series/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+end
+
+function p.mbwLink( id )
+	--P435's format regex: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} (e.g. 12345678-1234-1234-1234-1234567890AB)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
+	return '[https://musicbrainz.org/work/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz work' )
+end
+
+--Returns the ISNI check digit isni must be a string where the 15 first elements are digits, e.g. 0000000066534145
+function p.getIsniCheckDigit( isni )
+	local total = 0
+	for i = 1, 15 do
+		local digit = isni:byte( i ) - 48 --Get integer value
+		total = (total + digit) * 2
+	end
+	local remainder = total % 11
+	local result = (12 - remainder) % 11
+	if result == 10 then
+		return "X"
+	end
+	return tostring( result )
 end
 
 --Validate ISNI (and ORCID) and retuns it as a 16 characters string or returns false if it's invalid
 --See http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
-function validateIsni( id )
-    id = id:gsub( '[ %-]', '' ):upper()
-    if not id:match( '^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d[%dX]$' ) then
-        return false
-    end
-    if getIsniCheckDigit( id ) ~= string.char( id:byte( 16 ) ) then
-        return false
-    end
-    return id
+function p.validateIsni( id )
+	--P213 (ISNI) format regex: [0-9]{4} [0-9]{4} [0-9]{4} [0-9]{3}[0-9X] (e.g. 0000-0000-6653-4145)
+	--P496 (ORCID) format regex: 0000-000(1-[5-9]|2-[0-9]|3-[0-4])\d{3}-\d{3}[\dX] (e.g. 0000-0002-7398-5483)
+	id = id:gsub( '[ %-]', '' ):upper()
+	if not id:match( '^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d[%dX]$' ) then
+		return false
+	end
+	if p.getIsniCheckDigit( id ) ~= string.char( id:byte( 16 ) ) then
+		return false
+	end
+	return id
 end
 
---Returns the ISNI check digit isni must be a string where the 15 first elements are digits
-function getIsniCheckDigit( isni )
-    local total = 0
-    for i = 1, 15 do
-        local digit = isni:byte( i ) - 48 --Get integer value
-        total = (total + digit) * 2
-    end
-    local remainder = total % 11
-    local result = (12 - remainder) % 11
-    if result == 10 then
-        return "X"
-    end
-    return tostring( result )
+function p.isniLink( id )
+	id = p.validateIsni( id ) --e.g. 0000-0000-6653-4145
+	if not id then
+		return false
+	end
+	return '[http://isni.org/isni/'..id..' '..id:sub( 1, 4 )..' '..id:sub( 5, 8 )..' '..id:sub( 9, 12 )..' '..id:sub( 13, 16 )..']'..p.getCatForId( 'ISNI' ) --no https yet (10/2018)
 end
 
-function orcidLink( id )
-    id = validateIsni( id )
-    if not id then
-        return false
-    end
-    id = id:sub( 1, 4 ) .. '-' .. id:sub( 5, 8 ) .. '-'  .. id:sub( 9, 12 ) .. '-'  .. id:sub( 13, 16 )
-    return '[http://orcid.org/' .. id .. ' ' .. id .. ']' .. getCatForId( 'ORCID' )
+function p.orcidLink( id )
+	id = p.validateIsni( id ) --e.g. 0000-0002-7398-5483
+	if not id then
+		return false
+	end
+	id = id:sub( 1, 4 )..'-'..id:sub( 5, 8 )..'-'..id:sub( 9, 12 )..'-'..id:sub( 13, 16 )
+	return '[https://orcid.org/'..id..' '..id..']'..p.getCatForId( 'ORCID' )
 end
 
-function gndLink( id )
-    return '[http://d-nb.info/gnd/' .. id .. ' ' .. id .. ']' .. getCatForId( 'GND' )
+function p.gndLink( id )
+	--P227's format regex: (1|1[01])\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X] (e.g. 4079154-3)
+	if not string.match( id, '^1[01]?%d%d%d%d%d%d%d[0-9X]$' ) and
+	   not string.match( id, '^[47]%d%d%d%d%d%d%-%d$' ) and
+	   not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%-[0-9X]$' ) and
+	   not string.match( id, '^3%d%d%d%d%d%d%d[0-9X]$' ) then
+		return false
+	end
+	return '[https://d-nb.info/gnd/'..id..' '..id..']'..p.getCatForId( 'GND' )
 end
 
-function selibrLink( id )
+function p.selibrLink( id )
+	--P906's format regex: [1-9]\d{4,5} (e.g. 123456)
+	if not string.match( id, '^[1-9]%d%d%d%d%d?$' ) then
+		return false
+	end
+	return '[https://libris.kb.se/auth/'..id..' '..id..']'..p.getCatForId( 'SELIBR' )
+end
+
+function p.bnfLink( id )
+	--P268's format regex: \d{8}[0-9bcdfghjkmnpqrstvwxz] (e.g. 123456789)
+	if not string.match( id, '^c?b?%d%d%d%d%d%d%d%d[0-9bcdfghjkmnpqrstvwxz]$' ) then
+		return false
+	end
+	--Add cb prefix if it has been removed
+	if not string.match( id, '^cb.+$' ) then
+		id = 'cb'..id
+	end
+	return '[https://catalogue.bnf.fr/ark:/12148/'..id..' '..id..'] [http://data.bnf.fr/ark:/12148/'..id..' (данни)]'..p.getCatForId( 'BNF' )
+end
+
+function p.bpnLink( id )
+	--P651's format regex: \d{8} (e.g. 12345678)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[http://www.biografischportaal.nl/en/persoon/'..id..' '..id..']'..p.getCatForId( 'BPN' ) --no https yet (10/2018)
+end
+
+function p.ridLink( id )
+	--P1053's format regex: [A-Z]-\d{4}-(19|20)\d\d (e.g. A-1234-1934)
+	if not string.match( id, '^[A-Z]%-%d%d%d%d%-19%d%d$' ) and
+	   not string.match( id, '^[A-Z]%-%d%d%d%d%-20%d%d$' ) then
+		return false
+	end
+	return '[https://www.researcherid.com/rid/'..id..' '..id..']'..p.getCatForId( 'RID' )
+end
+
+function p.bibsysLink( id )
+	--P1015's format regex: [1-9]\d* or [1-9](\d{0,8}|\d{12}) (e.g. 1234567890123)
+	--TODO: follow up @ [[d:Property talk:P1015#Discrepancy between the 2 regex constraints]] or escalate/investigate
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%d?$' ) and
+	   not string.match( id, '^[1-9]%d%d%d%d%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[https://authority.bibsys.no/authority/rest/authorities/html/'..id..' '..id..']'..p.getCatForId( 'BIBSYS' )
+end
+
+function p.ulanLink( id )
+	--P245's format regex: 500\d{6} (e.g. 500123456)
+	if not string.match( id, '^500%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[https://www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&subjectid='..id..' '..id..']'..p.getCatForId( 'ULAN' )
+end
+
+function p.nlaLink( id )
+	--P409's format regex: [1-9][0-9]{0,11} (e.g. 123456789012)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://nla.gov.au/anbd.aut-an'..id..' '..id..']'..p.getCatForId( 'NLA' )
+end
+
+function p.rkdartistsLink( id )
+	--P650's format regex: [1-9]\d{0,5} (e.g. 123456)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://rkd.nl/en/explore/artists/'..id..' '..id..']'..p.getCatForId( 'RKDartists' )
+end
+
+function p.snacLink( id )
+	--P3430's format regex: \d*[A-Za-z][0-9A-Za-z]* (e.g. A)
+	if not string.match( id, '^%d*[A-Za-z][0-9A-Za-z]*$' ) then
+		return false
+	end
+	return '[http://socialarchive.iath.virginia.edu/ark:/99166/'..id..' '..id..']'..p.getCatForId( 'SNAC-ID' ) --no https yet (10/2018)
+end
+
+function p.dblpLink( id )
+	--P2456's format regex: \d{2,3} /\d+(-\d+)?|[a-z] /[a-zA-Z][0-9A-Za-z]*(-\d+)? (e.g. 123/123)
+	if not string.match( id, '^%d%d%d?/%d+$' ) and
+	   not string.match( id, '^%d%d%d?/%d+%-%d+$' ) and
+	   not string.match( id, '^[a-z]/[a-zA-Z][0-9A-Za-z]*$' ) and
+	   not string.match( id, '^[a-z]/[a-zA-Z][0-9A-Za-z]*%-%d+$' ) then
+		return false
+	end
+	return '[https://dblp.org/pid/'..id..' '..id..']'..p.getCatForId( 'DBLP' )
+end
+
+function p.acmLink( id )
+	--P864's format regex: \d{11} (e.g. 12345678901)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[https://dl.acm.org/author_page.cfm?id='..id..' '..id..']'..p.getCatForId( 'ACM-DL' )
+end
+
+function p.autoresuyLink( id )
+	--P2558's format regex: [1-9]\d{0,4} (e.g. 12345)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://autores.uy/autor/'..id..' '..id..']'..p.getCatForId( 'autores.uy' )
+end
+
+function p.picLink( id )
+	--P2750's format regex: [1-9]\d* (e.g. 1)
+	if not string.match( id, '^[1-9]%d*$' ) then
+		return false
+	end
+	return '[https://pic.nypl.org/constituents/'..id..' '..id..']'..p.getCatForId( 'PIC' )
+end
+
+function p.bildLink( id )
+	--P2092's format regex: \d+ (e.g. 1)
 	if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[//libris.kb.se/auth/' .. id .. ' ' .. id .. ']' .. getCatForId( 'SELIBR' )
+		return false
+	end
+	return '[https://www.bildindex.de/document/obj'..id..' '..id..']'..p.getCatForId( 'Bildindex' )
 end
 
-function bnfLink( id )
-    --Add cb prefix if it has been removed
-    if not string.match( id, '^cb.+$' ) then
-        id = 'cb' .. id
-    end
-
-    return '[http://catalogue.bnf.fr/ark:/12148/' .. id .. ' ' .. id .. '] [http://data.bnf.fr/ark:/12148/' .. id .. ' (архив)]' .. getCatForId( 'BNF' )
+function p.jocondeLink( id )
+	--P347's format regex: [\-0-9A-Za-z]{11} (e.g. 12345678901)
+	local regex = '^'..string.rep('[%-0-9A-Za-z]', 11)..'$'
+	if not string.match( id, regex ) then
+		return false
+	end
+	return '[http://www2.culture.gouv.fr/public/mistral/joconde_fr?ACTION=CHERCHER&FIELD_1=REF&VALUE_1='..id..' '..id..']'..p.getCatForId( 'Joconde' ) --no https yet (10/2018)
 end
 
-function bpnLink( id )
-    if not string.match( id, '^%d+$' ) then
-        return false
-    end
-    return '[http://www.biografischportaal.nl/en/persoon/' .. id .. ' ' .. id .. ']' .. getCatForId( 'BPN' )
+function p.rkdidLink( id )
+	--P350's format regex: [1-9]\d{0,5} (e.g. 123456)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+	return '[https://rkd.nl/nl/explore/images/'..id..' '..id..']'..p.getCatForId( 'RKDID' )
 end
 
-function ridLink( id )
-    return '[http://www.researcherid.com/rid/' .. id .. ' ' .. id .. ']' .. getCatForId( 'RID' )
+function p.balatLink( id )
+	--P3293's format regex: \d+ (e.g. 1)
+	if not string.match( id, '^%d+$' ) then
+		return false
+	end
+	return '[http://balat.kikirpa.be/object/104257'..id..' '..id..']'..p.getCatForId( 'BALaT' ) --no https yet (10/2018)
 end
 
-function bibsysLink( id )
-    return '[http://ask.bibsys.no/ask/action/result?cmd=&kilde=biblio&cql=bs.autid+%3D+' .. id .. '&feltselect=bs.autid ' .. id .. ']' .. getCatForId( 'BIBSYS' )
+function p.lnbLink( id )
+	--P1368's format regex: \d{9} (e.g. 123456789)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[https://kopkatalogs.lv/F?func=direct&local_base=lnc10&doc_number='..id..'&P_CON_LNG=ENG '..id..']'..p.getCatForId( 'LNB' )
 end
 
-function ulanLink( id )
-    return '[//www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&subjectid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'ULAN' )
+function p.nskLink( id )
+	--P1375's format regex: \d{9} (e.g. 123456789)
+	if not string.match( id, '^%d%d%d%d%d%d%d%d%d$' ) then
+		return false
+	end
+	return '[http://katalog.nsk.hr/F/?func=direct&doc_number='..id..'&local_base=nsk10 '..id..']'..p.getCatForId( 'NSK' ) --no https yet (10/2018)
 end
 
-function nlaLink( id )
-	return '[//nla.gov.au/anbd.aut-an' .. id .. ' ' .. id .. ']' .. getCatForId( 'NLA' )
+function p.iciaLink( id )
+	--P1736's format regex: \d+ (e.g. 1)
+	if not string.match( id, '^%d+$' ) then
+		return false
+	end
+	return '[https://www.imj.org.il/artcenter/newsite/en/?artist='..id..' '..id..']'..p.getCatForId( 'ICIA' )
 end
 
-local function rkdartistsLink( id )
-	return '[https://rkd.nl/en/explore/artists/' .. id .. ' ' .. id .. ']' .. getCatForId( 'RKDartists' )
+function p.ta98Link( id )
+	--P1323's format regex: A\d{2}\.\d\.\d{2}\.\d{3}[FM]? (e.g. A12.3.45.678)
+	if not string.match( id, '^A%d%d%.%d%.%d%d%.%d%d%d[FM]?$' ) then
+		return false
+	end
+	return '[http://tools.wmflabs.org/wikidata-externalid-url/?p=1323&url_prefix=https:%2F%2Fwww.unifr.ch%2Fifaa%2FPublic%2FEntryPage%2FTA98%20Tree%2FEntity%20TA98%20EN%2F&url_suffix=%20Entity%20TA98%20EN.htm&id='..id..' '..id..']'..p.getCatForId( 'TA98' )
 end
 
-local function NLGIDLink( id )
-    return '[https://catalogue.nlg.gr/Authority/Record?id=au.' .. id .. ' ' .. id .. ']' .. getCatForId( 'EBE' )
+function p.teLink( id )
+	--P1693's format regex: E[1-8]\.\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1}\.\d{1}\.\d{1,3} (e.g. E1.23.45.67.8.9.0)
+	local e1, e2 = string.match( id, '^E([1-8])%.(%d%d?)%.%d%d?%.%d%d?%.%d%.%d%.%d%d?%d?$' )
+	if not e1 then
+		return false
+	end
+	local TEnum = 'TEe0'..e1 --no formatter URL in WD, probably due to this complexity
+	if e1 == '5' or e1 == '7' then
+		if #e2 == 1 then e2 = '0'..e2 end
+		TEnum = TEnum..e2
+	end
+	return '[http://www.unifr.ch/ifaa/Public/EntryPage/ViewTE/'..TEnum..'.html '..id..']'..p.getCatForId( 'TE' )
 end
 
-local function BNeditionLink( id )
-    return '[http://www.biblionet.gr/main.asp?page=showbook&bookid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'BiblioNet' )
+function p.thLink( id )
+	--P1694's format regex: H\d\.\d{2}\.\d{2}\.\d\.\d{5} (e.g. H1.23.45.6.78901)
+	local h1, h2 = string.match( id, '^H(%d)%.(%d%d)%.%d%d%.%d%.%d%d%d%d%d$' )
+	if not h1 then
+		return false
+	end
+	local THnum = 'THh'..h1..h2 --no formatter URL in WD, probably due to this complexity
+	return '[http://www.unifr.ch/ifaa/Public/EntryPage/ViewTH/'..THnum..'.html '..id..']'..p.getCatForId( 'TH' )
 end
 
-local function BNpersonLink( id )
-    return '[http://www.biblionet.gr/main.asp?page=showauthor&personsid=' .. id .. ' ' .. id .. ']' .. getCatForId( 'BiblioNet' )
+function p.NLGIDLink( id )
+    return '[https://catalogue.nlg.gr/Authority/Record?id=au.' .. id .. ' ' .. id .. ']'..p.getCatForId( 'EBE' )
 end
 
-local function BNpublisherLink( id )
-    return '[http://www.biblionet.gr/com/' .. id .. ' ' .. id .. ']'.. getCatForId( 'BiblioNet' )
+function p.BNeditionLink( id )
+    return '[http://www.biblionet.gr/main.asp?page=showbook&bookid=' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
 end
 
-local function freebaseLink( id )
-	return '[https://g.co/kg' .. id .. ' ' .. id .. ']' .. getCatForId( 'Freebase' )
+function p.BNpersonLink( id )
+    return '[http://www.biblionet.gr/main.asp?page=showauthor&personsid=' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
 end
 
-local function jstorLink( id )
-	return '[https://www.jstor.org/topic/' .. id .. ' ' .. id .. ']' .. getCatForId( 'JSTOR' )
+function p.BNpublisherLink( id )
+    return '[http://www.biblionet.gr/com/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
 end
 
-local function newwLink( id )
-	return '[http://resources.huygens.knaw.nl/womenwriters/vre/persons/' .. id .. ' ' .. id .. ']' .. getCatForId( 'NEWW' )
+function p.freebaseLink( id )
+	return '[https://g.co/kg' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Freebase' )
 end
 
-local function fastLink( id )
-	return '[https://experimental.worldcat.org/fast/' .. id .. '/ ' .. id .. ']' .. getCatForId( 'FAST' )
+function p.jstorLink( id )
+	return '[https://www.jstor.org/topic/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'JSTOR' )
 end
 
-local function aatLink( id )
-	return '[http://vocab.getty.edu/page/aat/' .. id .. ' ' .. id .. ']' .. getCatForId( 'AAT')
+function p.newwLink( id )
+	return '[http://resources.huygens.knaw.nl/womenwriters/vre/persons/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'NEWW' )
 end
 
-local function koninklijkeLink( id )
-	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']' .. getCatForId( 'Koninklijke')
+function p.fastLink( id )
+	return '[https://experimental.worldcat.org/fast/' .. id .. '/ ' .. id .. ']'..p.getCatForId( 'FAST' )
 end
 
-local function openLibraryLink( id )
-	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']' .. getCatForId( 'OpenLibrary')
+function p.aatLink( id )
+	return '[http://vocab.getty.edu/page/aat/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'AAT')
 end
 
-function getIdsFromWikidata( item, property )
-    local ids = {}
-    if not item.claims[property] then
-        return ids
-    end
-    for _, statement in pairs( item.claims[property] ) do
-        table.insert( ids, statement.mainsnak.datavalue.value )
-    end
-    return ids
+function p.koninklijkeLink( id )
+	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Koninklijke')
 end
 
-function matchesWikidataRequirements( item, reqs )
-    for _, group in pairs( reqs ) do
-        local property = 'P' .. group[1]
-        local qid = group[2]
-        if item.claims[property] ~= nil then
-            for _, statement in pairs ( item.claims[property] ) do
-            	if statement.mainsnak.datavalue ~= nil then
-	                if statement.mainsnak.datavalue.value['numeric-id'] == qid then
-    	                return true
-        	        end
-        	    end
-            end
-        end
-    end
-    return false
+function p.openLibraryLink( id )
+	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary')
 end
 
-function createRow( id, label, rawValue, link, withUid )
-    if link then
-        if withUid then
-            return '* ' .. label .. ' <span class="uid">' .. link .. '</span>\n'
-        else
-            return '* ' .. label .. ' ' .. link .. '\n'
-        end
-    else
-        return '* <span class="error">The ' .. id .. ' id ' .. rawValue .. ' is not valid.</span>[[Category:Wikipedia articles with faulty authority control identifiers (' .. id .. ')]]\n'
-    end
+--[[==========================================================================]]
+--[[          Wikidata, navigation bar, and documentation functions           ]]
+--[[==========================================================================]]
+
+function p.getIdsFromWikidata( itemId, property )
+	local ids = {}
+	local statements = mw.wikibase.getBestStatements( itemId, property )
+	if statements then
+		for _, statement in ipairs( statements ) do
+			if statement.mainsnak.datavalue then
+				table.insert( ids, statement.mainsnak.datavalue.value )
+			end
+		end
+	end
+	return ids
 end
 
---In this order: name of the parameter, label, propertyId in Wikidata, formatting function
-local conf = {
-    { 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, viafLink },
-    { 'LCCN', '[[Контролен номер на Библиотеката на Конгреса|LCCN]]', 244, lccnLink },
-    { 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, isniLink },
-    { 'ORCID', '[[ORCID]]', 496, orcidLink },
-    { 'GND', '[[Колективен нормативен архив|GND]]', 227, gndLink },
-    { 'SELIBR', '[[LIBRIS|SELIBR]]', 906, selibrLink },
-    { 'SUDOC', '[[Система за университетска документацията на Франция|SUDOC]]', 269, sudocLink },
-    { 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, bnfLink },
-    { 'BPN', '[[Биографичен портал|BPN]]', 651, bpnLink },
-    { 'RID', '[[ResearcherID]]', 1053, ridLink },
-    { 'BIBSYS', '[[BIBSYS]]', 1015, bibsysLink },
-    { 'ULAN', '[[Колективен архив на авторските имена|ULAN]]', 245, ulanLink },
-    { 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, hlsLink },
-    { 'LIR', '[[Швейцарски исторически лексикон#Творби|LIR]]', 886, lirLink },
-    { 'MBA', '[[MusicBrainz]]', 434, mbLink },
-    { 'MGP', '[[Математическа генеалогия|MGP]]', 549, mgpLink },
-    { 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, nlaLink },
-    { 'NDL', '[[Национална парламентарна библиотека (Япония)|NDL]]', 349, ndlLink },
-    { 'NCL', '[[Националнa централна библиотека (Тайван)|NCL]]', 1048, nclLink },
-    { 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, nkcLink },
-    { 'Léonore', '[[:fr:Base Léonore|Léonore]]', 640, leonoreLink },
-    { 'SBN', '[[:it:Istituto centrale per il catalogo unico delle biblioteche italiane e per le informazioni bibliografiche|ICCU]]', 396, sbnLink },
-    { 'RLS', '[[Руска държавна библиотека|RLS]]', 947, rslLink },
-    { 'Botanist', '[[Авторски цитат (ботаника)|Botanist]]', 428, botanistLink },
-    { 'NARA-person', '[[Национално управление на архивите и документите на САЩ|NARA]]', 1222, narapersonLink },
-    { 'NARA-organization', '[[Национално управление на архивите и документите на САЩ|NARA]]', 1223, naraorganizationLink },
-    { 'USCongress', '[[Биографичен лексикон на американския Конгрес|US Congress]]', 1157, uscongressLink },
-    { 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, bneLink },
-    { 'CINII', '[[CiNii]]', 271, ciniiLink },
-    { 'TLS', '[[Швейцарски театрален лексикон|TLS]]', 1362, tlsLink },
-    { 'SIKART', '[[SIKART]]', 781, sikartLink },
-    { 'KULTURNAV', '[[KulturNav]]', 1248, kulturnavLink },
-    { 'RKDartists', '[[Нидерландски институт за история на изкуството|RKD]]', 650, rkdartistsLink },
-    { 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, NLGIDLink },
-    { 'BNed', '[[BiblioNet]]', 2187, BNeditionLink },
-    { 'BNper', '[[BiblioNet]]', 2188, BNpersonLink },
-    { 'BNpub', '[[BiblioNet]]', 2189, BNpublisherLink },
-    { 'Freebase', '[[:en:Freebase|Freebase]]', 646, freebaseLink },
-    { 'JSTOR', '[[JSTOR]]', 3827, jstorLink },
-    { 'NEWW', 'NEWW Women Writers', 2533, newwLink },
-    { 'FAST', 'FAST', 2163, fastLink },
-    { 'AAT', 'Art & Architecture Thesaurus', 1014, aatLink },
-    { 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, koninklijkeLink },
-    { 'OpenLibrary', 'Open Library', 648, openLibraryLink },
-}
+function p.matchesWikidataRequirements( itemId, reqs )
+	for _, group in ipairs( reqs ) do
+		local property = 'P' .. group[1]
+		local qid = group[2]
+		local statements = mw.wikibase.getBestStatements( itemId, property )
+		if statements then
+			for _, statement in ipairs( statements ) do
+				if statement.mainsnak.datavalue then
+					if statement.mainsnak.datavalue.value['numeric-id'] == qid then
+						return true
+	end	end	end	end	end
+	return false
+end
+
+function p.createRow( id, label, rawValue, link, withUid )
+	if link then
+		if withUid then
+			return '*' .. label .. ' <span class="uid">' .. link .. '</span>\n'
+		end
+		return '*' .. label .. ' ' .. link .. '\n'
+	end
+
+	local catName = 'Уикипедия:Статии с неправилен или подозрителен нормативен контрол (' .. id .. ')'
+	return '* <span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' не е валиден.</span>[[Категория:' .. catName .. ']]' .. p.redCatLink(catName) .. '\n'
+end
+
+-- Creates a human-readable standalone wikitable version of p.conf, and tracking categories with page counts, for use in the documentation
+function p.docConfTable( frame )
+	local wikiTable = '{| class="wikitable sortable"\n' ..
+					  '|+ Статистика\n' ..
+					  '|-\n' ..
+					  '! rowspan=2 | Параметър\n' ..
+					  '! rowspan=2 | Етикет\n' ..
+					  '! rowspan=2; data-sort-type=number | Свойство в Уикиданни\n' ..
+					  '! colspan=4 | Брой страници в проследяващите категории\n' ..
+					  '|-\n' ..
+					  '! Статии\n' ..
+					  '! Потребителски страници\n' ..
+					  '! Други страници\n' ..
+					  '! Неправилен НК\n' ..
+					  '|-\n'
+	
+	local lang = mw.getContentLanguage()
+	for _, conf in pairs( p.conf ) do
+		local param, link, pid = conf[1], conf[2], conf[3]
+		local category = conf.category or param
+		--local args = { id = 'f', pid }
+		--local wpl = frame:expandTemplate{ title = 'Wikidata property link', args = args }
+		--cats
+		local articleCat = 'Статии с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
+		local userCat =    'Потребителски страници с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
+		local miscCat =    'Други страници с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
+		local faultyCat =  'Статии с неправилен <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
+		--counts
+		local articleCount = lang:formatNum( mw.site.stats.pagesInCategory(articleCat, 'pages') )
+		local userCount =    lang:formatNum( mw.site.stats.pagesInCategory(userCat, 'pages') )
+		local miscCount =    lang:formatNum( mw.site.stats.pagesInCategory(miscCat, 'pages') )
+		local faultyCount =  lang:formatNum( mw.site.stats.pagesInCategory(faultyCat, 'pages') )
+		--concat
+		wikiTable = wikiTable..'\n'..
+					'|-\n'..
+					'||'..param..
+					'||'..link..
+					'||data-sort-value='..pid..'|[[:d:property:P'..pid..'|P'..pid..']]'..
+					'||style="text-align:right"|[[:Категория:'..articleCat..'|'..articleCount..']]'..
+					'||style="text-align:right"|[[:Категория:'..userCat..'|'..userCount..']]'..
+					'||style="text-align:right"|[[:Категория:'..miscCat..'|'..miscCount..']]'..
+					'||style="text-align:right"|[[:Категория:'.. faultyCat..'|'..faultyCount..']]'
+	end
+	return wikiTable .. '\n|}'
+end
+
+--[[==========================================================================]]
+--[[                              Configuration                               ]]
+--[[==========================================================================]]
 
 -- Check that the Wikidata item has this property-->value before adding it
 local reqs = {}
-reqs['MBA'] = {
-    { 106, 177220 }, -- occupation -> singer
-    { 31, 177220 }, -- instance of -> singer
-    { 106, 13385019 }, -- occupation -> rapper
-    { 31, 13385019 }, -- instance of -> rapper
-    { 106, 639669 }, -- occupation -> musician
-    { 31, 639669 }, -- instance of -> musician
-    { 106, 36834 }, -- occupation -> composer
-    { 31, 36834 }, -- instance of -> composer
-    { 106, 488205 }, -- occupation -> singer-songwriter
-    { 31, 488205 }, -- instance of -> singer-songwriter
-    { 106, 183945 }, -- occupation -> record producer
-    { 31, 183945 }, -- instance of -> record producer
-    { 106, 10816969 }, -- occupation -> club DJ
-    { 31, 10816969 }, -- instance of -> club DJ
-    { 106, 130857 }, -- occupation -> DJ
-    { 31, 130857 }, -- instance of -> DJ
-    { 106, 158852 }, -- occupation -> conductor
-    { 31, 158852 }, -- instance of -> conductor
-    { 31, 215380 }, -- instance of -> band
-    { 31, 5741069 }, -- instance of -> rock band
+
+-- Parameter format: { name of the parameter, label, propertyId in Wikidata, formatting function }
+p.conf = {
+	{ 'AAT', 'Art & Architecture Thesaurus', 1014, p.aatLink },
+	{ 'ACM-DL', 'ACM DL', 864, p.acmLink },
+	{ 'autores.uy', 'autores.uy', 2558, p.autoresuyLink },
+	{ 'BALaT', 'BALaT', 3293, p.balatLink },
+	{ 'BIBSYS', '[[BIBSYS]]', 1015, p.bibsysLink },
+	{ 'Bildindex', 'Bildindex', 2092, p.bildLink },
+	{ 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, p.bneLink },
+	{ 'BNed', 'BNed', 2187, p.BNeditionLink },
+	{ 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, p.bnfLink },
+	{ 'BNper', 'BNper', 2188, p.BNpersonLink },
+    { 'BNpub', 'BNpub', 2189, p.BNpublisherLink },
+	{ 'Botanist', 'Botanist', 428, p.botanistLink },
+	{ 'BPN', 'BPN', 651, p.bpnLink },
+	{ 'CINII', 'CiNii', 271, p.ciniiLink },
+	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
+	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
+	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
+	{ 'IAAF', '[[Международна асоциация на лекоатлетическите федерации|IAAF]]', 1146, p.iaafLink },
+	{ 'ICIA', 'ICIA', 1736, p.iciaLink },
+	{ 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, p.isniLink },
+	{ 'FAST', 'FAST', 2163, p.fastLink },
+	{ 'Freebase', 'Freebase', 646, p.freebaseLink },
+	{ 'Joconde', 'Joconde' , 347, p.jocondeLink },
+	{ 'JSTOR', '[[JSTOR]]', 3827, p.jstorLink },
+	{ 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, p.koninklijkeLink },
+	{ 'KULTURNAV', 'KulturNav', 1248, p.kulturnavLink },
+	{ 'LCCN', '[[Контролен номер на Библиотеката на Конгреса|LCCN]]', 244, p.lccnLink },
+	{ 'LIR', '[[Швейцарски исторически лексикон|LIR]]', 886, p.lirLink },
+	{ 'LNB', 'LNB', 1368, p.lnbLink },
+	{ 'Léonore', 'Léonore', 640, p.leonoreLink },
+	{ 'MBA', '[[MusicBrainz|MBa]]', 434, p.mbaLink },
+	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink },
+	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink },
+	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink },
+	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink },
+	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink },
+	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink },
+	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink },
+	{ 'MGP', 'MGP', 549, p.mgpLink },
+	{ 'NARA', 'NARA', 1225, p.naraLink },
+	{ 'NCL', 'NCL', 1048, p.nclLink },
+	{ 'NDL', '[[Национална парламентарна библиотека (Япония)|NDL]]', 349, p.ndlLink },
+	{ 'NEWW', 'NEWW Women Writers', 2533, p.newwLink },
+	{ 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, p.nkcLink },
+	{ 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, p.nlaLink },
+	{ 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.NLGIDLink },
+	{ 'NSK', 'NSK', 1375, p.nskLink },
+	{ 'OpenLibrary', 'Open Library', 648, p.openLibraryLink },
+	{ 'ORCID', 'ORCID', 496, p.orcidLink },
+	{ 'PIC', 'PIC', 2750, p.picLink },
+	{ 'RID', 'ResearcherID', 1053, p.ridLink },
+	{ 'RKDartists', '[[Нидерландски институт за история на изкуството|RKD]]', 650, p.rkdartistsLink },
+	{ 'RKDID', 'RKDimages ID', 350, p.rkdidLink },
+	{ 'RSL', '[[Руска държавна библиотека|RSL]]', 947, p.rslLink },
+	{ 'SBN', 'ICCU', 396, p.sbnLink },
+	{ 'SELIBR', '[[LIBRIS|SELIBR]]', 906, p.selibrLink },
+	{ 'SIKART', 'SIKART', 781, p.sikartLink },
+	{ 'SNAC-ID', 'SNAC', 3430, p.snacLink },
+	{ 'SUDOC', '[[Система за университетска документация на Франция|SUDOC]]', 269, p.sudocLink },
+	{ 'TA98', 'TA98', 1323, p.ta98Link },
+	{ 'TE', 'TE', 1693, p.teLink },
+	{ 'TH', 'TH', 1694, p.thLink },
+	{ 'TLS', 'TLS', 1362, p.tlsLink },
+	{ 'ULAN', 'ULAN', 245, p.ulanLink },
+	{ 'USCongress', 'US Congress', 1157, p.uscongressLink },
+	{ 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, p.viafLink },
 }
 
-local p = {}
+-- Legitimate aliases to p.conf, for convenience
+-- Format: { alias, parameter name in p.conf }
+p.aliases = {}
+
+-- Deprecated aliases to p.conf, which also get assigned to a tracking cat
+-- Format: { deprecated parameter name, replacement parameter name in p.conf }
+p.deprecated = {
+	{ 'GKD', 'GND' },
+	{ 'PND', 'GND' },
+	{ 'SWD', 'GND' },
+	{ 'NARA-organization', 'NARA' },
+	{ 'NARA-person', 'NARA' },
+}
+
+--[[==========================================================================]]
+--[[                                   Main                                   ]]
+--[[==========================================================================]]
 
 function p.authorityControl( frame )
-    local parentArgs = frame:getParent().args
-    --Create rows
-    local elements = {}
-
-    --redirect PND to GND
-    if (parentArgs.GND == nil or parentArgs.GND == '') and parentArgs.PND ~= nil and parentArgs.PND ~= '' then
-        parentArgs.GND = parentArgs.PND
-    end
-
-    --Wikidata fallback if requested
-    local item = mw.wikibase.getEntityObject()
-    if item ~= nil and item.claims ~= nil then
-        for _, params in pairs( conf ) do
-            if params[3] ~= 0 then
-                local val = parentArgs[params[1]]
-                if not val or val == '' then
-                	local canUseWikidata = nil
-                    if reqs[params[1]] ~= nil then
-                        canUseWikidata = matchesWikidataRequirements( item, reqs[params[1]] )
-                    else
-                        canUseWikidata = true
-                    end
-                    if canUseWikidata then
-                        local wikidataIds = getIdsFromWikidata( item, 'P' .. params[3] )
-                        if wikidataIds[1] then
-                            parentArgs[params[1]] = wikidataIds[1]
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    --Worldcat
-    if parentArgs['WORLDCATID'] and parentArgs['WORLDCATID'] ~= '' then
-        table.insert( elements, createRow( 'WORLDCATID', '', parentArgs['WORLDCATID'], '[http://www.worldcat.org/identities/' .. parentArgs['WORLDCATID'] .. ' WorldCat]', false ) ) --Validation?
-    elseif parentArgs['LCCN'] and parentArgs['LCCN'] ~= '' then
-        local lccnParts = splitLccn( parentArgs['LCCN'] )
-        if lccnParts then
-            table.insert( elements, createRow( 'LCCN', '', parentArgs['LCCN'], '[http://www.worldcat.org/identities/lccn-' .. lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3] .. ' WorldCat]', false ) )
-        end
-    end
-
-    --Configured rows
-    for k, params in pairs( conf ) do
-        local val = parentArgs[params[1]]
-        if val and val ~= '' then
-            table.insert( elements, createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
-        end
-    end
-    local Navbox = require('Модул:Navbox')
-    return Navbox._navbox( {
-        name  = 'Authority control',
-        bodyclass = 'hlist',
-        group1 = '[[Нормативен контрол]]',
-        list1 = table.concat( elements )
-    } )
+	local resolveEntity = require('Модул:ResolveEntityId')
+	local title = mw.title.getCurrentTitle()
+	local namespace = title.namespace
+	local talkspace = (mw.site.talkNamespaces[namespace] ~= nil)
+	local testcases = (string.sub(title.subpageText,1,9) == 'testcases')
+	local parentArgs = frame:getParent().args
+	local elements = {} --create/insert rows later
+	local worldcatCat = ''
+	local suppressedIdCat = ''
+	local deprecatedIdCat = ''
+	
+	--Redirect aliases to proper parameter names
+	for _, a in pairs( p.aliases ) do
+		local alias, param = a[1], a[2]
+		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[alias] then
+			parentArgs[param] = parentArgs[alias]
+		end
+	end
+	
+	--Redirect deprecated parameters to proper parameter names, and assign tracking cat
+	for _, d in pairs( p.deprecated ) do
+		local dep, param = d[1], d[2]
+		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[dep] then
+			parentArgs[param] = parentArgs[dep]
+			if namespace == 0 then
+				deprecatedIdCat = '[[Категория:Уикипедия:Статии с отпаднал нормативен контрол|'..dep..']]'
+			end
+		end
+	end
+	
+	--Use QID= parameter for testing/example purposes only
+	local itemId = nil
+	if testcases or talkspace then
+		if parentArgs['QID'] then
+			itemId = 'Q' .. mw.ustring.gsub(parentArgs['QID'], '^[Qq]', '')
+			itemId = resolveEntity._id(itemId) --nil if unresolvable
+		end
+	else
+		itemId = mw.wikibase.getEntityIdForCurrentPage()
+	end
+	
+	--Wikidata fallback if requested
+	if itemId then
+		for _, params in ipairs( p.conf ) do
+			if params[3] > 0 then
+				local val = parentArgs[params[1]]
+				if val == nil or val == '' then
+					local canUseWikidata = nil
+					if reqs[params[1]] then
+						canUseWikidata = p.matchesWikidataRequirements( itemId, reqs[params[1]] )
+					else
+						canUseWikidata = true
+					end
+					if canUseWikidata then
+						local wikidataIds = p.getIdsFromWikidata( itemId, 'P' .. params[3] )
+						if wikidataIds[1] then
+							if val == '' and (namespace == 0 or testcases) then
+								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат нормативен контрол|' .. params[1] .. ']]'
+							else
+								parentArgs[params[1]] = wikidataIds[1]
+	end	end	end	end	end	end	end
+	
+	--Configured rows
+	local rct = 0
+	for _, params in ipairs( p.conf ) do
+		local val = parentArgs[params[1]]
+		if val and val ~= '' then
+			table.insert( elements, p.createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
+			rct = rct + 1
+		end
+	end
+	
+	--WorldCat
+	local worldcatId = parentArgs['WORLDCATID']
+	if worldcatId and worldcatId ~= '' then --if unsuppressed & present
+		table.insert( elements, p.createRow( 'WORLDCATID', '', worldcatId, 'WorldCat: [https://www.worldcat.org/identities/'..worldcatId..' '..worldcatId..']', false ) ) --Validation?
+		worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
+	elseif worldcatId == nil then --if unsuppressed & absent
+		local viafId = parentArgs['VIAF']
+		local lccnId = parentArgs['LCCN']
+		if viafId and viafId ~= '' and p.viafLink( viafId ) then --VIAF must be unsuppressed & validated
+			table.insert( elements, p.createRow( 'VIAF', '', viafId, 'WorldCat (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
+			if (namespace == 0) then 
+				worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
+			end
+		elseif lccnId and lccnId ~= '' and p.lccnLink( lccnId ) then --LCCN must be unsuppressed & validated
+			local lccnParts = p.splitLccn( lccnId )
+			if lccnParts and lccnParts[1] ~= 'sh' then
+				local lccnIdFmtd = lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3]
+				table.insert( elements, p.createRow( 'LCCN', '', lccnId, 'WorldCat (през LCCN): [https://www.worldcat.org/identities/lccn-'..lccnIdFmtd..' '..lccnIdFmtd..']', false ) )
+				if (namespace == 0) then 
+					worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
+				end
+			end
+		end
+	elseif worldcatId == '' then --if suppressed
+		suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол|WorldCat]]'
+	end
+	
+	local Navbox = require('Модул:Navbox')
+	local elementsCat = ''
+	if rct > 20 then
+		local catName = 'Нормативен контрол с над 20 контролни идентификатора'
+		elementsCat  = '[[Категория:' .. catName .. ']]' .. p.redCatLink(catName)
+	end
+	
+	local outString = ''
+	if #elements > 0 then
+		local args = {}
+		if testcases and itemId then args = { qid = itemId } end --expensive
+		outString = Navbox._navbox( {
+			name  = 'Нормативен контрол',
+			bodyclass = 'hlist hlist-big plainlinks',
+			group1 = '[[Нормативен контрол]]',
+			list1 = table.concat( elements )
+			} )
+		local auxCats = worldcatCat .. elementsCat .. suppressedIdCat .. deprecatedIdCat
+		if testcases then
+			auxCats = mw.ustring.gsub(auxCats, '(%[%[)(Категория)', '%1:%2') --for easier checking
+		end
+		outString = outString .. auxCats
+		if namespace ~= 0 then
+			outString = mw.ustring.gsub(outString, '(%[%[)(Категория:Уикипедия:Статии)', '%1:%2') --by definition
+		end
+	end
+	
+	return outString
 end
 
 return p
