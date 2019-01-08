@@ -656,7 +656,7 @@ function p.docConfTable( frame )
 					  '! Статии\n' ..
 					  '! Потребителски страници\n' ..
 					  '! Други страници\n' ..
-					  '! Неправилен НК\n' ..
+					  '! Неправилен <abbr title="Нормативен контрол">НК</abbr>\n' ..
 					  '|-\n'
 	
 	local lang = mw.getContentLanguage()
@@ -666,10 +666,10 @@ function p.docConfTable( frame )
 		--local args = { id = 'f', pid }
 		--local wpl = frame:expandTemplate{ title = 'Wikidata property link', args = args }
 		--cats
-		local articleCat = 'Статии с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
-		local userCat =    'Потребителски страници с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
-		local miscCat =    'Други страници с <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
-		local faultyCat =  'Статии с неправилен <abbr title="Нормативен контрол">НК</abbr> ('..category..')'
+		local articleCat = 'Уикипедия:Статии с нормативен контрол ('..category..')'
+		local userCat =    'Уикипедия:Потребителски страници с нормативен контрол ('..category..')'
+		local miscCat =    'Уикипедия:Други страници с нормативен контрол ('..category..')'
+		local faultyCat =  'Уикипедия:Статии с неправилен или подозрителен нормативен контрол ('..category..')'
 		--counts
 		local articleCount = lang:formatNum( mw.site.stats.pagesInCategory(articleCat, 'pages') )
 		local userCount =    lang:formatNum( mw.site.stats.pagesInCategory(userCat, 'pages') )
