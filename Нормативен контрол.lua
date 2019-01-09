@@ -11,9 +11,9 @@ function p.getCatForId( id )
 	if namespace == 0 then
 		catName = 'Уикипедия:Статии с нормативен контрол (' .. id .. ')'
 	elseif namespace == 2 and not title.isSubpage then
-		catName = 'Уикипедия:Потребителски страници с нормативен контрол (' .. id .. ')'
+		catName = 'Уикипедия:Потребителски страници с нормативен контрол'
 	else
-		catName = 'Уикипедия:Други страници с нормативен контрол (' .. id .. ')'
+		catName = 'Уикипедия:Други страници с нормативен контрол'
 	end
 	return '[[Категория:' .. catName .. ']]'
 end
@@ -639,54 +639,66 @@ function p.createRow( id, label, rawValue, link, withUid )
 		return '*' .. label .. ' ' .. link .. '\n'
 	end
 
-	local catName = 'Уикипедия:Статии с неправилен или подозрителен нормативен контрол (' .. id .. ')'
-	return '* <span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' не е валиден.</span>[[Категория:' .. catName .. ']]' .. p.redCatLink(catName) .. '\n'
+	local catName = 'Уикипедия:Страници с невалиден нормативен контрол'
+	return '*<span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' е невалиден</span>[[Категория:' .. catName .. ']]' .. p.redCatLink(catName) .. '\n'
 end
 
 -- Creates a human-readable standalone wikitable version of p.conf, and tracking categories with page counts, for use in the documentation
 function p.docConfTable( frame )
-	local wikiTable = '{| class="wikitable sortable"\n' ..
-					  '|+ Статистика\n' ..
-					  '|-\n' ..
-					  '! rowspan=2 | Параметър\n' ..
-					  '! rowspan=2 | Етикет\n' ..
-					  '! rowspan=2; data-sort-type=number | Свойство в Уикиданни\n' ..
-					  '! colspan=4 | Брой страници в проследяващите категории\n' ..
-					  '|-\n' ..
-					  '! Статии\n' ..
-					  '! Потребителски страници\n' ..
-					  '! Други страници\n' ..
-					  '! Неправилен <abbr title="Нормативен контрол">НК</abbr>\n' ..
-					  '|-\n'
-	
+	local wikiTable = '{| class="wikitable"\n'..
+					  '|-\n'..
+					  '!Параметър'..
+					  '!!Етикет'..
+					  '!!Свойство<br />в Уикиданни'..
+					  '!!Основно <abbr title="Именно Пространство">ИП</abbr>\n'
 	local lang = mw.getContentLanguage()
 	for _, conf in pairs( p.conf ) do
 		local param, link, pid = conf[1], conf[2], conf[3]
 		local category = conf.category or param
-		--local args = { id = 'f', pid }
-		--local wpl = frame:expandTemplate{ title = 'Wikidata property link', args = args }
 		--cats
 		local articleCat = 'Уикипедия:Статии с нормативен контрол ('..category..')'
-		local userCat =    'Уикипедия:Потребителски страници с нормативен контрол ('..category..')'
-		local miscCat =    'Уикипедия:Други страници с нормативен контрол ('..category..')'
-		local faultyCat =  'Уикипедия:Статии с неправилен или подозрителен нормативен контрол ('..category..')'
 		--counts
 		local articleCount = lang:formatNum( mw.site.stats.pagesInCategory(articleCat, 'pages') )
-		local userCount =    lang:formatNum( mw.site.stats.pagesInCategory(userCat, 'pages') )
-		local miscCount =    lang:formatNum( mw.site.stats.pagesInCategory(miscCat, 'pages') )
-		local faultyCount =  lang:formatNum( mw.site.stats.pagesInCategory(faultyCat, 'pages') )
 		--concat
-		wikiTable = wikiTable..'\n'..
+		wikiTable = wikiTable..
 					'|-\n'..
-					'||'..param..
+					'|'..param..
 					'||'..link..
-					'||data-sort-value='..pid..'|[[:d:property:P'..pid..'|P'..pid..']]'..
-					'||style="text-align:right"|[[:Категория:'..articleCat..'|'..articleCount..']]'..
-					'||style="text-align:right"|[[:Категория:'..userCat..'|'..userCount..']]'..
-					'||style="text-align:right"|[[:Категория:'..miscCat..'|'..miscCount..']]'..
-					'||style="text-align:right"|[[:Категория:'.. faultyCat..'|'..faultyCount..']]'
+					'||[[:d:property:P'..pid..'|P'..pid..']]'..
+					'||style="text-align:right"|[[:Категория:'..articleCat..'|'..articleCount..']]\n'
 	end
-	return wikiTable .. '\n|}'
+	--other tracking cats
+	local WCat =       'Уикипедия:Статии с нормативен контрол (WorldCat)'
+	local userCat =    'Уикипедия:Потребителски страници с нормативен контрол'
+	local miscCat =    'Уикипедия:Други страници с нормативен контрол'
+	local faultyCat =  'Уикипедия:Страници с невалиден нормативен контрол'
+	local nonexCat =   'Страници с несъществуващи категории на нормативен контрол'
+	--cat counts
+	local WCount =       lang:formatNum( mw.site.stats.pagesInCategory(WCat, 'pages') )
+	local userCount =    lang:formatNum( mw.site.stats.pagesInCategory(userCat, 'pages') )
+	local miscCount =    lang:formatNum( mw.site.stats.pagesInCategory(miscCat, 'pages') )
+	local faultyCount =  lang:formatNum( mw.site.stats.pagesInCategory(faultyCat, 'pages') )
+	local nonexCount =   lang:formatNum( mw.site.stats.pagesInCategory(nonexCat, 'pages') )
+	--then assemble
+	return wikiTable..
+					'|-\n'..
+					'|WorldCat'..
+					'||WorldCat'..
+					'||—'..
+					'||style="text-align:right"|[[:Категория:'..WCat..'|'..WCount..']]\n'..
+					'|-\n'..
+					'!colspan="4"|Категории за проследяване на други именни пространства\n'..
+					'|-\n'..
+					'!Потребителски страници'..
+					'!!Други страници'..
+					'!!Невалиден <abbr title="Нормативен Контрол">НК</abbr>'..
+					'!!Червена<br />категория\n'..
+					'|-style="text-align:right"\n'..
+					'|[[:Категория:'..userCat..'|'..userCount..']]'..
+					'||[[:Категория:'..miscCat..'|'..miscCount..']]'..
+					'||[[:Категория:'.. faultyCat..'|'..faultyCount..']]'..
+					'||[[:Категория:'.. nonexCat..'|'..nonexCount..']]\n'..
+					'|}'
 end
 
 --[[==========================================================================]]
@@ -696,7 +708,7 @@ end
 -- Check that the Wikidata item has this property-->value before adding it
 local reqs = {}
 
--- Parameter format: { name of the parameter, label, propertyId in Wikidata, formatting function }
+-- Parameter format: { name of the parameter, label, propertyId in Wikidata, formatting function, category (used in p.docConfTable for tracking) }
 p.conf = {
 	{ 'AAT', 'Art & Architecture Thesaurus', 1014, p.aatLink },
 	{ 'ACM-DL', 'ACM DL', 864, p.acmLink },
@@ -705,10 +717,10 @@ p.conf = {
 	{ 'BIBSYS', '[[BIBSYS]]', 1015, p.bibsysLink },
 	{ 'Bildindex', 'Bildindex', 2092, p.bildLink },
 	{ 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, p.bneLink },
-	{ 'BNed', 'BNed', 2187, p.BNeditionLink },
+	{ 'BNed', 'BNed', 2187, p.BNeditionLink, category = 'BiblioNet' },
 	{ 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, p.bnfLink },
-	{ 'BNper', 'BNper', 2188, p.BNpersonLink },
-    { 'BNpub', 'BNpub', 2189, p.BNpublisherLink },
+	{ 'BNper', 'BNper', 2188, p.BNpersonLink, category = 'BiblioNet' },
+	{ 'BNpub', 'BNpub', 2189, p.BNpublisherLink, category = 'BiblioNet' },
 	{ 'Botanist', 'Botanist', 428, p.botanistLink },
 	{ 'BPN', 'BPN', 651, p.bpnLink },
 	{ 'CINII', 'CiNii', 271, p.ciniiLink },
@@ -728,14 +740,14 @@ p.conf = {
 	{ 'LIR', '[[Швейцарски исторически лексикон|LIR]]', 886, p.lirLink },
 	{ 'LNB', 'LNB', 1368, p.lnbLink },
 	{ 'Léonore', 'Léonore', 640, p.leonoreLink },
-	{ 'MBA', '[[MusicBrainz|MBa]]', 434, p.mbaLink },
-	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink },
-	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink },
-	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink },
-	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink },
-	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink },
-	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink },
-	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink },
+	{ 'MBA', '[[MusicBrainz|MBa]]', 434, p.mbaLink, category = 'MusicBrainz' },
+	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink, category = 'MusicBrainz' },
+	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink, category = 'MusicBrainz' },
+	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink, category = 'MusicBrainz' },
+	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink, category = 'MusicBrainz' },
+	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink, category = 'MusicBrainz' },
+	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink, category = 'MusicBrainz' },
+	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink, category = 'MusicBrainz' },
 	{ 'MGP', 'MGP', 549, p.mgpLink },
 	{ 'NARA', 'NARA', 1225, p.naraLink },
 	{ 'NCL', 'NCL', 1048, p.nclLink },
