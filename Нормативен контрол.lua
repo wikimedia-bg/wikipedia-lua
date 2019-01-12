@@ -683,7 +683,7 @@ function p.docConfTable( frame )
 	return wikiTable..
 					'|-\n'..
 					'|WorldCat'..
-					'||WorldCat'..
+					'||[[Онлайн компютърен библиотечен център|WorldCat]]'..
 					'||—'..
 					'||style="text-align:right"|[[:Категория:'..WCat..'|'..WCount..']]\n'..
 					'|-\n'..
@@ -725,13 +725,14 @@ p.conf = {
 	{ 'BPN', 'BPN', 651, p.bpnLink },
 	{ 'CINII', 'CiNii', 271, p.ciniiLink },
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
+	{ 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.NLGIDLink },
+	{ 'FAST', 'FAST', 2163, p.fastLink },
+	{ 'Freebase', 'Freebase', 646, p.freebaseLink },
 	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
 	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
 	{ 'IAAF', '[[Международна асоциация на лекоатлетическите федерации|IAAF]]', 1146, p.iaafLink },
 	{ 'ICIA', 'ICIA', 1736, p.iciaLink },
 	{ 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, p.isniLink },
-	{ 'FAST', 'FAST', 2163, p.fastLink },
-	{ 'Freebase', 'Freebase', 646, p.freebaseLink },
 	{ 'Joconde', 'Joconde' , 347, p.jocondeLink },
 	{ 'JSTOR', '[[JSTOR]]', 3827, p.jstorLink },
 	{ 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, p.koninklijkeLink },
@@ -755,7 +756,6 @@ p.conf = {
 	{ 'NEWW', 'NEWW Women Writers', 2533, p.newwLink },
 	{ 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, p.nkcLink },
 	{ 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, p.nlaLink },
-	{ 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.NLGIDLink },
 	{ 'NSK', 'NSK', 1375, p.nskLink },
 	{ 'OpenLibrary', 'Open Library', 648, p.openLibraryLink },
 	{ 'ORCID', 'ORCID', 496, p.orcidLink },
@@ -854,7 +854,7 @@ function p.authorityControl( frame )
 						local wikidataIds = p.getIdsFromWikidata( itemId, 'P' .. params[3] )
 						if wikidataIds[1] then
 							if val == '' and (namespace == 0 or testcases) then
-								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат нормативен контрол|' .. params[1] .. ']]'
+								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат нормативен контрол]]'
 							else
 								parentArgs[params[1]] = wikidataIds[1]
 	end	end	end	end	end	end	end
@@ -872,13 +872,13 @@ function p.authorityControl( frame )
 	--WorldCat
 	local worldcatId = parentArgs['WORLDCATID']
 	if worldcatId and worldcatId ~= '' then --if unsuppressed & present
-		table.insert( elements, p.createRow( 'WORLDCATID', '', worldcatId, 'WorldCat: [https://www.worldcat.org/identities/'..worldcatId..' '..worldcatId..']', false ) ) --Validation?
+		table.insert( elements, p.createRow( 'WORLDCATID', '', worldcatId, '[[Онлайн компютърен библиотечен център|WorldCat]]: [https://www.worldcat.org/identities/'..worldcatId..' '..worldcatId..']', false ) ) --Validation?
 		worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 	elseif worldcatId == nil then --if unsuppressed & absent
 		local viafId = parentArgs['VIAF']
 		local lccnId = parentArgs['LCCN']
 		if viafId and viafId ~= '' and p.viafLink( viafId ) then --VIAF must be unsuppressed & validated
-			table.insert( elements, p.createRow( 'VIAF', '', viafId, 'WorldCat (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
+			table.insert( elements, p.createRow( 'VIAF', '', viafId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
 			if (namespace == 0) then 
 				worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 			end
@@ -886,14 +886,14 @@ function p.authorityControl( frame )
 			local lccnParts = p.splitLccn( lccnId )
 			if lccnParts and lccnParts[1] ~= 'sh' then
 				local lccnIdFmtd = lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3]
-				table.insert( elements, p.createRow( 'LCCN', '', lccnId, 'WorldCat (през LCCN): [https://www.worldcat.org/identities/lccn-'..lccnIdFmtd..' '..lccnIdFmtd..']', false ) )
+				table.insert( elements, p.createRow( 'LCCN', '', lccnId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през LCCN): [https://www.worldcat.org/identities/lccn-'..lccnIdFmtd..' '..lccnIdFmtd..']', false ) )
 				if (namespace == 0) then 
 					worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 				end
 			end
 		end
 	elseif worldcatId == '' then --if suppressed
-		suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол|WorldCat]]'
+		suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол]]'
 	end
 	
 	local Navbox = require('Модул:Navbox')
