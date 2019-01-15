@@ -41,13 +41,13 @@ this is a table of all categories supported by Module:Webarchive
 ]]
 
 local categories = {
-	archiveis = 'Категория:Шаблон Webarchive, използващ връзки от Archive.is',
+	archiveis = 'Категория:Шаблон Webarchive с препратки към Archive.is',
 	error = 'Категория:Грешки в шаблон Webarchive',
-	other = 'Категория:Шаблон Webarchive, използващ връзки от други архивиращи сайтове',
-	unknown = 'Категория:Шаблон Webarchive, използващ връзки от непознати архивиращи сайтове',
+	other = 'Категория:Шаблон Webarchive с препратки към други архивиращи сайтове',
+	unknown = 'Категория:Шаблон Webarchive с препратки към непознати архивиращи сайтове',
 	warning = 'Категория:Предупреждения в шаблон Webarchive',
-	wayback = 'Категория:Шаблон Webarchive, използващ връзки от Wayback Machine',
-	webcite = 'Категория:Шаблон Webarchive, използващ връзки от WebCite',
+	wayback = 'Категория:Шаблон Webarchive с препратки към Wayback Machine',
+	webcite = 'Категория:Шаблон Webarchive с препратки към WebCite',
 	}
 
 
