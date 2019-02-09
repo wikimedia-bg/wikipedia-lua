@@ -1,0 +1,59 @@
+-- put tables and their tables together
+local function __coalesce(...)
+    local coalesced = {}
+    for _, langslist in ipairs{...} do
+        for langcode, langnames in pairs(langslist) do
+            for _, langname in pairs(langnames) do
+                if not coalesced[langcode] then
+                    coalesced[langcode] = {}
+                end
+                table.insert(coalesced[langcode], langname)
+            end
+        end
+    end
+ 
+    return coalesced
+end
+
+-- make the keys lowercase
+local function __preprocess(t, first_of_array_in_array)
+    local preprocessed = {}
+    if first_of_array_in_array then
+    	-- keep only the 1st language name for each code, excluding synonyms
+        for k, v in pairs(t) do
+            preprocessed[k:lower()] = {v[1]}
+        end
+    else
+        for k, v in pairs(t) do
+            preprocessed[k:lower()] = v
+        end
+    end
+
+    return preprocessed
+end
+
+-- all valid primary language subtags for BCP47 from IANA (most of them from ISO 639-1, -2 and -3 with some exclusions)
+local __iana_languages = __preprocess(require("Module:Language/data/iana languages"));
+-- ISO 639-3 contains additional 3-letter codes not inserted in the IANA database as they are aliased to 2-letter codes,
+-- but excludes some deleted codes still valid in BCP47 (some of them are aliased)
+local __iso_639_3      = __preprocess(require("Module:Language/data/ISO 639-3"));
+-- Wikimedia wikis uses some non-standard codes and a subset of IANA codes, plus composite codes
+local __wp_languages   = __preprocess(require("Module:Language/data/wp languages"), true);
+-- all valid script subtags for BCP47 from IANA (excluding special ISO 15924 codes)
+local iana_scripts     = __preprocess(require("Module:Language/data/iana scripts"));
+-- all valid region subtags for BCP47 from IANA (derived from ISO 3166-1 excluding special codes, and from 3-digit UN M.49 codes for groups of countries)
+local iana_regions     = __preprocess(require("Module:Language/data/iana regions"));
+
+-- variant subtags from IANA; table format differs from the other IANA data tables
+local iana_variants = __preprocess(require("Module:Language/data/iana variants"));
+-- suppressed script subtags from IANA;
+local iana_suppressed_scripts = __preprocess (require("Module:Language/data/iana suppressed scripts"));
+
+return {
+    lang   = __coalesce(__wp_languages, __iana_languages, __iso_639_3),
+    lang_iana = __iana_languages,
+    script = iana_scripts,
+    region = iana_regions,
+    variant = iana_variants,
+    suppressed = iana_suppressed_scripts,
+}
