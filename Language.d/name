@@ -1,0 +1,75 @@
+local getArgs = require("Module:Arguments").getArgs
+local p, e = {}, {}
+
+local function __compile(...)
+	local r,i = "",0
+	for _, v in ipairs(arg) do
+		i = i + 1
+		if i == 1 then
+			r = v[1]
+		elseif i == 2 then
+			r = r .. " (" .. v[1]
+		else
+			r =  r .. ", " .. v[1]
+		end
+	end
+	if i > 1 then
+		r = r .. ")"
+	end
+	return r
+end
+
+function e.simple(args, data)
+	return __compile(data.lang[args.code])
+end
+
+function e.fuzzy(args, data)
+	-- split lang code at '-', starting from the end, one dash at a time
+	-- and try to find a match; break from loop when we do
+	repeat
+		if data.lang[args.code] then
+			break
+		end
+		args.code = args.code:gsub("-[^-]*$", "")
+	until not args.code:match("-")
+
+	return __compile(data.lang[args.code])
+end
+
+function e.formal(args, data)
+	-- split the whole lang code up at every '-' and stick the bits in an array
+	local bits = {}; for match in args.code:gmatch("[^-]+") do
+		bits[#bits+1] = match
+	end
+
+	-- if length of the 2nd array item is 4, assume it's a script code,
+	-- otherwise a region code
+	if bits[2] and #bits[2] == 4 then
+		return __compile(data.lang[bits[1]],
+						 data.script[bits[2]],
+						 data.region[bits[3]]
+						)
+	else
+		return __compile(data.lang[bits[1]],
+						 data.region[bits[2]]
+						)
+	end
+end
+
+for function_name in pairs(e) do
+	p[function_name] = function (frame)
+		local args = getArgs(frame)
+		local data = mw.loadData("Module:Language/name/data")
+
+		args.code = args.code:lower()
+
+		-- if dataset=iana, discard wp language table
+		if args.dataset == "iana" then
+			data.lang = data.lang_iana
+		end
+
+		return e[function_name](args, data)
+	end
+end
+
+return p
