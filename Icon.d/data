@@ -1,0 +1,413 @@
+-- This module stores icon data for [[Module:Icon]].
+
+--------------------------------------------------------------------------------
+-- Icon data
+--------------------------------------------------------------------------------
+
+local data = {
+	fa = {
+		image = "Featured article star.svg",
+		tooltip = "Featured article",
+	},
+	far = {
+		image = "Cscr-star piece.png",
+		tooltip = "Featured article review",
+	},
+	farc = {
+		image = "Cscr-star piece.png",
+		tooltip = "Featured article removal candidate",
+	},
+	ffa = {
+		aliases = {"dfa"},
+		image = "Featured article star - cross.svg",
+		tooltip = "Former featured article",
+	},
+	fac = {
+		aliases = {"fan"},
+		image = "Cscr-candidate.svg",
+		tooltip = "Featured article candidate",
+	},
+	ffac = {
+		aliases = {"nofa"},
+		image = "Featured article star - cross.svg",
+		tooltip = "Failed featured article candidate",
+	},
+	fl = {
+		image = "Featured article star.svg",
+		tooltip = "Featured list",
+	},
+	flrc = {
+		aliases = {"flr"},
+		image = "Cscr-star piece.png",
+		tooltip = "Featured list removal candidate",
+	},
+	ffl = {
+		aliases = {"dfl"},
+		image = "Cscr-featured-strike.svg",
+		tooltip = "Former featured list",
+	},
+	flc = {
+		aliases = {"fln"},
+		image = "Cscr-candidate.svg",
+		tooltip = "Featured list candidate",
+	},
+	fflc = {
+		aliases = {"nofl"},
+		image = "Cscr-former.svg",
+		tooltip = "Failed featured list candidate",
+	},
+	a = {
+		image = "Symbol a class.svg",
+		tooltip = "A-Class article",
+	},
+	dac = {
+		aliases = {"daa"},
+		image = "Symbol unsupport A vote.svg",
+		tooltip = "Demoted A-Class article",
+	},
+	acc = {
+		aliases = {"acn", "aac"},
+		image = "A candidate.svg",
+		tooltip = "A-Class article candidate",
+	},
+	noac = {
+		aliases = {"faac"},
+		image = "Symbol unsupport A vote.svg",
+		tooltip = "Failed A-Class article candidate",
+	},
+	ga = {
+		image = "Symbol support vote.svg",
+		tooltip = "Good article",
+	},
+	gar = {
+		image = "GA Candidate Neutral vote(ChaosNil).svg",
+		tooltip = "Good article reassessment",
+	},
+	dga = {
+		image = "Symbol unsupport vote.svg",
+		tooltip = "Delisted good article",
+	},
+	gan = {
+		aliases = {"gac"},
+		image = "GA candidate.svg",
+		tooltip = "Good article nominee",
+	},
+	ga2 = {
+		image = "Symbol neutral vote.svg",
+		tooltip = "Good article, 2nd opinion",
+	},
+	gah = {
+		image = "Symbol wait.svg",
+		tooltip = "Good article on hold",
+	},
+	fgan = {
+		aliases = {"noga", "gaf", "gf"},
+		image = "Symbol oppose vote.svg",
+		tooltip = "Failed good article nominee",
+	},
+	fp = {
+		image = "Cscr-featured.svg",
+		tooltip = "Featured picture",
+	},
+	fpc = {
+		aliases = {"fpn"},
+		image = "Cscr-candidate.svg",
+		tooltip = "Featured picture candidate",
+	},
+	ffp = {
+		image = "Cscr-former.svg",
+		tooltip = "Former featured picture",
+	},
+	vp = {
+		image = "ENWP VP Logo.svg",
+		tooltip = "Valued picture",
+	},
+	vpc = {
+		image = "Valued pics 1.svg",
+		tooltip = "Valued picture candidate",
+	},
+	fs = {
+		image = "Cscr-featured.svg",
+		tooltip = "Featured sound",
+	},
+	ffs = {
+		image = "Cscr-former.svg",
+		tooltip = "Former featured sound",
+	},
+	fsc = {
+		image = "Cscr-candidate.svg",
+		tooltip = "Featured sound candidate",
+	},
+	fpo = {
+		image = "Linecons big-star.svg",
+		tooltip = "Before the featured portal process ceased in 2017, this had been designated as a featured portal.",
+	},
+	fpor = {
+		image = "Cscr-star piece.png",
+		tooltip = "Featured portal review",
+	},
+	ffpo = {
+		image = "Featured article star - cross.svg",
+		tooltip = "Former featured portal",
+	},
+	fpoc = {
+		image = "Cscr-candidate.svg",
+		tooltip = "Featured portal candidate",
+	},
+	ft = {
+		image = "Cscr-featuredtopic.svg",
+		tooltip = "Featured topic",
+	},
+	ftrc = {
+		image = "Cscr-star piece.png",
+		tooltip = "Featured topic removal candidate",
+	},
+	fft = {
+		aliases = {"dft"},
+		image = "DFT candidate_cluster.svg",
+		tooltip = "Former featured topic",
+	},
+	ftc = {
+		aliases = {"ftn"},
+		image = "FT candidate cluster.svg",
+		tooltip = "Featured topic candidate",
+	},
+	gt = {
+		image = "Support cluster.svg",
+		tooltip = "Good topic",
+	},
+	gtrc = {
+		image = "Symbol unsupport vote.svg",
+		tooltip = "Good topic removal candidate",
+	},
+	gtc = {
+		aliases = {"gtn"},
+		image = "GA candidate cluster.svg",
+		tooltip = "Good topic candidate",
+	},
+	bplus = {
+		aliases = {"b+"},
+		image = "Symbol bplus class.svg",
+		tooltip = "Bplus-Class article",
+	},
+	b = {
+		image = "Symbol b class.svg",
+		tooltip = "B-Class article",
+	},
+	br = {
+		aliases = {"bcr"},
+		image = "Bclass-checklist.svg",
+		tooltip = "B-Class review",
+	},
+	c = {
+		image = "Symbol c class.svg",
+		tooltip = "C-Class article",
+	},
+	start = {
+		image = "Symbol start class.svg",
+		tooltip = "Start-Class article",
+	},
+	stub = {
+		image = "Symbol stub class.svg",
+		tooltip = "Stub-Class article",
+	},
+	list = {
+		aliases = {"comparison"},
+		image = "Symbol list class.svg",
+		tooltip = "List-Class article",
+	},
+	no = {
+		image = "Crystal button cancel.svg",
+		tooltip = "Unknown-Class article",
+	},
+	book = {
+		image = "Symbol book class2.svg",
+		tooltip = "Wikipedia book",
+	},
+	category = {
+		aliases = {"cat", "categ"},
+		image = "Folder Hexagonal Icon.svg",
+		tooltip = "Category",
+	},
+	disambiguation = {
+		aliases = {"dab", "disamb", "disambig"},
+		image = "Symbol dab class.svg",
+		tooltip = "Disambiguation page",
+	},
+	image = {
+		aliases = {"file"},
+		image = "Video-x-generic.svg",
+		tooltip = "File",
+	},
+    needed = {
+        image = "Symbol needed class.svg",
+        tooltip = "Needed article",
+    },
+	outline = {
+		image = "Global thinking.svg",
+		tooltip = "Outline",
+	},
+        portal = {
+		image = "Portal-puzzle.svg",
+		tooltip = "Portal",
+	},
+	project = {
+		image = "Symbol information vote.svg",
+		tooltip = "Project page",
+	},
+	redirect = {
+		aliases = {"red", "redir"},
+		image = "Symbol redirect vote2.svg",
+		tooltip = "Redirect",
+	},
+	template = {
+		aliases = {"temp", "templ"},
+		image = "Symbol template class.svg",
+		tooltip = "Template",
+	},
+	essay = {
+		image = "Essay.svg",
+		tooltip = "Essay",
+	},
+	na = {
+		image = "Symbol neutral vote.svg",
+		tooltip = "Non-article page",
+	},
+	aa = {
+		image = "Yes check.svg",
+		tooltip = "Audited article of limited subject matter",
+	},
+	da = {
+		image = "Symbol oppose vote.svg",
+		tooltip = "Demoted article",
+	},
+	dyk = {
+		image = "Symbol question.svg",
+		tooltip = "Did You Know?",
+	},
+	dyk2 = {
+		image = "DYK questionmark icon.svg",
+		tooltip = "Did You Know?",
+	},
+	pr = {
+		image = "Nuvola apps kedit.png",
+		tooltip = "Peer review",
+	},
+	ppr = {
+		image = "Nuvola apps kedit.png",
+		tooltip = "Portal peer review",
+	},
+	q = {
+		aliases = {"question"},
+		image = "Symbol question.svg",
+		tooltip = "Question",
+	},
+	qi = {
+		image = "Quality images logo.svg",
+		tooltip = "Quality image on Wikimedia Commons",
+	},
+	vi = {
+		image = "Valued image seal.svg",
+		tooltip = "Valued image on Wikimedia Commons",
+	},
+	tfa = {
+		image = "Wikipedia-logo.svg",
+		tooltip = "Today's Featured Article",
+	},
+	tfl = {
+		image = "Wikipedia-logo.svg",
+		tooltip = "Today's Featured List",
+	},
+	itn = {
+		image = "Globe current.svg",
+		tooltip = "In The News",
+	},
+	otd = {
+		image = "Nuvola apps date.svg",
+		tooltip = "On This Day",
+	},
+	wikiproject = {
+		image = "People icon.svg",
+		tooltip = "WikiProject",
+	},
+	wikipedia = {
+		image = "Wikipedia-logo.svg",
+		tooltip = "Wikipedia page",
+	},
+	commons = {
+		image = "Commons-logo.svg",
+		tooltip = "Commons page",
+	},
+	wikiquote = {
+		image = "Wikiquote-logo.svg",
+		tooltip = "Wikiquote page",
+	},
+	wikiversity = {
+		image = "Wikiversity-logo.svg",
+		tooltip = "Wikiversity page",
+	},
+	wikibooks = {
+		image = "Wikibooks-logo.svg",
+		tooltip = "Wikibooks page",
+	},
+	wikisource = {
+		image = "Wikisource-logo.svg",
+		tooltip = "Wikisource page",
+	},
+	wiktionary = {
+		image = "Wiktionary-logo.svg",
+		tooltip = "Wiktionary page",
+	},
+	wikinews = {
+		image = "Wikinews-logo.svg",
+		tooltip = "Wikinews page",
+	},
+	wikispecies = {
+		image = "Wikispecies-logo.svg",
+		tooltip = "Wikispecies page",
+	},
+	wikidata = {
+		image = "Wikidata-logo.svg",
+		tooltip = "Wikidata page",
+	},
+	wikivoyage = {
+		image = "Wikivoyage-logo.svg",
+		tooltip = "Wikivoyage page",
+	},
+	meta = {
+		image = "Wikimedia Community Logo.svg",
+		tooltip = "Meta-wiki page",
+	},
+	four = {
+		image = "Four Award.svg",
+		tooltip = "Four Award",
+	},
+	million = {
+		image = "Million award logo.svg",
+		tooltip = "Million Award",
+	},
+	module = {
+		image = "Lua-logo-nolabel.svg",
+		tooltip = "Module",
+	},
+	_DEFAULT = {
+		image = "Symbol question.svg",
+	}
+}
+
+--------------------------------------------------------------------------------
+-- End icon data
+--------------------------------------------------------------------------------
+
+-- Make aliases work the same as normal keys, and remove the "aliases" subtables. 
+for k, t in pairs(data) do
+	if t.aliases then
+		for i, alias in ipairs(t.aliases) do
+			data[alias] = t
+		end
+		t.aliases = nil
+	end
+	data[k] = t
+end
+
+return data
