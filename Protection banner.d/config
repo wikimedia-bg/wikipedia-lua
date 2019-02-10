@@ -1,0 +1,1018 @@
+-- This module provides configuration data for [[Module:Protection banner]].
+
+return {
+
+--------------------------------------------------------------------------------
+--
+--                                BANNER DATA
+--
+--------------------------------------------------------------------------------
+
+--[[
+-- Banner data consists of six fields:
+-- * text - the main protection text that appears at the top of protection
+--   banners.
+-- * explanation - the text that appears below the main protection text, used
+--   to explain the details of the protection.
+-- * tooltip - the tooltip text you see when you move the mouse over a small
+--   padlock icon.
+-- * link - the page that the small padlock icon links to.
+-- * alt - the alt text for the small padlock icon. This is also used as tooltip
+--   text for the large protection banners.
+-- * image - the padlock image used in both protection banners and small padlock
+--   icons.
+--
+-- The module checks in three separate tables to find a value for each field.
+-- First it checks the banners table, which has values specific to the reason
+-- for the page being protected. Then the module checks the defaultBanners
+-- table, which has values specific to each protection level. Finally, the
+-- module checks the masterBanner table, which holds data for protection
+-- templates to use if no data has been found in the previous two tables.
+--
+-- The values in the banner data can take parameters. These are specified
+-- using ${TEXTLIKETHIS} (a dollar sign preceding a parameter name
+-- enclosed in curly braces).
+--
+--                          Available parameters:
+--
+-- ${CURRENTVERSION} - a link to the page history or the move log, with the
+-- display message "current-version-edit-display" or
+-- "current-version-move-display".
+--
+-- ${EDITREQUEST} - a link to create an edit request for the current page.
+--
+-- ${EXPLANATIONBLURB} - an explanation blurb, e.g. "Please discuss any changes
+-- on the talk page; you may submit a request to ask an administrator to make
+-- an edit if it is minor or supported by consensus."
+--
+-- ${IMAGELINK} - a link to set the image to, depending on the protection
+-- action and protection level.
+--
+-- ${INTROBLURB} - the PROTECTIONBLURB parameter, plus the expiry if an expiry
+-- is set. E.g. "Editing of this page by new or unregistered users is currently 
+-- disabled until dd Month YYYY."
+--
+-- ${INTROFRAGMENT} - the same as ${INTROBLURB}, but without final punctuation
+-- so that it can be used in run-on sentences.
+--
+-- ${PAGETYPE} - the type of the page, e.g. "article" or "template".
+-- Defined in the cfg.pagetypes table.
+--
+-- ${PROTECTIONBLURB} - a blurb explaining the protection level of the page, e.g.
+-- "Editing of this page by new or unregistered users is currently disabled"
+--
+-- ${PROTECTIONDATE} - the protection date, if it has been supplied to the
+-- template.
+--
+-- ${PROTECTIONLEVEL} - the protection level, e.g. "fully protected" or
+-- "semi-protected".
+--
+-- ${PROTECTIONLOG} - a link to the protection log or the pending changes log,
+-- depending on the protection action.
+--
+-- ${TALKPAGE} - a link to the talk page. If a section is specified, links
+-- straight to that talk page section.
+--
+-- ${TOOLTIPBLURB} - uses the PAGETYPE, PROTECTIONTYPE and EXPIRY parameters to
+-- create a blurb like "This template is semi-protected", or "This article is
+-- move-protected until DD Month YYYY".
+--
+-- ${VANDAL} - links for the specified username (or the root page name)
+-- using Module:Vandal-m.
+--
+--                                 Functions
+--
+-- For advanced users, it is possible to use Lua functions instead of strings
+-- in the banner config tables. Using functions gives flexibility that is not
+-- possible just by using parameters. Functions take two arguments, the
+-- protection object and the template arguments, and they must output a string.
+--
+-- For example:
+--
+-- text = function (protectionObj, args)
+--     if protectionObj.level == 'autoconfirmed' then
+--         return 'foo'
+--     else
+--         return 'bar'
+--     end
+-- end
+--
+-- Some protection object properties and methods that may be useful:
+-- protectionObj.action - the protection action
+-- protectionObj.level - the protection level
+-- protectionObj.reason - the protection reason
+-- protectionObj.expiry - the expiry. Nil if unset, the string "indef" if set
+--     to indefinite, and the protection time in unix time if temporary.
+-- protectionObj.protectionDate - the protection date in unix time, or nil if
+--     unspecified.
+-- protectionObj.bannerConfig - the banner config found by the module. Beware
+--     of editing the config field used by the function, as it could create an
+--     infinite loop.
+-- protectionObj:isProtected - returns a boolean showing whether the page is
+--     protected.
+-- protectionObj:isTemporary - returns a boolean showing whether the expiry is
+--     temporary.
+-- protectionObj:isIncorrect - returns a boolean showing whether the protection
+--     template is incorrect.
+--]]
+
+-- The master banner data, used if no values have been found in banners or
+-- defaultBanners.
+masterBanner = {
+	text = '${INTROBLURB}',
+	explanation = '${EXPLANATIONBLURB}',
+	tooltip = '${TOOLTIPBLURB}',
+	link = '${IMAGELINK}',
+	alt = 'Page ${PROTECTIONLEVEL}'
+},
+
+-- The default banner data. This holds banner data for different protection
+-- levels.
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+defaultBanners = {
+	edit = {},
+	move = {},
+	autoreview = {
+		default = {
+			alt = 'Page protected with pending changes',
+			tooltip = 'All edits by unregistered and new users are subject to review prior to becoming visible to unregistered users',
+			image = 'Pending-protection-shackle.svg'
+		}
+	},
+	upload = {}
+},
+
+-- The banner data. This holds banner data for different protection reasons.
+-- In fact, the reasons specified in this table control which reasons are
+-- valid inputs to the first positional parameter.
+--
+-- There is also a non-standard "description" field that can be used for items
+-- in this table. This is a description of the protection reason for use in the
+-- module documentation.
+--
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+banners = {
+	edit = {
+		blp = {
+			description = 'For pages protected to promote compliance with the'
+				.. ' [[Wikipedia:Biographies of living persons'
+				.. '|biographies of living persons]] policy',
+			text = '${INTROFRAGMENT} to promote compliance with'
+				.. ' [[Wikipedia:Biographies of living persons'
+				.. "|Wikipedia's&nbsp;policy on&nbsp;the&nbsp;biographies"
+				.. ' of&nbsp;living&nbsp;people]].',
+			tooltip = '${TOOLTIPFRAGMENT} to promote compliance with the policy on'
+				.. ' biographies of living people',
+		},
+		dmca = {
+			description = 'For pages protected by the Wikimedia Foundation'
+				.. ' due to [[Digital Millennium Copyright Act]] takedown requests',
+			explanation = function (protectionObj, args)
+				local ret = 'Pursuant to a rights owner notice under the Digital'
+					.. ' Millennium Copyright Act (DMCA) regarding some content'
+					.. ' in this article, the Wikimedia Foundation acted under'
+					.. ' applicable law and took down and restricted the content'
+					.. ' in question.'
+				if args.notice then
+					ret = ret .. ' A copy of the received notice can be found here: '
+						.. args.notice .. '.'
+				end
+				ret = ret .. ' For more information, including websites discussing'
+					.. ' how to file a counter-notice, please see'
+					.. " [[Wikipedia:Office actions]] and the article's ${TALKPAGE}."
+					.. "'''Do not remove this template from the article until the"
+					.. " restrictions are withdrawn'''."
+				return ret
+			end,
+			image = 'Office-protection-shackle.svg',
+		},
+		dispute = {
+			description = 'For pages protected due to editing disputes',
+			text = function (protectionObj, args)
+				-- Find the value of "disputes".
+				local display = 'disputes'
+				local disputes
+				if args.section then
+					disputes = string.format(
+						'[[%s:%s#%s|%s]]',
+						mw.site.namespaces[protectionObj.title.namespace].talk.name,
+						protectionObj.title.text,
+						args.section,
+						display
+					)
+				else
+					disputes = display
+				end
+
+				-- Make the blurb, depending on the expiry.
+				local msg
+				if type(protectionObj.expiry) == 'number' then
+					msg = '${INTROFRAGMENT} or until editing %s have been resolved.'
+				else
+					msg = '${INTROFRAGMENT} until editing %s have been resolved.'
+				end
+				return string.format(msg, disputes)
+			end,
+			explanation = "This protection is '''not''' an endorsement of the"
+				.. ' ${CURRENTVERSION}. ${EXPLANATIONBLURB}',
+			tooltip = '${TOOLTIPFRAGMENT} due to editing disputes',
+		},
+		ecp = {
+			description = 'For articles in topic areas authorized by'
+				.. ' [[Wikipedia:Arbitration Committee|ArbCom]] or'
+				.. ' meets the criteria for community use',
+			tooltip = 'This ${PAGETYPE} is extended-confirmed protected',
+			alt = 'Extended-protected ${PAGETYPE}',
+		},
+		mainpage = {
+			description = 'For pages protected for being displayed on the [[Main Page]]',
+			text = 'This file is currently'
+				.. ' [[Wikipedia:This page is protected|protected]] from'
+				.. ' editing because it is currently or will soon be displayed'
+				.. ' on the [[Main Page]].',
+			explanation = 'Images on the Main Page are protected due to their high'
+				.. ' visibility. Please discuss any necessary changes on the ${TALKPAGE}.'
+				.. '<br /><span style="font-size:90%;">'
+				.. "'''Administrators:''' Once this image is definitely off the Main Page,"
+				.. ' please unprotect this file, or reduce to semi-protection,'
+				.. ' as appropriate.</span>',
+		},
+		office = {
+			description = 'For pages protected by the Wikimedia Foundation',
+			text = function (protectionObj, args)
+				local ret = 'This ${PAGETYPE} is currently under the'
+					.. ' scrutiny of the'
+					.. ' [[Wikipedia:Office actions|Wikimedia Foundation Office]]'
+					.. ' and is protected.'
+				if protectionObj.protectionDate then
+					ret = ret .. ' It has been protected since ${PROTECTIONDATE}.'
+				end
+				return ret
+			end,
+			explanation = "If you can edit this page, please discuss all changes and"
+				.. " additions on the ${TALKPAGE} first. '''Do not remove protection from this"
+				.. " page unless you are authorized by the Wikimedia Foundation to do"
+				.. " so.'''",
+			image = 'Office-protection-shackle.svg',
+		},
+		reset = {
+			description = 'For pages protected by the Wikimedia Foundation and'
+				.. ' "reset" to a bare-bones version',
+ 			text = 'This ${PAGETYPE} is currently under the'
+					.. ' scrutiny of the'
+					.. ' [[Wikipedia:Office actions|Wikimedia Foundation Office]]'
+					.. ' and is protected.',
+			explanation = function (protectionObj, args)
+				local ret = ''
+				if protectionObj.protectionDate then
+					ret = ret .. 'On ${PROTECTIONDATE} this ${PAGETYPE} was'
+				else
+					ret = ret .. 'This ${PAGETYPE} has been'
+				end
+				ret = ret .. ' reduced to a'
+				.. ' simplified, "bare bones" version so that it may be completely'
+				.. ' rewritten to ensure it meets the policies of'
+				.. ' [[WP:NPOV|Neutral Point of View]] and [[WP:V|Verifiability]].'
+				.. ' Standard Wikipedia policies will apply to its rewriting—which'
+				.. ' will eventually be open to all editors—and will be strictly'
+				.. ' enforced. The ${PAGETYPE} has been ${PROTECTIONLEVEL} while'
+				.. ' it is being rebuilt.\n\n'
+				.. 'Any insertion of material directly from'
+				.. ' pre-protection revisions of the ${PAGETYPE} will be removed, as'
+				.. ' will any material added to the ${PAGETYPE} that is not properly'
+				.. ' sourced. The associated talk page(s) were also cleared on the'
+				.. " same date.\n\n"
+				.. "If you can edit this page, please discuss all changes and"
+				.. " additions on the ${TALKPAGE} first. '''Do not override"
+				.. " this action, and do not remove protection from this page,"
+				.. " unless you are authorized by the Wikimedia Foundation"
+				.. " to do so. No editor may remove this notice.'''"
+
+				return ret
+			end,
+			image = 'Office-protection-shackle.svg',
+		},
+		sock = {
+			description = 'For pages protected due to'
+				.. ' [[Wikipedia:Sock puppetry|sock puppetry]]',
+			text = '${INTROFRAGMENT} to prevent [[Wikipedia:Sock puppetry|sock puppets]] of'
+				.. ' [[Wikipedia:Blocking policy|blocked]] or'
+				.. ' [[Wikipedia:Banning policy|banned users]]'
+				.. ' from editing it.',
+			tooltip = '${TOOLTIPFRAGMENT} to prevent sock puppets of blocked or banned users from'
+				.. ' editing it',
+		},
+		template = {
+			description = 'For [[Wikipedia:High-risk templates|high-risk]]'
+				.. ' templates and Lua modules',
+			text = 'This is a permanently [[Help:Protection|protected]] ${PAGETYPE},'
+				.. ' as it is [[Wikipedia:High-risk templates|high-risk]].',
+			explanation = 'Please discuss any changes on the ${TALKPAGE}; you may'
+				.. ' ${EDITREQUEST} to ask an'
+				.. ' [[Wikipedia:Administrators|administrator]] or'
+				.. ' [[Wikipedia:Template editor|template editor]] to make an edit if'
+				.. ' it is [[Help:Minor edit#When to mark an edit as a minor edit'
+				.. '|uncontroversial]] or supported by'
+				.. ' [[Wikipedia:Consensus|consensus]]. You can also'
+				.. ' [[Wikipedia:Requests for page protection|request]] that the page be'
+				.. ' unprotected.',
+			tooltip = 'This high-risk ${PAGETYPE} is permanently ${PROTECTIONLEVEL}'
+				.. ' to prevent vandalism',
+			alt = 'Permanently protected ${PAGETYPE}',
+		},
+		usertalk = {
+			description = 'For pages protected against disruptive edits by a'
+				.. ' particular user',
+			text = '${INTROFRAGMENT} to prevent ${VANDAL} from using it to make disruptive edits,'
+				.. ' such as abusing the'
+				.. ' &#123;&#123;[[Template:unblock|unblock]]&#125;&#125; template.',
+			explanation = 'If you cannot edit this user talk page and you need to'
+				.. ' make a change or leave a message, you can'
+				.. ' [[Wikipedia:Requests for page protection'
+				.. '#Current requests for edits to a protected page'
+				.. '|request an edit]],'
+				.. ' [[Wikipedia:Requests for page protection'
+				.. '#Current requests for reduction in protection level'
+				.. '|request unprotection]],'
+				.. ' [[Special:Userlogin|log in]],'
+				.. ' or [[Special:UserLogin/signup|create an account]].',
+		},
+		vandalism = {
+			description = 'For pages protected against'
+				.. ' [[Wikipedia:Vandalism|vandalism]]',
+			text = '${INTROFRAGMENT} due to [[Wikipedia:Vandalism|vandalism]].',
+			explanation = function (protectionObj, args)
+				local ret = ''
+				if protectionObj.level == 'sysop' then
+					ret = ret .. "This protection is '''not''' an endorsement of the"
+						.. ' ${CURRENTVERSION}. '
+				end
+				return ret .. '${EXPLANATIONBLURB}'
+			end,
+			tooltip = '${TOOLTIPFRAGMENT} due to vandalism',
+		}
+	},
+	move = {
+		dispute = {
+			description = 'For pages protected against page moves due to'
+				.. ' disputes over the page title',
+			explanation = "This protection is '''not''' an endorsement of the"
+				.. ' ${CURRENTVERSION}. ${EXPLANATIONBLURB}',
+			image = 'Move-protection-shackle.svg'
+		},
+		vandalism = {
+			description = 'For pages protected against'
+				.. ' [[Wikipedia:Vandalism#Page-move vandalism'
+				.. ' |page-move vandalism]]'
+		}
+	},
+	autoreview = {},
+	upload = {}
+},
+
+--------------------------------------------------------------------------------
+--
+--                            GENERAL DATA TABLES
+--
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+-- Protection blurbs
+--------------------------------------------------------------------------------
+
+-- This table produces the protection blurbs available with the
+-- ${PROTECTIONBLURB} parameter. It is sorted by protection action and
+-- protection level, and is checked by the module in the following order:
+-- 1. page's protection action, page's protection level
+-- 2. page's protection action, default protection level
+-- 3. "edit" protection action, default protection level
+--
+-- It is possible to use banner parameters inside this table.
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+protectionBlurbs = {
+	edit = {
+		default = 'This ${PAGETYPE} is currently [[Help:Protection|'
+			.. 'protected]] from editing',
+		autoconfirmed = 'Editing of this ${PAGETYPE} by [[Wikipedia:User access'
+			.. ' levels#New users|new]] or [[Wikipedia:User access levels#Unregistered'
+			.. ' users|unregistered]] users is currently [[Help:Protection|disabled]]',
+		extendedconfirmed = 'This ${PAGETYPE} is ${PROTECTIONLEVEL} as a result of'
+			.. ' [[Wikipedia:Arbitration Committee|ArbCom]] enforcement or meets the'
+			.. ' [[Wikipedia:Protection policy#extended|criteria for community use]]',
+	},
+	move = {
+		default = 'This ${PAGETYPE} is currently [[Help:Protection|protected]]'
+			.. ' from [[Help:Moving a page|page moves]]'
+	},
+	autoreview = {
+		default = 'All edits made to this ${PAGETYPE} by'
+			.. ' [[Wikipedia:User access levels#New users|new]] or'
+			.. ' [[Wikipedia:User access levels#Unregistered users|unregistered]]'
+			.. ' users are currently'
+			.. ' [[Wikipedia:Pending changes|subject to review]]'
+	},
+	upload = {
+		default = 'Uploading new versions of this ${PAGETYPE} is currently disabled'
+	}
+},
+
+
+--------------------------------------------------------------------------------
+-- Explanation blurbs
+--------------------------------------------------------------------------------
+
+-- This table produces the explanation blurbs available with the
+-- ${EXPLANATIONBLURB} parameter. It is sorted by protection action,
+-- protection level, and whether the page is a talk page or not. If the page is
+-- a talk page it will have a talk key of "talk"; otherwise it will have a talk
+-- key of "subject". The table is checked in the following order:
+-- 1. page's protection action, page's protection level, page's talk key
+-- 2. page's protection action, page's protection level, default talk key
+-- 3. page's protection action, default protection level, page's talk key
+-- 4. page's protection action, default protection level, default talk key
+--
+-- It is possible to use banner parameters inside this table.
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+explanationBlurbs = {
+	edit = {
+		autoconfirmed = {
+			subject = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details. If you'
+				.. ' cannot edit this ${PAGETYPE} and you wish to make a change, you can'
+				.. ' ${EDITREQUEST}, discuss changes on the ${TALKPAGE},'
+				.. ' [[Wikipedia:Requests for page protection'
+				.. '#Current requests for reduction in protection level'
+				.. '|request unprotection]], [[Special:Userlogin|log in]], or'
+				.. ' [[Special:UserLogin/signup|create an account]].',
+			default = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details. If you'
+				.. ' cannot edit this ${PAGETYPE} and you wish to make a change, you can'
+				.. ' [[Wikipedia:Requests for page protection'
+				.. '#Current requests for reduction in protection level'
+				.. '|request unprotection]], [[Special:Userlogin|log in]], or'
+				.. ' [[Special:UserLogin/signup|create an account]].',
+		},
+		extendedconfirmed = {
+			default = 'Extended confirmed protection prevents edits from all IP editors'
+				.. ' and registered users with fewer than 30 days tenure and 500 edits.'
+				.. ' The [[Wikipedia:Protection policy#extended|policy on community use]]'
+				.. ' specifies that extended confirmed protection can be applied to combat'
+				.. ' disruption, if semi-protection has proven to be ineffective.'
+				.. ' Please discuss any changes on the ${TALKPAGE}; you may'
+				.. ' ${EDITREQUEST} to ask for uncontroversial changes supported by'
+				.. ' [[Wikipedia:Consensus|consensus]].'
+		},
+		default = {
+			subject = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' Please discuss any changes on the ${TALKPAGE}; you'
+				.. ' may ${EDITREQUEST} to ask an'
+				.. ' [[Wikipedia:Administrators|administrator]] to make an edit if it'
+				.. ' is [[Help:Minor edit#When to mark an edit as a minor edit'
+				.. '|uncontroversial]] or supported by [[Wikipedia:Consensus'
+				.. '|consensus]]. You may also [[Wikipedia:Requests for'
+				.. ' page protection#Current requests for reduction in protection level'
+				.. '|request]] that this page be unprotected.',
+			default = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' You may [[Wikipedia:Requests for page'
+				.. ' protection#Current requests for edits to a protected page|request an'
+				.. ' edit]] to this page, or [[Wikipedia:Requests for'
+				.. ' page protection#Current requests for reduction in protection level'
+				.. '|ask]] for it to be unprotected.'
+		}
+	},
+	move = {
+		default = {
+			subject = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' The page may still be edited but cannot be moved'
+				.. ' until unprotected. Please discuss any suggested moves on the'
+				.. ' ${TALKPAGE} or at [[Wikipedia:Requested moves]]. You can also'
+				.. ' [[Wikipedia:Requests for page protection|request]] that the page be'
+				.. ' unprotected.',
+			default = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' The page may still be edited but cannot be moved'
+				.. ' until unprotected. Please discuss any suggested moves at'
+				.. ' [[Wikipedia:Requested moves]]. You can also'
+				.. ' [[Wikipedia:Requests for page protection|request]] that the page be'
+				.. ' unprotected.'
+		}
+	},
+	autoreview = {
+		default = {
+			default = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' Edits to this ${PAGETYPE} by new and unregistered users'
+				.. ' will not be visible to readers until they are accepted by'
+				.. ' a reviewer. To avoid the need for your edits to be'
+				.. ' reviewed, you may'
+				.. ' [[Wikipedia:Requests for page protection'
+				.. '#Current requests for reduction in protection level'
+				.. '|request unprotection]], [[Special:Userlogin|log in]], or'
+				.. ' [[Special:UserLogin/signup|create an account]].'
+		},
+	},
+	upload = {
+		default = {
+			default = 'See the [[Wikipedia:Protection policy|'
+				.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+				.. ' The page may still be edited but new versions of the file'
+				.. ' cannot be uploaded until it is unprotected. You can'
+				.. ' request that a new version be uploaded by using a'
+				.. ' [[Wikipedia:Edit requests|protected edit request]], or you'
+				.. ' can  [[Wikipedia:Requests for page protection|request]]'
+				.. ' that the file be unprotected.'
+		}
+	}
+},
+
+--------------------------------------------------------------------------------
+-- Protection levels
+--------------------------------------------------------------------------------
+
+-- This table provides the data for the ${PROTECTIONLEVEL} parameter, which
+-- produces a short label for different protection levels. It is sorted by
+-- protection action and protection level, and is checked in the following
+-- order:
+-- 1. page's protection action, page's protection level
+-- 2. page's protection action, default protection level
+-- 3. "edit" protection action, default protection level
+--
+-- It is possible to use banner parameters inside this table.
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+protectionLevels = {
+	edit = {
+		default = 'protected',
+		templateeditor = 'template-protected',
+		extendedconfirmed = 'extended-protected',
+		autoconfirmed = 'semi-protected',
+	},
+	move = {
+		default = 'move-protected'
+	},
+	autoreview = {
+	},
+	upload = {
+		default = 'upload-protected'
+	}
+},
+
+--------------------------------------------------------------------------------
+-- Images
+--------------------------------------------------------------------------------
+
+-- This table lists different padlock images for each protection action and
+-- protection level. It is used if an image is not specified in any of the
+-- banner data tables, and if the page does not satisfy the conditions for using
+-- the ['image-filename-indef'] image. It is checked in the following order:
+-- 1. page's protection action, page's protection level
+-- 2. page's protection action, default protection level
+images = {
+	edit = {
+		default = 'Full-protection-shackle.svg',
+		templateeditor = 'Template-protection-shackle.svg',
+		extendedconfirmed = 'Extended-protection-shackle.svg',
+		autoconfirmed = 'Semi-protection-shackle.svg'
+	},
+	move = {
+		default = 'Move-protection-shackle.svg',
+	},
+	autoreview = {
+		default = 'Pending-protection-shackle.svg'
+	},
+	upload = {
+		default = 'Upload-protection-shackle.svg'
+	}
+},
+
+-- Pages with a reason specified in this table will show the special "indef"
+-- padlock, defined in the 'image-filename-indef' message, if no expiry is set.
+indefImageReasons = {
+	template = true
+},
+
+--------------------------------------------------------------------------------
+-- Image links
+--------------------------------------------------------------------------------
+
+-- This table provides the data for the ${IMAGELINK} parameter, which gets
+-- the image link for small padlock icons based on the page's protection action
+-- and protection level. It is checked in the following order:
+-- 1. page's protection action, page's protection level
+-- 2. page's protection action, default protection level
+-- 3. "edit" protection action, default protection level
+--
+-- It is possible to use banner parameters inside this table.
+-- *required* - this table needs edit, move, autoreview and upload subtables.
+imageLinks = {
+	edit = {
+		default = 'Wikipedia:Protection policy#full',
+		templateeditor = 'Wikipedia:Protection policy#template',
+		extendedconfirmed = 'Wikipedia:Protection policy#extended',
+		autoconfirmed = 'Wikipedia:Protection policy#semi'
+	},
+	move = {
+		default = 'Wikipedia:Protection policy#move'
+	},
+	autoreview = {
+		default = 'Wikipedia:Protection policy#pending'
+	},
+	upload = {
+		default = 'Wikipedia:Protection policy#upload'
+	}
+},
+
+--------------------------------------------------------------------------------
+-- Padlock indicator names
+--------------------------------------------------------------------------------
+
+-- This table provides the "name" attribute for the <indicator> extension tag
+-- with which small padlock icons are generated. All indicator tags on a page
+-- are displayed in alphabetical order based on this attribute, and with
+-- indicator tags with duplicate names, the last tag on the page wins.
+-- The attribute is chosen based on the protection action; table keys must be a
+-- protection action name or the string "default".
+padlockIndicatorNames = {
+	autoreview = 'pp-autoreview',
+	default = 'pp-default'
+},
+
+--------------------------------------------------------------------------------
+-- Protection categories
+--------------------------------------------------------------------------------
+
+--[[
+-- The protection categories are stored in the protectionCategories table.
+-- Keys to this table are made up of the following strings:
+--
+-- 1. the expiry date
+-- 2. the namespace
+-- 3. the protection reason (e.g. "dispute" or "vandalism")
+-- 4. the protection level (e.g. "sysop" or "autoconfirmed")
+-- 5. the action (e.g. "edit" or "move")
+-- 
+-- When the module looks up a category in the table, first it will will check to
+-- see a key exists that corresponds to all five parameters. For example, a
+-- user page semi-protected from vandalism for two weeks would have the key
+-- "temp-user-vandalism-autoconfirmed-edit". If no match is found, the module
+-- changes the first part of the key to "all" and checks the table again. It
+-- keeps checking increasingly generic key combinations until it finds the
+-- field, or until it reaches the key "all-all-all-all-all".
+--
+-- The module uses a binary matrix to determine the order in which to search.
+-- This is best demonstrated by a table. In this table, the "0" values
+-- represent "all", and the "1" values represent the original data (e.g.
+-- "indef" or "file" or "vandalism").
+--
+--        expiry    namespace reason   level     action
+-- order
+-- 1      1         1         1        1         1
+-- 2      0         1         1        1         1
+-- 3      1         0         1        1         1
+-- 4      0         0         1        1         1
+-- 5      1         1         0        1         1
+-- 6      0         1         0        1         1
+-- 7      1         0         0        1         1
+-- 8      0         0         0        1         1
+-- 9      1         1         1        0         1
+-- 10     0         1         1        0         1
+-- 11     1         0         1        0         1
+-- 12     0         0         1        0         1
+-- 13     1         1         0        0         1
+-- 14     0         1         0        0         1
+-- 15     1         0         0        0         1
+-- 16     0         0         0        0         1
+-- 17     1         1         1        1         0
+-- 18     0         1         1        1         0
+-- 19     1         0         1        1         0
+-- 20     0         0         1        1         0
+-- 21     1         1         0        1         0
+-- 22     0         1         0        1         0
+-- 23     1         0         0        1         0
+-- 24     0         0         0        1         0
+-- 25     1         1         1        0         0
+-- 26     0         1         1        0         0
+-- 27     1         0         1        0         0
+-- 28     0         0         1        0         0
+-- 29     1         1         0        0         0
+-- 30     0         1         0        0         0
+-- 31     1         0         0        0         0
+-- 32     0         0         0        0         0
+--
+-- In this scheme the action has the highest priority, as it is the last
+-- to change, and the expiry has the least priority, as it changes the most.
+-- The priorities of the expiry, the protection level and the action are
+-- fixed, but the priorities of the reason and the namespace can be swapped
+-- through the use of the cfg.bannerDataNamespaceHasPriority table.
+--]]
+
+-- If the reason specified to the template is listed in this table,
+-- namespace data will take priority over reason data in the protectionCategories
+-- table.
+reasonsWithNamespacePriority = {
+	vandalism = true,
+},
+
+-- The string to use as a namespace key for the protectionCategories table for each
+-- namespace number.
+categoryNamespaceKeys = {
+	[  2] = 'user',
+	[  3] = 'user',
+	[  4] = 'project',
+	[  6] = 'file',
+	[  8] = 'mediawiki',
+	[ 10] = 'template',
+	[ 12] = 'project',
+	[ 14] = 'category',
+	[100] = 'portal',
+	[828] = 'module',
+},
+
+protectionCategories = {
+	['all|all|all|all|all']                  = 'Wikipedia fully protected pages',
+	['all|all|office|all|all']               = 'Wikipedia Office-protected pages',
+	['all|all|reset|all|all']                = 'Wikipedia Office-protected pages',
+	['all|all|dmca|all|all']                 = 'Wikipedia Office-protected pages',
+	['all|all|mainpage|all|all']             = 'Wikipedia fully-protected main page files',
+	['all|all|all|extendedconfirmed|all']    = 'Wikipedia pages under 30-500 editing restriction',
+	['all|all|ecp|extendedconfirmed|all']    = 'Wikipedia pages under 30-500 editing restriction',
+	['all|template|all|all|edit']            = 'Wikipedia fully protected templates',
+	['all|all|all|autoconfirmed|edit']       = 'Wikipedia semi-protected pages',
+	['indef|all|all|autoconfirmed|edit']     = 'Wikipedia indefinitely semi-protected pages',
+	['all|all|blp|autoconfirmed|edit']       = 'Wikipedia indefinitely semi-protected biographies of living people',
+	['temp|all|blp|autoconfirmed|edit']      = 'Wikipedia temporarily semi-protected biographies of living people',
+	['all|all|dispute|autoconfirmed|edit']   = 'Wikipedia pages semi-protected due to dispute',
+	['all|all|sock|autoconfirmed|edit']      = 'Wikipedia pages semi-protected from banned users',
+	['all|all|vandalism|autoconfirmed|edit'] = 'Wikipedia pages semi-protected against vandalism',
+	['all|category|all|autoconfirmed|edit']  = 'Wikipedia semi-protected categories',
+	['all|file|all|autoconfirmed|edit']      = 'Wikipedia semi-protected files',
+	['all|portal|all|autoconfirmed|edit']    = 'Wikipedia semi-protected portals',
+	['all|project|all|autoconfirmed|edit']   = 'Wikipedia semi-protected project pages',
+	['all|talk|all|autoconfirmed|edit']      = 'Wikipedia semi-protected talk pages',
+	['all|template|all|autoconfirmed|edit']  = 'Wikipedia semi-protected templates',
+	['all|user|all|autoconfirmed|edit']      = 'Wikipedia semi-protected user and user talk pages',
+	['all|template|all|templateeditor|edit'] = 'Wikipedia template-protected templates',
+	['all|all|blp|sysop|edit']               = 'Wikipedia indefinitely protected biographies of living people',
+	['temp|all|blp|sysop|edit']              = 'Wikipedia temporarily protected biographies of living people',
+	['all|all|dispute|sysop|edit']           = 'Wikipedia pages protected due to dispute',
+	['all|all|sock|sysop|edit']              = 'Wikipedia pages protected from banned users',
+	['all|all|vandalism|sysop|edit']         = 'Wikipedia pages protected against vandalism',
+	['all|category|all|sysop|edit']          = 'Wikipedia protected categories',
+	['all|file|all|sysop|edit']              = 'Wikipedia fully-protected files',
+	['all|project|all|sysop|edit']           = 'Wikipedia fully-protected project pages',
+	['all|talk|all|sysop|edit']              = 'Wikipedia fully-protected talk pages',
+	['all|template|all|sysop|edit']          = 'Wikipedia fully protected templates',
+	['all|user|all|sysop|edit']              = 'Wikipedia protected user and user talk pages',
+	['all|module|all|all|edit']              = 'Wikipedia fully-protected modules',
+	['all|module|all|templateeditor|edit']   = 'Wikipedia template-protected modules',
+	['all|module|all|autoconfirmed|edit']    = 'Wikipedia semi-protected modules',
+	['all|all|all|sysop|move']               = 'Wikipedia move-protected pages',
+	['indef|all|all|sysop|move']             = 'Wikipedia indefinitely move-protected pages',
+	['all|all|dispute|sysop|move']           = 'Wikipedia pages move-protected due to dispute',
+	['all|all|vandalism|sysop|move']         = 'Wikipedia pages move-protected due to vandalism',
+	['all|portal|all|sysop|move']            = 'Wikipedia move-protected portals',
+	['all|portal|all|sysop|move']            = 'Wikipedia move-protected portals',
+	['all|project|all|sysop|move']           = 'Wikipedia move-protected project pages',
+	['all|talk|all|sysop|move']              = 'Wikipedia move-protected talk pages',
+	['all|template|all|sysop|move']          = 'Wikipedia move-protected templates',
+	['all|user|all|sysop|move']              = 'Wikipedia move-protected user and user talk pages',
+	['all|all|all|autoconfirmed|autoreview'] = 'Wikipedia pending changes protected pages',
+	['all|file|all|all|upload']              = 'Wikipedia upload-protected files',
+},
+
+--------------------------------------------------------------------------------
+-- Expiry category config
+--------------------------------------------------------------------------------
+
+-- This table configures the expiry category behaviour for each protection
+-- action.
+-- * If set to true, setting that action will always categorise the page if
+--   an expiry parameter is not set.
+-- * If set to false, setting that action will never categorise the page.
+-- * If set to nil, the module will categorise the page if:
+--   1) an expiry parameter is not set, and
+--   2) a reason is provided, and
+--   3) the specified reason is not blacklisted in the reasonsWithoutExpiryCheck
+--      table.
+
+expiryCheckActions = {
+	edit = nil,
+	move = false,
+	autoreview = true,
+	upload = false
+},
+
+reasonsWithoutExpiryCheck = {
+	blp = true,
+	template = true,
+},
+
+--------------------------------------------------------------------------------
+-- Pagetypes
+--------------------------------------------------------------------------------
+
+-- This table produces the page types available with the ${PAGETYPE} parameter.
+-- Keys are namespace numbers, or the string "default" for the default value.
+pagetypes = {
+	[0] = 'article',
+	[6] = 'file',
+	[10] = 'template',
+	[14] = 'category',
+	[828] = 'module',
+	default = 'page'
+},
+
+--------------------------------------------------------------------------------
+-- Strings marking indefinite protection
+--------------------------------------------------------------------------------
+
+-- This table contains values passed to the expiry parameter that mean the page
+-- is protected indefinitely.
+indefStrings = {
+	['indef'] = true,
+	['indefinite'] = true,
+	['indefinitely'] = true,
+	['infinite'] = true,
+},
+
+--------------------------------------------------------------------------------
+-- Group hierarchy
+--------------------------------------------------------------------------------
+
+-- This table maps each group to all groups that have a superset of the original
+-- group's page editing permissions.
+hierarchy = {
+	sysop = {},
+	reviewer = {'sysop'},
+	filemover = {'sysop'},
+	templateeditor = {'sysop'},
+	extendedconfirmed = {'sysop'},
+	autoconfirmed = {'reviewer', 'filemover', 'templateeditor', 'extendedconfirmed'},
+	user = {'autoconfirmed'},
+	['*'] = {'user'}
+},
+
+--------------------------------------------------------------------------------
+-- Wrapper templates and their default arguments
+--------------------------------------------------------------------------------
+
+-- This table contains wrapper templates used with the module, and their
+-- default arguments. Templates specified in this table should contain the
+-- following invocation, and no other template content:
+--
+-- {{#invoke:Protection banner|main}}
+--
+-- If other content is desired, it can be added between
+-- <noinclude>...</noinclude> tags.
+--
+-- When a user calls one of these wrapper templates, they will use the
+-- default arguments automatically. However, users can override any of the
+-- arguments.
+wrappers = {
+	['Template:Pp']                         = {},
+	['Template:Pp-30-500']                  = {'ecp'},
+	['Template:Pp-blp']                     = {'blp'},
+	-- we don't need Template:Pp-create
+	['Template:Pp-dispute']                 = {'dispute'},
+	['Template:Pp-main-page']               = {'mainpage'},
+	['Template:Pp-move']                    = {action = 'move'},
+	['Template:Pp-move-dispute']            = {'dispute', action = 'move'},
+	-- we don't need Template:Pp-move-indef
+	['Template:Pp-move-vandalism']          = {'vandalism', action = 'move'},
+	['Template:Pp-office']                  = {'office'},
+	['Template:Pp-office-dmca']             = {'dmca'},
+	['Template:Pp-pc']                      = {action = 'autoreview', small = true},
+	['Template:Pp-pc1']                     = {action = 'autoreview', small = true},
+	['Template:Pp-reset']                   = {'reset'},
+	['Template:Pp-semi-indef']              = {small = true},
+	['Template:Pp-sock']                    = {'sock'},
+	['Template:Pp-template']                = {'template', small = true},
+	['Template:Pp-upload']                  = {action = 'upload'},
+	['Template:Pp-usertalk']                = {'usertalk'},
+	['Template:Pp-vandalism']               = {'vandalism'},
+},
+
+--------------------------------------------------------------------------------
+-- 
+--                                 MESSAGES
+-- 
+--------------------------------------------------------------------------------
+
+msg = {
+
+--------------------------------------------------------------------------------
+-- Intro blurb and intro fragment
+--------------------------------------------------------------------------------
+
+-- These messages specify what is produced by the ${INTROBLURB} and
+-- ${INTROFRAGMENT} parameters. If the protection is temporary they use the
+-- intro-blurb-expiry or intro-fragment-expiry, and if not they use
+-- intro-blurb-noexpiry or intro-fragment-noexpiry.
+-- It is possible to use banner parameters in these messages.
+['intro-blurb-expiry'] = '${PROTECTIONBLURB} until ${EXPIRY}.',
+['intro-blurb-noexpiry'] = '${PROTECTIONBLURB}.',
+['intro-fragment-expiry'] = '${PROTECTIONBLURB} until ${EXPIRY},',
+['intro-fragment-noexpiry'] = '${PROTECTIONBLURB}',
+
+--------------------------------------------------------------------------------
+-- Tooltip blurb
+--------------------------------------------------------------------------------
+
+-- These messages specify what is produced by the ${TOOLTIPBLURB} parameter.
+-- If the protection is temporary the tooltip-blurb-expiry message is used, and
+-- if not the tooltip-blurb-noexpiry message is used.
+-- It is possible to use banner parameters in these messages.
+['tooltip-blurb-expiry'] = 'This ${PAGETYPE} is ${PROTECTIONLEVEL} until ${EXPIRY}.',
+['tooltip-blurb-noexpiry'] = 'This ${PAGETYPE} is ${PROTECTIONLEVEL}.',
+['tooltip-fragment-expiry'] = 'This ${PAGETYPE} is ${PROTECTIONLEVEL} until ${EXPIRY},',
+['tooltip-fragment-noexpiry'] = 'This ${PAGETYPE} is ${PROTECTIONLEVEL}',
+
+--------------------------------------------------------------------------------
+-- Special explanation blurb
+--------------------------------------------------------------------------------
+
+-- An explanation blurb for pages that cannot be unprotected, e.g. for pages
+-- in the MediaWiki namespace.
+-- It is possible to use banner parameters in this message.
+['explanation-blurb-nounprotect'] = 'See the [[Wikipedia:Protection policy|'
+	.. 'protection policy]] and ${PROTECTIONLOG} for more details.'
+	.. ' Please discuss any changes on the ${TALKPAGE}; you'
+	.. ' may ${EDITREQUEST} to ask an'
+	.. ' [[Wikipedia:Administrators|administrator]] to make an edit if it'
+	.. ' is [[Help:Minor edit#When to mark an edit as a minor edit'
+	.. '|uncontroversial]] or supported by [[Wikipedia:Consensus'
+	.. '|consensus]].',
+
+--------------------------------------------------------------------------------
+-- Protection log display values
+--------------------------------------------------------------------------------
+
+-- These messages determine the display values for the protection log link
+-- or the pending changes log link produced by the ${PROTECTIONLOG} parameter.
+-- It is possible to use banner parameters in these messages.
+['protection-log-display'] = 'protection log',
+['pc-log-display'] = 'pending changes log',
+
+--------------------------------------------------------------------------------
+-- Current version display values
+--------------------------------------------------------------------------------
+
+-- These messages determine the display values for the page history link
+-- or the move log link produced by the ${CURRENTVERSION} parameter.
+-- It is possible to use banner parameters in these messages.
+['current-version-move-display'] = 'current title',
+['current-version-edit-display'] = 'current version',
+
+--------------------------------------------------------------------------------
+-- Talk page
+--------------------------------------------------------------------------------
+
+-- This message determines the display value of the talk page link produced
+-- with the ${TALKPAGE} parameter.
+-- It is possible to use banner parameters in this message.
+['talk-page-link-display'] = 'talk page',
+
+--------------------------------------------------------------------------------
+-- Edit requests
+--------------------------------------------------------------------------------
+
+-- This message determines the display value of the edit request link produced
+-- with the ${EDITREQUEST} parameter.
+-- It is possible to use banner parameters in this message.
+['edit-request-display'] = 'submit an edit request',
+
+--------------------------------------------------------------------------------
+-- Expiry date format
+--------------------------------------------------------------------------------
+
+-- This is the format for the blurb expiry date. It should be valid input for
+-- the first parameter of the #time parser function.
+['expiry-date-format'] = 'F j, Y "at" H:i e',
+
+--------------------------------------------------------------------------------
+-- Tracking categories
+--------------------------------------------------------------------------------
+
+-- These messages determine which tracking categories the module outputs.
+['tracking-category-incorrect'] = 'Wikipedia pages with incorrect protection templates',
+['tracking-category-template'] = 'Wikipedia template-protected pages other than templates and modules',
+
+--------------------------------------------------------------------------------
+-- Images
+--------------------------------------------------------------------------------
+
+-- These are images that are not defined by their protection action and protection level.
+['image-filename-indef'] = 'Full-protection-shackle.svg',
+['image-filename-default'] = 'Transparent.gif',
+
+--------------------------------------------------------------------------------
+-- End messages
+--------------------------------------------------------------------------------
+}
+
+--------------------------------------------------------------------------------
+-- End configuration
+--------------------------------------------------------------------------------
+}
