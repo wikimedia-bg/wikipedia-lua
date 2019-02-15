@@ -5,38 +5,38 @@ local aliasesP = mw.loadData((...):sub(1, (...):match('^.*()/') - 1).."/aliasesP
 
 local p = {
 	["errors"] = {
-		["unknown-data-type"]          = "Unknown or unsupported datatype '$1'.",
-		["missing-required-parameter"] = "No required parameters defined, needing at least one",
-		["extra-required-parameter"]   = "Parameter '$1' must be defined as optional",
-		["no-function-specified"]      = "You must specify a function to call",  -- equal to the standard module error message
-		["main-called-twice"]          = 'The function "main" cannot be called twice',
-		["no-such-function"]           = 'The function "$1" does not exist'  -- equal to the standard module error message
+		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни "$1".',
+		["missing-required-parameter"] = 'Не са дефинирани задължителни параметри, изисква се поне един',
+		["extra-required-parameter"]   = 'Параметър "$1" трябва да бъде дефиниран като незадължителен',
+		["no-function-specified"]      = 'Трябва да бъде посочена функция за извикване',  -- equal to the standard module error message
+		["main-called-twice"]          = 'Функцията "main" не може да бъде извикана два пъти',
+		["no-such-function"]           = 'Функцията "$1" не съществува'  -- equal to the standard module error message
 	},
 	["info"] = {
-		["edit-on-wikidata"] = "Edit this on Wikidata"
+		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
 	},
 	["numeric"] = {
-		["decimal-mark"] = ",",
-		["delimiter"]    = " "
+		["decimal-mark"] = ',',
+		["delimiter"]    = ' '
 	},
 	["datetime"] = {
 		["prefixes"] = {
-			["decade-period"] = ""
+			["decade-period"] = ''
 		},
 		["suffixes"] = {
-			["decade-period"] = "s",
-			["millennium"]    = " millennium",
-			["century"]       = " century",
-			["million-years"] = " million years",
-			["billion-years"] = " billion years",
-			["year"]          = " year",
-			["years"]         = " years"
+			["decade-period"] = '-те',
+			["millennium"]    = ' хилядолетие',
+			["century"]       = ' век',
+			["million-years"] = ' милиони години',
+			["billion-years"] = ' милиарди години',
+			["year"]          = ' година',
+			["years"]         = ' години'
 		},
-		["julian-calendar"] = "Julian calendar",  -- linked page title
-		["julian"]          = "Julian",
-		["BCE"]             = "BCE",
-		["CE"]              = "CE",
-		["common-era"]      = "Common Era"  -- linked page title
+		["julian-calendar"] = 'Юлиански календар',  -- linked page title
+		["julian"]          = '<abbr title="Юлиански календар">Ю.К.</abbr>',
+		["BCE"]             = 'пр.н.е.',
+		["CE"]              = 'сл.н.е.',
+		["common-era"]      = 'Нова Ера'  -- linked page title
 	},
 	["coord"] = {
 		["latitude-north"] = "N",
@@ -49,8 +49,8 @@ local p = {
 		["separator"]      = ", "
 	},
 	["values"] = {
-		["unknown"] = "unknown",
-		["none"]    = "none"
+		["unknown"] = "неизвестна",
+		["none"]    = "няма"
 	},
 	["cite"] = {
 		["version"] = "2",  -- increase this each time the below parameters are changed to avoid conflict errors
@@ -89,19 +89,19 @@ local p = {
 
 function p.getOrdinalSuffix(num)
 	if tostring(num):sub(-2,-2) == '1' then
-		return "th"  -- 10th, 11th, 12th, 13th, ... 19th
+		return "-и"  -- 10th, 11th, 12th, 13th, ... 19th
 	end
 	
 	num = tostring(num):sub(-1)
 	
 	if num == '1' then
-		return "st"
+		return "-ви"
 	elseif num == '2' then
-		return "nd"
+		return "-ри"
 	elseif num == '3' then
-		return "rd"
+		return "-ти"
 	else
-		return "th"
+		return "-и"
 	end
 end
 
