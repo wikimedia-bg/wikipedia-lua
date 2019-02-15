@@ -1030,9 +1030,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				if calendarID and calendarID == aliasesQ.prolepticJulianCalendar then
 					if not raw then
 						if link then
-							calendar = " ("..buildWikilink(i18n['datetime']['julian-calendar'], i18n['datetime']['julian'])..")"
+							calendar = " <sup>("..buildWikilink(i18n['datetime']['julian-calendar'], i18n['datetime']['julian'])..")</sup>"
 						else
-							calendar = " ("..i18n['datetime']['julian']..")"
+							calendar = " <sup>("..i18n['datetime']['julian']..")</sup>"
 						end
 					else
 						calendar = "/"..i18n['datetime']['julian']
