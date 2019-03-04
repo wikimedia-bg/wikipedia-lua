@@ -18,13 +18,6 @@ function p.getCatForId( id )
 	return '[[Категория:' .. catName .. ']]'
 end
 
-function p.redCatLink( catName ) --catName == 'Blah', not 'Category:Blah', not '[[Category:Blah]]'
-	if catName and catName ~= '' and mw.title.new(catName, 14).exists == false then
-		return '[[Категория:Страници с несъществуващи категории на нормативен контрол]]'
-	end
-	return ''
-end
-
 --[[==========================================================================]]
 --[[                      Property formatting functions                       ]]
 --[[==========================================================================]]
@@ -244,7 +237,7 @@ function p.mbareaLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/area/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/area/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz area' )
 end
 
 function p.mbiLink( id )
@@ -252,7 +245,7 @@ function p.mbiLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/instrument/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/instrument/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz instrument' )
 end
 
 function p.mblLink( id )
@@ -260,7 +253,7 @@ function p.mblLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/label/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/label/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz label' )
 end
 
 function p.mbpLink( id )
@@ -268,7 +261,7 @@ function p.mbpLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/place/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/place/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz place' )
 end
 
 function p.mbrgLink( id )
@@ -276,7 +269,7 @@ function p.mbrgLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/release-group/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/release-group/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz release group' )
 end
 
 function p.mbsLink( id )
@@ -284,7 +277,7 @@ function p.mbsLink( id )
 	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
 		return false
 	end
-	return '[https://musicbrainz.org/series/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz' )
+	return '[https://musicbrainz.org/series/'..id..' '..id..']'..p.getCatForId( 'MusicBrainz series' )
 end
 
 function p.mbwLink( id )
@@ -556,48 +549,92 @@ function p.thLink( id )
 	return '[http://www.unifr.ch/ifaa/Public/EntryPage/ViewTH/'..THnum..'.html '..id..']'..p.getCatForId( 'TH' )
 end
 
-function p.NLGIDLink( id )
-    return '[https://catalogue.nlg.gr/Authority/Record?id=au.' .. id .. ' ' .. id .. ']'..p.getCatForId( 'EBE' )
+function p.EBEIDLink( id )
+	--P3348's format regex: [1-9]\d* (e.g. 1538)
+	if not string.match( id, '^[1-9]%d*$' ) then
+		return false
+	end
+	return '[https://catalogue.nlg.gr/Authority/Record?id=au.' .. id .. ' ' .. id .. ']'..p.getCatForId( 'EBE' )
 end
 
 function p.BNeditionLink( id )
-    return '[http://www.biblionet.gr/main.asp?page=showbook&bookid=' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
+	--P2187's format regex: [1-9][0-9]{0,5} (e.g. 1595; 15959)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
+    return '[http://www.biblionet.gr/book/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet book' )
 end
 
 function p.BNpersonLink( id )
-    return '[http://www.biblionet.gr/main.asp?page=showauthor&personsid=' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
+	--P2188's format regex: [1-9][0-9]{0,5} (e.g. 1595; 15959)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d%d?$' ) then
+		return false
+	end
+    return '[http://www.biblionet.gr/author/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet author' )
 end
 
 function p.BNpublisherLink( id )
+	--P2189's format regex: [1-9][0-9]{0,3} (e.g. 15; 159)
+	if not string.match( id, '^[1-9]%d?%d%d?$' ) then
+		return false
+	end
     return '[http://www.biblionet.gr/com/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'BiblioNet' )
 end
 
-function p.freebaseLink( id )
-	return '[https://g.co/kg' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Freebase' )
-end
-
 function p.jstorLink( id )
+	--P3827's format regex:  [^\s\/]+ (e.g. atmm; 1237; at-80-pre)
+	if not string.match( id, '^[^%s%/]+$' ) then
+		return false
+	end
 	return '[https://www.jstor.org/topic/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'JSTOR' )
 end
 
 function p.newwLink( id )
+	--P2533's format regex: [a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12} (e.g. 413e8c0d-8d35-42ea-90d2-29563884b304)
+	if not string.match( id, '^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$' ) then
+		return false
+	end
 	return '[http://resources.huygens.knaw.nl/womenwriters/vre/persons/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'NEWW' )
 end
 
+function p.dsiLink( id )
+	--P2349's format regex: [1-9]\d* (e.g. 1538)
+	if not string.match( id, '^[1-9]%d*$' ) then
+		return false
+	end
+	return '[http://www.uni-stuttgart.de/hi/gnt/dsi2/index.php?table_name=dsi&function=details&where_field=id&where_value='..id..' '..id..']'..p.getCatForId( 'DSI' )
+end
+
 function p.fastLink( id )
+	--P2163's format regex: [1-9]\d{0,7} (e.g. 1358961)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?$' ) then
+		return false
+	end
 	return '[https://experimental.worldcat.org/fast/' .. id .. '/ ' .. id .. ']'..p.getCatForId( 'FAST' )
 end
 
 function p.aatLink( id )
+	--P1014's format regex: 300\d{6} (e.g. 300025486)
+	if not string.match( id, '^300%d%d%d%d%d%d$' ) then
+		return false
+	end
 	return '[http://vocab.getty.edu/page/aat/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'AAT')
 end
 
 function p.koninklijkeLink( id )
-	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Koninklijke')
+	--P1006's format regex: \d{8}(\d|X) (e.g. 069071632)
+	if not ( string.match( id, '^%d%d%d%d%d%d%d%d%d$' ) or string.match( id, '^%d%d%d%d%d%d%d%dX$' ) ) then
+		return false
+	end
+	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Koninklijke' )
 end
 
 function p.openLibraryLink( id )
-	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary')
+	--P648's format regex: OL[1-9]\d{0,7}[AMW] (e.g. OL3156833A)
+	if not string.match( id, '^OL[1-9]%d?%d?%d?%d?%d?%d?%d?[AMW]$' ) then
+		return false
+	end
+	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary' )
 end
 
 --[[==========================================================================]]
@@ -640,17 +677,17 @@ function p.createRow( id, label, rawValue, link, withUid )
 	end
 
 	local catName = 'Уикипедия:Страници с невалиден нормативен контрол'
-	return '*<span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' е невалиден</span>[[Категория:' .. catName .. ']]' .. p.redCatLink(catName) .. '\n'
+	return '*<span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' е невалиден</span>[[Категория:' .. catName .. ']]\n'
 end
 
 -- Creates a human-readable standalone wikitable version of p.conf, and tracking categories with page counts, for use in the documentation
 function p.docConfTable( frame )
-	local wikiTable = '{| class="wikitable"\n'..
+	local wikiTable = '{| class="wikitable sortable"\n'..
 					  '|-\n'..
 					  '!Параметър'..
-					  '!!Етикет'..
-					  '!!Свойство<br />в Уикиданни'..
-					  '!!Основно <abbr title="Именно Пространство">ИП</abbr>\n'
+					  '!!Показване<br />в нав. лента'..
+					  '!!data-sort-type="number"|Свойство<br />в Уикиданни'..
+					  '!!Брой в<br />категория\n'
 	local lang = mw.getContentLanguage()
 	for _, conf in pairs( p.conf ) do
 		local param, link, pid = conf[1], conf[2], conf[3]
@@ -664,40 +701,20 @@ function p.docConfTable( frame )
 					'|-\n'..
 					'|'..param..
 					'||'..link..
-					'||[[:d:property:P'..pid..'|P'..pid..']]'..
+					'||data-sort-value="'..pid..'"|[[:d:property:P'..pid..'|P'..pid..']]'..
 					'||style="text-align:right"|[[:Категория:'..articleCat..'|'..articleCount..']]\n'
 	end
 	--other tracking cats
 	local WCat =       'Уикипедия:Статии с нормативен контрол (WorldCat)'
-	local userCat =    'Уикипедия:Потребителски страници с нормативен контрол'
-	local miscCat =    'Уикипедия:Други страници с нормативен контрол'
-	local faultyCat =  'Уикипедия:Страници с невалиден нормативен контрол'
-	local nonexCat =   'Страници с несъществуващи категории на нормативен контрол'
 	--cat counts
 	local WCount =       lang:formatNum( mw.site.stats.pagesInCategory(WCat, 'pages') )
-	local userCount =    lang:formatNum( mw.site.stats.pagesInCategory(userCat, 'pages') )
-	local miscCount =    lang:formatNum( mw.site.stats.pagesInCategory(miscCat, 'pages') )
-	local faultyCount =  lang:formatNum( mw.site.stats.pagesInCategory(faultyCat, 'pages') )
-	local nonexCount =   lang:formatNum( mw.site.stats.pagesInCategory(nonexCat, 'pages') )
 	--then assemble
 	return wikiTable..
 					'|-\n'..
-					'|WorldCat'..
+					'|WORLDCATID'..
 					'||[[Онлайн компютърен библиотечен център|WorldCat]]'..
-					'||—'..
+					'||data-sort-value="0"|—'..
 					'||style="text-align:right"|[[:Категория:'..WCat..'|'..WCount..']]\n'..
-					'|-\n'..
-					'!colspan="4"|Категории за проследяване на други именни пространства\n'..
-					'|-\n'..
-					'!Потребителски страници'..
-					'!!Други страници'..
-					'!!Невалиден <abbr title="Нормативен Контрол">НК</abbr>'..
-					'!!Червена<br />категория\n'..
-					'|-style="text-align:right"\n'..
-					'|[[:Категория:'..userCat..'|'..userCount..']]'..
-					'||[[:Категория:'..miscCat..'|'..miscCount..']]'..
-					'||[[:Категория:'.. faultyCat..'|'..faultyCount..']]'..
-					'||[[:Категория:'.. nonexCat..'|'..nonexCount..']]\n'..
 					'|}'
 end
 
@@ -717,17 +734,17 @@ p.conf = {
 	{ 'BIBSYS', '[[BIBSYS]]', 1015, p.bibsysLink },
 	{ 'Bildindex', 'Bildindex', 2092, p.bildLink },
 	{ 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, p.bneLink },
-	{ 'BNed', 'BNed', 2187, p.BNeditionLink, category = 'BiblioNet' },
+	{ 'BNed', 'BNed', 2187, p.BNeditionLink, category = 'BiblioNet book' },
 	{ 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, p.bnfLink },
-	{ 'BNper', 'BNper', 2188, p.BNpersonLink, category = 'BiblioNet' },
+	{ 'BNper', 'BNper', 2188, p.BNpersonLink, category = 'BiblioNet author' },
 	{ 'BNpub', 'BNpub', 2189, p.BNpublisherLink, category = 'BiblioNet' },
 	{ 'Botanist', 'Botanist', 428, p.botanistLink },
 	{ 'BPN', 'BPN', 651, p.bpnLink },
 	{ 'CINII', 'CiNii', 271, p.ciniiLink },
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
-	{ 'NLG', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.NLGIDLink },
+	{ 'DSI', 'DSI', 2349, p.dsiLink },
+	{ 'EBE', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.EBEIDLink },
 	{ 'FAST', 'FAST', 2163, p.fastLink },
-	{ 'Freebase', 'Freebase', 646, p.freebaseLink },
 	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
 	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
 	{ 'IAAF', '[[Международна асоциация на лекоатлетическите федерации|IAAF]]', 1146, p.iaafLink },
@@ -742,13 +759,13 @@ p.conf = {
 	{ 'LNB', 'LNB', 1368, p.lnbLink },
 	{ 'Léonore', 'Léonore', 640, p.leonoreLink },
 	{ 'MBA', '[[MusicBrainz|MBa]]', 434, p.mbaLink, category = 'MusicBrainz' },
-	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink, category = 'MusicBrainz' },
-	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink, category = 'MusicBrainz' },
-	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink, category = 'MusicBrainz' },
-	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink, category = 'MusicBrainz' },
-	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink, category = 'MusicBrainz' },
-	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink, category = 'MusicBrainz' },
-	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink, category = 'MusicBrainz' },
+	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink, category = 'MusicBrainz area' },
+	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink, category = 'MusicBrainz instrument' },
+	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink, category = 'MusicBrainz label' },
+	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink, category = 'MusicBrainz place' },
+	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink, category = 'MusicBrainz release group' },
+	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink, category = 'MusicBrainz series' },
+	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink, category = 'MusicBrainz work' },
 	{ 'MGP', 'MGP', 549, p.mgpLink },
 	{ 'NARA', 'NARA', 1225, p.naraLink },
 	{ 'NCL', 'NCL', 1048, p.nclLink },
@@ -780,7 +797,12 @@ p.conf = {
 
 -- Legitimate aliases to p.conf, for convenience
 -- Format: { alias, parameter name in p.conf }
-p.aliases = {}
+p.aliases = {
+	{ 'Leonore', 'Léonore' },
+	{ 'NLG', 'EBE' },
+	{ 'autores', 'autores.uy' },
+	{ 'SNAC', 'SNAC-ID' },
+}
 
 -- Deprecated aliases to p.conf, which also get assigned to a tracking cat
 -- Format: { deprecated parameter name, replacement parameter name in p.conf }
@@ -808,9 +830,21 @@ function p.authorityControl( frame )
 	local suppressedIdCat = ''
 	local deprecatedIdCat = ''
 	
+	--Format args
+	for k, v in pairs( frame:getParent().args ) do
+		if type(k) == 'string' then
+			--make args case insensitive
+			local lowerk = mw.ustring.lower(k)
+			if parentArgs[lowerk] == nil or parentArgs[lowerk] == '' then
+				parentArgs[k] = nil
+				parentArgs[lowerk] = v
+			end
+		end
+	end
+	
 	--Redirect aliases to proper parameter names
 	for _, a in pairs( p.aliases ) do
-		local alias, param = a[1], a[2]
+		local alias, param = mw.ustring.lower(a[1]), mw.ustring.lower(a[2])
 		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[alias] then
 			parentArgs[param] = parentArgs[alias]
 		end
@@ -818,7 +852,7 @@ function p.authorityControl( frame )
 	
 	--Redirect deprecated parameters to proper parameter names, and assign tracking cat
 	for _, d in pairs( p.deprecated ) do
-		local dep, param = d[1], d[2]
+		local dep, param = mw.ustring.lower(d[1]), mw.ustring.lower(d[2])
 		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[dep] then
 			parentArgs[param] = parentArgs[dep]
 			if namespace == 0 then
@@ -842,6 +876,7 @@ function p.authorityControl( frame )
 	if itemId then
 		for _, params in ipairs( p.conf ) do
 			if params[3] > 0 then
+				params[1] = mw.ustring.lower(params[1])
 				local val = parentArgs[params[1]]
 				if val == nil or val == '' then
 					local canUseWikidata = nil
@@ -854,7 +889,7 @@ function p.authorityControl( frame )
 						local wikidataIds = p.getIdsFromWikidata( itemId, 'P' .. params[3] )
 						if wikidataIds[1] then
 							if val == '' and (namespace == 0 or testcases) then
-								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат нормативен контрол]]'
+								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол]]'
 							else
 								parentArgs[params[1]] = wikidataIds[1]
 	end	end	end	end	end	end	end
@@ -862,7 +897,7 @@ function p.authorityControl( frame )
 	--Configured rows
 	local rct = 0
 	for _, params in ipairs( p.conf ) do
-		local val = parentArgs[params[1]]
+		local val = parentArgs[mw.ustring.lower(params[1])]
 		if val and val ~= '' then
 			table.insert( elements, p.createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
 			rct = rct + 1
@@ -870,19 +905,14 @@ function p.authorityControl( frame )
 	end
 	
 	--WorldCat
-	local worldcatId = parentArgs['WORLDCATID']
+	local worldcatId = parentArgs[mw.ustring.lower('WORLDCATID')]
 	if worldcatId and worldcatId ~= '' then --if unsuppressed & present
 		table.insert( elements, p.createRow( 'WORLDCATID', '', worldcatId, '[[Онлайн компютърен библиотечен център|WorldCat]]: [https://www.worldcat.org/identities/'..worldcatId..' '..worldcatId..']', false ) ) --Validation?
 		worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 	elseif worldcatId == nil then --if unsuppressed & absent
-		local viafId = parentArgs['VIAF']
-		local lccnId = parentArgs['LCCN']
-		if viafId and viafId ~= '' and p.viafLink( viafId ) then --VIAF must be unsuppressed & validated
-			table.insert( elements, p.createRow( 'VIAF', '', viafId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
-			if (namespace == 0) then 
-				worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
-			end
-		elseif lccnId and lccnId ~= '' and p.lccnLink( lccnId ) then --LCCN must be unsuppressed & validated
+		local lccnId = parentArgs[mw.ustring.lower('LCCN')]
+		local viafId = parentArgs[mw.ustring.lower('VIAF')]
+		if lccnId and lccnId ~= '' and p.lccnLink( lccnId ) then --LCCN must be unsuppressed & validated
 			local lccnParts = p.splitLccn( lccnId )
 			if lccnParts and lccnParts[1] ~= 'sh' then
 				local lccnIdFmtd = lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3]
@@ -890,6 +920,11 @@ function p.authorityControl( frame )
 				if (namespace == 0) then 
 					worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 				end
+			end
+		elseif viafId and viafId ~= '' and p.viafLink( viafId ) then --VIAF must be unsuppressed & validated
+			table.insert( elements, p.createRow( 'VIAF', '', viafId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
+			if (namespace == 0) then 
+				worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
 			end
 		end
 	elseif worldcatId == '' then --if suppressed
@@ -899,8 +934,7 @@ function p.authorityControl( frame )
 	local Navbox = require('Модул:Navbox')
 	local elementsCat = ''
 	if rct > 20 then
-		local catName = 'Нормативен контрол с над 20 контролни идентификатора'
-		elementsCat  = '[[Категория:' .. catName .. ']]' .. p.redCatLink(catName)
+		elementsCat  = '[[Категория:Нормативен контрол с над 20 контролни идентификатора]]'
 	end
 	
 	local outString = ''
