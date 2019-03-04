@@ -132,6 +132,30 @@ end
 local p = {}
 
 --[[==========================================================================]]
+--[[								Doc table								  ]]
+--[[==========================================================================]]
+
+function p.docConfTable( frame )
+	local wikiTable = '{| class="wikitable sortable"\n'..
+					  '|-\n'..
+					  '!Параметър'..
+					  '!!Показване<br />в нав. лента'..
+					  '!!data-sort-type="number"|Свойство<br />в Уикиданни\n'
+	for _, db in pairs( conf.databases ) do
+		local param, link, pid = db[1], db[2], db[3]
+		if type(pid) == 'number' and pid > 0 then
+		wikiTable = wikiTable..
+					'|-\n'..
+					'|'..param..
+					'||'..link..
+					'||data-sort-value="'..pid..'"|[[:d:property:P'..pid..'|P'..pid..']]\n'
+		end
+	end
+	return wikiTable..
+					'|}'
+end
+
+--[[==========================================================================]]
 --[[                                   Main                                   ]]
 --[[==========================================================================]]
 
@@ -147,7 +171,7 @@ function p.authorityControlTaxon( frame )
 	local tFroms = {} --non-sequential table of unique froms
 	local iFroms = 0 --integer size of tFroms, b/c Lua
 	local categories = {
-		'[[Категория:Таксономичен контрол с from параметри]]',
+		'[[Категория:Таксономичен контрол без from параметри]]',
 		'[[Категория:Таксономичен контрол, десинхронизиран с Уикиданни]]',
 		'', -- [3] placeholder for [[Category:Taxonbars using multiple manual Wikidata items]]
 		'', -- [4] placeholder for [[Category:Taxonbars with invalid from parameters]]
@@ -268,6 +292,7 @@ function p.authorityControlTaxon( frame )
 	--Check for unknown parameters
 	--create knowns list
 	local acceptableArgs = { from = true, } --master list of l/c acceptable args
+	local AuCl = require( 'Модул:Нормативен контрол' ) --exclude Authority control parameters; they shouldn't appear as unknown
 	for _, d in pairs( conf.databases ) do
 		if d[1] ~= 'Wikidata' then --made obsolete by from
 			acceptableArgs[mw.ustring.lower(d[1])] = true
@@ -275,6 +300,12 @@ function p.authorityControlTaxon( frame )
 	end
 	for _, a in pairs( conf.aliases ) do
 		acceptableArgs[mw.ustring.lower(a[1])] = true
+	end
+	for _, acc in pairs( AuCl.conf ) do
+		acceptableArgs[mw.ustring.lower(acc[1])] = true
+	end
+	for _, aca in pairs( AuCl.aliases ) do
+		acceptableArgs[mw.ustring.lower(aca[1])] = true
 	end
 	--create trimmed parents list
 	local baseParentArgs = {} --condensed list of l/c parent args w/o trailing #s
@@ -623,12 +654,9 @@ function p.authorityControlTaxon( frame )
 	if string.sub(currentTitle.subpageText,1,9) == 'testcases' then parentArgs['demo'] = true end
 	if not isNilOrEmpty( parentArgs['demo'] ) then
 		outString = outString .. mw.text.nowiki(table.concat(categories)) .. '<br />'
-	elseif currentTitle.namespace == 0 then
-		if outString ~= '' then
-			outString = outString .. table.concat(categories)
-		end
+	elseif currentTitle.namespace == 0 and outString ~= '' then
+		outString = outString .. table.concat(categories)
 	end
-	
 	return outString .. errors
 end
 
