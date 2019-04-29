@@ -5,7 +5,6 @@
 --    in the global  Data:*.tab  pages on Commons, and used everywhere.
 -- end
 -- SAW:   https://www.mediawiki.org/wiki/Multilingual_Templates_and_Modules
--- ATТENTION:
 --    Please do NOT rename this module - it has to be identical on all wikis.
 --    This code is maintained at https://www.mediawiki.org/wiki/Module:TNT
 --    Please do not modify it anywhere else, as it may get copied and override your changes.
