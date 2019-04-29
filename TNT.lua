@@ -29,7 +29,7 @@
 --    {{#invoke:TNT | doc | Graph:Lines }}
 --        uses https://commons.wikimedia.org/wiki/Data:Templatedata/Graph:Lines.tab
 --        if the current page is Template:Graph:Lines/doc
--- end
+-- 
 
 local p = {}
 local i18nDataset = 'I18n/Module:TNT.tab'
