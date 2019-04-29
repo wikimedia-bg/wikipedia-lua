@@ -1,5 +1,5 @@
 --
--- INTRO:   (!!! DO NOT RENAME THIS PAGE !!!)
+-- INTRO:   (!!! DON'T RENAME THIS PAGE !!!)
 --    This module allows any template or module to be copy/pasted between
 --    wikis without any translation changes. All translation text is stored
 --    in the global  Data:*.tab  pages on Commons, and used everywhere.
