@@ -10,7 +10,6 @@
 --    This code is maintained at https://www.mediawiki.org/wiki/Module:TNT
 --    Please do not modify it anywhere else, as it may get copied and override your changes.
 --    Suggestions can be made at https://www.mediawiki.org/wiki/Module_talk:TNT
---
 -- DESCRIPTION:
 --    The "msg" function uses a Commons dataset to translate a message
 --    with a given key (e.g. source-table), plus optional arguments
