@@ -62,6 +62,7 @@ function p.format(dataset, key, params, lang)
 	checkType('format', 2, key, 'string')
 	checkType('format', 3, params, 'table', true)
 	checkType('format', 4, lang, 'string', true)
+	-- end
 	return formatMessage(dataset, key, params, lang)
 end
 
