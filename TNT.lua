@@ -7,7 +7,7 @@
 -- SAW:   https://www.mediawiki.org/wiki/Multilingual_Templates_and_Modules
 -- ATТENTION:
 --    Please do NOT rename this module - it has to be identical on all wikis.
---    This code is maintained at https://www.mediawiki.org/wiki/Module:TNT
+--    This code is maintained at https://www.mediawiki.org/wik
 --    Please do not modify it anywhere else, as it may get copied and override your changes.
 --    Suggestions can be made at https://www.mediawiki.org/wiki/Module_talk:TNT
 -- DESCRIPTION:
