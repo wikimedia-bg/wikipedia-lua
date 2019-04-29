@@ -18,7 +18,7 @@
 --    to the wiki markup in the current content language.
 --    Use lang=xx to set language.  Example:
 --
---   nkknb
+--    {{#invoke:TNT | msg
 --     | I18n/Template:Graphs.tab  <!-- https://commons.wikimedia.org/wiki/Data:I18n/Template:Graphs.tab -->
 --     | source-table              <!-- uses a translation message with id = "source-table" -->
 --     | param1 }}                 <!-- optional parameter -->
