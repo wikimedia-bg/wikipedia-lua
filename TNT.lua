@@ -3,7 +3,7 @@
 --    This module allows any template or module to be copy/pasted between
 --    wikis without any translation changes. All translation text is stored
 --    in the global  Data:*.tab  pages on Commons, and used everywhere.
---
+-- end
 -- SAW:   https://www.mediawiki.org/wiki/Multilingual_Templates_and_Modules
 -- ATТENTION:
 --    Please do NOT rename this module - it has to be identical on all wikis.
