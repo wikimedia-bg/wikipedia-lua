@@ -1,23 +1,25 @@
 --
--- INTRO:   (!!! DON'T RENAME THIS PAGE !!!)
+-- INTRO:   (!!! DO NOT RENAME THIS PAGE !!!)
 --    This module allows any template or module to be copy/pasted between
 --    wikis without any translation changes. All translation text is stored
 --    in the global  Data:*.tab  pages on Commons, and used everywhere.
--- end
--- SAW:   https://www.mediawiki.org/wiki/Multilingual_Templates_and_Modules
--- ATТENTION:
+--
+-- SEE:   https://www.mediawiki.org/wiki/Multilingual_Templates_and_Modules
+--
+-- ATTENTION:
 --    Please do NOT rename this module - it has to be identical on all wikis.
 --    This code is maintained at https://www.mediawiki.org/wiki/Module:TNT
 --    Please do not modify it anywhere else, as it may get copied and override your changes.
 --    Suggestions can be made at https://www.mediawiki.org/wiki/Module_talk:TNT
+--
 -- DESCRIPTION:
 --    The "msg" function uses a Commons dataset to translate a message
 --    with a given key (e.g. source-table), plus optional arguments
 --    to the wiki markup in the current content language.
 --    Use lang=xx to set language.  Example:
--- end
+--
 --    {{#invoke:TNT | msg
---     | I18n/Template:Graphs.tab  <!-- http://commons.wikimedia.org/wiki/Data:I18n/Template:Graphs.tab -->
+--     | I18n/Template:Graphs.tab  <!-- https://commons.wikimedia.org/wiki/Data:I18n/Template:Graphs.tab -->
 --     | source-table              <!-- uses a translation message with id = "source-table" -->
 --     | param1 }}                 <!-- optional parameter -->
 --
@@ -29,7 +31,7 @@
 --    {{#invoke:TNT | doc | Graph:Lines }}
 --        uses https://commons.wikimedia.org/wiki/Data:Templatedata/Graph:Lines.tab
 --        if the current page is Template:Graph:Lines/doc
--- end
+--
 
 local p = {}
 local i18nDataset = 'I18n/Module:TNT.tab'
@@ -62,7 +64,6 @@ function p.format(dataset, key, params, lang)
 	checkType('format', 2, key, 'string')
 	checkType('format', 3, params, 'table', true)
 	checkType('format', 4, lang, 'string', true)
-	-- end
 	return formatMessage(dataset, key, params, lang)
 end
 
