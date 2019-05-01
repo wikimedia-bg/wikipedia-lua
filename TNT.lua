@@ -38,7 +38,7 @@ local i18nDataset = 'I18n/Module:TNT.tab'
 local checkType = require('libraryUtil').checkType
 
 -- Forward declaration of the local functions
-local formatMessage, loadData, link
+local sanitizeDataset, loadData, link, formatMessage
 
 function p.msg(frame)
 	local dataset, id
@@ -74,14 +74,12 @@ function p.link(frame)
 end
 
 function p.doc(frame)
-	return frame:extensionTag(
-			'templatedata',
-			p.getTemplateData(mw.text.trim(frame.args[1]))
-	) .. formatMessage(i18nDataset, 'edit_doc', {link(dataset)})
+	local dataset = 'Templatedata/' .. sanitizeDataset(frame.args[1])
+	return frame:extensionTag('templatedata', p.getTemplateData(dataset)) ..
+		   formatMessage(i18nDataset, 'edit_doc', {link(dataset)})
 end
 
-function p.getTemplateData(page)
-	dataset = 'Templatedata/' .. mw.text.trim(page)
+function p.getTemplateData(dataset)
 	-- TODO: add '_' parameter once lua starts reindexing properly for "all" languages
 	local data = loadData(dataset)
 	local names = {}
@@ -124,12 +122,24 @@ end
 
 -- Local functions
 
-loadData = function(dataset, lang)
-	if not dataset or dataset == '' then
-		error(formatMessage(i18nDataset, 'error_no_dataset', {}))
+sanitizeDataset = function(dataset)
+	if not dataset then
+		return nil
 	end
-	if string.sub(dataset,-4) ~= '.tab' then
-		dataset = dataset .. '.tab'
+	dataset = mw.text.trim(dataset)
+	if dataset == '' then
+		return nil
+	elseif string.sub(dataset,-4) ~= '.tab' then
+		return dataset .. '.tab'
+	else
+		return dataset
+	end
+end
+
+loadData = function(dataset, lang)
+	dataset = sanitizeDataset(dataset)
+	if not dataset then
+		error(formatMessage(i18nDataset, 'error_no_dataset', {}))
 	end
 
 	local data = mw.ext.data.get(dataset, lang)
