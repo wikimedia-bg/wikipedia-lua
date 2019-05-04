@@ -35,7 +35,6 @@
 
 local p = {}
 local i18nDataset = 'I18n/Module:TNT.tab'
-local checkType = require('libraryUtil').checkType
 
 -- Forward declaration of the local functions
 local sanitizeDataset, loadData, link, formatMessage
@@ -60,6 +59,7 @@ end
 
 -- Identical to p.msg() above, but used from other lua modules
 function p.format(dataset, key, params, lang)
+	local checkType = require('libraryUtil').checkType
 	checkType('format', 1, dataset, 'string')
 	checkType('format', 2, key, 'string')
 	checkType('format', 3, params, 'table', true)
@@ -67,8 +67,8 @@ function p.format(dataset, key, params, lang)
 	return formatMessage(dataset, key, params, lang)
 end
 
--- Converts first parameter to a interwiki-ready link. For example, it converts
--- "Sandbox/Sample.tab" -> 'commons:Data:Sandbox/Sample.tab'
+-- Obsolete function that adds a 'c:' prefix to the first param.
+-- "Sandbox/Sample.tab" -> 'c:Data:Sandbox/Sample.tab'
 function p.link(frame)
 	return link(frame.args[1])
 end
@@ -157,12 +157,7 @@ end
 
 -- Given a dataset name, convert it to a title with the 'commons:data:' prefix
 link = function(dataset)
-	dataset = 'Data:' .. mw.text.trim(dataset or '')
-	if mw.site.siteName == 'Wikimedia Commons' then
-		return dataset
-	else
-		return 'commons:' .. dataset
-	end
+	return 'c:Data:' .. mw.text.trim(dataset or '')
 end
 
 formatMessage = function(dataset, key, params, lang)
