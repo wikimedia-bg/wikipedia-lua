@@ -54,7 +54,10 @@ local function addRow(rowArgs)
 					:css('text-align', 'center')
 					:cssText(args.headerstyle)
 					:cssText(rowArgs.headerstyle)
+					:newline()
 					:wikitext(rowArgs.header)
+					:done()
+					:newline()
 	elseif rowArgs.data then
 		local row = root:tag('tr')
 		row:addClass(rowArgs.rowclass)
@@ -68,8 +71,10 @@ local function addRow(rowArgs)
 					:css('text-align', 'left')
 					:cssText(args.labelstyle)
 					:cssText(rowArgs.labelstyle)
+					:newline()
 					:wikitext(rowArgs.label)
 					:done()
+					:newline()
 		end
 
 		local dataCell = row:tag('td')
@@ -84,6 +89,8 @@ local function addRow(rowArgs)
 			:cssText(rowArgs.datastyle)
 			:newline()
 			:wikitext(rowArgs.data)
+			:done()
+			:newline()
 	end
 end
 
@@ -109,7 +116,10 @@ local function renderAboveRow()
 				:css('font-size', '125%')
 				:css('font-weight', 'bold')
 				:cssText(args.abovestyle)
+				:newline()
 				:wikitext(args.above)
+				:done()
+				:newline()
 end
 
 local function renderBelowRow()
@@ -124,6 +134,8 @@ local function renderBelowRow()
 				:cssText(args.belowstyle)
 				:newline()
 				:wikitext(args.below)
+				:done()
+				:newline()
 end
 
 local function renderSubheaders()
