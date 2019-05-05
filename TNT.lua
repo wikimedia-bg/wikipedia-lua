@@ -58,13 +58,25 @@ function p.msg(frame)
 end
 
 -- Identical to p.msg() above, but used from other lua modules
-function p.format(dataset, key, params, lang)
+-- Parameters:  name of dataset, message key, optional arguments
+-- Example with 2 params:  format('I18n/Module:TNT', 'error_bad_msgkey', 'my-key', 'my-dataset')
+function p.format(dataset, key, ...)
 	local checkType = require('libraryUtil').checkType
 	checkType('format', 1, dataset, 'string')
 	checkType('format', 2, key, 'string')
-	checkType('format', 3, params, 'table', true)
-	checkType('format', 4, lang, 'string', true)
-	return formatMessage(dataset, key, params, lang)
+	return formatMessage(dataset, key, {...})
+end
+
+
+-- Identical to p.msg() above, but used from other lua modules with the language param
+-- Parameters:  language code, name of dataset, message key, optional arguments
+-- Example with 2 params:  formatInLanguage('es', I18n/Module:TNT', 'error_bad_msgkey', 'my-key', 'my-dataset')
+function p.formatInLanguage(lang, dataset, key, ...)
+	local checkType = require('libraryUtil').checkType
+	checkType('formatInLanguage', 1, lang, 'string')
+	checkType('formatInLanguage', 2, dataset, 'string')
+	checkType('formatInLanguage', 3, key, 'string')
+	return formatMessage(dataset, key, {...}, lang)
 end
 
 -- Obsolete function that adds a 'c:' prefix to the first param.
