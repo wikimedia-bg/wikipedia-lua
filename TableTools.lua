@@ -16,6 +16,7 @@ local p = {}
 local floor = math.floor
 local infinity = math.huge
 local checkType = libraryUtil.checkType
+local checkTypeMulti = libraryUtil.checkTypeMulti
 
 --[[
 ------------------------------------------------------------------------------------
@@ -250,6 +251,7 @@ end
 -- but for arrays it is more efficient to use the # operator.
 ------------------------------------------------------------------------------------
 --]]
+
 function p.size(t)
 	checkType('size', 1, t, 'table')
 	local i = 0
@@ -257,6 +259,196 @@ function p.size(t)
 		i = i + 1
 	end
 	return i
+end
+
+
+local function defaultKeySort(item1, item2)
+	-- "number" < "string", so numbers will be sorted before strings.
+	local type1, type2 = type(item1), type(item2)
+	if type1 ~= type2 then
+		return type1 < type2
+	else -- This will fail with table, boolean, function.
+		return item1 < item2
+	end
+end
+
+--[[
+	Returns a list of the keys in a table, sorted using either a default
+	comparison function or a custom keySort function.
+]]
+function p.keysToList(t, keySort, checked)
+	if not checked then
+		checkType('keysToList', 1, t, 'table')
+		checkTypeMulti('keysToList', 2, keySort, { 'function', 'boolean', 'nil' })
+	end
+	
+	local list = {}
+	local index = 1
+	for key, value in pairs(t) do
+		list[index] = key
+		index = index + 1
+	end
+	
+	if keySort ~= false then
+		keySort = type(keySort) == 'function' and keySort or defaultKeySort
+		
+		table.sort(list, keySort)
+	end
+	
+	return list
+end
+
+--[[
+	Iterates through a table, with the keys sorted using the keysToList function.
+	If there are only numerical keys, sparseIpairs is probably more efficient.
+]]
+function p.sortedPairs(t, keySort)
+	checkType('sortedPairs', 1, t, 'table')
+	checkType('sortedPairs', 2, keySort, 'function', true)
+	
+	local list = p.keysToList(t, keySort, true)
+	
+	local i = 0
+	return function()
+		i = i + 1
+		local key = list[i]
+		if key ~= nil then
+			return key, t[key]
+		else
+			return nil, nil
+		end
+	end
+end
+
+--[[
+	Returns true if all keys in the table are consecutive integers starting at 1.
+--]]
+function p.isArray(t)
+	checkType("isArray", 1, t, "table")
+	
+	local i = 0
+	for k, v in pairs(t) do
+		i = i + 1
+		if t[i] == nil then
+			return false
+		end
+	end
+	return true
+end
+
+-- { "a", "b", "c" } -> { a = 1, b = 2, c = 3 }
+function p.invert(array)
+	checkType("invert", 1, array, "table")
+	
+	local map = {}
+	for i, v in ipairs(array) do
+		map[v] = i
+	end
+	
+	return map
+end
+
+--[[
+	{ "a", "b", "c" } -> { ["a"] = true, ["b"] = true, ["c"] = true }
+--]]
+function p.listToSet(t)
+	checkType("listToSet", 1, t, "table")
+	
+	local set = {}
+	for _, item in ipairs(t) do
+		set[item] = true
+	end
+	
+	return set
+end
+
+--[[
+	Recursive deep copy function.
+	Preserves identities of subtables.
+	
+]]
+local function _deepCopy(orig, includeMetatable, already_seen)
+	-- Stores copies of tables indexed by the original table.
+	already_seen = already_seen or {}
+	
+	local copy = already_seen[orig]
+	if copy ~= nil then
+		return copy
+	end
+	
+	if type(orig) == 'table' then
+		copy = {}
+		for orig_key, orig_value in pairs(orig) do
+			copy[deepcopy(orig_key, includeMetatable, already_seen)] = deepcopy(orig_value, includeMetatable, already_seen)
+		end
+		already_seen[orig] = copy
+		
+		if includeMetatable then
+			local mt = getmetatable(orig)
+			if mt ~= nil then
+				local mt_copy = deepcopy(mt, includeMetatable, already_seen)
+				setmetatable(copy, mt_copy)
+				already_seen[mt] = mt_copy
+			end
+		end
+	else -- number, string, boolean, etc
+		copy = orig
+	end
+	return copy
+end
+
+function p.deepCopy(orig, noMetatable, already_seen)
+	checkType("deepCopy", 3, already_seen, "table", true)
+	
+	return _deepCopy(orig, not noMetatable, already_seen)
+end
+
+--[[
+	Concatenates all values in the table that are indexed by a number, in order.
+	sparseConcat{ a, nil, c, d }  =>  "acd"
+	sparseConcat{ nil, b, c, d }  =>  "bcd"
+]]
+function p.sparseConcat(t, sep, i, j)
+	local list = {}
+	
+	local list_i = 0
+	for _, v in p.sparseIpairs(t) do
+		list_i = list_i + 1
+		list[list_i] = v
+	end
+	
+	return table.concat(list, sep, i, j)
+end
+
+--[[
+-- This returns the length of a table, or the first integer key n counting from
+-- 1 such that t[n + 1] is nil. It is similar to the operator #, but may return
+-- a different value when there are gaps in the array portion of the table.
+-- Intended to be used on data loaded with mw.loadData. For other tables, use #.
+-- Note: #frame.args in frame object always be set to 0, regardless of 
+-- the number of unnamed template parameters, so use this function for
+-- frame.args.
+--]]
+function p.length(t)
+	local i = 1
+	while t[i] ~= nil do
+		i = i + 1
+	end
+	return i - 1
+end
+
+function p.inArray(arr, valueToFind)
+	checkType("inArray", 1, arr, "table")
+	
+	-- if valueToFind is nil, error?
+	
+	for _, v in ipairs(arr) do
+		if v == valueToFind then
+			return true
+		end
+	end
+	
+	return false
 end
 
 return p
