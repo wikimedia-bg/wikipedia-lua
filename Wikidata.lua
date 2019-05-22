@@ -517,8 +517,15 @@ end
 function p.getDescription(frame)
 	local langcode = frame.args[1]
 	local id = frame.args[2]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
-	-- return description of a Wikidata entity in the given language or the default language of this Wikipedia site
-	return mw.wikibase.getEntityObject(id).descriptions[langcode or wiki.langcode].value
+	local result = ''
+	local entity = mw.wikibase.getEntity(id)
+	if entity and entity.descriptions then
+		local description = entity.descriptions[langcode or wiki.langcode]	-- get the description of a Wikidata entity in the given language or the default language of this Wikipedia site
+		if description then
+			result = description.value
+		end
+	end
+	return result
 end
 
 function p.count(frame)
