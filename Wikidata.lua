@@ -525,7 +525,12 @@ function p.getDescription(frame)
 			result = description.value
 		end
 	end
-	return result
+	
+	if ( langcode == 'bg' or not langcode ) and not mw.ustring.match( result, '^[А-я0-9].*$' ) then
+		return ''
+	else
+		return result
+	end
 end
 
 function p.count(frame)
