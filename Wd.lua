@@ -1740,6 +1740,21 @@ function State:getReference(statement)
 		if statement.snaks[p.aliasesP.importedFrom] then
 			statement.snaks[p.aliasesP.importedFrom] = nil
 		end
+				
+		-- don't include "inferred from", which is added by a bot
+		if statement.snaks['P3452'] then
+			statement.snaks['P3452'] = nil
+		end
+		
+		-- don't include "type of reference"
+		if statement.snaks['P3865'] then
+			statement.snaks['P3865'] = nil
+		end
+		
+		-- don't include "reference has role"
+		if statement.snaks['P6184'] then
+			statement.snaks['P6184'] = nil
+		end
 		
 		-- don't include languages that are equal to the local one
 		for i, v in ipairs(langParams) do
@@ -1759,6 +1774,10 @@ function State:getReference(statement)
 				params[i] = self:getReferenceDetails(statement.snaks, i, false, self.linked, true)  -- link = true/false, anyLang = true
 			else
 				params[i] = {self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)}  -- link = true/false, anyLang = true
+			end
+			
+			if i == p.aliasesP.languageOfWorkOrName then
+				params[i] = {p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})}
 			end
 			
 			if #params[i] == 0 then
@@ -1841,37 +1860,64 @@ function State:getReference(statement)
 			
 			-- combine "reference URL" and "title" into one link if both are present
 			if params[p.aliasesP.referenceURL] and params[p.aliasesP.title] then
-				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.referenceURL][1] .. ' "' .. params[p.aliasesP.title][1] .. '"]'
+				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.referenceURL][1] .. ' ' .. params[p.aliasesP.title][1] .. ']'
 			elseif params[p.aliasesP.referenceURL] then
-				citeParams['default'][#citeParams['default'] + 1] = params[p.aliasesP.referenceURL][1]
+				local simpleUrl = mw.ustring.gsub(params[p.aliasesP.referenceURL][1], '^%a+://([^/]+).*', ' %1')
+				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.referenceURL][1] .. simpleUrl .. ']'
 			elseif params[p.aliasesP.title] then
-				citeParams['default'][#citeParams['default'] + 1] = '"' .. params[p.aliasesP.title][1] .. '"'
+				citeParams['default'][#citeParams['default'] + 1] = params[p.aliasesP.title][1]
 			end
 			
 			-- then add "stated in"
 			if params[p.aliasesP.statedIn] then
-				citeParams['default'][#citeParams['default'] + 1] = "''" .. params[p.aliasesP.statedIn][1] .. "''"
+				citeParams['default'][#citeParams['default'] + 1] = params[p.aliasesP.statedIn][1]
+			end
+			
+			-- then add "retrieved"
+			if params[p.aliasesP.retrieved] then
+				citeParams['default'][#citeParams['default'] + 1] = 'Посетен на ' .. params[p.aliasesP.retrieved][1]
+			end
+			
+			-- combine "Archive URL" and "Archive date" into one if both are present
+			if params[p.aliasesP.archiveURL] and params[p.aliasesP.archiveDate] then
+				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.archiveURL][1] .. ' Архив] на оригинала от ' .. params[p.aliasesP.archiveDate][1]
+			elseif params[p.aliasesP.archiveURL] then
+				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.archiveURL][1] .. ' Архив] на оригинала'
+			end
+			
+			-- and lastly "lang"
+			local langCite = ''
+			if params[p.aliasesP.languageOfWorkOrName] then
+				if mw.isSubsting() then
+					langCite = ' <small style="color:#444">({{cite-lang|' .. params[p.aliasesP.languageOfWorkOrName][1] .. '}})</small>'
+				else
+					langCite = ' <small style="color:#444">(' .. mw.getCurrentFrame():expandTemplate{title='cite-lang', args=params[p.aliasesP.languageOfWorkOrName]} .. ')</small>'
+				end
 			end
 			
 			-- remove previously added parameters so that they won't be added a second time
+			params[p.aliasesP.languageOfWorkOrName] = nil
 			params[p.aliasesP.author] = nil
 			params[p.aliasesP.referenceURL] = nil
 			params[p.aliasesP.title] = nil
+			params[p.aliasesP.retrieved] = nil
 			params[p.aliasesP.statedIn] = nil
+			params[p.aliasesP.archiveURL] = nil
+			params[p.aliasesP.archiveDate] = nil
 			
 			-- add the rest of the parameters
 			for i, v in pairs(params) do
 				i = self.conf:getLabel(i)
 				
 				if i ~= "" then
-					citeParams['default'][#citeParams['default'] + 1] = i .. ": " .. v[1]
+					citeParams['default'][#citeParams['default'] + 1] = mw.language.getContentLanguage():ucfirst(i) .. ": " .. v[1]
 				end
 			end
 			
-			value = table.concat(citeParams['default'], "; ")
+			value = table.concat(citeParams['default'], ", ")
 			
 			if value ~= "" then
-				value = value .. "."
+				value = value .. "." .. langCite
 			end
 		end
 		
