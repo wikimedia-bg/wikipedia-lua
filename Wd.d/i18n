@@ -33,7 +33,7 @@ local p = {
 			["years"]         = ' години'
 		},
 		["julian-calendar"] = 'Юлиански календар',  -- linked page title
-		["julian"]          = '<abbr title="Юлиански календар">Ю.К.</abbr>',
+		["julian"]          = '<abbr title="Юлиански календар">ЮК</abbr>',
 		["BCE"]             = 'пр.н.е.',
 		["CE"]              = 'сл.н.е.',
 		["common-era"]      = 'Нова Ера'  -- linked page title
@@ -57,14 +57,14 @@ local p = {
 		["web"] = {
 			-- <= left side: all allowed reference properties for *web page sources* per https://www.wikidata.org/wiki/Help:Sources
 			-- => right side: corresponding parameter names in (equivalent of) [[:en:Template:Cite web]] (if non-existent, keep empty i.e. "")
-			[aliasesP.statedIn]             = "website",
+			[aliasesP.statedIn]             = "work",
 			[aliasesP.referenceURL]         = "url",
 			[aliasesP.publicationDate]      = "date",
-			[aliasesP.retrieved]            = "access-date",
+			[aliasesP.retrieved]            = "accessdate",
 			[aliasesP.title]                = "title",
-			[aliasesP.archiveURL]           = "archive-url",
-			[aliasesP.archiveDate]          = "archive-date",
-			[aliasesP.languageOfWorkOrName] = "language",
+			[aliasesP.archiveURL]           = "archiveurl",
+			[aliasesP.archiveDate]          = "archivedate",
+			[aliasesP.languageOfWorkOrName] = "lang",
 			[aliasesP.language]             = "language",  -- fallback option
 			[aliasesP.author]               = "author",  -- existence of author1, author2, author3, etc. is assumed
 			[aliasesP.publisher]            = "publisher",
@@ -98,7 +98,7 @@ function p.getOrdinalSuffix(num)
 		return "-ви"
 	elseif num == '2' then
 		return "-ри"
-	elseif num == '3' then
+	elseif num == '3' or num == '4' then
 		return "-ти"
 	else
 		return "-и"
@@ -108,7 +108,7 @@ end
 function p.addDelimiters(n)
 	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
 	
-	if left and num and right then
+	if (left and num and right) and (#num > 3) then
 		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. p['numeric']['delimiter']):reverse()) .. right
 	else
 		return n
