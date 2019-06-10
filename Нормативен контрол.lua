@@ -94,8 +94,8 @@ function p.uscongressLink( id )
 end
 
 function p.naraLink( id )
-	--P1225's format regex: ^([1-9]\d{0,7})$ (e.g. 12345678)
-	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?$' ) then
+	--P1225's format regex: ^([1-9]\d{0,8})$ (e.g. 123456789)
+	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%d?$' ) then
 		return false
 	end
 	return '[https://catalog.archives.gov/id/'..id..' '..id..']'..p.getCatForId( 'NARA' )
