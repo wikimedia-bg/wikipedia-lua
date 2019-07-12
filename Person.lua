@@ -62,6 +62,11 @@ function Date:fromString(dateString)
 	if monthName and year then
 		return d:set(year, monthName)
 	end
+	millennium = mw.ustring.match(dateString, "^(%d+)\. millennium")
+	if millennium then
+		d.millennium = millennium
+		return d
+	end
 	century = mw.ustring.match(dateString, "^(%d+)\. century")
 	if century then
 		d.century = century
@@ -114,14 +119,17 @@ end
 
 function birthCategories(date)
 	local cats = {}
+	if date.millennium then
+		table.insert(cats, "Родени през " .. date.millennium .. " хилядолетие" .. bceSuffix(date.bce))
+	end
 	if date.century then
-		table.insert(cats, "Родени през " ..  date.century .. " век" .. bceSuffix(date.bce))
+		table.insert(cats, "Родени през " .. date.century .. " век" .. bceSuffix(date.bce))
 	end
 	if date.decade then
-		table.insert(cats, "Родени през " ..  date.decade.. "-те години" .. bceSuffix(date.bce))
+		table.insert(cats, "Родени през " .. date.decade .. "-те години" .. bceSuffix(date.bce))
 	end
 	if date.year then
-		table.insert(cats, "Родени през " ..  date.year .. " година" .. bceSuffix(date.bce))
+		table.insert(cats, "Родени през " .. date.year .. " година" .. bceSuffix(date.bce))
 	end
 	if date.day and date.monthName then
 		table.insert(cats, "Родени на " ..  date.day .. " " .. date.monthName)
@@ -134,6 +142,9 @@ end
 
 function deathCategories(date)
 	local cats = {}
+	if date.millennium then
+		table.insert(cats, "Починали през " ..  date.millennium .. " хилядолетие" .. bceSuffix(date.bce))
+	end
 	if date.century then
 		table.insert(cats, "Починали през " ..  date.century .. " век" .. bceSuffix(date.bce))
 	end
@@ -179,6 +190,9 @@ function prepareDeathDateVars(dateOfBirthString, dateOfDeathString)
 end
 
 function wikifyDate(date)
+	if date.millennium then
+		return "[[" .. date.millennium .. " хилядолетие" .. bceSuffix(date.bce) .. "]]"
+	end
 	if date.century then
 		return "[[" .. date.century .. " век" .. bceSuffix(date.bce) .. "]]"
 	end
