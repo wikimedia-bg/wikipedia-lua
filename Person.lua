@@ -242,6 +242,10 @@ function isAfterGregorianIntroduced(date)
 	if date.century and tonumber(date.century) < 16 then
 		return false
 	end
+	-- The calendar makes very little sense with millennium level accuracy.
+	if date.millennium then
+		return true
+	end
 	
 	-- After or in 1583, the 1580s, or the 16th century.
 	return true
