@@ -223,10 +223,6 @@ function formatAgeSuffix(age)
 end
 
 function isAfterGregorianIntroduced(date)
-	-- The calendar makes very little sense with millennium level accuracy.
-	if date.millennium then
-		return true
-	end
 	-- Shouldn't be possible if calendarmodel is defined, but best be safe.
 	if date.unknown then
 		return false
@@ -244,6 +240,10 @@ function isAfterGregorianIntroduced(date)
 		return false
 	end
 	if date.century and tonumber(date.century) < 16 then
+		return false
+	end
+	-- The calendar makes very little sense with millennium level accuracy.
+	if date.millennium then
 		return false
 	end
 	
