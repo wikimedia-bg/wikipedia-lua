@@ -31,6 +31,7 @@ p.valueCommands = {
 p.nameCommands = {
 	label      = "label",
 	title      = "title",
+	description = "description",
 	alias      = "alias",
 	aliases    = "aliases"
 }
@@ -2343,6 +2344,13 @@ function nameCommand(args, funcName)
 		
 		if _.curState.linked and value then
 			value = buildWikilink(value)
+		end
+ 	
+	elseif funcName == p.generalCommands.description then
+		_.entity = mw.wikibase.getEntity(_.entityID)
+
+		if _.entity.descriptions[_.langCode] then
+			value = _.entity.descriptions[_.langCode].value
 		end
 	elseif funcName == p.nameCommands.alias or funcName == p.nameCommands.aliases then
 		local aliases, parsedFormat, formatParams, sep
