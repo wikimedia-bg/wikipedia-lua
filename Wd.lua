@@ -2346,7 +2346,7 @@ function nameCommand(args, funcName)
 			value = buildWikilink(value)
 		end
  	
-	elseif funcName == p.generalCommands.description then
+	elseif funcName == p.nameCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 
 		if _.entity.descriptions[_.langCode] then
