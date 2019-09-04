@@ -2349,7 +2349,7 @@ function nameCommand(args, funcName)
 	elseif funcName == p.nameCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 
-		if _.entity.descriptions[_.langCode] then
+		if _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
 	elseif funcName == p.nameCommands.alias or funcName == p.nameCommands.aliases then
