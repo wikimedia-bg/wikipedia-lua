@@ -163,7 +163,7 @@ function deathCategories(date)
 	return cats
 end
 
-function prepareBirthDateVars(dateOfBirthString, dateOfDeathString)
+function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	if isEmpty(dateOfBirthString) then
 		return nil
 	end
@@ -173,10 +173,11 @@ function prepareBirthDateVars(dateOfBirthString, dateOfDeathString)
 		vars.age = age(vars.date)
 	end
 	vars.cats = birthCategories(vars.date)
+        vars.julian = isJulian(vars.date, calendar)
 	return vars
 end
 
-function prepareDeathDateVars(dateOfBirthString, dateOfDeathString)
+function prepareDeathDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	if isEmpty(dateOfDeathString) then
 		return nil
 	end
@@ -186,6 +187,7 @@ function prepareDeathDateVars(dateOfBirthString, dateOfDeathString)
 		vars.age = age(Date:fromString(dateOfBirthString), vars.date)
 	end
 	vars.cats = deathCategories(vars.date)
+        vars.julian = isJulian(vars.date, calendar)
 	return vars
 end
 
@@ -222,6 +224,18 @@ function formatAgeSuffix(age)
 	return '<span class="noprint"> <small>('.. age .. ' г.)</small></span>'
 end
 
+function isJulian(date, calendar)
+	-- The "Q" things are calendarmodels as returned by Wikidata queries.
+	-- For more information, see [[:wikidata:Help:Dates]].
+	local julian_items = {
+		["Q11184"] = true,
+		["Q1985786"] = true,
+		["юлиански"] = true,
+	}
+	-- Equivalent to Python's "if calendar in julian_items".
+	return julian_items[calendar] and isAfterGregorianIntroduced(date)
+end
+
 function isAfterGregorianIntroduced(date)
 	-- Shouldn't be possible if calendarmodel is defined, but best be safe.
 	if date.unknown then
@@ -252,21 +266,15 @@ function isAfterGregorianIntroduced(date)
 end
 
 function formatDate(vars, calendar)
-	-- The "Q" things are calendarmodels as returned by Wikidata queries.
-	-- For more information, see [[:wikidata:Help:Dates]].
-	local julian_items = {
-		["Q11184"] = true,
-		["Q1985786"] = true,
-		["юлиански"] = true,
-	}
-	local note = '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
-	local cat = '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
 	if vars == nil then
 		return ""
 	end
+
+	local note = '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
+	local cat = '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
 	local output = wikifyDate(vars.date)
-	-- Equivalent to Python's "if calendar in julian_items".
-	if julian_items[calendar] and isAfterGregorianIntroduced(vars.date) then
+
+	if vars.julian then
 		output = output .. note .. cat
 	end
 	if vars.age then
@@ -280,11 +288,11 @@ function formatDate(vars, calendar)
 end
 
 function p.birth_date(frame)
-	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2]), frame.args[3])
+	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3]))
 end
 
 function p.death_date(frame)
-	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2]), frame.args[3])
+	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3]))
 end
 
 return p
