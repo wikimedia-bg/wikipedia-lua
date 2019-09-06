@@ -32,8 +32,8 @@ local p = {
 			["year"]          = ' година',
 			["years"]         = ' години'
 		},
-		["julian-calendar"] = 'Юлиански календар',  -- linked page title
-		["julian"]          = '<abbr title="Юлиански календар">ЮК</abbr>',
+		["julian-calendar"] = 'Приемане на григорианския календар',  -- linked page title
+		["julian"]          = 'стар стил',
 		["BCE"]             = 'пр.н.е.',
 		["CE"]              = 'сл.н.е.',
 		["common-era"]      = 'Нова Ера'  -- linked page title
