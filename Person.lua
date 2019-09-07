@@ -1,4 +1,5 @@
 local p = {}
+local wd = require('Модул:Wd')
 
 function isEmpty(var)
 	return var == nil or var == ""
@@ -43,6 +44,57 @@ function Date:set(year, monthName, day)
 	self.month = self:monthNameToNumber(monthName)
 	self.day = day
 	return self
+end
+
+function Date:fromWikidata(dateString)
+	d = { _ = dateString }
+	setmetatable(d, self)
+	self.__index = self
+	if isEmpty(dateString) or (dateString == 'няма') then
+		return d
+	end
+	if (dateString == 'неизвестна') then
+		d.unknown = true
+		return d
+	end
+
+	if string.match(dateString, 'пр.н.е.') then
+		d.bce = true
+	end
+	if string.match(dateString, 'стар стил') then
+		d.julian = true
+	end
+
+	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
+	if day and monthName and year then
+		return d:set(year, monthName, day)
+	end
+	monthName, year = mw.ustring.match(dateString, "^(%a+) (%d+)")
+	if monthName and year then
+		return d:set(year, monthName)
+	end
+
+	millennium = mw.ustring.match(dateString, "^(%d+).* хилядолетие")
+	if millennium then
+		d.millennium = millennium
+		return d
+	end
+	century = mw.ustring.match(dateString, "^(%d+).* век")
+	if century then
+		d.century = century
+		return d
+	end
+	decade = mw.ustring.match(dateString, "^(%d+)-те")
+	if decade then
+		d.decade = decade
+		return d
+	end
+	year = mw.ustring.match(dateString, "^(%d+)")
+	if year then
+		return d:set(year)
+	end
+
+	return d
 end
 
 function Date:fromString(dateString)
@@ -93,6 +145,11 @@ function Date:fromString(dateString)
 	return d
 end
 
+function tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
 
 function age(dateOfBirth, dateOfDeath)
 	if not dateOfBirth.year then
@@ -100,6 +157,8 @@ function age(dateOfBirth, dateOfDeath)
 	end
 	if isEmpty(dateOfDeath) or dateOfDeath:isEmpty() then
 		dateOfDeath = Date.currentDate()
+	elseif dateOfDeath.unknown then
+		return nil
 	end
 	local startDate = dateForCalc(dateOfBirth)
 	local endDate = dateForCalc(dateOfDeath)
@@ -164,6 +223,23 @@ function deathCategories(date)
 	return cats
 end
 
+function prepareBirthDateVarsWikidata(eid)
+	local dateOfBirthString = wd._property({eid, 'P569'})
+	if isEmpty(dateOfBirthString) then
+		return nil
+	end
+	local vars = {}
+	vars.date = Date:fromWikidata(dateOfBirthString)
+
+	if isEmpty(wd._property({eid, 'P570'})) then 
+		vars.age = age(vars.date)
+	end
+	vars.cats = birthCategories(vars.date)
+        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
+
+	return vars
+end
+
 function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	if isEmpty(dateOfBirthString) then
 		return nil
@@ -176,6 +252,24 @@ function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	end
 	vars.cats = birthCategories(vars.date)
         vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
+	return vars
+end
+
+function prepareDeathDateVarsWikidata(eid)
+	local dateOfDeathString = wd._property({eid, 'P570'})
+	if isEmpty(dateOfDeathString) then
+		return nil
+	end
+	local vars = {}
+	vars.date = Date:fromWikidata(dateOfDeathString)
+
+	local dateOfBirthString = wd._property({eid, 'P569'})
+	if not isEmpty(dateOfBirthString) then
+		vars.age = age(Date:fromWikidata(dateOfBirthString), vars.date)
+	end
+	vars.cats = deathCategories(vars.date)
+        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
+
 	return vars
 end
 
@@ -291,11 +385,29 @@ function formatDate(vars, calendar)
 end
 
 function p.birth_date(frame)
-	return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3]))
+	local eid = ''
+	if tablelength(frame.args) == 1 then
+		eid = frame.args[1]
+	end
+
+	if tablelength(frame.args) <= 1 then
+		return formatDate(prepareBirthDateVarsWikidata(eid))
+	else
+		return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3]))
+	end
 end
 
 function p.death_date(frame)
-	return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3]))
+	local eid = ''
+	if tablelength(frame.args) == 1 then
+		eid = frame.args[1]
+	end
+
+	if tablelength(frame.args) <= 1 then
+		return formatDate(prepareDeathDateVarsWikidata(eid))
+	else
+		return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3]))
+	end
 end
 
 return p
