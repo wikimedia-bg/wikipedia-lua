@@ -800,7 +800,7 @@ function Config:concatValues(valuesArray)
 			
 			if not skip then
 				-- add <ref> tag with the reference's hash as its name (to deduplicate references)
-				outString = outString .. mw.getCurrentFrame():extensionTag("ref", valuesArray[i][1], {name = "wikidata-" .. valuesArray[i].refHash .. "-v" .. i18n['cite']['version']})
+				outString = outString .. mw.getCurrentFrame():extensionTag("ref", valuesArray[i][1], {name = valuesArray[i].refHash})
 			end
 		else
 			outString = outString .. valuesArray[i][1]
@@ -1850,6 +1850,8 @@ function State:getReference(statement)
 	local value = ""
 	local ref = {}
 	
+	local version = 1  -- increase this each time the below logic is changed to avoid conflict errors
+
 	if statement.snaks then
 		-- don't include "imported from", which is added by a bot
 		if statement.snaks[p.aliasesP.importedFrom] then
@@ -1857,13 +1859,18 @@ function State:getReference(statement)
 		end
 				
 		-- don't include "inferred from", which is added by a bot
-		if statement.snaks['P3452'] then
-			statement.snaks['P3452'] = nil
+		if statement.snaks[p.aliasesP.inferredFrom] then
+			statement.snaks[p.aliasesP.inferredFrom] = nil
 		end
 		
 		-- don't include "type of reference"
-		if statement.snaks['P3865'] then
-			statement.snaks['P3865'] = nil
+		if statement.snaks[p.aliasesP.typeOfReference] then
+			statement.snaks[p.aliasesP.typeOfReference] = nil
+		end
+		
+		-- don't include "image" to prevent littering
+		if statement.snaks[p.aliasesP.image] then
+			statement.snaks[p.aliasesP.image] = nil
 		end
 		
 		-- don't include "reference has role"
@@ -2037,7 +2044,7 @@ function State:getReference(statement)
 			
 			if not self.rawValue then
 				-- this should become a <ref> tag, so safe the reference's hash for later
-				value.refHash = statement.hash
+				value.refHash = "wikidata-" .. statement.hash .. "-v" .. (tonumber(i18n['cite']['version']) + version)
 			end
 			
 			ref = {value}  -- wrap the value object in an array
