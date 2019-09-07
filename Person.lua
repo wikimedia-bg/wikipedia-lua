@@ -11,6 +11,7 @@ Date = {
 	-- monthName = nil,
 	-- year = nil,
 	-- bce = nil, -- is it in the BCE epoch
+	-- julian = nil, -- is the date in Julian calendar
 }
 function Date.currentDate()
 	return os.date("*t")
@@ -169,11 +170,12 @@ function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	end
 	local vars = {}
 	vars.date = Date:fromString(dateOfBirthString)
-	if isEmpty(dateOfDeathString) then
+	vars.date.julian = isJulian(calendar)
+	if isEmpty(dateOfDeathString) then 
 		vars.age = age(vars.date)
 	end
 	vars.cats = birthCategories(vars.date)
-        vars.julian = isJulian(vars.date, calendar)
+        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 	return vars
 end
 
@@ -183,11 +185,12 @@ function prepareDeathDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	end
 	local vars = {}
 	vars.date = Date:fromString(dateOfDeathString)
+	vars.date.julian = isJulian(calendar)
 	if not isEmpty(dateOfBirthString) then
 		vars.age = age(Date:fromString(dateOfBirthString), vars.date)
 	end
 	vars.cats = deathCategories(vars.date)
-        vars.julian = isJulian(vars.date, calendar)
+        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 	return vars
 end
 
@@ -224,7 +227,7 @@ function formatAgeSuffix(age)
 	return '<span class="noprint"> <small>('.. age .. ' г.)</small></span>'
 end
 
-function isJulian(date, calendar)
+function isJulian(calendar)
 	-- The "Q" things are calendarmodels as returned by Wikidata queries.
 	-- For more information, see [[:wikidata:Help:Dates]].
 	local julian_items = {
@@ -233,7 +236,7 @@ function isJulian(date, calendar)
 		["юлиански"] = true,
 	}
 	-- Equivalent to Python's "if calendar in julian_items".
-	return julian_items[calendar] and isAfterGregorianIntroduced(date)
+	return julian_items[calendar]
 end
 
 function isAfterGregorianIntroduced(date)
@@ -274,7 +277,7 @@ function formatDate(vars, calendar)
 	local cat = '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
 	local output = wikifyDate(vars.date)
 
-	if vars.julian then
+	if vars.showJulian then
 		output = output .. note .. cat
 	end
 	if vars.age then
