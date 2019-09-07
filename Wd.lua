@@ -86,7 +86,7 @@ local formats = {
 	property              = "%p[%s][%r]",
 	qualifier             = "%q[%s][%r]",
 	reference             = "%r",
-	propertyWithQualifier = "%p[ <span style=\"font-size:smaller\">(%q)</span>][%s][%r]",
+	propertyWithQualifier = "%p[ <span style=\"font-size:85%\">(%q)</span>][%s][%r]",
 	alias                 = "%a[%s]",
 	badge                 = "%b[%s]"
 }
@@ -162,7 +162,7 @@ function Config.new()
 	cfg.langObj = mw.language.new(cfg.langCode)
 	
 	-- somewhat reliable way of determining global site ID in the absence of a library function, targeting the Wikipedia project (i.e. appending "wiki")
-	cfg.siteID = (function() for i,v in pairs(mw.site.interwikiMap("local")) do if v.isCurrentWiki then return mw.ustring.gsub(i,"-","_").."wiki" end end end)()
+	cfg.siteID = (function() for i,v in pairs(mw.site.interwikiMap("local")) do if v.isCurrentWiki and i~="w" then return mw.ustring.gsub(i,"-","_").."wiki" end end end)()
 
 	cfg.states = {}
 	cfg.states.qualifiersCount = 0
@@ -1183,7 +1183,11 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				lonDirectionEN = lonDirectionEN_E
 			end
 			
-			precision = datavalue['precision'] or 1
+			precision = datavalue['precision']
+
+			if not precision or precision == 0 then
+				precision = 1 / 3600 -- precision unspecified, set to arcsecond
+			end
 			
 			latitude = math.floor(latitude / precision + 0.5) * precision
 			longitude = math.floor(longitude / precision + 0.5) * precision
