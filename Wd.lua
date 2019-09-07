@@ -19,7 +19,7 @@ function loadSubmodules(frame)
 	p.aliasesP = p.aliasesP or mw.loadData(title .. "/aliasesP")
 end
 
-p.valueCommands = {
+p.claimCommands = {
 	property   = "property",
 	properties = "properties",
 	qualifier  = "qualifier",
@@ -28,12 +28,14 @@ p.valueCommands = {
 	references = "references"
 }
 
-p.nameCommands = {
+p.generalCommands = {
 	label      = "label",
 	title      = "title",
 	description = "description",
 	alias      = "alias",
-	aliases    = "aliases"
+	aliases    = "aliases",
+	badge      = "badge",
+	badges     = "badges"
 }
 
 p.flags = {
@@ -75,6 +77,7 @@ local parameters = {
 	qualifier = "%q",
 	reference = "%r",
 	alias     = "%a",
+	badge     = "%b",
 	separator = "%s",
 	general   = "%x"
 }
@@ -84,7 +87,8 @@ local formats = {
 	qualifier             = "%q[%s][%r]",
 	reference             = "%r",
 	propertyWithQualifier = "%p[ <span style=\"font-size:smaller\">(%q)</span>][%s][%r]",
-	alias                 = "%a[%s]"
+	alias                 = "%a[%s]",
+	badge                 = "%b[%s]"
 }
 
 local hookNames = {              -- {level_1, level_2}
@@ -92,7 +96,8 @@ local hookNames = {              -- {level_1, level_2}
 	[parameters.reference]        = {"getReferences", "getReference"},
 	[parameters.qualifier]        = {"getAllQualifiers"},
 	[parameters.qualifier.."\\d"] = {"getQualifiers", "getQualifier"},
-	[parameters.alias]            = {"getAlias"}
+	[parameters.alias]            = {"getAlias"},
+	[parameters.badge]            = {"getBadge"}
 }
 
 -- default value objects, should NOT be mutated but instead copied
@@ -150,12 +155,15 @@ function Config.new()
 	cfg.editable = false
 	cfg.editAtEnd = false
 	
-	cfg.pageTitle = false
+	cfg.inSitelinks = false
 	
 	cfg.langCode = mw.language.getContentLanguage().code
 	cfg.langName = mw.language.fetchLanguageName(cfg.langCode, cfg.langCode)
 	cfg.langObj = mw.language.new(cfg.langCode)
 	
+	-- somewhat reliable way of determining global site ID in the absence of a library function, targeting the Wikipedia project (i.e. appending "wiki")
+	cfg.siteID = (function() for i,v in pairs(mw.site.interwikiMap("local")) do if v.isCurrentWiki then return mw.ustring.gsub(i,"-","_").."wiki" end end end)()
+
 	cfg.states = {}
 	cfg.states.qualifiersCount = 0
 	cfg.curState = nil
@@ -201,7 +209,7 @@ function replaceAlias(id)
 	return id
 end
 
-function errorText(code, param) 
+function errorText(code, param)
 	local text = i18n["errors"][code]
 	if param then text = mw.ustring.gsub(text, "$1", param) end
 	return text
@@ -737,7 +745,7 @@ function Config:getEditIcon()
 	
 	if self.propertyID then
 		value = value .. "#" .. self.propertyID
-	elseif self.pageTitle then
+	elseif self.inSitelinks then
 		value = value .. "#sitelinks-wikipedia"
 	end
 	
@@ -1152,7 +1160,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				lonDirectionEN = lonDirectionEN_E
 			end
 			
-			precision = datavalue['precision']
+			precision = datavalue['precision'] or 1
 			
 			latitude = math.floor(latitude / precision + 0.5) * precision
 			longitude = math.floor(longitude / precision + 0.5) * precision
@@ -1341,113 +1349,6 @@ function Config:setPeriod(period)
 	self.periods[periodPos] = true
 end
 
-function Config:processFlag(flag)
-	if not flag then
-		return false
-	else
-		flag = mw.text.trim(flag)
-	end
-	
-	if flag == p.flags.lat_only then
-		self.curState.lat_only = true
-		return true
-	elseif flag == p.flags.lon_only then
-		self.curState.lon_only = true
-		return true
-	elseif flag == p.flags.linked then
-		self.curState.linked = true
-		return true
-	elseif flag == p.flags.raw then
-		self.curState.rawValue = true
-		
-		if self.curState == self.states[parameters.reference] then
-			-- raw reference values end with periods and require a separator (other than none)
-			self.separators["sep%r"][1] = {" "}
-		end
-		
-		return true
-	elseif flag == p.flags.short then
-		self.curState.shortName = true
-		return true
-	elseif flag == p.flags.multilanguage then
-		self.curState.anyLanguage = true
-		return true
-	elseif flag == p.flags.unit then
-		self.curState.unitOnly = true
-		return true
-	elseif flag == p.flags.mdy then
-		self.mdyDate = true
-		return true
-	elseif flag == p.flags.single then
-		self.singleClaim = true
-		return true
-	elseif flag == p.flags.sourced then
-		self.sourcedOnly = true
-		return true
-	elseif flag == p.flags.edit then
-		self.editable = true
-		return true
-	elseif flag == p.flags.editAtEnd then
-		self.editable = true
-		self.editAtEnd = true
-		return true
-	elseif flag == p.flags.best or flag:match('^'..p.flags.preferred..'[+-]?$') or flag:match('^'..p.flags.normal..'[+-]?$') or flag:match('^'..p.flags.deprecated..'[+-]?$') then
-		self:setRank(flag)
-		return true
-	elseif flag == p.flags.future or flag == p.flags.current or flag == p.flags.former then
-		self:setPeriod(flag)
-		return true
-	elseif flag == "" then
-		-- ignore empty flags and carry on
-		return true
-	else
-		return false
-	end
-end
-
-function Config:processFlagOrCommand(flag)
-	local param = ""
-	
-	if not flag then
-		return false
-	else
-		flag = mw.text.trim(flag)
-	end
-	
-	if flag == p.valueCommands.property or flag == p.valueCommands.properties then
-		param = parameters.property
-	elseif flag == p.valueCommands.qualifier or flag == p.valueCommands.qualifiers then
-		self.states.qualifiersCount = self.states.qualifiersCount + 1
-		param = parameters.qualifier .. self.states.qualifiersCount
-		self.separators["sep"..param] = {copyTable(defaultSeparators["sep%q\\d"])}
-	elseif flag == p.valueCommands.reference or flag == p.valueCommands.references then
-		param = parameters.reference
-	else
-		return self:processFlag(flag)
-	end
-	
-	if self.states[param] then
-		return false
-	end
-	
-	-- create a new state for each command
-	self.states[param] = State.new(self)
-	
-	-- use "%x" as the general parameter name
-	self.states[param].parsedFormat = parseFormat(parameters.general)  -- will be overwritten for param=="%p"
-	
-	-- set the separator
-	self.states[param].separator = self.separators["sep"..param]  -- will be nil for param=="%p", which will be set separately
-	
-	if flag:sub(-1) ~= 's' then
-		self.states[param].singleValue = true
-	end
-	
-	self.curState = self.states[param]
-	
-	return true
-end
-
 function Config:qualifierMatches(claim, id, value)
 	local qualifiers
 	
@@ -1537,6 +1438,136 @@ function Config:timeMatches(claim)
 	end
 	
 	return false
+end
+
+function Config:processFlag(flag)
+	if not flag then
+		return false
+	else
+		flag = mw.text.trim(flag)
+	end
+	
+	if flag == p.flags.lat_only then
+		self.curState.lat_only = true
+		return true
+	elseif flag == p.flags.lon_only then
+		self.curState.lon_only = true
+		return true
+	elseif flag == p.flags.linked then
+		self.curState.linked = true
+		return true
+	elseif flag == p.flags.raw then
+		self.curState.rawValue = true
+		
+		if self.curState == self.states[parameters.reference] then
+			-- raw reference values end with periods and require a separator (other than none)
+			self.separators["sep%r"][1] = {" "}
+		end
+		
+		return true
+	elseif flag == p.flags.short then
+		self.curState.shortName = true
+		return true
+	elseif flag == p.flags.multilanguage then
+		self.curState.anyLanguage = true
+		return true
+	elseif flag == p.flags.unit then
+		self.curState.unitOnly = true
+		return true
+	elseif flag == p.flags.mdy then
+		self.mdyDate = true
+		return true
+	elseif flag == p.flags.single then
+		self.singleClaim = true
+		return true
+	elseif flag == p.flags.sourced then
+		self.sourcedOnly = true
+		return true
+	elseif flag == p.flags.edit then
+		self.editable = true
+		return true
+	elseif flag == p.flags.editAtEnd then
+		self.editable = true
+		self.editAtEnd = true
+		return true
+	elseif flag == p.flags.best or flag:match('^'..p.flags.preferred..'[+-]?$') or flag:match('^'..p.flags.normal..'[+-]?$') or flag:match('^'..p.flags.deprecated..'[+-]?$') then
+		self:setRank(flag)
+		return true
+	elseif flag == p.flags.future or flag == p.flags.current or flag == p.flags.former then
+		self:setPeriod(flag)
+		return true
+	elseif flag == "" then
+		-- ignore empty flags and carry on
+		return true
+	else
+		return false
+	end
+end
+
+function Config:processFlagOrCommand(flag)
+	local param = ""
+	
+	if not flag then
+		return false
+	else
+		flag = mw.text.trim(flag)
+	end
+	
+	if flag == p.claimCommands.property or flag == p.claimCommands.properties then
+		param = parameters.property
+	elseif flag == p.claimCommands.qualifier or flag == p.claimCommands.qualifiers then
+		self.states.qualifiersCount = self.states.qualifiersCount + 1
+		param = parameters.qualifier .. self.states.qualifiersCount
+		self.separators["sep"..param] = {copyTable(defaultSeparators["sep%q\\d"])}
+	elseif flag == p.claimCommands.reference or flag == p.claimCommands.references then
+		param = parameters.reference
+	else
+		return self:processFlag(flag)
+	end
+	
+	if self.states[param] then
+		return false
+	end
+	
+	-- create a new state for each command
+	self.states[param] = State.new(self)
+	
+	-- use "%x" as the general parameter name
+	self.states[param].parsedFormat = parseFormat(parameters.general)  -- will be overwritten for param=="%p"
+	
+	-- set the separator
+	self.states[param].separator = self.separators["sep"..param]  -- will be nil for param=="%p", which will be set separately
+	
+	if flag:sub(-1) ~= 's' then
+		self.states[param].singleValue = true
+	end
+	
+	self.curState = self.states[param]
+	
+	return true
+end
+
+function Config:processSeparators(args)
+	local sep
+	
+	for i, v in pairs(self.separators) do
+		if args[i] then
+			sep = replaceSpecialChars(args[i])
+			
+			if sep ~= "" then
+				self.separators[i][1] = {sep}
+			else
+				self.separators[i][1] = nil
+			end
+		end
+	end
+end
+
+function Config:setFormatAndSeparators(state, parsedFormat)
+	state.parsedFormat = parsedFormat
+	state.separator = self.separators["sep"]
+	state.movSeparator = self.separators["sep"..parameters.separator]
+	state.puncMark = self.separators["punc"]
 end
 
 -- determines if a claim has references by prefetching them from the claim using getReferences,
@@ -2008,6 +2039,23 @@ function State:getAlias(object)
 	end
 end
 
+-- level 1 hook
+function State:getBadge(value)
+	value = self.conf:getLabel(value, self.rawValue, self.linked, self.shortName)
+	
+	if value == "" then
+		value = nil
+	end
+	
+	value = {value}  -- create one value object
+	
+	if #value > 0 then
+		return {value}  -- wrap the value object in an array and return it
+	else
+		return {}  -- return empty array if there was no value
+	end
+end
+
 function State:callHook(param, hooks, statement, result)
 	local valuesArray, refHash
 	
@@ -2099,19 +2147,19 @@ function State:iterate(statements, hooks, matchHook)
 	return self:out()
 end
 
-function extractEntityFromInput(id, allowUnknown)
+function extractEntityFromInput(id, allowOmitPropPrefix)
 	if id:sub(1,1):upper() == "Q" then
-		return id:upper()
+		return id:upper()                                      -- entity ID of an item was given
 	elseif id:sub(1,9):lower() == "property:" then
 		return replaceAlias(mw.text.trim(id:sub(10))):upper()  -- entity ID of a property was given
-	elseif allowUnknown and id ~= "" then 
-		return replaceAlias(id):upper()
+	elseif allowOmitPropPrefix and id ~= "" then
+		return replaceAlias(id):upper()                        -- could be an entity ID of a property without "Property:" prefix
 	else
 		return nil
 	end
 end
 
-function extractEntityFromArgs(args, nextIndex, handleUnknownPos)
+function extractEntityFromArgs(args, nextIndex, allowOmitPropPrefix)
 	local id, eidArg
 	
 	if args[nextIndex] then
@@ -2120,23 +2168,23 @@ function extractEntityFromArgs(args, nextIndex, handleUnknownPos)
 		args[nextIndex] = ""
 	end
 	
-	id = extractEntityFromInput(args[nextIndex], handleUnknownPos)
+	id = extractEntityFromInput(args[nextIndex], allowOmitPropPrefix)
 	eidArg = args[p.args.eid]
 	
 	if id then 
 		return id, nextIndex + 1
-	elseif not eidArg then
-		return mw.wikibase.getEntityIdForCurrentPage(), nextIndex  -- by default, use item-entity connected to current page
+	elseif eidArg then
+		return extractEntityFromInput(eidArg, true), nextIndex -- if no positional id was found but eid was given, use eid without a default
 	else
-		return extractEntityFromInput(eidArg, true), nextIndex
+		return mw.wikibase.getEntityIdForCurrentPage(), nextIndex -- by default, use item-entity connected to current page
 	end
 end
 
-function valueCommand(args, funcName)
+function claimCommand(args, funcName)
 	local _ = Config.new()
 	_:processFlagOrCommand(funcName)  -- process first command (== function name)
 	
-	local parsedFormat, formatParams, claims, sep, value
+	local parsedFormat, formatParams, claims, value
 	local hooks = {count = 0}
 	
 	local nextIndex = 1
@@ -2148,7 +2196,7 @@ function valueCommand(args, funcName)
 	
 	_.entityID, nextIndex = extractEntityFromArgs(args, nextIndex, false)
 	
-	-- if eid was expliclty set to empty, then this returns an empty string
+	-- if eid was explicitly set to empty, then this returns an empty string
 	if _.entityID == nil then
 		return ""
 	end
@@ -2218,25 +2266,14 @@ function valueCommand(args, funcName)
 		_.separators["sep"][1] = nil
 	end
 	
-	-- if exactly one "qualifier(s)" command has been given, make "sep%q" point to "sep%q1" to make them equivalent;
-	-- must come BEFORE overriding the separator values
+	-- if exactly one "qualifier(s)" command has been given, make "sep%q" point to "sep%q1" to make them equivalent
 	if _.states.qualifiersCount == 1 then
 		_.separators["sep"..parameters.qualifier] = _.separators["sep"..parameters.qualifier.."1"]
 	end
 	
 	-- process overridden separator values;
-	-- must come AFTER parsing the format
-	for i, v in pairs(_.separators) do
-		if args[i] then
-			sep = replaceSpecialChars(args[i])
-			
-			if sep ~= "" then
-				_.separators[i][1] = {sep}
-			else
-				_.separators[i][1] = nil
-			end
-		end
-	end
+	-- must come AFTER tweaking the default separators
+	_:processSeparators(args)
 	
 	-- define the hooks that should be called (getProperty, getQualifiers, getReferences);
 	-- only define a hook if both its command ("propert(y|ies)", "reference(s)", "qualifier(s)") and its parameter ("%p", "%r", "%q1", "%q2", "%q3") have been given
@@ -2270,14 +2307,12 @@ function valueCommand(args, funcName)
 	-- which must exist in order to be able to determine if a claim has any references;
 	-- must come AFTER defining the hooks
 	if _.sourcedOnly and not _.states[parameters.reference] then
-		_:processFlagOrCommand(p.valueCommands.reference)  -- use singular "reference" to minimize overhead
+		_:processFlagOrCommand(p.claimCommands.reference)  -- use singular "reference" to minimize overhead
 	end
 	
-	-- set the parsed format and the separators (and optional punctuation mark)
-	_.states[parameters.property].parsedFormat = parsedFormat
-	_.states[parameters.property].separator = _.separators["sep"]
-	_.states[parameters.property].movSeparator = _.separators["sep"..parameters.separator]
-	_.states[parameters.property].puncMark = _.separators["punc"]
+	-- set the parsed format and the separators (and optional punctuation mark);
+	-- must come AFTER creating the additonal states
+	_:setFormatAndSeparators(_.states[parameters.property], parsedFormat)
 	
 	-- process qualifier matching values, analogous to _.propertyValue
 	for i, v in pairs(args) do
@@ -2314,7 +2349,7 @@ function valueCommand(args, funcName)
 	end
 end
 
-function nameCommand(args, funcName)
+function generalCommand(args, funcName)
 	local _ = Config.new()
 	_.curState = State.new(_)
 	
@@ -2327,16 +2362,16 @@ function nameCommand(args, funcName)
 	
 	_.entityID, nextIndex = extractEntityFromArgs(args, nextIndex, true)
 	
-	-- if eid was expliclty set to empty, then this returns an empty string
+	-- if eid was explicitly set to empty, then this returns an empty string
 	if _.entityID == nil then
 		return ""
 	end
 	
 	-- serve according to the given command
-	if funcName == p.nameCommands.label then
+	if funcName == p.generalCommands.label then
 		value = _:getLabel(_.entityID, _.curState.rawValue, _.curState.linked, _.curState.shortName)
-	elseif funcName == p.nameCommands.title then
-		_.pageTitle = true
+	elseif funcName == p.generalCommands.title then
+		_.inSitelinks = true
 		
 		if _.entityID:sub(1,1) == "Q" then
 			value = mw.wikibase.sitelink(_.entityID)
@@ -2346,59 +2381,78 @@ function nameCommand(args, funcName)
 			value = buildWikilink(value)
 		end
  	
-	elseif funcName == p.nameCommands.description then
+	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 
 		if _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
-	elseif funcName == p.nameCommands.alias or funcName == p.nameCommands.aliases then
-		local aliases, parsedFormat, formatParams, sep
+	elseif funcName == p.generalCommands.alias or funcName == p.generalCommands.aliases then
+		local parsedFormat, formatParams
 		local hooks = {count = 0}
 		
-		if funcName == p.nameCommands.alias then
+		if funcName == p.generalCommands.alias or funcName == p.generalCommands.badge then
 			_.curState.singleValue = true
 		end
 		
-		-- parse the desired format, or parse the default aliases format
-		if args["format"] then
-			parsedFormat, formatParams = parseFormat(args["format"])
-		else
-			parsedFormat, formatParams = parseFormat(formats.alias)
-		end
-		
-		-- process overridden separator values;
-		-- must come AFTER parsing the format
-		for i, v in pairs(_.separators) do
-			if args[i] then
-				sep = replaceSpecialChars(args[i])
-				
-				if sep ~= "" then
-					_.separators[i][1] = {sep}
-				else
-					_.separators[i][1] = nil
-				end
+		if funcName == p.generalCommands.alias or funcName == p.generalCommands.aliases then
+			local aliases
+			
+			-- parse the desired format, or parse the default aliases format
+			if args["format"] then
+				parsedFormat, formatParams = parseFormat(args["format"])
+			else
+				parsedFormat, formatParams = parseFormat(formats.alias)
 			end
-		end
-		
-		-- define the hook that should be called (getAlias);
-		-- only define the hook if the parameter ("%a") has been given
-		if formatParams[parameters.alias] then
-			hooks[parameters.alias] = getHookName(parameters.alias, 1)
-			hooks.count = hooks.count + 1
-		end
-		
-		-- set the parsed format and the separators (and optional punctuation mark)
-		_.curState.parsedFormat = parsedFormat
-		_.curState.separator = _.separators["sep"]
-		_.curState.movSeparator = _.separators["sep"..parameters.separator]
-		_.curState.puncMark = _.separators["punc"]
-		
-		_.entity = mw.wikibase.getEntity(_.entityID)
-		
-		if _.entity and _.entity.aliases then aliases = _.entity.aliases[_.langCode] end
-		if aliases then
-			value = _:concatValues(_.curState:iterate(aliases, hooks))
+			
+			-- process overridden separator values;
+			-- must come AFTER tweaking the default separators
+			_:processSeparators(args)
+			
+			-- define the hook that should be called (getAlias);
+			-- only define the hook if the parameter ("%a") has been given
+			if formatParams[parameters.alias] then
+				hooks[parameters.alias] = getHookName(parameters.alias, 1)
+				hooks.count = hooks.count + 1
+			end
+			
+			-- set the parsed format and the separators (and optional punctuation mark)
+			_:setFormatAndSeparators(_.curState, parsedFormat)
+			
+			if _.entity and _.entity.aliases then aliases = _.entity.aliases[_.langCode] end
+			if aliases then
+				value = _:concatValues(_.curState:iterate(aliases, hooks))
+			end
+		elseif funcName == p.generalCommands.badge or funcName == p.generalCommands.badges then
+			_.inSitelinks = true
+			
+			local badges
+			
+			-- parse the desired format, or parse the default aliases format
+			if args["format"] then
+				parsedFormat, formatParams = parseFormat(args["format"])
+			else
+				parsedFormat, formatParams = parseFormat(formats.badge)
+			end
+			
+			-- process overridden separator values;
+			-- must come AFTER tweaking the default separators
+			_:processSeparators(args)
+			
+			-- define the hook that should be called (getBadge);
+			-- only define the hook if the parameter ("%b") has been given
+			if formatParams[parameters.badge] then
+				hooks[parameters.badge] = getHookName(parameters.badge, 1)
+				hooks.count = hooks.count + 1
+			end
+			
+			-- set the parsed format and the separators (and optional punctuation mark)
+			_:setFormatAndSeparators(_.curState, parsedFormat)
+			
+			if _.entity and _.entity.sitelinks and _.entity.sitelinks[_.siteID] then badges = _.entity.sitelinks[_.siteID].badges end
+			if badges then
+				value = _:concatValues(_.curState:iterate(badges, hooks))
+			end
 		end
 	end
 	
@@ -2411,11 +2465,10 @@ function nameCommand(args, funcName)
 	
 	return value
 end
-
 -- modules that include this module should call the functions with an underscore prepended, e.g.: p._property(args)
 function establishCommands(commandList, commandFunc)
 	for commandIndex, commandName in pairs(commandList) do
-		local function wikitextWrapper(frame) 
+		local function wikitextWrapper(frame)
 			loadSubmodules(frame)
 			return commandFunc(copyTable(frame.args), commandName)
 		end
@@ -2429,8 +2482,8 @@ function establishCommands(commandList, commandFunc)
 	end
 end
 
-establishCommands(p.valueCommands, valueCommand)
-establishCommands(p.nameCommands, nameCommand)
+establishCommands(p.claimCommands, claimCommand)
+establishCommands(p.generalCommands, generalCommand)
 
 -- main function that is supposed to be used by wrapper templates
 function p.main(frame)
