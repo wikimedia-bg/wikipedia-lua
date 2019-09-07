@@ -1526,8 +1526,6 @@ end
 function Config:processFlag(flag)
 	if not flag then
 		return false
-	else
-		flag = mw.text.trim(flag)
 	end
 	
 	if flag == p.flags.lat_only then
@@ -1592,8 +1590,6 @@ function Config:processFlagOrCommand(flag)
 	
 	if not flag then
 		return false
-	else
-		flag = mw.text.trim(flag)
 	end
 	
 	if flag == p.claimCommands.property or flag == p.claimCommands.properties then
@@ -2233,36 +2229,28 @@ function State:iterate(statements, hooks, matchHook)
 	return self:out()
 end
 
-function extractEntityFromInput(id, allowOmitPropPrefix)
-	if id:sub(1,1):upper() == "Q" then
-		return id:upper()                                      -- entity ID of an item was given
-	elseif id:sub(1,9):lower() == "property:" then
-		return replaceAlias(mw.text.trim(id:sub(10))):upper()  -- entity ID of a property was given
-	elseif allowOmitPropPrefix and id ~= "" then
-		return replaceAlias(id):upper()                        -- could be an entity ID of a property without "Property:" prefix
+function nextArg(args)
+	local arg = args[args.pointer]
+	
+	if arg then
+		args.pointer = args.pointer + 1
+		return mw.text.trim(arg)
 	else
 		return nil
 	end
 end
 
-function extractEntityFromArgs(args, nextIndex, allowOmitPropPrefix)
-	local id, eidArg
-	
-	if args[nextIndex] then
-		args[nextIndex] = mw.text.trim(args[nextIndex])
+function getEntityId(arg, allowOmitPropPrefix)
+	if not arg then
+		return nil
+	elseif arg:sub(1,1):upper() == "Q" then
+		return arg:upper()  -- entity ID of an item was given
+	elseif arg:sub(1,9):lower() == "property:" then
+		return replaceAlias(mw.text.trim(arg:sub(10))):upper()  -- entity ID of a property was given
+	elseif allowOmitPropPrefix and arg ~= "" then
+		return replaceAlias(arg):upper()  -- could be an entity ID of a property without "Property:" prefix
 	else
-		args[nextIndex] = ""
-	end
-	
-	id = extractEntityFromInput(args[nextIndex], allowOmitPropPrefix)
-	eidArg = args[p.args.eid]
-	
-	if id then 
-		return id, nextIndex + 1
-	elseif eidArg then
-		return extractEntityFromInput(eidArg, true), nextIndex -- if no positional id was found but eid was given, use eid without a default
-	else
-		return mw.wikibase.getEntityIdForCurrentPage(), nextIndex -- by default, use item-entity connected to current page
+		return ""
 	end
 end
 
@@ -2270,49 +2258,58 @@ function claimCommand(args, funcName)
 	local _ = Config.new()
 	_:processFlagOrCommand(funcName)  -- process first command (== function name)
 	
-	local parsedFormat, formatParams, claims, value
+	local lastArg, parsedFormat, formatParams, claims, value
 	local hooks = {count = 0}
 	
-	local nextIndex = 1
-	
 	-- process flags and commands
-	while _:processFlagOrCommand(args[nextIndex]) do
-		nextIndex = nextIndex + 1
-	end
+	repeat
+		lastArg = nextArg(args)
+	until not _:processFlagOrCommand(lastArg)
 	
-	_.entityID, nextIndex = extractEntityFromArgs(args, nextIndex, false)
+	-- use the entity ID from the positional arguments if given
+	_.entityID = getEntityId(lastArg, false)
 	
-	-- if eid was explicitly set to empty, then this returns an empty string
-	if _.entityID == nil then
-		return ""
+	if not _.entityID or _.entityID == "" then
+		-- if no positional ID is given, use the eid argument if given
+		_.entityID = getEntityId(args[p.args.eid], true)
+		
+		if _.entityID == "" then
+			-- if eid was explicitly set to empty, then this returns an empty string
+			return ""
+		elseif not _.entityID then
+			-- by default, use the item-entity connected to the current page
+			_.entityID = mw.wikibase.getEntityIdForCurrentPage()
+		end
+	else
+		lastArg = nextArg(args)
 	end
 	
 	_.entity = mw.wikibase.getEntity(_.entityID)
-	_.propertyID = replaceAlias(args[nextIndex]):upper()
-	nextIndex = nextIndex + 1
+	_.propertyID = replaceAlias(lastArg)
+
+	if not _.propertyID then
+		return ""  -- we cannot continue without a property ID
+	end
+	
+	_.propertyID = _.propertyID:upper()
 	
 	if _.states.qualifiersCount > 0 then
 		-- do further processing if "qualifier(s)" command was given
 		
-		if #args - nextIndex + 1 > _.states.qualifiersCount then
+		if #args - args.pointer + 1 > _.states.qualifiersCount then
 			-- claim ID or literal value has been given
 			
-			_.propertyValue = mw.text.trim(args[nextIndex])
-			nextIndex = nextIndex + 1
+			_.propertyValue = nextArg(args)
 		end
 		
 		for i = 1, _.states.qualifiersCount do
 			-- check if given qualifier ID is an alias and add it
-			_.qualifierIDs[parameters.qualifier..i] = replaceAlias(mw.text.trim(args[nextIndex] or "")):upper()
-			nextIndex = nextIndex + 1
+			_.qualifierIDs[parameters.qualifier..i] = replaceAlias(nextArg(args) or ""):upper()
 		end
 	elseif _.states[parameters.reference] then
 		-- do further processing if "reference(s)" command was given
 		
-		if args[nextIndex] then
-			_.propertyValue = mw.text.trim(args[nextIndex])
-		end
-		-- not incrementing nextIndex because it is never used after this
+		_.propertyValue = nextArg(args)
 	end
 	
 	-- check for special property value 'somevalue' or 'novalue'
@@ -2439,18 +2436,27 @@ function generalCommand(args, funcName)
 	local _ = Config.new()
 	_.curState = State.new(_)
 	
+	local lastArg
 	local value = nil
-	local nextIndex = 1
 	
-	while _:processFlag(args[nextIndex]) do
-		nextIndex = nextIndex + 1
-	end
+	repeat
+		lastArg = nextArg(args)
+	until not _:processFlag(lastArg)
 	
-	_.entityID, nextIndex = extractEntityFromArgs(args, nextIndex, true)
+	-- use the entity ID from the positional arguments if given
+	_.entityID = getEntityId(lastArg, false)
 	
-	-- if eid was explicitly set to empty, then this returns an empty string
-	if _.entityID == nil then
-		return ""
+	if not _.entityID or _.entityID == "" then
+		-- if no positional ID is given, use the eid argument if given
+		_.entityID = getEntityId(args[p.args.eid], true)
+		
+		if _.entityID == "" then
+			-- if eid was explicitly set to empty, then this returns an empty string
+			return ""
+		elseif not _.entityID then
+			-- by default, use the item-entity connected to the current page
+			_.entityID = mw.wikibase.getEntityIdForCurrentPage()
+		end
 	end
 	
 	-- serve according to the given command
@@ -2551,16 +2557,20 @@ function generalCommand(args, funcName)
 	
 	return value
 end
+
 -- modules that include this module should call the functions with an underscore prepended, e.g.: p._property(args)
 function establishCommands(commandList, commandFunc)
 	for commandIndex, commandName in pairs(commandList) do
 		local function wikitextWrapper(frame)
+			local args = copyTable(frame.args)
+			args.pointer = 1
 			loadSubmodules(frame)
-			return commandFunc(copyTable(frame.args), commandName)
+			return commandFunc(args, commandName)
 		end
 		p[commandName] = wikitextWrapper
 		
 		local function luaWrapper(args)
+			args.pointer = 1
 			loadSubmodules()
 			return commandFunc(args, commandName)
 		end
