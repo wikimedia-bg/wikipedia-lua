@@ -1780,7 +1780,7 @@ end
 
 -- level 2 hook
 function State:getReference(statement)
-	local lang, key, citeWeb, citeQ, label
+	local key, citeWeb, citeQ, label
 	local langParams = {p.aliasesP.language, p.aliasesP.languageOfWorkOrName}
 	local params = {}
 	local citeParams = {['web'] = {}, ['q'] = {}}
@@ -1811,13 +1811,9 @@ function State:getReference(statement)
 			statement.snaks['P6184'] = nil
 		end
 		
-		-- don't include languages that are equal to the local one
-		for i, v in ipairs(langParams) do
-			lang = self:getReferenceDetail(statement.snaks, v)
-			
-			if self.conf.langName == lang then
-				statement.snaks[v] = nil
-			end
+		-- don't include "language" if it is equal to the local one
+		if self:getReferenceDetail(statement.snaks, p.aliasesP.language) == self.conf.langName then
+			statement.snaks[p.aliasesP.language] = nil
 		end
 		
 		-- retrieve all the parameters
