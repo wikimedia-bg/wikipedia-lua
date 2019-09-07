@@ -86,7 +86,7 @@ local formats = {
 	property              = "%p[%s][%r]",
 	qualifier             = "%q[%s][%r]",
 	reference             = "%r",
-	propertyWithQualifier = "%p[ <span style=\"font-size:85%\">(%q)</span>][%s][%r]",
+	propertyWithQualifier = "%p[ <span style=\"font-size:85\\%\">(%q)</span>][%s][%r]",
 	alias                 = "%a[%s]",
 	badge                 = "%b[%s]"
 }
