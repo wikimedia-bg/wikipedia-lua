@@ -1121,13 +1121,27 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			
 			return value
 		elseif datatype == 'globecoordinate' then
-			-- logic from https://github.com/DataValues/Geo
+			-- logic from https://github.com/DataValues/Geo (v4.0.1)
 			
-			local precision, numDigits, strFormat, value, globe
-			local latValue, latitude, latDegrees, latMinutes, latSeconds
-			local lonValue, longitude, lonDegrees, lonMinutes, lonSeconds
+			local precision, unitsPerDegree, numDigits, strFormat, value, globe
+			local latitude, latConv, latValue, latLink
+			local longitude, lonConv, lonValue, lonLink
 			local latDirection, latDirectionN, latDirectionS, latDirectionEN
 			local lonDirection, lonDirectionE, lonDirectionW, lonDirectionEN
+
+			local latDegrees = nil
+			local latMinutes = nil
+			local latSeconds = nil
+			local lonDegrees = nil
+			local lonMinutes = nil
+			local lonSeconds = nil
+			
+			local latDegSym = ""
+			local latMinSym = ""
+			local latSecSym = ""
+			local lonDegSym = ""
+			local lonMinSym = ""
+			local lonSecSym = ""
 			
 			local latDirectionEN_N = "N"
 			local latDirectionEN_S = "S"
@@ -1159,6 +1173,15 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			latitude = datavalue['latitude']
 			longitude = datavalue['longitude']
 			
+			precision = datavalue['precision']
+
+			if not precision or precision <= 0 then
+				precision = 1 / 3600 -- precision not set (correctly), set to arcsecond
+			end
+			-- remove insignificant detail
+			latitude = math.floor(latitude / precision + 0.5) * precision
+			longitude = math.floor(longitude / precision + 0.5) * precision
+
 			if lat_only then
 				return latitude
 			elseif lon_only then
@@ -1183,63 +1206,93 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				lonDirectionEN = lonDirectionEN_E
 			end
 			
-			precision = datavalue['precision']
-
-			if not precision or precision == 0 then
-				precision = 1 / 3600 -- precision unspecified, set to arcsecond
+			if precision >= 1 - (1 / 60) and precision < 1 then
+				precision = 1
+			elseif precision >= (1 / 60) - (1 / 3600) and precision < (1 / 60) then
+				precision = 1 / 60
 			end
 			
-			latitude = math.floor(latitude / precision + 0.5) * precision
-			longitude = math.floor(longitude / precision + 0.5) * precision
+			if precision >= 1 then
+				unitsPerDegree = 1
+			elseif precision >= (1 / 60)  then
+				unitsPerDegree = 60
+			else
+				unitsPerDegree = 3600
+			end
 			
-			numDigits = math.ceil(-math.log10(3600 * precision))
+			numDigits = math.ceil(-math.log10(unitsPerDegree * precision))
 			
-			if numDigits < 0 or numDigits == -0 then
+			if numDigits <= 0 then
 				numDigits = tonumber("0")  -- for some reason, 'numDigits = 0' may actually store '-0', so parse from string instead
 			end
 			
 			strFormat = "%." .. numDigits .. "f"
 			
-			-- use string.format() to strip decimal point followed by a zero (.0) for whole numbers
-			latSeconds = tonumber(strFormat:format(math.floor(latitude * 3600 * 10^numDigits + 0.5) / 10^numDigits))
-			lonSeconds = tonumber(strFormat:format(math.floor(longitude * 3600 * 10^numDigits + 0.5) / 10^numDigits))
-			
-			latMinutes = math.floor(latSeconds / 60)
-			lonMinutes = math.floor(lonSeconds / 60)
-			
-			latSeconds = latSeconds - (latMinutes * 60)
-			lonSeconds = lonSeconds - (lonMinutes * 60)
-			
-			latDegrees = math.floor(latMinutes / 60)
-			lonDegrees = math.floor(lonMinutes / 60)
-			
-			latMinutes = latMinutes - (latDegrees * 60)
-			lonMinutes = lonMinutes - (lonDegrees * 60)
-			
-			latValue = latDegrees .. degSymbol
-			lonValue = lonDegrees .. degSymbol
-			
-			if precision < 1 then
-				latValue = latValue .. latMinutes .. minSymbol
-				lonValue = lonValue .. lonMinutes .. minSymbol
-			end
-			
-			if precision < (1 / 60) then
-				latSeconds = strFormat:format(latSeconds)
-				lonSeconds = strFormat:format(lonSeconds)
+			if precision >= 1 then
+				latDegrees = strFormat:format(latitude)
+				lonDegrees = strFormat:format(longitude)
 				
 				if not raw then
-					-- replace decimal marks based on locale
-					latSeconds = replaceDecimalMark(latSeconds)
-					lonSeconds = replaceDecimalMark(lonSeconds)
+					latDegSym = replaceDecimalMark(latDegrees) .. degSymbol
+					lonDegSym = replaceDecimalMark(lonDegrees) .. degSymbol
+				else
+					latDegSym = latDegrees .. degSymbol
+					lonDegSym = lonDegrees .. degSymbol
+				end
+			else
+				latConv = math.floor(latitude * unitsPerDegree * 10^numDigits + 0.5) / 10^numDigits
+				lonConv = math.floor(longitude * unitsPerDegree * 10^numDigits + 0.5) / 10^numDigits
+				
+				if precision >= (1 / 60) then
+					latMinutes = latConv
+					lonMinutes = lonConv
+				else
+					latSeconds = latConv
+					lonSeconds = lonConv
+					
+					latMinutes = math.floor(latSeconds / 60)
+					lonMinutes = math.floor(lonSeconds / 60)
+					
+					latSeconds = strFormat:format(latSeconds - (latMinutes * 60))
+					lonSeconds = strFormat:format(lonSeconds - (lonMinutes * 60))
+					
+					if not raw then
+						latSecSym = replaceDecimalMark(latSeconds) .. secSymbol
+						lonSecSym = replaceDecimalMark(lonSeconds) .. secSymbol
+					else
+						latSecSym = latSeconds .. secSymbol
+						lonSecSym = lonSeconds .. secSymbol
+					end
 				end
 				
-				latValue = latValue .. latSeconds .. secSymbol
-				lonValue = lonValue .. lonSeconds .. secSymbol
+				latDegrees = math.floor(latMinutes / 60)
+				lonDegrees = math.floor(lonMinutes / 60)
+				
+				latDegSym = latDegrees .. degSymbol
+				lonDegSym = lonDegrees .. degSymbol
+				
+				latMinutes = latMinutes - (latDegrees * 60)
+				lonMinutes = lonMinutes - (lonDegrees * 60)
+				
+				if precision >= (1 / 60) then
+					latMinutes = strFormat:format(latMinutes)
+					lonMinutes = strFormat:format(lonMinutes)
+					
+					if not raw then
+						latMinSym = replaceDecimalMark(latMinutes) .. minSymbol
+						lonMinSym = replaceDecimalMark(lonMinutes) .. minSymbol
+					else
+						latMinSym = latMinutes .. minSymbol
+						lonMinSym = lonMinutes .. minSymbol
+					end
+				else
+					latMinSym = latMinutes .. minSymbol
+					lonMinSym = lonMinutes .. minSymbol
+				end
 			end
 			
-			latValue = latValue .. latDirection
-			lonValue = lonValue .. lonDirection
+			latValue = latDegSym .. latMinSym .. latSecSym .. latDirection
+			lonValue = lonDegSym .. lonMinSym .. lonSecSym .. lonDirection
 			
 			value = latValue .. separator .. lonValue
 			
@@ -1252,7 +1305,10 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					globe = "earth"
 				end
 				
-				value = "[https://tools.wmflabs.org/geohack/geohack.php?language="..self.langCode.."&params="..latitude.."_"..latDirectionEN.."_"..longitude.."_"..lonDirectionEN.."_globe:"..globe.." "..value.."]"
+				latLink = table.concat({latDegrees, latMinutes, latSeconds}, "_")
+				lonLink = table.concat({lonDegrees, lonMinutes, lonSeconds}, "_")
+				
+				value = "[https://tools.wmflabs.org/geohack/geohack.php?language="..self.langCode.."&params="..latLink.."_"..latDirectionEN.."_"..lonLink.."_"..lonDirectionEN.."_globe:"..globe.." "..value.."]"
 			end
 			
 			return value
