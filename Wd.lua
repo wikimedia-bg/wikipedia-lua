@@ -223,6 +223,29 @@ function replaceDecimalMark(num)
 	return mw.ustring.gsub(num, "[.]", i18n['numeric']['decimal-mark'], 1)
 end
 
+function padZeros(num, numDigits)
+	local numZeros
+	local negative = false
+	
+	if num < 0 then
+		negative = true
+		num = num * -1
+	end
+	
+	num = tostring(num)
+	numZeros = numDigits - num:len()
+	
+	for i = 1, numZeros do
+		num = "0"..num
+	end
+	
+	if negative then
+		num = "-"..num
+	end
+	
+	return num
+end
+
 function replaceSpecialChar(chr)
 	if chr == '_' then
 		-- replace underscores with spaces
@@ -1083,13 +1106,13 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				
 				value = prefix .. value .. suffix .. calendar
 			else
-				value = tostring(yRound * sign)
+				value = padZeros(yRound * sign, 4)
 				
 				if m then
-					value = value .. "-" .. m
+					value = value .. "-" .. padZeros(m, 2)
 					
 					if d then
-						value = value .. "-" .. d
+						value = value .. "-" .. padZeros(d, 2)
 					end
 				end
 				
