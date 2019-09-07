@@ -2229,17 +2229,6 @@ function State:iterate(statements, hooks, matchHook)
 	return self:out()
 end
 
-function nextArg(args)
-	local arg = args[args.pointer]
-	
-	if arg then
-		args.pointer = args.pointer + 1
-		return mw.text.trim(arg)
-	else
-		return nil
-	end
-end
-
 function getEntityId(arg, allowOmitPropPrefix)
 	if not arg then
 		return nil
@@ -2251,6 +2240,17 @@ function getEntityId(arg, allowOmitPropPrefix)
 		return replaceAlias(arg):upper()  -- could be an entity ID of a property without "Property:" prefix
 	else
 		return ""
+	end
+end
+
+function nextArg(args)
+	local arg = args[args.pointer]
+	
+	if arg then
+		args.pointer = args.pointer + 1
+		return mw.text.trim(arg)
+	else
+		return nil
 	end
 end
 
@@ -2287,12 +2287,18 @@ function claimCommand(args, funcName)
 	_.entity = mw.wikibase.getEntity(_.entityID)
 	_.propertyID = replaceAlias(lastArg)
 
-	if not _.propertyID then
-		return ""  -- we cannot continue without a property ID
+	if not _.entity or not _.propertyID then
+		return ""  -- we cannot continue without an entity or a property ID
 	end
 	
 	_.propertyID = _.propertyID:upper()
 	
+	if not _.entity.claims or not _.entity.claims[_.propertyID] then
+		return ""  -- there is no use to continue without any claims
+	end
+	
+	claims = _.entity.claims[_.propertyID]
+
 	if _.states.qualifiersCount > 0 then
 		-- do further processing if "qualifier(s)" command was given
 		
@@ -2413,23 +2419,18 @@ function claimCommand(args, funcName)
 		end
 	end
 	
-	if _.entity and _.entity.claims then claims = _.entity.claims[_.propertyID] end
-	if claims then
-		-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
-		claims = sortOnRank(claims)
-		
-		-- then iterate through the claims to collect values
-		value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
-		
-		-- if desired, add a clickable icon that may be used to edit the returned values on Wikidata
-		if _.editable and value ~= "" then
-			value = value .. _:getEditIcon()
-		end
-		
-		return value
-	else
-		return ""
+	-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
+	claims = sortOnRank(claims)
+	
+	-- then iterate through the claims to collect values
+	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
+	
+	-- if desired, add a clickable icon that may be used to edit the returned values on Wikidata
+	if _.editable and value ~= "" then
+		value = value .. _:getEditIcon()
 	end
+	
+	return value
 end
 
 function generalCommand(args, funcName)
@@ -2479,7 +2480,7 @@ function generalCommand(args, funcName)
 		if _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
-	elseif funcName == p.generalCommands.alias or funcName == p.generalCommands.aliases then
+	else
 		local parsedFormat, formatParams
 		local hooks = {count = 0}
 		
@@ -2487,8 +2488,18 @@ function generalCommand(args, funcName)
 			_.curState.singleValue = true
 		end
 		
+		_.entity = mw.wikibase.getEntity(_.entityID)
+		
+		if not _.entity then
+			return ""  -- we cannot continue without an entity
+		end
+		
 		if funcName == p.generalCommands.alias or funcName == p.generalCommands.aliases then
-			local aliases
+			if not _.entity.aliases or not _.entity.aliases[_.langCode] then
+				return ""  -- there is no use to continue without any aliasses
+			end
+			
+			local aliases = _.entity.aliases[_.langCode]
 			
 			-- parse the desired format, or parse the default aliases format
 			if args["format"] then
@@ -2511,14 +2522,16 @@ function generalCommand(args, funcName)
 			-- set the parsed format and the separators (and optional punctuation mark)
 			_:setFormatAndSeparators(_.curState, parsedFormat)
 			
-			if _.entity and _.entity.aliases then aliases = _.entity.aliases[_.langCode] end
-			if aliases then
-				value = _:concatValues(_.curState:iterate(aliases, hooks))
-			end
+			-- iterate to collect values
+			value = _:concatValues(_.curState:iterate(aliases, hooks))
 		elseif funcName == p.generalCommands.badge or funcName == p.generalCommands.badges then
-			_.inSitelinks = true
+			if not _.entity.sitelinks or not _.entity.sitelinks[_.siteID] or not _.entity.sitelinks[_.siteID].badges then
+				return ""  -- there is no use to continue without any badges
+			end
 			
-			local badges
+			local badges = _.entity.sitelinks[_.siteID].badges
+			
+			_.inSitelinks = true
 			
 			-- parse the desired format, or parse the default aliases format
 			if args["format"] then
@@ -2541,10 +2554,8 @@ function generalCommand(args, funcName)
 			-- set the parsed format and the separators (and optional punctuation mark)
 			_:setFormatAndSeparators(_.curState, parsedFormat)
 			
-			if _.entity and _.entity.sitelinks and _.entity.sitelinks[_.siteID] then badges = _.entity.sitelinks[_.siteID].badges end
-			if badges then
-				value = _:concatValues(_.curState:iterate(badges, hooks))
-			end
+			-- iterate to collect values
+			value = _:concatValues(_.curState:iterate(badges, hooks))
 		end
 	end
 	
