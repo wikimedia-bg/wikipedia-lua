@@ -652,7 +652,7 @@ function Config:getLabel(id, raw, link, short)
 	else
 		-- try short name first if requested
 		if short then
-			label = p._property({p.aliasesP.shortName, [p.args.eid] = id})  -- get short name
+			label = p._property{p.aliasesP.shortName, [p.args.eid] = id} -- get short name
 			
 			if label == "" then
 				label = nil
@@ -764,7 +764,7 @@ function Config:getEditIcon()
 		back = '</span>'
 	end
 	
-	value = "[[File:Blue pencil.svg|frameless|text-top|10px|alt=" .. i18n['info']['edit-on-wikidata'] .. "|link=https://www.wikidata.org/wiki/" .. prefix .. self.entityID .. "?uselang=" .. self.langCode
+	value = "[[File:OOjs UI icon edit-ltr-progressive.svg|frameless|text-top|10px|alt=" .. i18n['info']['edit-on-wikidata'] .. "|link=https://www.wikidata.org/wiki/" .. prefix .. self.entityID .. "?uselang=" .. self.langCode
 	
 	if self.propertyID then
 		value = value .. "#" .. self.propertyID
@@ -867,7 +867,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			elseif subtype == 'math' and not raw then
 				return mw.getCurrentFrame():extensionTag("math", datavalue)
 			elseif subtype == 'external-id' and link then
-				local url = p._property({p.aliasesP.formatterURL, [p.args.eid] = snak.property})  -- get formatter URL
+				local url = p._property{p.aliasesP.formatterURL, [p.args.eid] = snak.property}  -- get formatter URL
 				
 				if url ~= "" then
 					url = mw.ustring.gsub(url, "$1", datavalue)
@@ -2579,8 +2579,9 @@ function establishCommands(commandList, commandFunc)
 			return commandFunc(args, commandName)
 		end
 		p[commandName] = wikitextWrapper
-		
+	
 		local function luaWrapper(args)
+			args = copyTable(args)
 			args.pointer = 1
 			loadSubmodules()
 			return commandFunc(args, commandName)
