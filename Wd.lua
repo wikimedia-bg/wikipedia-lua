@@ -1837,7 +1837,6 @@ end
 -- level 2 hook
 function State:getReference(statement)
 	local key, citeWeb, citeQ, label
-	local langParams = {p.aliasesP.language, p.aliasesP.languageOfWorkOrName}
 	local params = {}
 	local citeParams = {['web'] = {}, ['q'] = {}}
 	local citeMismatch = {}
@@ -1888,10 +1887,6 @@ function State:getReference(statement)
 				params[i] = self:getReferenceDetails(statement.snaks, i, false, self.linked, true)  -- link = true/false, anyLang = true
 			else
 				params[i] = {self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)}  -- link = true/false, anyLang = true
-			end
-			
-			if i == p.aliasesP.languageOfWorkOrName then
-				params[i] = {p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})}
 			end
 			
 			if #params[i] == 0 then
@@ -2001,16 +1996,16 @@ function State:getReference(statement)
 			
 			-- and lastly "lang"
 			local langCite = ''
-			if params[p.aliasesP.languageOfWorkOrName] then
+			if params[p.aliasesP.language] then
 				if mw.isSubsting() then
-					langCite = ' <small style="color:#444">({{cite-lang|' .. params[p.aliasesP.languageOfWorkOrName][1] .. '}})</small>'
+					langCite = ' <small style="color:#444">({{cite-lang|' .. params[p.aliasesP.language][1] .. '}})</small>'
 				else
-					langCite = ' <small style="color:#444">(' .. mw.getCurrentFrame():expandTemplate{title='cite-lang', args=params[p.aliasesP.languageOfWorkOrName]} .. ')</small>'
+					langCite = ' <small style="color:#444">(' .. mw.getCurrentFrame():expandTemplate{title='cite-lang', args=params[p.aliasesP.language]} .. ')</small>'
 				end
 			end
 			
 			-- remove previously added parameters so that they won't be added a second time
-			params[p.aliasesP.languageOfWorkOrName] = nil
+			params[p.aliasesP.language] = nil
 			params[p.aliasesP.author] = nil
 			params[p.aliasesP.referenceURL] = nil
 			params[p.aliasesP.title] = nil
