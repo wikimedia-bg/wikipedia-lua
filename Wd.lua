@@ -1089,6 +1089,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				end
 				
 				value = tostring(yRound)
+				if link then
+					value = '[[' .. value .. ']]'
+				end
 				
 				if m then
 					dateStr = self.langObj:formatDate("F", "1-"..m.."-1")
@@ -1099,6 +1102,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 						else
 							dateStr = d .. " " .. dateStr
 						end
+					end
+					if link then
+						dateStr = '[[' .. dateStr .. ']]'
 					end
 					
 					value = dateStr .. " " .. value
