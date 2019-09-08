@@ -1082,15 +1082,15 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				end
 				
 				if ce then
-					if link then
-						ce = buildWikilink(i18n['datetime']['common-era'], ce)
-					end
 					suffix = suffix .. " " .. ce
+					if link then
+						suffix = suffix .. "]]"
+					end
 				end
 				
 				value = tostring(yRound)
 				if link then
-					value = '[[' .. value .. ']]'
+					value = '[[' .. value
 				end
 				
 				if m then
