@@ -374,9 +374,19 @@ function formatDate(vars, calendar)
 		return ""
 	end
 
-	local output = wd._property({'linked', vars.date.q, vars.date.p, 'references'})
-	if output == 'неизвестна' then -- TBD: more qualifier handling
-		output = 'неизв.'
+	local output = wd._property({'linked', 'references', vars.date.q, vars.date.p})
+	if output == 'неизвестна' then
+		local earliest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1319', format='%q'})
+		local latest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1326', format='%q'})
+		if (earliest ~= '') and (latest ~= '') then
+			output = 'между ' .. earliest .. ' и ' .. latest
+		elseif (earliest ~= '') then
+			output = 'не по-рано от ' .. earliest
+		elseif (latest ~= '') then
+			output = 'не по-късно от ' .. latest
+		else
+			output = 'неизв.'
+		end
 	elseif output == '' then
 		output = wikifyDate(vars.date) -- TBD: to be removed after assuring it's not used anymore
 	else
