@@ -46,8 +46,10 @@ function Date:set(year, monthName, day)
 	return self
 end
 
-function Date:fromWikidata(dateString)
-	d = { _ = dateString }
+function Date:fromWikidata(eid, property)
+	local dateString = wd._property({eid, property})
+
+	d = { _ = dateString, q = eid, p = property }
 	setmetatable(d, self)
 	self.__index = self
 	if isEmpty(dateString) or (dateString == 'няма') then
@@ -97,6 +99,7 @@ function Date:fromWikidata(dateString)
 	return d
 end
 
+-- TBD: to be removed after assuring it's not used anymore
 function Date:fromString(dateString)
 	d = { _ = dateString }
 	setmetatable(d, self)
@@ -197,6 +200,9 @@ function birthCategories(date)
 	if date.unknown then
 		table.insert(cats, "Статии за личности с неизвестна година на раждане")
 	end
+	if date.julian and isAfterGregorianIntroduced(date) then
+		table.insert(cats, "Статии с дати на раждане или смърт по стар стил")
+	end
 	return cats
 end
 
@@ -220,26 +226,25 @@ function deathCategories(date)
 	if date.unknown then
 		table.insert(cats, "Статии за личности с неизвестна година на смърт")
 	end
+	if date.julian and isAfterGregorianIntroduced(date) then
+		table.insert(cats, "Статии с дати на раждане или смърт по стар стил")
+	end
 	return cats
 end
 
 function prepareBirthDateVarsWikidata(eid)
-	local dateOfBirthString = wd._property({eid, 'P569'})
-	if isEmpty(dateOfBirthString) then
-		return nil
-	end
 	local vars = {}
-	vars.date = Date:fromWikidata(dateOfBirthString)
+	vars.date = Date:fromWikidata(eid, 'P569')
 
 	if isEmpty(wd._property({eid, 'P570'})) then 
 		vars.age = age(vars.date)
 	end
 	vars.cats = birthCategories(vars.date)
-        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 
 	return vars
 end
 
+-- TBD: to be removed after assuring it's not used anymore
 function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	if isEmpty(dateOfBirthString) then
 		return nil
@@ -251,28 +256,26 @@ function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
 		vars.age = age(vars.date)
 	end
 	vars.cats = birthCategories(vars.date)
-        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 	return vars
 end
 
 function prepareDeathDateVarsWikidata(eid)
-	local dateOfDeathString = wd._property({eid, 'P570'})
-	if isEmpty(dateOfDeathString) then
+	local vars = {}
+	vars.date = Date:fromWikidata(eid, 'P570')
+	if isEmpty(vars.date._) then
 		return nil
 	end
-	local vars = {}
-	vars.date = Date:fromWikidata(dateOfDeathString)
 
-	local dateOfBirthString = wd._property({eid, 'P569'})
-	if not isEmpty(dateOfBirthString) then
-		vars.age = age(Date:fromWikidata(dateOfBirthString), vars.date)
+	local birthDate = Date:fromWikidata(eid, 'P569')
+	if not isEmpty(birthDate._) then
+		vars.age = age(birthDate, vars.date)
 	end
 	vars.cats = deathCategories(vars.date)
-        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 
 	return vars
 end
 
+-- TBD: to be removed after assuring it's not used anymore
 function prepareDeathDateVars(dateOfBirthString, dateOfDeathString, calendar)
 	if isEmpty(dateOfDeathString) then
 		return nil
@@ -284,10 +287,10 @@ function prepareDeathDateVars(dateOfBirthString, dateOfDeathString, calendar)
 		vars.age = age(Date:fromString(dateOfBirthString), vars.date)
 	end
 	vars.cats = deathCategories(vars.date)
-        vars.showJulian = vars.date.julian and isAfterGregorianIntroduced(vars.date)
 	return vars
 end
 
+-- TBD: to be removed after assuring it's not used anymore
 function wikifyDate(date)
 	if date.millennium then
 		return "[[" .. date.millennium .. " хилядолетие" .. bceSuffix(date.bce) .. "]]"
@@ -310,9 +313,13 @@ function wikifyDate(date)
 	if date.year then
 		output = output .. "[[" .. date.year .. (date.bce and " г. пр.н.е.]]" or "]] г.")
 	end
+	if date.julian and isAfterGregorianIntroduced(date) then
+		output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
+	end
 	return output
 end
 
+-- TBD: to be removed after assuring it's not used anymore
 function bceSuffix(isBce)
 	if isBce then return " пр.н.е." else return "" end
 end
@@ -367,19 +374,20 @@ function formatDate(vars, calendar)
 		return ""
 	end
 
-	local note = '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
-	local cat = '[[Категория:Статии с дати на раждане или смърт по стар стил]]'
-	local output = wikifyDate(vars.date)
-
-	if vars.showJulian then
-		output = output .. note .. cat
+	local output = wd._property({'linked', vars.date.q, vars.date.p, 'references'})
+	if output == 'неизвестна' then -- TBD: more qualifier handling
+		output = 'неизв.'
 	end
+	if output == '' then
+		output = wikifyDate(vars.date) -- TBD: to be removed after assuring it's not used anymore
+	end
+
 	if vars.age then
 		output = output .. formatAgeSuffix(vars.age)
 	end
 	output = '<span class="oneline">' .. output .. '</span>'
 	for k, category in pairs(vars.cats) do
-		output = output .. '[[Category:' .. category .. ']]'
+		output = output .. '[[Категория:' .. category .. ']]'
 	end
 	return output
 end
@@ -393,7 +401,7 @@ function p.birth_date(frame)
 	if tablelength(frame.args) <= 1 then
 		return formatDate(prepareBirthDateVarsWikidata(eid))
 	else
-		return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3]))
+		return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3])) -- TBD: to be removed after assuring it's not used anymore
 	end
 end
 
@@ -406,7 +414,7 @@ function p.death_date(frame)
 	if tablelength(frame.args) <= 1 then
 		return formatDate(prepareDeathDateVarsWikidata(eid))
 	else
-		return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3]))
+		return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3])) -- TBD: to be removed after assuring it's not used anymore
 	end
 end
 
