@@ -1083,9 +1083,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				
 				if ce then
 					suffix = suffix .. " " .. ce
-					if link then
-						suffix = suffix .. "]]"
-					end
+				end
+				if link then
+					suffix = suffix .. "]]"
 				end
 				
 				value = tostring(yRound)
