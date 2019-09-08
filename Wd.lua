@@ -944,8 +944,6 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				
 				-- if precision is tens/hundreds/thousands of years
 				if precision >= 6 then
-					mayAddCalendar = true
-					
 					if precision <= 7 then
 						-- round centuries/millenniums up (e.g. 20th century or 3rd millennium)
 						yRound = math.ceil(yDiv)
@@ -1004,7 +1002,6 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 							precision = 5
 							yFactor = 1
 							yRound = y
-							mayAddCalendar = true
 						end
 					end
 					
@@ -1053,7 +1050,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				end
 			else
 				yRound = y
-				mayAddCalendar = true
+				mayAddCalendar = (yRound*sign >= 1583) -- show Julian calendar only after introduction of Gregorian calendar
 			end
 			
 			if mayAddCalendar then
