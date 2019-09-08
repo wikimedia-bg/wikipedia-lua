@@ -1889,6 +1889,10 @@ function State:getReference(statement)
 				params[i] = {self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)}  -- link = true/false, anyLang = true
 			end
 			
+			if i == p.aliasesP.language then
+				params[i] = {p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})}
+			end
+			
 			if #params[i] == 0 then
 				params[i] = nil
 			else
@@ -2472,7 +2476,7 @@ function generalCommand(args, funcName)
 	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 
-		if _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
+		if _.entity and _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
 	else
