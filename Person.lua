@@ -377,9 +377,13 @@ function formatDate(vars, calendar)
 	local output = wd._property({'linked', vars.date.q, vars.date.p, 'references'})
 	if output == 'неизвестна' then -- TBD: more qualifier handling
 		output = 'неизв.'
-	end
-	if output == '' then
+	elseif output == '' then
 		output = wikifyDate(vars.date) -- TBD: to be removed after assuring it's not used anymore
+	else
+		local sourcing = wd._qualifier({vars.date.q, vars.date.p, 'P1480'})
+		if sourcing ~= '' then
+			output = sourcing .. " " .. output
+		end
 	end
 
 	if vars.age then
