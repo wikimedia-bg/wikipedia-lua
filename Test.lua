@@ -2297,7 +2297,11 @@ function claimCommand(args, funcName)
 	else
 		lastArg = nextArg(args)
 	end
+
 	_.atDate = args[p.args.date]
+	if not _.flagPeriod then
+		_:setPeriod(p.flags.current) -- current when date is set but without period flags
+	end
 	
 	_.entity = mw.wikibase.getEntity(_.entityID)
 	_.propertyID = replaceAlias(lastArg)
