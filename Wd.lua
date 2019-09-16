@@ -62,7 +62,8 @@ p.flags = {
 }
 
 p.args = {
-	eid = "eid"
+	eid  = "eid",
+	date = "date"
 }
 
 local aliasesQ = {
@@ -148,6 +149,7 @@ function Config.new()
 	
 	cfg.periods = {true, true, true}  -- future = true, current = true, former = true
 	cfg.flagPeriod = false
+	cfg.atDate = nil
 	
 	cfg.mdyDate = false
 	cfg.singleClaim = false
@@ -1477,6 +1479,16 @@ function Config:timeMatches(claim)
 	end
 	
 	local now = os.date('!*t')
+	local atYear, atMonth, atDay = parseDate(self.atDate)
+	if atYear == nil then
+		atYear = now['year']
+	end
+	if atMonth == nil then
+		atMonth = now['month']
+	end
+	if atDay == nil then
+		atDay = now['day']
+	end
 	
 	startTime = self:getSingleRawQualifier(claim, p.aliasesP.startTime)
 	if startTime and startTime ~= "" and startTime ~= " " then
@@ -1503,22 +1515,22 @@ function Config:timeMatches(claim)
 	
 	if self.periods[1] then
 		-- future
-		if startTimeY and datePrecedesDate(now['year'], now['month'], now['day'], startTimeY, startTimeM, startTimeD) then
+		if startTimeY and datePrecedesDate(atYear, atMonth, atDay, startTimeY, startTimeM, startTimeD) then
 			return true
 		end
 	end
 	
 	if self.periods[2] then
 		-- current
-		if (startTimeY == nil or not datePrecedesDate(now['year'], now['month'], now['day'], startTimeY, startTimeM, startTimeD)) and
-		   (endTimeY == nil or datePrecedesDate(now['year'], now['month'], now['day'], endTimeY, endTimeM, endTimeD)) then
+		if (startTimeY == nil or not datePrecedesDate(atYear, atMonth, atDay, startTimeY, startTimeM, startTimeD)) and
+		   (endTimeY == nil or datePrecedesDate(atYear, atMonth, atDay, endTimeY, endTimeM, endTimeD)) then
 			return true
 		end
 	end
 	
 	if self.periods[3] then
 		-- former
-		if endTimeY and not datePrecedesDate(now['year'], now['month'], now['day'], endTimeY, endTimeM, endTimeD) then
+		if endTimeY and not datePrecedesDate(atYear, atMonth, atDay, endTimeY, endTimeM, endTimeD) then
 			return true
 		end
 	end
@@ -2284,6 +2296,11 @@ function claimCommand(args, funcName)
 		end
 	else
 		lastArg = nextArg(args)
+	end
+
+	_.atDate = args[p.args.date]
+	if not _.flagPeriod then
+		_:setPeriod(p.flags.current) -- current when date is set but without period flags
 	end
 	
 	_.entity = mw.wikibase.getEntity(_.entityID)
