@@ -920,6 +920,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			local sign = 1
 			local prefix = ""
 			local suffix = ""
+			local linkSuffix = ""
 			local mayAddCalendar = false
 			local calendar = ""
 			local precision = datavalue['precision']
@@ -952,12 +953,12 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 						
 						if not raw then
 							if precision == 6 then
-								suffix = i18n['datetime']['suffixes']['millennium']
+								linkSuffix = i18n['datetime']['suffixes']['millennium']
 							else
-								suffix = i18n['datetime']['suffixes']['century']
+								linkSuffix = i18n['datetime']['suffixes']['century']
 							end
 							
-							suffix = i18n.getOrdinalSuffix(yRound) .. suffix
+							suffix = i18n.getOrdinalSuffix(yRound) .. linkSuffix
 						else
 							-- if not verbose, take the first year of the century/millennium
 							-- (e.g. 1901 for 20th century or 2001 for 3rd millennium)
@@ -971,6 +972,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 						if not raw then
 							prefix = i18n['datetime']['prefixes']['decade-period']
 							suffix = i18n['datetime']['suffixes']['decade-period']
+							linkSuffix = suffix
 						end
 					end
 					
@@ -1036,14 +1038,17 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					if not raw then
 						if precision == 3 then
 							suffix = i18n['datetime']['suffixes']['million-years']
+							linkSuffix = suffix
 						elseif precision == 0 then
 							suffix = i18n['datetime']['suffixes']['billion-years']
+							linkSuffix = suffix
 						else
 							yRound = yRound * yFactor
 							if yRound == 1 then
 								suffix = i18n['datetime']['suffixes']['year']
 							else
 								suffix = i18n['datetime']['suffixes']['years']
+								linkSuffix = suffix
 							end
 						end
 					else
@@ -1053,6 +1058,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			else
 				yRound = y
 				mayAddCalendar = (yRound*sign >= 1583) -- show Julian calendar only after introduction of Gregorian calendar
+				suffix = i18n['datetime']['suffixes']['year']
 			end
 			
 			if mayAddCalendar then
@@ -1082,14 +1088,19 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				
 				if ce then
 					suffix = suffix .. " " .. ce
-				end
-				if link then
-					suffix = suffix .. "]]"
+					linkSuffix = linkSuffix .. " " .. ce
 				end
 				
 				value = tostring(yRound)
+
 				if link then
-					value = '[[' .. value
+					if suffix == linkSuffix then
+						value = '[[' .. value .. suffix .. ']]'
+					else
+						value = '[[' .. value .. linkSuffix .. '|' .. value .. suffix .. ']]'
+					end
+				else
+					value = value .. suffix
 				end
 				
 				if m then
@@ -1109,7 +1120,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					value = dateStr .. " " .. value
 				end
 				
-				value = prefix .. value .. suffix .. calendar
+				value = prefix .. value .. calendar
 			else
 				value = padZeros(yRound * sign, 4)
 				
