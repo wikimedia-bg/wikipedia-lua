@@ -2310,7 +2310,7 @@ function claimCommand(args, funcName)
 	end
 
 	_.atDate = args[p.args.date]
-	if not _.flagPeriod then
+	if (not _.flagPeriod) and (_.atDate ~= nil) then
 		_:setPeriod(p.flags.current) -- current when date is set but without period flags
 	end
 	
