@@ -374,7 +374,7 @@ function formatDate(vars, calendar)
 		return ""
 	end
 
-	local output = wd._property({'linked', 'references', vars.date.q, vars.date.p})
+	local output = wd._property({'linked', vars.date.q, vars.date.p})
 	if output == 'неизвестна' then
 		local earliest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1319', format='%q'})
 		local latest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1326', format='%q'})
