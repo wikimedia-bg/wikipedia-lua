@@ -99,55 +99,6 @@ function Date:fromWikidata(eid, property)
 	return d
 end
 
--- TBD: to be removed after assuring it's not used anymore
-function Date:fromString(dateString)
-	d = { _ = dateString }
-	setmetatable(d, self)
-	self.__index = self
-	if isEmpty(dateString) then
-		return d
-	end
-	if string.match(dateString, 'BCE$') then
-		d.bce = true
-	end
-	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
-	if day and monthName and year then
-		return d:set(year, monthName, day)
-	end
-	monthName, year = mw.ustring.match(dateString, "^(%a+) (%d+)")
-	if monthName and year then
-		return d:set(year, monthName)
-	end
-	millennium = mw.ustring.match(dateString, "^(%d+)\. millennium")
-	if millennium then
-		d.millennium = millennium
-		return d
-	end
-	century = mw.ustring.match(dateString, "^(%d+)\. century")
-	if century then
-		d.century = century
-		return d
-	end
-	decade = mw.ustring.match(dateString, "^(%d+)s")
-	if decade then
-		d.decade = decade
-		return d
-	end
-	year = mw.ustring.match(dateString, "^(%d+)")
-	if year then
-		return d:set(year)
-	end
-	if string.match(dateString, "неизвестна стойност") then
-		d.unknown = true
-	end
-	-- old value
-	if string.match(dateString, "неразпозната стойност") then
-		d.unknown = true
-	end
-
-	return d
-end
-
 function tablelength(T)
   local count = 0
   for _ in pairs(T) do count = count + 1 end
@@ -178,6 +129,10 @@ end
 
 function dateForCalc(date)
 	return string.format("%d%02d%02d", date.year or 0, date.month or 0, date.day or 0)
+end
+
+function bceSuffix(isBce)
+	if isBce then return " пр.н.е." else return "" end
 end
 
 function birthCategories(date)
@@ -244,21 +199,6 @@ function prepareBirthDateVarsWikidata(eid)
 	return vars
 end
 
--- TBD: to be removed after assuring it's not used anymore
-function prepareBirthDateVars(dateOfBirthString, dateOfDeathString, calendar)
-	if isEmpty(dateOfBirthString) then
-		return nil
-	end
-	local vars = {}
-	vars.date = Date:fromString(dateOfBirthString)
-	vars.date.julian = isJulian(calendar)
-	if isEmpty(dateOfDeathString) then 
-		vars.age = age(vars.date)
-	end
-	vars.cats = birthCategories(vars.date)
-	return vars
-end
-
 function prepareDeathDateVarsWikidata(eid)
 	local vars = {}
 	vars.date = Date:fromWikidata(eid, 'P570')
@@ -273,55 +213,6 @@ function prepareDeathDateVarsWikidata(eid)
 	vars.cats = deathCategories(vars.date)
 
 	return vars
-end
-
--- TBD: to be removed after assuring it's not used anymore
-function prepareDeathDateVars(dateOfBirthString, dateOfDeathString, calendar)
-	if isEmpty(dateOfDeathString) then
-		return nil
-	end
-	local vars = {}
-	vars.date = Date:fromString(dateOfDeathString)
-	vars.date.julian = isJulian(calendar)
-	if not isEmpty(dateOfBirthString) then
-		vars.age = age(Date:fromString(dateOfBirthString), vars.date)
-	end
-	vars.cats = deathCategories(vars.date)
-	return vars
-end
-
--- TBD: to be removed after assuring it's not used anymore
-function wikifyDate(date)
-	if date.millennium then
-		return "[[" .. date.millennium .. " хилядолетие" .. bceSuffix(date.bce) .. "]]"
-	end
-	if date.century then
-		return "[[" .. date.century .. " век" .. bceSuffix(date.bce) .. "]]"
-	end
-	if date.decade then
-		return "[[" .. date.decade .. "-те" .. (date.bce and " пр.н.е.]]" or "]] години")
-	end
-	if date.unknown then
-		return "неизв."
-	end
-	local output = ""
-	if date.day and date.monthName then
-		output = output .. "[[" .. date.day .. " " .. date.monthName .. "]] "
-	elseif date.monthName then
-		output = output .. date.monthName .. " "
-	end
-	if date.year then
-		output = output .. "[[" .. date.year .. (date.bce and " г. пр.н.е.]]" or "]] г.")
-	end
-	if date.julian and isAfterGregorianIntroduced(date) then
-		output = output .. '<sup>[[Приемане на григорианския календар|стар стил]]</sup>'
-	end
-	return output
-end
-
--- TBD: to be removed after assuring it's not used anymore
-function bceSuffix(isBce)
-	if isBce then return " пр.н.е." else return "" end
 end
 
 function formatAgeSuffix(age)
@@ -387,8 +278,6 @@ function formatDate(vars, calendar)
 		else
 			output = 'неизв.'
 		end
-	elseif output == '' then
-		output = wikifyDate(vars.date) -- TBD: to be removed after assuring it's not used anymore
 	else
 		local sourcing = wd._qualifier({vars.date.q, vars.date.p, 'P1480'})
 		if sourcing ~= '' then
@@ -412,11 +301,7 @@ function p.birth_date(frame)
 		eid = frame.args[1]
 	end
 
-	if tablelength(frame.args) <= 1 then
-		return formatDate(prepareBirthDateVarsWikidata(eid))
-	else
-		return formatDate(prepareBirthDateVars(frame.args[1], frame.args[2], frame.args[3])) -- TBD: to be removed after assuring it's not used anymore
-	end
+	return formatDate(prepareBirthDateVarsWikidata(eid))
 end
 
 function p.death_date(frame)
@@ -425,11 +310,7 @@ function p.death_date(frame)
 		eid = frame.args[1]
 	end
 
-	if tablelength(frame.args) <= 1 then
-		return formatDate(prepareDeathDateVarsWikidata(eid))
-	else
-		return formatDate(prepareDeathDateVars(frame.args[1], frame.args[2], frame.args[3])) -- TBD: to be removed after assuring it's not used anymore
-	end
+	return formatDate(prepareDeathDateVarsWikidata(eid))
 end
 
 return p
