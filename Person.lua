@@ -100,12 +100,6 @@ function Date:fromWikidata(eid, property)
 	return d
 end
 
-function tablelength(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
-end
-
 function age(dateOfBirth, dateOfDeath)
 	if not dateOfBirth.year then
 		return nil
@@ -375,20 +369,12 @@ function p.lsc(frame)
 end
 
 function p.birth_date(frame)
-	local eid = ''
-	if tablelength(frame.args) == 1 then
-		eid = frame.args[1]
-	end
-
+	local eid = frame.args[1] or ''
 	return formatDate(prepareBirthDateVarsWikidata(eid))
 end
 
 function p.death_date(frame)
-	local eid = ''
-	if tablelength(frame.args) == 1 then
-		eid = frame.args[1]
-	end
-
+	local eid = frame.args[1] or ''
 	return formatDate(prepareDeathDateVarsWikidata(eid))
 end
 
