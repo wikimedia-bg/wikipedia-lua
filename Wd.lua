@@ -2507,7 +2507,7 @@ function generalCommand(args, funcName)
 	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 
-		if _.entity and _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
+		if _.entity and _.entity.descriptions and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
 	else
