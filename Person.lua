@@ -351,19 +351,28 @@ end
 function p.lsc(frame)
 	local location = frame.args[1]
 	local settlement = ''
-	local str = ''
+	local country = frame.args[2] or ''
 
 	if isCountry(location) then
 		return wd._label({ 'linked', location })
 	end
 	if isSettlement(location, 1) then 
-		return wd._label({ 'linked', location}) .. wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+		if country == '' then
+			country = wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+		end
+		return wd._label({ 'linked', location}) .. country
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
-			return wd._label({ 'linked', location}) .. ', ' .. wd._label({ 'linked', settlement}) .. wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
+			if country == '' then
+				country = wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
+			end
+			return wd._label({ 'linked', location}) .. ', ' .. wd._label({ 'linked', settlement}) .. country
 		end
-		return wd._label({ 'linked', location}) .. str .. wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+		if country == '' then
+			country = wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+		end
+		return wd._label({ 'linked', location}) .. country
 	end
 	return ''
 end
