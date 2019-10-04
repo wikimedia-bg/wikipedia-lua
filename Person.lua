@@ -351,7 +351,7 @@ end
 function p.lsc(frame)
 	local location = frame.args[1]
 	local settlement = ''
-	local country = frame.args[2] or ''
+	local country = frame.args[3] or ''
 
 	if isCountry(location) then
 		return wd._label({ 'linked', location })
