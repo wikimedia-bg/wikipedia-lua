@@ -361,9 +361,9 @@ function p.lsc(frame)
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
-			str = ', ' .. wd._label({ 'linked', settlement})
+			return wd._label({ 'linked', location}) .. ', ' .. wd._label({ 'linked', settlement}) .. wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
 		end
-		return wd._label({ 'linked', location}) .. str .. wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
+		return wd._label({ 'linked', location}) .. str .. wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
 	end
 	return ''
 end
