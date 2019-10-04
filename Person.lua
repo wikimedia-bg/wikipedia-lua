@@ -14,6 +14,7 @@ Date = {
 	-- bce = nil, -- is it in the BCE epoch
 	-- julian = nil, -- is the date in Julian calendar
 }
+
 function Date.currentDate()
 	return os.date("*t")
 end
@@ -293,6 +294,84 @@ function formatDate(vars, calendar)
 		output = output .. '[[Категория:' .. category .. ']]'
 	end
 	return output
+end
+
+function inArray (array, value)
+    for index, v in ipairs(array) do
+        if v == value then
+            return true
+        end
+    end
+
+    return false
+end
+
+function isCountry(qid)
+        local countries = {'Q6256', 'Q3624078', 'Q1151405', 'Q161243', 'Q15239622', 'Q2577883', 'Q3024240', 'Q6726158', 'Q15634554'}
+        local s = wd._properties ({ 'raw', qid, 'P31', sep='', ["sep%s"]='\t' })
+
+        for token in string.gmatch(s, "[^\t]+") do
+                if inArray(countries, token) then
+                        return true
+                end
+        end
+        return false
+end
+
+function isSettlement(qid, iterate)
+        local settlements = {'Q486972', 'Q3957', 'Q7930989', 'Q10354598', 'Q498162', 'Q17343829', 'Q22674925', 'Q1529096', 'Q515'}
+        local s = wd._properties ({ 'raw', qid, 'P31', sep='', ["sep%s"]='\t' })
+        local t = false
+
+        for token in string.gmatch(s, "[^\t]+") do
+                if inArray(settlements, token) then
+                        return true
+                end
+                if iterate > 0 then
+                        t = isSettlement(token, iterate - 1)
+                        if t then
+                                return true
+                        end
+                end
+        end
+        return false
+end
+
+function findSettlement(qid, date, iterate)
+        local s = wd._properties ({ 'raw', qid, 'P131', sep='', ["sep%s"]='\t' , ["date"]=date })
+        local t = ''
+        for token in string.gmatch(s, "[^\t]+") do
+                if isSettlement(token, 1) then
+                        return token
+                end
+                if iterate > 0 then
+                        t = findSettlement(qid, date, iterate - 1)
+                        if t ~= '' then
+                                return t
+                        end
+                end
+        end
+        return ''
+end
+
+function p.lsc(frame)
+	local location = frame.args[1]
+	local settlement = ''
+	local str = ''
+
+	if isCountry(location) then
+		return wd._label({ 'linked', location })
+	end
+	if isSettlement(location, 1) then 
+		return wd._label({ 'linked', location}) .. wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+	else
+		settlement = findSettlement(location, frame.args[2], 3)
+		if settlement ~= '' then
+			str = ', ' .. wd._label({ 'linked', settlement})
+		end
+		return wd._label({ 'linked', location}) .. str .. wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
+	end
+	return ''
 end
 
 function p.birth_date(frame)
