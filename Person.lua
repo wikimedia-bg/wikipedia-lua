@@ -348,33 +348,47 @@ function findSettlement(qid, date, iterate)
         return ''
 end
 
+function joinStrings(strings, separator)
+        local res = ''
+        for i, s in ipairs(strings) do
+                if (s ~= '') and (s ~= nil) then
+                        res = res .. s .. separator
+                end
+        end
+        if res ~= '' then
+                res = string.sub (res, 1, string.len(res) - string.len(separator))
+        end
+        return res
+end
+
 function p.lsc(frame)
 	local location = frame.args[1]
 	local settlement = ''
-	local country = frame.args[3] or ''
+	local lstr = wd._label({ 'linked', location })
+	local sstr = ''
+	local cstr = frame.args[3] or ''
 
 	if isCountry(location) then
-		return wd._label({ 'linked', location })
+		return lstr
 	end
-	if isSettlement(location, 1) then 
-		if country == '' then
-			country = wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
+	if isSettlement(location, 1) then
+		if cstr == '' then
+			cstr = wd._property({'linked', 'normal+', location, 'P17', date=frame.args[2]})
 		end
-		return wd._label({ 'linked', location}) .. country
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
-			if country == '' then
-				country = wd._property({'linked', 'normal+', settlement, 'P17', format=', %p', date=frame.args[2]})
+			if cstr == '' then
+				cstr = wd._property({'linked', 'normal+', settlement, 'P17', date=frame.args[2]})
 			end
-			return wd._label({ 'linked', location}) .. ', ' .. wd._label({ 'linked', settlement}) .. country
+			sstr = wd._label({ 'linked', settlement})
+		else
+			if cstr == '' then
+				cstr = wd._property({'linked', 'normal+', location, 'P17',  date=frame.args[2]})
+			end
 		end
-		if country == '' then
-			country = wd._property({'linked', 'normal+', location, 'P17', format=', %p', date=frame.args[2]})
-		end
-		return wd._label({ 'linked', location}) .. country
 	end
-	return ''
+	return joinStrings({lstr, sstr, cstr}, ', ')
 end
 
 function p.birth_date(frame)
