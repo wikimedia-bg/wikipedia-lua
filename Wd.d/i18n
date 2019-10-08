@@ -106,9 +106,20 @@ end
 
 function p.addDelimiters(n)
 	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
+	local dec, num2, num3, rem = string.match(right, "^([,%.])(%d%d)(%d*)([^%d]*)$")
+	
+	if dec and num2 and num3 and rem then
+		num3 = '0.' .. num3
+		if tonumber(num3) >= 0.5 then
+			num2 = num2 + 1
+		end
+		right = dec .. num2 .. rem
+	end
 	
 	if (left and num and right) and (#num > 3) then
 		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. p['numeric']['delimiter']):reverse()) .. right
+	elseif left and num and right then
+		return left .. num .. right
 	else
 		return n
 	end
