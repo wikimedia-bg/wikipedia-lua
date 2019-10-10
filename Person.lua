@@ -363,6 +363,10 @@ end
 
 function p.lsc(frame)
 	local location = frame.args[1]
+	if location == '' then
+		return ''
+	end
+
 	local settlement = ''
 	local lstr = wd._label({ 'linked', location })
 	local sstr = ''
