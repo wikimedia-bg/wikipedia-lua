@@ -363,7 +363,8 @@ end
 
 function p.lsc(frame)
 	local location = frame.args[1]
-	if location == '' then
+
+	if location == '' or location == ' ' then
 		return ''
 	end
 
