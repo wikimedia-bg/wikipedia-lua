@@ -86,21 +86,27 @@ local p = {
 	}
 }
 
-function p.getOrdinalSuffix(num)
+function p.getOrdinalSuffix(num, gen)
+	local gLetter = 'и'
+	
+	if gen == p['datetime']['suffixes']['millennium'] then
+		gLetter = 'o'
+	end
+	
 	if tostring(num):sub(-2,-2) == '1' then
-		return "-и"  -- 10th, 11th, 12th, 13th, ... 19th
+		return '-' .. gLetter	-- 10th, 11th, 12th, 13th, ... 19th
 	end
 	
 	num = tostring(num):sub(-1)
 	
 	if num == '1' then
-		return "-ви"
+		return '-в' .. gLetter
 	elseif num == '2' then
-		return "-ри"
+		return '-р' .. gLetter
 	elseif num == '3' or num == '4' then
-		return "-ти"
+		return '-т' .. gLetter
 	else
-		return "-и"
+		return '-' .. gLetter
 	end
 end
 
