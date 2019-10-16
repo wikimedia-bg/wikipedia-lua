@@ -313,11 +313,18 @@ function isCountry(qid)
 end
 
 function isSettlement(qid, iterate)
+        local notsettlements = {'Q123705'}
         local settlements = {'Q486972', 'Q3957', 'Q7930989', 'Q10354598', 'Q498162', 'Q17343829', 'Q22674925', 'Q1529096', 'Q515'}
         local s = wd._properties ({ 'raw', qid, 'P31', sep='', ["sep%s"]='\t' })
+        if s == '' then
+                s = wd._properties ({ 'raw', qid, 'P279', sep='', ["sep%s"]='\t' })
+        end
         local t = false
 
         for token in string.gmatch(s, "[^\t]+") do
+                if inArray(notsettlements, token) then
+                        return false
+                end
                 if inArray(settlements, token) then
                         return true
                 end
@@ -339,7 +346,7 @@ function findSettlement(qid, date, iterate)
                         return token
                 end
                 if iterate > 0 then
-                        t = findSettlement(qid, date, iterate - 1)
+                        t = findSettlement(token, date, iterate - 1)
                         if t ~= '' then
                                 return t
                         end
@@ -376,6 +383,7 @@ function p.lsc(frame)
 	if isCountry(location) then
 		return lstr
 	end
+
 	if isSettlement(location, 1) then
 		if cstr == '' then
 			cstr = wd._property({'linked', 'normal+', location, 'P17', date=frame.args[2]})
