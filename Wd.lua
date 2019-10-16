@@ -958,7 +958,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 								linkSuffix = i18n['datetime']['suffixes']['century']
 							end
 							
-							suffix = i18n.getOrdinalSuffix(yRound) .. linkSuffix
+							suffix = i18n.getOrdinalSuffix(yRound, linkSuffix) .. linkSuffix
 						else
 							-- if not verbose, take the first year of the century/millennium
 							-- (e.g. 1901 for 20th century or 2001 for 3rd millennium)
