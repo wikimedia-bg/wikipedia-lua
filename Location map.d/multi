@@ -1,0 +1,242 @@
+require('Module:No globals')
+
+local p = {}
+
+local getArgs = require('Module:Arguments').getArgs
+local locmap = require('Module:Location map')
+
+local function switcherSeparate(s)
+	if s == nil then return {} end
+	local retval = {}
+	for i in string.gmatch(s .. '#', '([^#]*)#') do
+		i = mw.text.trim(i)
+		retval[#retval + 1] = (i ~= '' and i)
+	end
+	return retval
+end
+
+function p.container(frame, args, map)
+	local caption_list = {}
+	if not args then
+		args = getArgs(frame, {wrappers = 'Template:Location map+', valueFunc = locmap.valueFunc})
+	end
+	if not map then
+		if args[1] then
+			map = {}
+			for mapname in string.gmatch(args[1], '[^#]+') do
+				map[#map + 1] = locmap.getMapParams(mapname, frame)
+			end
+			if args['caption'] then
+				if args['caption'] == "" then
+					while #caption_list < #map do
+						caption_list[#caption_list + 1] = args['caption']
+					end
+				else
+					for caption in mw.text.gsplit(args['caption'], '##', true) do
+						caption_list[#caption_list + 1] = caption
+					end
+				end
+			end
+			if #map == 1 then map = map[1] end
+		else
+			map = locmap.getMapParams('World', frame)
+		end
+	end
+	if type(map) == 'table' then
+		local placeslist = mw.text.gsplit(args.places, '#PlaceList#')
+		local permaplaces = {}
+		local numbermaps = #map
+		local count = 0
+		for i = 1,numbermaps do
+			permaplaces[i] = {}
+		end
+		for place in placeslist do
+			table.insert(permaplaces[count%numbermaps + 1],place)
+			count = count + 1
+		end
+		local altmaps = switcherSeparate(args.AlternativeMap)
+		if #altmaps > #map then
+			error(string.format('%d AlternativeMaps were provided, but only %d maps were provided', #altmaps, #map))
+		end
+		local overlays = switcherSeparate(args.overlay_image)
+		if #overlays > #map then
+			error(string.format('%d overlay_images were provided, but only %d maps were provided', #overlays, #map))
+		end
+		if #caption_list > #map then
+			error(string.format('%d captions were provided, but only %d maps were provided', #caption_list, #map))
+		end
+		local outputs = {}
+		args.autoSwitcherLabel = true
+		for k,v in ipairs(map) do
+			args.AlternativeMap = altmaps[k]
+			args.overlay_image = overlays[k]
+			args.caption = caption_list[k]
+			args.places = table.concat(permaplaces[k])
+			outputs[k] = p.container(frame, args, v)
+		end
+		return '<div class="switcher-container">' .. table.concat(outputs) .. '</div>'
+	else
+		return locmap.top(frame, args, map) .. (args.places and args.places:gsub('%s*\n%s*', '') or '') .. locmap.bottom(frame, args, map)
+	end
+end
+
+local function manyMakeArgs(fullArgs, n)
+	if n == 1 then
+		return {
+			lat = fullArgs.lat1 or fullArgs.lat,
+			long = fullArgs.long1 or fullArgs.long,
+			coordinates = fullArgs.coordinates1 or fullArgs.coordinates,
+			lat_deg = fullArgs.lat1_deg or fullArgs.lat_deg,
+			lat_min = fullArgs.lat1_min or fullArgs.lat_min,
+			lat_sec = fullArgs.lat1_sec or fullArgs.lat_sec,
+			lat_dir = fullArgs.lat1_dir or fullArgs.lat_dir,
+			lon_deg = fullArgs.lon1_deg or fullArgs.lon_deg,
+			lon_min = fullArgs.lon1_min or fullArgs.lon_min,
+			lon_sec = fullArgs.lon1_sec or fullArgs.lon_sec,
+			lon_dir = fullArgs.lon1_dir or fullArgs.lon_dir,
+			outside = fullArgs.outside1 or fullArgs.outside,
+			mark = fullArgs.mark1 or fullArgs.mark,
+			marksize = fullArgs.mark1size or fullArgs.marksize,
+			link = fullArgs.link1 or fullArgs.link,
+			label = fullArgs.label1 or fullArgs.label,
+			label_size = fullArgs.label1_size or fullArgs.label_size,
+			label_width = fullArgs.label1_width or fullArgs.label_width,
+			position = fullArgs.position1 or fullArgs.pos1 or fullArgs.position or fullArgs.pos,
+			background = fullArgs.background1 or fullArgs.bg1 or fullArgs.background or fullArgs.bg
+		}
+	else
+		return {
+			lat = fullArgs['lat' .. n],
+			long = fullArgs['long' .. n],
+			coordinates = fullArgs['coordinates' .. n],
+			lat_deg = fullArgs['lat' .. n .. '_deg'],
+			lat_min = fullArgs['lat' .. n .. '_min'],
+			lat_sec = fullArgs['lat' .. n .. '_sec'],
+			lat_dir = fullArgs['lat' .. n .. '_dir'],
+			lon_deg = fullArgs['lon' .. n .. '_deg'],
+			lon_min = fullArgs['lon' .. n .. '_min'],
+			lon_sec = fullArgs['lon' .. n .. '_sec'],
+			lon_dir = fullArgs['lon' .. n .. '_dir'],
+			outside = fullArgs['outside' .. n],
+			mark = fullArgs['mark' .. n],
+			marksize = fullArgs['mark' .. n .. 'size'],
+			link = fullArgs['link' .. n],
+			label = fullArgs['label' .. n],
+			label_size = fullArgs['label' .. n .. '_size'],
+			label_width = fullArgs['label' .. n .. '_width'],
+			position = fullArgs['position' .. n] or fullArgs['pos' .. n],
+			background = fullArgs['background' .. n] or fullArgs['bg' .. n]
+		}
+	end
+end
+
+function p.many(frame, args, map)
+	if not args then
+		args = getArgs(frame, {wrappers = 'Template:Location map many', valueFunc = locmap.valueFunc})
+	end
+	if not args[1] then
+		args[1] = 'World'
+	end
+	if not map then
+		map = {}
+		for mapname in string.gmatch(args[1], '[^#]+') do
+			map[#map + 1] = locmap.getMapParams(mapname, frame)
+		end
+		if #map ~= 1 then
+			local outputs = {}
+			args.autoSwitcherLabel = true
+			for k,v in ipairs(map) do
+				outputs[k] = p.many(frame, args, v)
+			end
+			return '<div class="switcher-container">' .. table.concat(outputs) .. '</div>'
+		end
+		map = map[1]
+	end
+	local marks = {}
+	local markhigh
+	if args.markhigh then
+		mw.log('Removed parameter markhigh used.')
+		local parent = frame:getParent()
+		if parent then
+			mw.log('Parent is ' .. parent:getTitle())
+		end
+		mw.logObject(args, 'args')
+		markhigh = true
+	end
+	for k, v in pairs(args) do -- @todo change to uargs once we have that
+		if v then
+			if string.sub(k, -4) == '_deg' then
+				k = string.sub(k, 1, -5)
+			end
+			if string.sub(k, 1, 3) == 'lat' then
+				k = tonumber(string.sub(k, 4))
+				if k then
+					table.insert(marks, k)
+				end
+			elseif string.sub(k, 1, 11) == 'coordinates' then
+				k = tonumber(string.sub(k, 12))
+				if k then
+					table.insert(marks,k)
+				end
+			end
+		end
+	end
+	table.sort(marks)
+	if marks[1] ~= 1 and (args.lat or args.lat_deg or args.coordinates) then
+		table.insert(marks, 1, 1)
+	end
+	local body = ''
+	for _, v in ipairs(marks) do
+		-- don't try to consolidate this into the above loop. ordering of elements from pairs() is unspecified
+		body = body .. tostring( locmap.mark(frame, manyMakeArgs(args, v), map) )
+		if args['mark' .. v .. 'high'] then
+			mw.log('Removed parameter mark' .. v .. 'high used.')
+			local parent = frame:getParent()
+			if parent then
+				mw.log('Parent is ' .. parent:getTitle())
+			end
+			mw.logObject(args, 'args')
+			markhigh = true
+		end
+	end
+	args.label = nil -- there is no global label
+	return locmap.top(frame, args, map) .. body .. locmap.bottom(frame, args, map) .. (markhigh and '[[Category:Location maps with possible errors|Page using removed parameter]]' or '')
+end
+
+function p.load(frame, args, map)
+	if not args then
+		args = getArgs(frame, {frameOnly = true})
+	end
+	local dataModule = mw.loadData(frame.args[1])
+	if not map then
+		map = {}
+		for mapname in string.gmatch(dataModule.containerArgs[1], '[^#]+') do
+			map[#map + 1] = locmap.getMapParams(mapname, frame)
+		end
+		if #map ~= 1 then
+			local outputs = {}
+			args.autoSwitcherLabel = true
+			for k,v in ipairs(map) do
+				outputs[k] = p.load(frame, args, v)
+			end
+			return '<div class="switcher-container">' .. table.concat(outputs) .. '</div>'
+		end
+		map = map[1]
+	end
+	local marks = {}
+	if dataModule.marks then
+		for k,markArgs in ipairs(dataModule.marks) do
+			marks[k] = tostring(locmap.mark(frame, markArgs, map))
+		end
+	end
+	if dataModule.secondaryModules then
+		for _,modname in ipairs(dataModule.secondaryModules) do
+			for _,markArgs in ipairs(mw.loadData(modname).marks) do
+				marks[#marks + 1] = tostring(locmap.mark(frame, markArgs, map))
+			end
+		end
+	end
+	return locmap.top(frame, dataModule.containerArgs, map) .. table.concat(marks) .. locmap.bottom(frame, dataModule.containerArgs, map)
+end
+
+return p
