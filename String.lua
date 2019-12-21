@@ -362,24 +362,24 @@ function str.replace( frame )
     local plain = new_args['plain'] or true;
         
     if source_str == '' or pattern == '' then
-        return source_str;
+        return source_str
     end    
-    plain = str._getBoolean( plain );
+    plain = str._getBoolean( plain )
 
     if plain then
         pattern = str._escapePattern( pattern );
-        replace = mw.ustring.gsub( replace, "%%", "%%%%" ); --Only need to escape replacement sequences.
+        replace = mw.ustring.gsub( replace, "%%", "%%%%" ) --Only need to escape replacement sequences.
     end
     
-    local result;
+    local result
 
     if count ~= nil then
-        result = mw.ustring.gsub( source_str, pattern, replace, count );
+        result = mw.ustring.gsub( source_str, pattern, replace, count )
     else
-        result = mw.ustring.gsub( source_str, pattern, replace );
+        result = mw.ustring.gsub( source_str, pattern, replace )
     end        
 
-    return result;
+    return result
 end
 
 --[[
