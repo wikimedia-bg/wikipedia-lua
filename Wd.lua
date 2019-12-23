@@ -639,7 +639,7 @@ function Config:getLabel(id, raw, link, short)
 	
 	if raw then
 		-- check if given id actually exists
-		if mw.wikibase.getEntity(id) then
+		if mw.wikibase.isValidEntityId(id) and mw.wikibase.entityExists(id) then
 			label = id
 			
 			if id:sub(1,1) == "P" then
@@ -662,12 +662,7 @@ function Config:getLabel(id, raw, link, short)
 		
 		-- get label
 		if not label then
-			label, lang = mw.wikibase.getLabelWithLang(id)
-			
-			-- don't allow language fallback
-			if lang ~= self.langCode then
-				label = nil
-			end
+			label = mw.wikibase.getLabelByLang(id, self.langCode)
 		end
 	end
 	
