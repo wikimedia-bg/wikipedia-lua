@@ -163,8 +163,7 @@ function Config.new()
 	cfg.langName = mw.language.fetchLanguageName(cfg.langCode, cfg.langCode)
 	cfg.langObj = mw.language.new(cfg.langCode)
 	
-	-- somewhat reliable way of determining global site ID in the absence of a library function, targeting the Wikipedia project (i.e. appending "wiki")
-	cfg.siteID = (function() for i,v in pairs(mw.site.interwikiMap("local")) do if v.isCurrentWiki and i~="w" then return mw.ustring.gsub(i,"-","_").."wiki" end end end)()
+	cfg.siteID = mw.wikibase.getGlobalSiteId()
 
 	cfg.states = {}
 	cfg.states.qualifiersCount = 0
