@@ -23,11 +23,11 @@ end
 --[[==========================================================================]]
 
 function p.iaafLink( id )
-	--P1146's format regex: [1-9][0-9]* (e.g. 123)
-	if not string.match( id, '^[1-9]%d*$' ) then
+	--P1146's format regex: [0-9][0-9]* (e.g. 123)
+	if not string.match( id, '^%d+$' ) then
 		return false
 	end
-	return '[https://www.iaaf.org/athletes/biographies/athcode='..id..' '..id..']'..p.getCatForId( 'IAAF' )
+	return '[https://www.worldathletics.org/athletes/_/'..id..' '..id..']'..p.getCatForId( 'IAAF' )
 end
 
 function p.viafLink( id )
@@ -71,18 +71,18 @@ function p.ciniiLink( id )
 	if not string.match( id, '^DA%d%d%d%d%d%d%d[%dX]$' ) then
 		return false
 	end
-	return '[https://ci.nii.ac.jp/author/'..id..'?l=en '..id..']'..p.getCatForId( 'CINII' )
+	return '[https://ci.nii.ac.jp/author/'..id..' '..id..']'..p.getCatForId( 'CINII' )
 end
 
 function p.bneLink( id )
-	--P950's format regex: (XX|FF|a)\d{4,7}|(bima|bimo|bica|bis[eo]|bivi|Mise|Mimo|Mima)\d{10} (e.g. XX1234567)
-	if not string.match( id, '^[XF][XF]%d%d%d%d%d?%d?%d?$' ) and
+	--P950's format regex: (XX|a)\d{4,7}|(bima|bimo|bise|bivi|Mise|Mimo|Mima)\d{10} (e.g. XX1234567)
+	if not string.match( id, '^XX%d%d%d%d%d?%d?%d?$' ) and
 	   not string.match( id, '^a%d%d%d%d%d?%d?%d?$' ) and
-	   not string.match( id, '^bi[mcsv][aoei]%d%d%d%d%d%d%d%d%d%d$' ) and
+	   not string.match( id, '^bi[msv][aoei]%d%d%d%d%d%d%d%d%d%d$' ) and
 	   not string.match( id, '^Mi[sm][eoa]%d%d%d%d%d%d%d%d%d%d$' ) then
 		return false
 	end
-	return '[http://catalogo.bne.es/uhtbin/authoritybrowse.cgi?action=display&authority_id='..id..' '..id..']'..p.getCatForId( 'BNE' ) --no https yet (10/2018)
+	return '[http://datos.bne.es/resource/'..id..' '..id..']'..p.getCatForId( 'BNE' ) --no https yet (10/2018)
 end
 
 function p.uscongressLink( id )
@@ -116,7 +116,7 @@ function p.mgpLink( id )
 	if not string.match( id, '^%d%d?%d?%d?%d?%d?$' ) then
 		return false
 	end
-	return '[http://www.genealogy.ams.org/id.php?id='..id..' '..id..']'..p.getCatForId( 'MGP' ) --no https yet (10/2018)
+	return '[https://genealogy.math.ndsu.nodak.edu/id.php?id='..id..' '..id..']'..p.getCatForId( 'MGP' ) --no https yet (10/2018)
 end
 
 function p.rslLink( id )
@@ -151,7 +151,7 @@ function p.nkcLink( id )
 	if not string.match( id, '^[a-z][a-z][a-z]?[a-z]?%d%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$' ) then
 		return false
 	end
-	return '[https://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica='..id..'&CON_LNG=ENG '..id..']'..p.getCatForId( 'NKC' )
+	return '[https://aleph.nkp.cz/F/?func=find-c&local_base=aut&ccl_term=ica='..id..' '..id..']'..p.getCatForId( 'NKC' )
 end
 
 function p.nclLink( id )
@@ -159,7 +159,7 @@ function p.nclLink( id )
 	if not string.match( id, '^%d+$' ) then
 		return false
 	end
-	return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence='..id..'&CON_LNG=ENG '..id..']'..p.getCatForId( 'NCL' ) --no https yet (10/2018)
+	return '[http://aleweb.ncl.edu.tw/F/?func=accref&acc_sequence='..id..' '..id..']'..p.getCatForId( 'NCL' ) --no https yet (10/2018)
 end
 
 function p.ndlLink( id )
@@ -179,13 +179,11 @@ function p.sudocLink( id )
 end
 
 function p.hdsLink( id )
-	--P902's format regex: 50\d{3}|[1-4]\d{4}|[1-9]\d{0,3}| (e.g. 50123)
-	if not string.match( id, '^50%d%d%d$' ) and
-	   not string.match( id, '^[1-4]%d%d%d%d$' ) and
-	   not string.match( id, '^[1-9]%d?%d?%d?$' ) then
+	--P902's format regex: \d{6} (e.g. 50123)
+	if not string.match( id, '^%d%d%d%d%d%d$' )then
 		return false
 	end
-	return '[http://www.hls-dhs-dss.ch/textes/f/F'..id..'.php '..id..']'..p.getCatForId( 'HDS' ) --no https yet (10/2018)
+	return '[https://hls-dhs-dss.ch/de/articles/'..id..' '..id..']'..p.getCatForId( 'HDS' )
 end
 
 function p.lirLink( id )
@@ -336,8 +334,8 @@ function p.orcidLink( id )
 end
 
 function p.gndLink( id )
-	--P227's format regex: (1|1[01])\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X] (e.g. 4079154-3)
-	if not string.match( id, '^1[01]?%d%d%d%d%d%d%d[0-9X]$' ) and
+	--P227's format regex: 1[012]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X] (e.g. 4079154-3)
+	if not string.match( id, '^1[012]?%d%d%d%d%d%d%d[0-9X]$' ) and
 	   not string.match( id, '^[47]%d%d%d%d%d%d%-%d$' ) and
 	   not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%-[0-9X]$' ) and
 	   not string.match( id, '^3%d%d%d%d%d%d%d[0-9X]$' ) then
@@ -355,8 +353,8 @@ function p.selibrLink( id )
 end
 
 function p.bnfLink( id )
-	--P268's format regex: \d{8}[0-9bcdfghjkmnpqrstvwxz] (e.g. 123456789)
-	if not string.match( id, '^c?b?%d%d%d%d%d%d%d%d[0-9bcdfghjkmnpqrstvwxz]$' ) then
+	--P268's format regex: \d{8,9}[0-9bcdfghjkmnpqrstvwxz] (e.g. 123456789)
+	if not string.match( id, '^c?b?%d?%d%d%d%d%d%d%d%d[0-9bcdfghjkmnpqrstvwxz]$' ) then
 		return false
 	end
 	--Add cb prefix if it has been removed
@@ -367,27 +365,25 @@ function p.bnfLink( id )
 end
 
 function p.bpnLink( id )
-	--P651's format regex: \d{8} (e.g. 12345678)
-	if not string.match( id, '^%d%d%d%d%d%d%d%d$' ) then
+	--P651's format regex: \d{6,8} (e.g. 123456)
+	if not string.match( id, '^%d%d%d%d%d%d%d?%d?$' ) then
 		return false
 	end
 	return '[http://www.biografischportaal.nl/en/persoon/'..id..' '..id..']'..p.getCatForId( 'BPN' ) --no https yet (10/2018)
 end
 
 function p.ridLink( id )
-	--P1053's format regex: [A-Z]-\d{4}-(19|20)\d\d (e.g. A-1234-1934)
-	if not string.match( id, '^[A-Z]%-%d%d%d%d%-19%d%d$' ) and
-	   not string.match( id, '^[A-Z]%-%d%d%d%d%-20%d%d$' ) then
+	--P1053's format regex: [A-Z]+-\d{4}-(19|20)\d\d (e.g. A-1234-1934)
+	if not string.match( id, '^[A-Z]+%-%d%d%d%d%-19%d%d$' ) and
+	   not string.match( id, '^[A-Z]+%-%d%d%d%d%-20%d%d$' ) then
 		return false
 	end
 	return '[https://www.researcherid.com/rid/'..id..' '..id..']'..p.getCatForId( 'RID' )
 end
 
 function p.bibsysLink( id )
-	--P1015's format regex: [1-9]\d* or [1-9](\d{0,8}|\d{12}) (e.g. 1234567890123)
-	--TODO: follow up @ [[d:Property talk:P1015#Discrepancy between the 2 regex constraints]] or escalate/investigate
-	if not string.match( id, '^[1-9]%d?%d?%d?%d?%d?%d?%d?%d?$' ) and
-	   not string.match( id, '^[1-9]%d%d%d%d%d%d%d%d%d%d%d%d$' ) then
+	--P1015's format regex: [1-9]\d* (e.g. 1234567890123)
+	if not string.match( id, '^[1-9]%d*$' ) then
 		return false
 	end
 	return '[https://authority.bibsys.no/authority/rest/authorities/html/'..id..' '..id..']'..p.getCatForId( 'BIBSYS' )
@@ -422,11 +418,11 @@ function p.snacLink( id )
 	if not string.match( id, '^%d*[A-Za-z][0-9A-Za-z]*$' ) then
 		return false
 	end
-	return '[http://socialarchive.iath.virginia.edu/ark:/99166/'..id..' '..id..']'..p.getCatForId( 'SNAC-ID' ) --no https yet (10/2018)
+	return '[https://snaccooperative.org/ark:/99166/'..id..' '..id..']'..p.getCatForId( 'SNAC-ID' ) --no https yet (10/2018)
 end
 
 function p.dblpLink( id )
-	--P2456's format regex: \d{2,3} /\d+(-\d+)?|[a-z] /[a-zA-Z][0-9A-Za-z]*(-\d+)? (e.g. 123/123)
+	--P2456's format regex: \d{2,3}/\d+(-\d+)?|[a-z]\/[a-zA-Z][0-9A-Za-z]*(-\d+)? (e.g. 123/123)
 	if not string.match( id, '^%d%d%d?/%d+$' ) and
 	   not string.match( id, '^%d%d%d?/%d+%-%d+$' ) and
 	   not string.match( id, '^[a-z]/[a-zA-Z][0-9A-Za-z]*$' ) and
@@ -449,7 +445,7 @@ function p.autoresuyLink( id )
 	if not string.match( id, '^[1-9]%d?%d?%d?%d?$' ) then
 		return false
 	end
-	return '[https://autores.uy/autor/'..id..' '..id..']'..p.getCatForId( 'autores.uy' )
+	return '[http://autores.uy/entidad/'..id..' '..id..']'..p.getCatForId( 'autores.uy' )
 end
 
 function p.picLink( id )
@@ -457,7 +453,7 @@ function p.picLink( id )
 	if not string.match( id, '^[1-9]%d*$' ) then
 		return false
 	end
-	return '[https://pic.nypl.org/constituents/'..id..' '..id..']'..p.getCatForId( 'PIC' )
+	return '[http://pic.nypl.org/constituents/'..id..' '..id..']'..p.getCatForId( 'PIC' )
 end
 
 function p.bildLink( id )
@@ -474,7 +470,7 @@ function p.jocondeLink( id )
 	if not string.match( id, regex ) then
 		return false
 	end
-	return '[http://www2.culture.gouv.fr/public/mistral/joconde_fr?ACTION=CHERCHER&FIELD_1=REF&VALUE_1='..id..' '..id..']'..p.getCatForId( 'Joconde' ) --no https yet (10/2018)
+	return '[https://www.pop.culture.gouv.fr/notice/joconde/'..id..' '..id..']'..p.getCatForId( 'Joconde' ) --no https yet (10/2018)
 end
 
 function p.rkdidLink( id )
@@ -490,7 +486,7 @@ function p.balatLink( id )
 	if not string.match( id, '^%d+$' ) then
 		return false
 	end
-	return '[http://balat.kikirpa.be/object/104257'..id..' '..id..']'..p.getCatForId( 'BALaT' ) --no https yet (10/2018)
+	return '[http://balat.kikirpa.be/object/'..id..' '..id..']'..p.getCatForId( 'BALaT' ) --no https yet (10/2018)
 end
 
 function p.lnbLink( id )
@@ -522,7 +518,7 @@ function p.ta98Link( id )
 	if not string.match( id, '^A%d%d%.%d%.%d%d%.%d%d%d[FM]?$' ) then
 		return false
 	end
-	return '[http://tools.wmflabs.org/wikidata-externalid-url/?p=1323&url_prefix=https:%2F%2Fwww.unifr.ch%2Fifaa%2FPublic%2FEntryPage%2FTA98%20Tree%2FEntity%20TA98%20EN%2F&url_suffix=%20Entity%20TA98%20EN.htm&id='..id..' '..id..']'..p.getCatForId( 'TA98' )
+	return '[https://tools.wmflabs.org/wikidata-externalid-url/?p=1323&url_prefix=https:%2F%2Fwww.unifr.ch%2Fifaa%2FPublic%2FEntryPage%2FTA98%20Tree%2FEntity%20TA98%20EN%2F&url_suffix=%20Entity%20TA98%20EN.htm&id='..id..' '..id..']'..p.getCatForId( 'TA98' )
 end
 
 function p.teLink( id )
@@ -602,7 +598,7 @@ function p.dsiLink( id )
 	if not string.match( id, '^[1-9]%d*$' ) then
 		return false
 	end
-	return '[http://www.uni-stuttgart.de/hi/gnt/dsi2/index.php?table_name=dsi&function=details&where_field=id&where_value='..id..' '..id..']'..p.getCatForId( 'DSI' )
+	return '[https://dsi.hi.uni-stuttgart.de/index.php?table_name=dsi&function=details&where_field=id&where_value='..id..' '..id..']'..p.getCatForId( 'DSI' )
 end
 
 function p.fastLink( id )
@@ -623,15 +619,15 @@ end
 
 function p.koninklijkeLink( id )
 	--P1006's format regex: \d{8}(\d|X) (e.g. 069071632)
-	if not ( string.match( id, '^%d%d%d%d%d%d%d%d%d$' ) or string.match( id, '^%d%d%d%d%d%d%d%dX$' ) ) then
+	if not string.match( id, '^%d%d%d%d%d%d%d%d[%dXx]$' ) then
 		return false
 	end
 	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Koninklijke' )
 end
 
 function p.openLibraryLink( id )
-	--P648's format regex: OL[1-9]\d{0,7}[AMW] (e.g. OL3156833A)
-	if not string.match( id, '^OL[1-9]%d?%d?%d?%d?%d?%d?%d?[AMW]$' ) then
+	--P648's format regex: OL\d{1,7}[AMW] (e.g. OL3156833A)
+	if not string.match( id, '^OL%d%d?%d?%d?%d?%d?%d?%d?[AMW]$' ) then
 		return false
 	end
 	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary' )
