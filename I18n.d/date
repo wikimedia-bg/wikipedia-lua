@@ -1,0 +1,433 @@
+--[[
+  __  __           _       _        ___ _  ___           __  _       _       
+ |  \/  | ___   __| |_   _| | ___ _|_ _/ |( _ ) _ __    / /_| | __ _| |_ ___ 
+ | |\/| |/ _ \ / _` | | | | |/ _ (_)| || |/ _ \| '_ \  / / _` |/ _` | __/ _ \
+ | |  | | (_) | (_| | |_| | |  __/_ | || | (_) | | | |/ / (_| | (_| | ||  __/
+ |_|  |_|\___/ \__,_|\__,_|_|\___(_)___|_|\___/|_| |_/_/ \__,_|\__,_|\__\___|
+                                                                             
+This Module handles per language customization of dates
+Copied from https://commons.wikimedia.org/wiki/Module:I18n/date
+used by Module:ISOdate, Module:Complex date, Module:WikidataIB
+Authors and Maintainers:
+* Jarekt 
+]]
+
+
+local p = {}
+
+--[[ Different languages use different date formats, and many formats are shared among whole families of languages. 
+"DateLang" picks a cluster of languages associated with a single date format, based on the language to be used. 
+All unlisted languages default to English form. Languages like "de-formal" follows regular language fallback chain 
+and would default to German, and only if that does not exist then to English.
+]]
+
+p.DateLang = {
+	['be'] 		= 'ru-form', -- Belarusian
+	['be-tarsk'] 	= 'ru-form', -- Belarusian (Tara۫ievica)
+	['bn'] 		= 'en-form', -- Bengali
+	['bpy'] 	= 'bpy-form', -- Bishnupuriya Manipuri
+	['ce'] 		= 'ce-form', -- Chechen
+	['cs'] 		= 'cs-form', -- Czech
+	['da'] 		= 'de-form', -- Danish
+	['de'] 		= 'de-form', -- German
+	['el'] 		= 'ru-form', -- Greek
+	['en'] 		= 'en-form', -- English
+	['eo'] 		= 'eo-form', -- Esperanto
+	['es'] 		= 'es-form', -- Spanish
+	['et'] 		= 'de-form', -- Estonian
+	['eu'] 		= 'eu-form', -- Basque
+	['fa'] 		= 'he-form', -- Persian
+	['fi'] 		= 'fi-form', -- Finnish
+	['fr'] 		= 'fr-form', -- French
+	['ga'] 		= 'ga-form', -- Gallic
+	['gl'] 		= 'es-form', -- Galician based on https://translatewiki.net/wiki/MediaWiki:Pagetriage-info-timestamp-date-format/gl
+	['hi'] 		= 'en-form', -- Hindi
+	['he'] 		= 'he-form', -- Hebrew 
+	['hr'] 		= 'hr-form', -- Croatian 
+	['hu'] 		= 'hu-form', -- Hungarian
+	['hsb'] 	= 'cs-form', -- Upper Sorbian
+	['ia'] 		= 'ia-form', -- Interlingua
+	['is'] 		= 'de-form', -- Icelandic
+	['ja'] 		= 'zh-form', -- Japanese
+	['kn'] 		= 'kn-form', -- Kannada
+	['ko'] 		= 'ko-form', -- Korean
+	['lt'] 		= 'lt-form', -- Lithuanian
+	['lv'] 		= 'lv-form', -- Latvian
+	['mk'] 		= 'en-form', -- Macedonian
+	['ml'] 		= 'ml-form', -- Malayalam
+	['mr'] 		= 'mr-form', -- Marathi
+	['new'] 	= 'new-form', -- Newari
+	['nn'] 		= 'de-form', -- Norwegian Nynorsk
+	['no'] 		= 'de-form', -- Norwegian (bokm欩
+	['oc'] 		= 'oc-form', -- Occitan
+	['pa'] 		= 'en-form', -- Punjabi
+	['pl'] 		= 'ru-form', -- Polish
+	['pt'] 		= 'es-form', -- Portuguese
+	['qu'] 		= 'qu-form', -- Quechua based on https://translatewiki.net/wiki/MediaWiki:Pagetriage-info-timestamp-date-format/qu
+	['qug'] 	= 'qug-form', -- Kichwa based on Template_talk:Date#Kichwa_.5Bqug.5D
+	['ru'] 		= 'ru-form', -- Russian
+	['sk'] 		= 'cs-form', -- Slovakian
+	['sl'] 		= 'sl-form', -- Slovene
+	['sr'] 		= 'hr-form', -- Serbian
+	['th'] 		= 'th-form', -- Thai solar calendar
+	['uk'] 		= 'ru-form', -- Ukrainian
+	['vi'] 		= 'vi-form', -- Vietnamese
+	['zh-hans'] 	= 'zh-form', -- Chinese
+}
+
+--[[ Date format parameter which will be passed to {{#time:}} parser function. 
+  It depends on the language and which parts of the date need to be displayed. 
+  Different forms are:
+  * YMDHMS = stands for YYYY:MM:DD, HH:MM:SS format or equivalent
+  * YMDHM  = stands for YYYY:MM:DD, HH:MM format or equivalent
+  * YMD    = stands for YYYY:MM:DD format or equivalent
+  * YM     = stands for YYYY:MM (year-month) format or equivalent
+  * MD     = stands for MM:DD (month-day) format or equivalent
+  * Y      = stands for YYYY (year only) format or equivalent
+  * M      = stands for month name only
+  
+  The left hand side follows encoding used by {{#time}} parser function , 
+  see https://www.mediawiki.org/wiki/Help:Extension:ParserFunctions#.23time for documentation.
+	To summerize:
+	 * Y - 4-digit year, like "2017"
+	 * y - 2-digit year, like "17"
+	 * M - An abbreviation of the month name, in the site language, like "Mar"
+	 * F - The full month name in the site language, like "March"
+	 * xg - Output the full month name in the genitive form for site languages that distinguish 
+	        between genitive and nominative forms. This option is useful for many Slavic languages 
+					like Polish, Russian, Belarusian, Czech, Slovak, Slovene, Ukrainian, etc.
+	 * j - Day of the month, not zero-padded, like "1"
+	 * d - Day of the month, zero-padded, like "01"
+	 * a - "am" during the morning (00:00:00 → 11:59:59), "pm" otherwise (12:00:00 → 23:59:59).
+	 * A - Uppercase version of a above.
+	 * g - Hour in 12-hour format, not zero-padded. 
+	 * h - Hour in 12-hour format, zero-padded.
+	 * G - Hour in 24-hour format, not zero-padded. 
+	 * H - Hour in 24-hour format, zero-padded. 
+	 * i - Minutes past the hour, zero-padded.
+	 * s - Seconds past the minute, zero-padded.
+	 
+  Original set was developed to match the output of the pre-Lua {{date}} template, preserved as {{date/old}}
+]]
+p.DateFormat = {
+	-- day/month/year languages
+	['en-form'] = {
+		YMDHMS='j F Y, H:i:s',		
+		YMDHM ='j F Y, H:i',		
+		YMD   ='j F Y',		
+		YM    ='F Y',		
+		MD    ='j F',		
+		Y     ='Y',
+		M     ='F'		
+	},
+	['de-form'] = {
+		YMDHMS='j. F Y, H:i:s',		
+		YMDHM ='j. F Y, H:i',		
+		YMD   ='j. F Y',		
+		YM    ='F Y',		
+		MD    ='j. F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['hr-form'] = {
+		YMDHMS='j. F Y., H:i:s',		
+		YMDHM ='j. F Y., H:i',		
+		YMD   ='j. F Y.',		
+		YM    ='F Y.',		
+		MD    ='j. F',		
+		Y     ='Y.',
+		M     ='F'
+	},
+	['ml-form'] = {
+		YMDHMS='j F Y, H:i:s',		
+		YMDHM ='j F Y, H:i',		
+		YMD   ='j F Y',		
+		YM    ='F Y',		
+		MD    ='F j',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['th-form'] = {
+		YMDHMS='j F "พ.ศ." xkY, H:i:s',	
+		YMDHM ='j F "พ.ศ." xkY, H:i',	
+		YMD   ='j F "พ.ศ." xkY',	
+		YM    ='F "พ.ศ." xkY',
+		MD    ='j F',		
+		Y     ='"พ.ศ." xkY',
+		M     ='F'
+	},
+	['fi-form'] = {
+		YMDHMS='j. F"ta" Y, H:i:s',	
+		YMDHM ='j. F"ta" Y, H:i',	
+		YMD   ='j. F"ta" Y',	
+		YM    ='F Y',		
+		MD    ='j. F"ta"',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['es-form'] = {
+		YMDHMS='j "de" F "de" Y, H:i:s',	
+		YMDHM ='j "de" F "de" Y, H:i',	
+		YMD   ='j "de" F "de" Y',	
+		YM    ='F "de" Y',		
+		MD    ='j "de" F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['oc-form'] = {
+		YMDHMS='j F "de" Y, H:i:s',	
+		YMDHM ='j F "de" Y, H:i',	
+		YMD   ='j F "de" Y',	
+		YM    ='F "de" Y',		
+		MD    ='j F',			
+		Y     ='Y',
+		M     ='F'
+	},
+	['ia-form'] = {
+		YMDHMS='j "de" F Y, H:i:s',	
+		YMDHM ='j "de" F Y, H:i',	
+		YMD   ='j "de" F Y',	
+		YM    ='F Y',		
+		MD    ='j "de" F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['eo-form'] = {
+		YMDHMS='"la" j"-a de" F Y, H:i:s',
+		YMDHM ='"la" j"-a de" F Y, H:i',
+		YMD   ='"la" j"-a de" F Y',
+		YM    ='F Y',		
+		MD    ='"la" j"-a de" F',	
+		Y     ='Y',
+		M     ='F'
+	},
+	['vi-form'] = {
+		YMDHMS='j F "năm" Y "lúc" H:i:s',	
+		YMDHM ='j F "năm" Y "lúc" H:i',	
+		YMD   ='j F "năm" Y',	
+		YM    ='F "năm" Y',		
+		MD    ='j F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['qu-form'] = {
+		YMDHMS='j "ñiqin" F"pi" Y "watapi", H:i:s',	
+		YMDHM ='j "ñiqin" F"pi" Y "watapi", H:i',	
+		YMD   ='j "ñiqin" F"pi" Y "watapi"',	
+		YM    ='F"pi" Y "watapi"',		
+		MD    ='j "ñiqin" F"pi"',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['qug-form'] = {
+		YMDHMS='j "niki" F"pi" Y "watapi", H:i:s',	
+		YMDHM ='j "niki" F"pi" Y "watapi", H:i',	
+		YMD   ='j "niki" F"pi" Y "watapi"',	
+		YM    ='F"pi" Y "watapi"',		
+		MD    ='j "niki" F"pi"',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['he-form'] = {
+		YMDHMS='"<span dir=rtl>"j xg Y"</span>", H:i:s',		
+		YMDHM ='"<span dir=rtl>"j xg Y"</span>", H:i',		
+		YMD   ='"<span dir=rtl>"j xg Y"</span>"',		
+		YM    ='"<span dir=rtl>"F Y"</span>"',		
+		MD    ='"<span dir=rtl>"j xg"</span>"',		
+		Y     ='Y',
+		M     ='"<span dir=rtl>"F"</span>"'
+	},
+	
+	-- French and Gallic languages require different form for first day of the month and 
+	-- different for the other days
+	['fr-form'] = {
+		YMDHMS='j F Y, H:i:s',		
+		YMDHM ='j F Y, H:i',		
+		YMD   ='j F Y',		
+		YM    ='F Y',		
+		MD    ='j F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['ga-form'] = {
+		YMDHMS='j F Y, H:i:s',		
+		YMDHM ='j F Y, H:i',		
+		YMD   ='j F Y',		
+		YM    ='F Y',		
+		MD    ='j F',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['fr-form1'] = { -- 1st of the month form
+		YMDHMS='j"<sup>er</sup>" F Y, H:i:s', 
+		YMDHM ='j"<sup>er</sup>" F Y, H:i', 
+		YMD   ='j"<sup>er</sup>" F Y', 
+		YM    ='F Y', 	
+		MD    ='j"<sup>er</sup>" F', 
+		Y     ='Y',
+		M     ='F'
+	},
+	['ga-form1'] = { -- 1st of the month form
+		YMDHMS='j"<sup>ú</sup>" F Y, H:i:s',  
+		YMDHM ='j"<sup>ú</sup>" F Y, H:i',  
+		YMD   ='j"<sup>ú</sup>" F Y',  
+		YM    ='F Y', 	
+		MD    ='j"<sup>ú</sup>" F',  
+		Y     ='Y',
+		M     ='F'
+	},
+		
+	-- day/month/year Slavic languages
+	['ru-form'] = {
+		YMDHMS='j xg Y, H:i:s',		
+		YMDHM ='j xg Y, H:i',		
+		YMD   ='j xg Y',		
+		YM    ='F Y',		
+		MD    ='j xg',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['cs-form'] = {
+		YMDHMS='j. xg Y, H:i:s',		
+		YMDHM ='j. xg Y, H:i',		
+		YMD   ='j. xg Y',		
+		YM    ='F Y',		
+		MD    ='j. xg',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['sl-form'] = {
+		YMDHMS='j. xg Y "ob" H:i:s',	
+		YMDHM ='j. xg Y "ob" H:i',	
+		YMD   ='j. xg Y',		
+		YM    ='F Y',		
+		MD    ='j. xg',		
+		Y     ='Y',
+		M     ='F'
+	},
+		
+	-- year/month/day languages
+	['zh-form'] = {
+		YMDHMS='Y年Fj日, H:i:s',		
+		YMDHM ='Y年Fj日, H:i',		
+		YMD   ='Y年Fj日',		
+		YM    ='Y年F',		
+		MD    ='Fj日',		
+		Y     ='Y年',
+		M     ='F'
+	},
+	['ko-form'] = {
+		YMDHMS='Y년 F j일, H:i:s',	
+		YMDHM ='Y년 F j일, H:i',		
+		YMD   ='Y년 F j일',		
+		YM    ='Y년 F',		
+		MD    ='F j일',		
+		Y     ='Y년',
+		M     ='F'
+	},
+	['hu-form'] = {
+		YMDHMS='Y. F j., H:i:s',		
+		YMDHM ='Y. F j., H:i',		
+		YMD   ='Y. F j.',		
+		YM    ='Y. F',		
+		MD    ='F j.',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['lt-form'] = {
+		YMDHMS='Y "m". F j "d"., H:i:s',	
+		YMDHM ='Y "m". F j "d"., H:i',	
+		YMD   ='Y "m". F j "d".',	
+		YM    ='Y "m". F',		
+		MD    ='F j "d".',		
+		Y     ='Y "m".',
+		M     ='F'
+	},
+	['eu-form'] = {
+		YMDHMS='Y"ko" F"ren" j"a", H:i:s',		
+		YMDHM ='Y"ko" F"ren" j"a", H:i',		
+		YMD   ='Y"ko" F"ren" j"a"',		
+		YM    ='Y"ko" F',		
+		MD    ='F"ren" j"a"',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['eu-form01'] = { -- 1st and 21st of the month  uses different form
+                YMDHMS='Y"ko" F"ren" j"ea", H:i:s',		
+		YMDHM ='Y"ko" F"ren" j"ea", H:i',		
+		YMD   ='Y"ko" F"ren" j"ea"',		
+		YM    ='Y"ko" F',		
+		MD    ='F"ren" j"ea"',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['eu-form11'] = { -- 11th and 31st of the month  uses different form
+                YMDHMS='Y"ko" F"ren" j, H:i:s',		
+		YMDHM ='Y"ko" F"ren" j, H:i',		
+		YMD   ='Y"ko" F"ren" j',		
+		YM    ='Y"ko" F',		
+		MD    ='F"ren" j',		
+		Y     ='Y',
+		M     ='F'
+	},
+	['ce-form'] = {
+		YMDHMS='Y "шаран" j F, H:i:s',	
+		YMDHM ='Y "шаран" j F, H:i',	
+		YMD   ='Y "шаран" j F',	
+		YM    ='Y "шаран" F',	
+		MD    ='j F',		
+		Y     ='Y "шо"',
+		M     ='F'
+	},
+			
+	-- year/day/month languages
+	['lv-form'] = {
+		YMDHMS='Y". gada" j. F, H:i:s',	
+		YMDHM ='Y". gada" j. F, H:i',	
+		YMD   ='Y". gada" j. F',	
+		YM    ='Y". gada" F',	
+		MD    ='j. F',		
+		Y     ='Y". gada"',
+		M     ='F'
+	},
+
+	-- month/day/year languages
+	['kn-form'] = {
+		YMDHMS='F j, Y, H:i:s',		
+		YMDHM ='F j, Y, H:i',		
+		YMD   ='F j, Y',		
+		YM    ='F, Y',		
+		MD    ='F j',		
+		Y     ='Y',
+		M     ='F'
+	}, 
+	['bpy-form']= {
+		YMDHMS='F j, মারি Y, H:i:s',	
+		YMDHM ='F j, মারি Y, H:i',		
+		YMD   ='F j, মারি Y',	
+		YM    ='F, মারি Y',		
+		MD    ='F j',		
+		Y     ='মারি Y',
+		M     ='F'
+	},
+	['mr-form'] = {
+		YMDHMS='F j, इ.स. Y, H:i:s',	
+		YMDHM ='F j, इ.स. Y, H:i',	
+		YMD   ='F j, इ.स. Y',	
+		YM    ='F, इ.स. Y',		
+		MD    ='F j',		
+		Y     ='इ.स. Y',
+		M     ='F'
+	},
+	['new-form']= {
+		YMDHMS='F j, ई सं  Y, H:i:s',	
+		YMDHM ='F j, ई सं  Y, H:i',	
+		YMD   ='F j, ई सं  Y',	
+		YM    ='F, ई सं  Y',		
+		MD    ='F j',		
+		Y     ='ई सं Y',
+		M     ='F'
+	},
+}
+ 
+return p
