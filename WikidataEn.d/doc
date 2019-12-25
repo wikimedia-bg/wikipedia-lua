@@ -54,14 +54,14 @@ Please note that lower-case parameters are no longer supported by the wikibase c
 
 === Example in Infobox template ===
 Inside an infobox definition, it may be called like this:
-* <code><nowiki>| data55 = {{#invoke:Wikidata|getValue|P26|{{{spouse|FETCH_WIKIDATA}}} }}</nowiki></code>
+* <code><nowiki>| data55 = {{#invoke:WikidataEn|getValue|P26|{{{spouse|FETCH_WIKIDATA}}} }}</nowiki></code>
 which causes the infobox to:
 # not display spouse if the infobox parameter <code>|spouse</code> is set to be blank (as <code>"| spouse ="</code>}
 # display the linked value(s) from Wikidata if the infobox parameter <code>|spouse</code> is not supplied
 # display the local infobox parameter <code>|spouse</code> if it is supplied (e.g. <code>"|spouse = Hillary Rodham Clinton"</code>)
 
 Optionally, it could be called as:
-* <code><nowiki>| data55 = {{#invoke:Wikidata|getValue|P26|{{{spouse|}}} }}</nowiki></code>
+* <code><nowiki>| data55 = {{#invoke:WikidataEn|getValue|P26|{{{spouse|}}} }}</nowiki></code>
 which causes the infobox to:
 # not display spouse if the infobox parameter <code>|spouse</code> is set to be blank (as <code>"| spouse ="</code>}
 # not display spouse if the infobox parameter <code>|spouse</code> is not supplied
