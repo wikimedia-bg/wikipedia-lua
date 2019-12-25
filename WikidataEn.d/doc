@@ -32,10 +32,10 @@ Other methods:
 === Arbitrary Access ===
 As of 16 September 2015, it is now possible to fetch data from other articles by using their QID.
 The following call:
-* <code><nowiki>{{#invoke:Wikidata|getValueFromID|<QID>|<Property>|FETCH_WIKIDATA}}</nowiki></code>
+* <code><nowiki>{{#invoke:WikidataEn|getValueFromID|<QID>|<Property>|FETCH_WIKIDATA}}</nowiki></code>
 will do the same as getValue, but takes an extra parameter, which is the QID of the Wikidata item that you want to get the property value from.
 For example:
-* <code><nowiki>{{#invoke:Wikidata|getValueFromID|Q151973|P26|FETCH_WIKIDATA}}</nowiki></code>
+* <code><nowiki>{{#invoke:WikidataEn|getValueFromID|Q151973|P26|FETCH_WIKIDATA}}</nowiki></code>
 will fetch a list of the linked values for 'spouse' (P26) from 'Richard Burton' (Q151973) from anywhere in the English Wikipedia.
 
 This means that testing environments may be set up in user space, but remember that these calls are classed as ''expensive'', so please use them as sparingly as possible.
