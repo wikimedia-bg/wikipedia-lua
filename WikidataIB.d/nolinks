@@ -1,0 +1,56 @@
+local p ={}
+
+--[[
+The values here are the English sitelinks for items that should not be linked.
+These 36 are not definitive and may be altered to suit.
+--]]
+p.items = {
+	"Australia",
+	"Austria",
+	"Belgium",
+	"Canada",
+	"China",
+	"Denmark",
+	"England",
+	"France",
+	"Germany",
+	"Greece",
+	"Hungary",
+	"Iceland",
+	"India",
+	"Republic of Ireland",
+	"Israel",
+	"Italy",
+	"Jamaica",
+	"Japan",
+	"Luxembourg",
+	"Mexico",
+	"Netherlands",
+	"New Zealand",
+	"Northern Ireland",
+	"Norway",
+	"Poland",
+	"Portugal",
+	"Russia",
+	"Scotland",
+	"South Africa",
+	"Spain",
+	"Sweden",
+	"Switzerland",
+	"Turkey",
+	"United Kingdom",
+	"UK",
+	"United States",
+	"USA",
+	"Wales",
+}
+
+--[[
+This provides a convenient way to create a test whether an item is on the list.
+--]]
+p.itemsindex = {}
+for i, v in ipairs(p.items) do
+	p.itemsindex[v] = true
+end
+
+return p
