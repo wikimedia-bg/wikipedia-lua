@@ -1,0 +1,47 @@
+--[[
+To satisfy Wikipedia:Manual of Style/Titles, certain types of items are italicised,
+and others are quoted.
+This submodule lists the entity-ids used in 'instance of' (P31),
+which allows a module to identify the values that should be formatted.
+The table p.formats is indexed by entity-id, and contains the value " or ''
+--]]
+
+local p = {}
+
+p.italics = {
+	"Q571",			-- book
+	"Q13593966",	-- literary trilogy
+	"Q277759",		-- book series
+	"Q2188189",		-- musical work
+	"Q11424",		-- film
+	"Q13593818",	-- film trilogy
+	"Q24856",		-- film series
+	"Q5398426",		-- television series
+	"Q482994",		-- album
+	"Q169930",		-- extended play
+	"Q1760610",		-- comic book
+	"Q7889",		-- video game
+	"Q7058673",		-- video game series
+	"Q25379",		-- play
+	"Q2743",		-- musical
+	"Q37484",		-- epic poem
+}
+
+p.quotes = { 
+	"Q207628",		-- musical composition
+}
+
+p.size = 0
+p.formats = {}
+
+for i, v in ipairs(p.italics) do
+	p.formats[v] = "''"
+	p.size = p.size + 1
+end
+
+for i, v in ipairs(p.quotes) do
+	p.formats[v] = '"'
+	p.size = p.size + 1
+end
+
+return p
