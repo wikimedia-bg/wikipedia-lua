@@ -1,0 +1,10 @@
+{{Module rating |alpha}}
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+== Usage ==
+
+<code><nowiki>{{</nowiki>#invoke:{{BASEPAGENAME}}|''function_name''}}</code>
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
