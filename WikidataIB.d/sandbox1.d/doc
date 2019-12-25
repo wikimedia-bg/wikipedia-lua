@@ -1,0 +1,596 @@
+<noinclude>For documenting developments not yet in the main module.
+</noinclude>
+This module is designed specifically to implement a mechanism which moves control of whether Wikidata values are used in an infobox from the template coder at the infobox design level to the editor at the article level. It is only intended to be used inside an infobox.
+
+One of the three sandboxes at [[Module:WikidataIB/sandbox]], [[Module:WikidataIB/sandbox1]] or [[Module:WikidataIB/sandbox2]] should be used for testing anything other than trivial amendments.
+
+Test cases for the main module can be found at [[Module talk:WikidataIB/testing]]. Test cases for two of the sandboxes are at [[Module talk:WikidataIB/sandbox/testing]] and [[Module talk:WikidataIB/sandbox1/testing]].
+
+== Overview ==
+The module provides these calls specifically for use in infoboxes at present:
+# <code>getValue</code>
+#: <s><code>getPreferredValue</code></s> - obsoleted: use <code>getValue|rank=best</code> instead.
+#: <s><code>getNormalValue</code></s> - obsoleted: use <code>getValue|rank=normal</code> instead.
+# <code>getCoords</code>
+# <code>getQualifierValue</code>
+# <code>getValueByQual</code>
+# <code>getValueByLang</code>
+The obsolete call getSourcedValue has now been removed as it is redundant to getValue which can do the same job using the {{para|onlysourced|true}} parameter (which is set by default).
+
+There are also these utility calls:
+# <code>getLink</code>
+# <code>getLabel</code>
+# <code>getAT</code>
+# <code>getDescription</code>
+# <code>pageId</code>
+# <code>formatDate</code>
+# <code>checkBlacklist</code>
+# <code>emptyor</code>
+# <code>labelorid</code>
+# <code>getLang</code>
+# <code>getQid</code>
+
+Example form of each call:
+ <nowiki>{{#invoke:WikidataIB |getValue |<PropertyID> |name=<fieldname> |suppressfields=<list of fields which will never display> |fetchwikidata=<list of fields to fetch values from Wikidata> |onlysourced=<yes/no> |noicon=<yes/no> |df=<dmy/mdy/y> |bc=<BC/BCE> |qual=<ALL/DATES/P999> |list=<ubl/hlist/prose> |linked=<yes/no> |<local parameter>}}</nowiki>
+
+ <nowiki>{{#invoke:WikidataIB |getCoords |name=<fieldname> |suppressfields=<list of fields which will never display> |fetchwikidata=<list of fields to fetch values from Wikidata> |<local parameter>}}</nowiki>
+
+ <nowiki>{{#invoke:WikidataIB |getQualifierValue |<PropertyID> |pval=<ID of target value for the property> |qual=<qualifier ID for that target value> |name=<fieldname> |suppressfields=<list of fields which will never display> |fetchwikidata=<list of fields to fetch values from Wikidata> |onlysourced=<yes/no>}}</nowiki>
+
+ <nowiki>{{#invoke:WikidataIB |getValueByQual |<PropertyID> |qualID=<qualifier property ID to match> |qvalue=<QID of target value for the qualifier property> |name=<fieldname> |suppressfields=<list of fields which will never display> |fetchwikidata=<list of fields to fetch values from Wikidata> |onlysourced=<yes/no>}}</nowiki>
+
+ <nowiki>{{#invoke:WikidataIB |getValueByLang |<PropertyID> |lang=<language code to match> |name=<fieldname> |suppressfields=<list of fields which will never display> |fetchwikidata=<list of fields to fetch values from Wikidata> |onlysourced=<yes/no>}}</nowiki>
+
+
+== Function getValue ==
+=== Parameters to getValue ===
+{| class ="wikitable"
+|-
+! scope="col" | Name
+! scope="col" | Alias
+! scope="col" | Function
+! scope="col" | Default
+|-
+| (first unnamed)
+| 1
+| The property-ID whose values are returned. Required.
+| 
+|-
+|-
+| (second unnamed)
+| 2
+| A locally supplied value that, if it is not empty, will be returned in preference to the value on Wikidata.
+| empty
+|-
+| qid
+| 
+| The Q-number (entity-ID) of the entity that the property belongs to. If not supplied or empty, defaults to the associated Wikidata entry of the current page – uses [[:mw:Extension:Wikibase Client/Lua #mw.wikibase.getEntityIdForCurrentPage|mw.wikibase.getEntityIdForCurrentPage()]].
+| Item id for current page
+|-
+| rank
+|
+| [Case insensitive] When set to <code>best</code>, returns preferred values if present, otherwise returns normal values. When set to <code>preferred</code> returns preferred values. When set to <code>normal</code>, returns normal values. When set to <code>deprecated</code> returns deprecated values. Any parameter value beginning with "b" is "best"; beginning with "p" is "preferred"; beginning with "n" is "normal"; beginning with "d" is deprecated. Multiple values are allowed: "p n d" would return all ranks. "Best" overrides the other flags. Other values are ignored and if no ranks are requested, preferred and normal are returned.
+| preferred and normal
+|-
+| qual
+| 
+| The property-ID of a qualifier that is to be returned in parentheses after the property. Setting <code>qual=ALL</code> returns all qualifiers. Setting <code>qual=DATES</code> returns {{q|P580}} and {{q|P582}} with a date separator.
+| none
+|-
+| fetchwikidata
+| fwd
+| List of fields to fetch values from. <code>ALL</code> fetches all fields. A value of <code>NONE</code> or blank or omitting the parameter fetches no fields.
+| none
+|-
+| suppressfields
+| spf
+| List of fields which will never display. This will even force a local value in the field not to display.
+| none
+|-
+| name
+| 
+| Name of the field. When encoding an infobox, this is the name that fetchwikidata and suppressfields will recognise. Required if fetchwikidata or suppressfields is specified (except when <code>fetchwikidata=ALL</code>).
+| nil
+|-
+| onlysourced
+| osd
+| A boolean which will filter out Wikidata values that are unsourced or only sourced to Wikipedia. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| true
+|-
+| df
+| 
+| Date format: may be <code>dmy</code> (day before month) or <code>mdy</code> (month before day) or <code>y</code> (year alone).
+| dmy
+|-
+| bc
+| 
+| Format of the BC/BCE suffix for dates.
+| BCE
+|-
+| linked
+| 
+| A boolean that enables the link to a local page via its sitelink on Wikidata. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| true
+|-
+| wdlinks
+| wdl
+| A boolean that enables the display of links to Wikidata when no local article exists. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
+| unitabbr
+| 
+| A boolean that enables unit abbreviations for common units. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
+| maxvals
+| 
+| Sets the maximum number of values to be returned when multiple values are available. Setting it to 1 is useful where the returned string is used within another call, e.g. image. Values <code>0</code> and empty return all values.
+| 0 (all)
+|-
+| collapse
+| 
+| Sets the maximum number of values to be returned before the content is auto-collapsed. Values <code>0</code> and empty allow all content to be displayed uncollapsed.
+| 0 (all)
+|-
+| linkprefix
+| 
+| A link prefix that is prepended to the linked value when linked. Applies only to items that have articles and to strings (e.g. url). It triggers linking of strings. Any double-quotes " are stripped out, so that spaces may be passed.
+| empty
+|-
+| linkpostfix
+| 
+| A link postfix that is appended to the linked value when linked. Applies only to items that have articles and to strings (e.g. url). It triggers linking of strings. Any double-quotes " are stripped out, so that spaces may be passed.
+| empty
+|-
+| prefix
+| 
+| A prefix that is prepended to the displayed value of strings (e.g. url). Any double-quotes " are stripped out, so that spaces may be passed.
+| empty
+|-
+| postfix
+| 
+| A postfix that is appended to the displayed value of strings (e.g. url). Any double-quotes " are stripped out, so that spaces may be passed.
+| empty
+|-
+| qlinkprefix
+| 
+| Qualifier link prefix (see linkprefix).
+| empty
+|-
+| qlinkpostfix
+| 
+| Qualifier link postfix (see linkpostfix).
+| empty
+|-
+| qprefix
+| 
+| Qualifier prefix (see prefix).
+| empty
+|-
+| qpostfix
+| 
+| Qualifier postfix (see postfix).
+| empty
+|-
+| sorted
+| 
+| A boolean which enables sorting of the values returned. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
+| qsorted
+| 
+| A boolean which enables sorting of the qualifier values within each item returned. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
+| noicon
+| 
+| A boolean which will suppress the trailing "edit at Wikidata" pen-icon. Useful for when the returned value is to be further processed. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
+| list
+| 
+| The name of a template that the list of multiple values is then passed through. Examples include "hlist" and "ubl". Setting it to "prose" produces something like "1, 2, 3, and 4"
+| none
+|-
+| sep
+| 
+| Customises the string that is used to separate multiple returned values. Any double-quotes " are stripped out, so that spaces may be passed. If nothing or an empty string is passed it is set to the default list separator (", " in English).
+| ", "
+|-
+| qsep
+| 
+| Customises the string that is used to separate multiple returned qualifier values. Any double-quotes " are stripped out, so that spaces may be passed. If nothing or an empty string is passed it is set to the default list separator (", " in English).
+| ", "
+|-
+| format
+| 
+| Determines whether global coordinates should be rendered as degree/minute/second or as decimal degrees. Any value beginning "dec" (case insensitive) will render as decimal. Anything else will render as DMS.
+| dms
+|-
+| show
+| 
+| Determines how global coordinates should be returned. The value "longlat" will return <code>longitude, latitude</code>. Any other value beginning "lon" (case insensitive) will return just longitude. Any value beginning "lat" (case insensitive) will return just latitude. When used with {{para|noicon|true}}, all of these will be pure numbers in decimal degrees (signed: N and E as positive), which are intended for use in mapping templates, etc. Anything other value (or nothing) will render the usual coordinate values as DMS or decimal with "NSEW" qualifiers, etc.
+| empty
+|-
+| lang
+| 
+| Allows an unlinked value to be returned in the chosen language. Takes a standard ISO language code recognised by MediaWiki. If not supplied or blank, the local language (or set language for multi-lingual wikis) is used as normal.
+| local language
+|}
+
+=== Base parameters ===
+* getValue can also take a named parameter {{para|qid}} which is the Wikidata ID for an article. This will not normally be used as omitting it defaults to the current article.
+* The property whose value is to be returned is passed in the first unnamed property and is required.
+* The second unnamed parameter, if supplied, will become the returned value and no call to Wikidata will be made.
+
+=== Whitelist and blacklist ===
+* The name of the field that this function is called from is passed in the named parameter {{para|name}}, which is first checked against a blacklist of fields that are never to be displayed, (i.e. the call must return nil in all circumstances). If the field is not on the blacklist, it is then checked against a whitelist. If the name of the field matches, the call will return any locally supplied value if it is supplied as the second unnamed parameter, or the Wikidata value otherwise.
+* The name is compulsory when the blacklist or whitelist is used, so the module returns nil if it is not supplied, other than when {{para|fetchwikidata|ALL}}.
+* The blacklist is passed in the named parameter {{para|suppressfields}}
+* The whitelist is passed in the named parameter {{para|fetchwikidata}}
+
+=== Sourcing ===
+The getValue function will accept a boolean parameter <code>onlysourced</code> which will suppress return of Wikidata values that are unsourced or only sourced to Wikipedia. The absence of the parameter, an empty parameter ({{para|onlysourced}}) and the empty string (<code>""</code>) all default to true (i.e. only referenced values are returned). The values <code>no</code>, <code>false</code> and <code>0</code> are treated as false (i.e. all values are returned); any other value is true (although {{para|onlysourced|yes/no}} is recommended for readability).
+
+=== Link to Wikidata ===
+The getValue function will accept a boolean parameter <code>noicon</code> which will suppress the trailing "edit at Wikidata" icon and link for cases when the returned value is to be further processed by the infobox (e.g. a url). The absence of the parameter or an empty parameter ({{para|noicon}}) default to false (i.e. the icon is added). The empty string (<code>""</code>) and the values <code>no</code>, <code>false</code> and <code>0</code> are treated as false; any other value is true (although {{para|noicon|true}} is recommended for readability).
+
+=== Dates ===
+In order to handle the requirement for dates in mdy, dmy or just year formats, getValue accepts a named parameter {{para|df}} that may take the values "dmy", "mdy", or "y" - default is "dmy".
+
+As an article may require either of suffixes BC and BCE, getValue accepts a named parameter {{para|bc}} that may take the values "BC", or "BCE" - default is "BCE". Some test cases are shown at [[Module talk:WikidataIB/testing #Calls to getValue for dates]].
+
+=== Ranks ===
+The {{para|rank}} parameter, when set to preferred, returns only preferred values; when set to normal, returns only normal values; when set to deprecated, returns only deprecated values. If the parameter is set to best, it returns preferred values if present, otherwise normal values. Any parameter value beginning with "p" is "preferred"; any parameter value beginning with "n" is "normal"; any parameter value beginning with "d" is "deprecated"; any parameter value beginning with "b" is "best". Combinations of values are allowed, e.g. {{para|rank|p n}} returns all the preferred and normal values (which is the default), although "best" overrides any other parameters.
+
+==== Specific value-type handlers ====
+The module has specific handlers for the following data types:
+# Items that correspond to an article in some Wikipedia, called "wikibase-items". These will be linked to the corresponding (and disambiguated) article on English Wikipedia where possible.
+# Items that represent dates. These may be centuries, years, years and months, or years, months and days.
+# Items that represent Commons media, urls, external ids, or other sorts of plain text.
+# Items that represent quantities. All of these may have an associated unit, or be dimensionless, and may have a range.
+# Items that represent global coordinates. These will be in degrees of latitude and longitude and will have an associated precision.
+Items that represent other types of data are not handled at present.
+
+The third class of data types may be used with the parameters:
+* {{para|prefix}}, {{para|postfix}}, {{para|linkprefix}}, {{para|linkpostfix}}
+If you don't supply at least one of {{para|linkprefix}} or {{para|linkpostfix}}, then just {{para|prefix}} and {{para|postfix}} are used. For example, when getting the {{Q|P717}} in {{Q|Q532127|}}:
+* <code><nowiki>{{#invoke:WikidataIB/sandbox|getValue|P717|fetchwikidata=ALL|onlysourced=no |prefix="before " |postfix=" after" |qid=Q532127}}</nowiki></code> → {{#invoke:WikidataIB/sandbox |getValue |P717 |fetchwikidata=ALL|onlysourced=no |prefix="before " |postfix=" after" |qid=Q532127}}
+Use double-quotes to enclose the parameter value if it has leading or trailing spaces (otherwise they are stripped out). If you supply {{para|linkprefix}} or {{para|linkpostfix}}, then all four parameters are used and a link is made for each value like this:
+* <code><nowiki>[[ linkprefix WikidataValue1 linkpostfix | prefix WikidataValue1 postfix]], [[ linkprefix WikidataValue2 linkpostfix | prefix WikidataValue2 postfix]], etc.</nowiki></code>
+That allows multiple links to be made to different sections of a list article, such as [[List of observatory codes]]. For example, when getting the {{Q|P717}} in {{Q|Q532127|}} we can make the links:
+*<code><nowiki>{{#invoke:WikidataIB/sandbox|getValue|P717|fetchwikidata=ALL|onlysourced=no |prefix= |postfix= |linkprefix="List of observatory codes#" |linkpostfix= |qid=Q532127}}</nowiki></code> → {{#invoke:WikidataIB/sandbox|getValue|P717|fetchwikidata=ALL|onlysourced=no |prefix= |postfix= |linkprefix="List of observatory codes#" |linkpostfix= |qid=Q532127}}
+
+The parameters {{para|prefix}}, {{para|postfix}}, {{para|linkprefix}}, {{para|linkpostfix}} are also applied to wikibase-items if they are linked.
+
+==== Formatting multiple returned values ====
+* {{para|sorted|<yes{{!}}no>}} is a boolean passed to enable sorting of the values returned. No parameter, or an empty string, or "false", or "no", or "0" disables sorting. It's only a very dumb alphabetical sort and sorts linked values as "[[ ..."
+* {{para|sep|<separator characters>}} allows the separator between multiple returned values to be defined. The default is <code>", "</code> (comma plus normal space). If the separator has leading or trailing spaces, enclose it in double quotes (e.g. {{para|sep|" - "}}). Any double quotes are stripped from the separator. The pipe character (<code>|</code>) must be escaped as <code><nowiki>{{!}}</nowiki></code>. For reasons of accessibility (see [[MOS:PLIST]]), do not use {{para|sep|&lt;br>}} for vertical unbulleted lists; use {{para|list|ubl}} instead.
+* {{para|list|<hlist{{!}}ubl>}} allows multiple returned values to be displayed as a horizontal list ({{para|list|hlist}}), or a vertical unbulleted list ({{para|list|ubl}}). These override the separator and do not display the 'pen icon' linked to "Edit at Wikidata"
+
+=== Limiting the returned values ===
+Sometimes a property is expected to have a single value, such as {{q|P18}}, but may have multiple values on Wikidata. Setting {{para|maxvals|1}} will limit the number of values returned to 1. Any other value is possible and functions as expected, but zero is treated as "no limit".
+
+=== Unlinking ===
+A returned value that represents an article on the local wiki will be linked by default. This includes redirects, but not dab pages. Sometimes there is a need not to link that returned values and this may be accomplished by setting {{para|linked|no}}.
+
+=== Unit abbreviations ===
+When the returned value is a quantity, the name of the units in which it is expressed is appended. Infoboxes may wish to use abbreviations instead for common units. This can be done by setting {{para|unitabbr|true}}.
+
+=== Qualifiers ===
+A parameter {{para|qual}} may be supplied, which will return qualifiers of the required property, if they exist. If the value is set to a property id (P12345), then only the values of qualifiers with that property will be returned. If the value is set to {{para|qual|ALL}}, then all of the qualifier values are returned. If the value is set to {{para|qual|DATES}} then the {{q|P580}} and the {{q|P582}} of the property are returned with a date separator. In each case, any qualifier values returned follow the property value, and are enclosed in parentheses. If multiple qualifier values are returned, they will be separated by commas by default, although the separator can be changed by specifying {{para|qsep}} (which may be enclosed in double-quotes, which are stripped out, so that spaces can be included). Setting the parameter {{para|qsorted|yes}} will sort the returned qualifier values alphanumerically.
+
+=== Short form of parameters ===
+Some of the longer parameters may be abbreviated to make infobox designs more compact:
+* <code>fwd → fetchwikidata</code>
+* <code>osd → onlysourced</code>
+* <code>spf → suppressfields</code>
+* <code>wdl → wdlinks</code>
+
+=== Wrapper template ===
+The template {{tl|wdib}} can be used as a convenient wrapper for <code><nowiki>{{#invoke:WikidataIB |getValue}}</nowiki></code>.
+
+== Other main functions ==
+=== Function getPreferredValue ===
+The getPreferredValue function works exactly like getValue, taking the same parameters, but if any values for a property have the preferred rank set, it will only return those values. This is now deprecated in favour of <code>getValue|rank=best</code>.
+
+=== Function getNormalValue ===
+The getNormalValue function complements getPreferredValue, taking the same parameters, but if any values for a property have the normal rank set, it will only return those values. This is now deprecated in favour of <code>getValue|rank=normal</code>.
+
+If a property has a mixture of preferred and normal ranks set, they can be separated by separate calls using <code>getValue|rank=preferred</code> (only returns preferred values) and <code>getValue|rank=normal</code> (only returns normal values).
+
+Fetching the name(s) of the {{Q|P170}} from {{Q|Q29016906}}:
+* <code><nowiki>{{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no}}</nowiki></code> → {{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no}}
+* <code><nowiki>{{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=preferred}}</nowiki></code> → {{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=preferred}}
+* <code><nowiki>{{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=normal}}</nowiki></code> → {{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=normal}}
+* <code><nowiki>{{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=best}}</nowiki></code> → {{#invoke:WikidataIB |getValue |P170 |fwd=ALL |qid=Q29016906 |osd=no |rank=best}}
+
+=== Function getCoords ===
+* getCoords can also take a named parameter {{para|qid}} which is the Wikidata ID for an article. This will not normally be used as omitting it defaults to the current article.
+* The first unnamed parameter, if supplied, will become the returned value and no call to Wikidata will be made.
+* The coordinates from Wikidata are parsed and passed to [[Template:Coord]] which returns the display as if it were called manually.
+* The blacklist of fields that are never to be displayed, and the whitelist are implemented in the same way as for getValue using {{para|suppressfields}} and {{para|fetchwikidata}}
+
+=== Function getQualifierValue ===
+
+The getQualifierValue function is for use when we want to fetch the value of a qualifier. We need to know the property and the value of the property that the qualifier relates to. The parameters are:
+* The property ID passed in the unnamed parameter (or {{para|1}})
+* The target value for that property in {{para|pval}}
+* The qualifier ID for that target value in {{para|qual}}
+* The same parameters to implement whitelisting and blacklisting of the property as in getValue
+* Optional boolean to specify whether only sourced values of the property are returned (defaults to "no") in {{para|onlysourced}}
+* Optional item ID for arbitrary access in {{para|qid}}
+* The same parameters to format output as in getValue
+
+==== Example of getQualifierValue ====
+In {{Q|Q1513315}} there is a property {{Q|P793}}, which has a value {{Q|Q385378}}. That has two qualifiers, {{Q|P580}} and {{Q|P582}}. To get the start date:
+* <code><nowiki>{{#invoke:WikidataIB |getQualifierValue |P793 |pval=Q385378 |qual=P580 |name=xyz |fetchwikidata=ALL }}</nowiki></code>
+In [[South Pole Telescope]] it returns:
+* {{#invoke:WikidataIB |getQualifierValue |P793 |pval=Q385378 |qual=P580 |name=xyz |fetchwikidata=ALL |qid=Q1513315}}
+
+=== Function getValueByQual ===
+The getValueByQual function returns the value of a property which has a qualifier with a given entity value. The parameters are:
+* The property ID passed in the unnamed parameter (or {{para|1}})
+* The property ID for a qualifier (or "ALL" or "DATES") in {{para|qualID}}
+* The Wikibase-entity ID of a value for that qualifier in {{para|qvalue}}
+* The same parameters to implement whitelisting and blacklisting of the property as in getValue
+* Optional boolean to specify whether only sourced values of the property are returned (defaults to "no") in {{para|onlysourced}}
+* Optional item ID for arbitrary access in {{para|qid}}
+* The same parameters to format output as in getValue
+
+==== Example of getValueByQual ====
+In {{Q|Q10990}} there is a property {{Q|P443}} that has multiple values, each of which has a qualifier {{Q|P407}}. We can return the property value whose qualifier has the value {{Q|Q7979}}
+* <code><nowiki>{{#invoke:WikidataIB |getValueByQual |qid=Q10990 |P443 |qualID=P407 |qvalue=Q7979 |fwd=ALL |osd=no |noicon=true}}</nowiki></code> → {{#invoke:WikidataIB/sandbox |getValueByQual |qid=Q10990 |P443 |qualID=P407 |qvalue=Q7979 |fwd=ALL |osd=no |noicon=true}}
+
+=== Function getValueByLang ===
+The getValueByLang function returns the value of a property which has a qualifier {{Q|P407}} whose value has the given language code. The parameters are:
+* The property ID passed in the unnamed parameter (or {{para|1}})
+* The MediaWiki language code to match the language whose code is given by {{para|lang|xx[-yy]}}. If no code is supplied, it uses the default language.
+* The same parameters to implement whitelisting and blacklisting of the property as in getValue
+* Optional boolean to specify whether only sourced values of the property are returned (defaults to "no") in {{para|onlysourced}}
+* Optional item ID for arbitrary access in {{para|qid}}
+* The same parameters to format output as in getValue
+
+== Utility functions ==
+
+=== Function getLink ===
+getLink has the qid of a Wikidata entity passed as the first unnamed parameter or as |qid=
+
+If there is a sitelink to an article on the local Wiki, it returns a link to the article with the Wikidata label as the displayed text.
+If there is no sitelink, it returns the label as plain text.
+If there is no label in the local language, it displays the qid instead.
+: Wikidata: {{q|Q29016906}} and {{q|Q3621491}} 
+* <code><nowiki>{{#invoke:WikidataIB |getLink |Q29016906}}</nowiki></code> → {{#invoke:WikidataIB |getLink |Q29016906}}
+* <code><nowiki>{{#invoke:WikidataIB |getLink |Q3621491}}</nowiki></code> → {{#invoke:WikidataIB |getLink |Q3621491}}
+
+=== Function getLabel ===
+getLabel has the qid of a Wikidata entity passed as the first unnamed parameter or as |qid=
+
+It returns the Wikidata label for the local language as plain text.
+If there is no label in the local language, it displays the qid instead.
+Note that this is the label given to the Wikidata entry in the same language as the current Wiki, if the label exists.
+: Wikidata: {{q|Q29016906}} and {{q|Q3621491}} 
+* <code><nowiki>{{#invoke:WikidataIB |getLabel |Q29016906}}</nowiki></code> → {{#invoke:WikidataIB |getLabel |Q29016906}}
+* <code><nowiki>{{#invoke:WikidataIB |getLabel |Q3621491}}</nowiki></code> → {{#invoke:WikidataIB |getLabel |Q3621491}}
+
+=== Function getAT ===
+getAT has the qid of a Wikidata entity passed as the first unnamed parameter or as |qid=
+
+If there is a sitelink to an article on the local Wiki, it returns the sitelink as plain text, i.e. the article title.
+If there is no sitelink, it returns nothing.
+Note that this is the title of the article in the current Wikipedia, if the interlanguage link exists in the Wikidata entry.
+: Wikidata: {{q|Q29016906}} and {{q|Q3621491}} 
+* <code><nowiki>{{#invoke:WikidataIB |getAT |Q29016906}}</nowiki></code> → {{#invoke:WikidataIB |getAT |Q29016906}}
+* <code><nowiki>{{#invoke:WikidataIB |getAT |Q3621491}}</nowiki></code> → {{#invoke:WikidataIB |getAT |Q3621491}}
+
+=== Function getDescription ===
+getDescription has the qid of a Wikidata entity passed as |qid= (it defaults to the associated qid of the current article if omitted).
+It has a local parameter passed as the first unnamed parameter.
+Any local parameter passed (other than "Wikidata" or "none") becomes the return value.
+It returns the article description for the Wikidata entity in plain text if the local parameter is "Wikidata".
+Nothing is returned if the description doesn't exist or "none" is passed as the local parameter.
+: Wikidata: {{q|Q29016906}} and {{q|Q3621491}} 
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q29016906 |wikidata}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q29016906 |wikidata}}
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q29016906 |A painting}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q29016906 |A painting}}
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q29016906 |none}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q29016906 |none}}
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q3621491 |wikidata}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q3621491 |wikidata}}
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q3621491 |A profession}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q3621491 |A profession}}
+* <code><nowiki>{{#invoke:WikidataIB |getDescription |qid=Q3621491 |none}}</nowiki></code> → {{#invoke:WikidataIB |getDescription |qid=Q3621491 |none}}
+
+=== Function formatDate ===
+formatDate accepts a datetime of the usual format from mw.wikibase.entity:formatPropertyValues, like "1 August 30 BCE" as parameter 1 and formats it according to the df (date format) and bc parameters.
+* <code><nowiki>{{#invoke:WikidataIB |formatDate | 1 August 30 BCE |bc=BCE |df=dmy}}</nowiki></code> → {{#invoke:WikidataIB |formatDate | 1 August 30 BCE |bc=BCE |df=dmy}}
+* <code><nowiki>{{#invoke:WikidataIB |formatDate | 1 August 30 BCE |bc=BC  |df=mdy}}</nowiki></code> → {{#invoke:WikidataIB |formatDate | 1 August 30 BCE |bc=BC  |df=mdy}}
+* df = "dmy" / "mdy" / "y" - default is "dmy"
+* bc = "BC" / "BCE" - default is "BCE"
+
+=== Function checkBlacklist ===
+checkBlacklist allows a test to check whether a named field is allowed.
+It returns true if the field is not blacklisted (i.e. allowed)
+It returns false if the field is blacklisted (i.e. disallowed)
+
+Example:
+* <code><nowiki>{{#if:{{#invoke:WikidataIB |checkBlacklist |name=nationality |suppressfields=residence; nationality; citizenship}} | not blacklisted | blacklisted}}</nowiki></code> → {{#if:{{#invoke:WikidataIB |checkBlacklist |name=nationality |suppressfields=residence; nationality; citizenship}} | not blacklisted | blacklisted}}
+* <code><nowiki>{{#if:{{#invoke:WikidataIB |checkBlacklist |name=birth_place |suppressfields=residence; nationality; citizenship}} | not blacklisted | blacklisted}}</nowiki></code> → {{#if:{{#invoke:WikidataIB |checkBlacklist |name=birth_place |suppressfields=residence; nationality; citizenship}} | not blacklisted | blacklisted}}
+
+=== Function emptyor ===
+emptyor returns nil if its first unnamed argument is just punctuation, whitespace or html tags otherwise it returns the argument unchanged (including leading/trailing space).
+
+If the argument could contain "=", then it must be called explicitly:
+* <code><nowiki>| 1 = whatever-the-argument-is</nowiki></code>
+In that case, leading and trailing spaces are trimmed.
+
+It finds use in infoboxes where it can replace tests like:
+* <code><nowiki>{{#if: {{#invoke:WikidataIB |getvalue |P99 |fwd=ALL}} | <span class="xxx">{{#invoke:WikidataIB |getvalue |P99 |fwd=ALL}}</span> | }}</nowiki></code>
+with a form that uses just a single call to Wikidata:
+* <code><nowiki>{{#invoke |WikidataIB |emptyor |1= <span class="xxx">{{#invoke:WikidataIB |getvalue |P99 |fwd=ALL}}</span> }}</nowiki></code>
+
+=== Function labelorid ===
+labelorid is a public function to expose the output of labelOrId().
+
+The Q-number (entity ID) is passed as |qid= or as an unnamed parameter.
+
+It returns the Wikidata label for that entity or the qid if no label exists.
+
+=== Function getLang ===
+getLang returns the MediaWiki language code of the current content.
+
+If optional parameter |style=full, it returns the language name.
+
+=== Function getQid ===
+* getQid works with the current page and its associated Wikidata entry.
+* It returns qid, if supplied as the first unnamed parameter or as {{para|qid}};
+* failing that, the Wikidata entity ID of the "category's main topic (P301)", if it exists;
+* failing that, the Wikidata entity ID asociated with the curent page, if it exists;
+* otherwise, nothing
+
+=== Function formatNumber ===
+formatNumber reads a number supplied in the first unnamed parameter (or {{para|num}} as a named alias) and a language code in the {{para|lang}} parameter. If no valid language parameter is supplied, it uses the user's set language where available, otherwise the wiki's content language. It returns the number formatted according to the language conventions of that language.
+* Example: <code><nowiki>{{#invoke:WikidataIB |formatNumber |1.23456789e6 |lang=de}}</nowiki></code> → {{#invoke:WikidataIB |formatNumber |1.23456789e6 |lang=de}}
+
+=== Function examine ===
+examine provides a dump of the entire property given in the first unnamed parameter (or in {{para|pid}} as a named alias) from the item given by the parameter 'qid', or from the item corresponding to the current page if qid is not supplied. It works in a similar manner to the [[Module:Wikidata|Dump]] function, but only loads a single claim, rather than the whole Wikidata entry.
+* Example: <code><nowiki>{{#invoke:WikidataIB |examine |qid=Q1396889 |P50}}</nowiki></code>
+
+== Coding into an infobox ==
+
+Typically, the getValue call will be invoked in an infobox definition, using appropriate template parameters. One simple implementation is given as an example in [[:Template:Infobox book/Wikidata/Sandbox]]. As an illustration, the 'author' field in the infobox is coded like this:
+<pre style="line-height:1.2em;">
+| label2  = Author{{#if:{{{authors|}}}|s}}
+|  data2  = {{#invoke:WikidataIB |getValue |P50 |name=author |fetchwikidata={{{fetchwikidata|}}} |suppressfields={{{suppressfields|}}} |{{{authors|{{{author|}}}}}} }}
+</pre>
+The property to be fetched is the first unnamed parameter. In this case it is {{Q|P50}}.
+
+The name of the field is passed in {{para|name}} and that name is checked against the blacklist and the whitelist. To always suppress the author field in a particular article, an editor will set {{para|suppressfields|author}} in the infobox. The author field will then never be displayed.
+
+If the field is not blacklisted, then the infobox can be set to display a locally supplied value for author simply by setting {{para|author|[[George Orwell]]}}, for example, in the infobox. It also accepts {{para|authors}}.  If the name of the field is on the whitelist, e.g. {{para|fetchwikidata|author; genre; pub_date; pages; dewey; congress}}, ''and'' the local value is not supplied, then the infobox will display the value retrieved from Wikidata. Any separators can be used, except | and {}.
+
+As a shorthand, {{para|fetchwikidata|ALL}} will fetch all of the fields that are not blacklisted, as long as no local value is already provided in the article for a given field.
+
+Since Wikidata labels are normally lower case, the sentence case function from [[Module:String2]] can be used to capitalise the first letter of the returned text, e.g.
+* <code><nowiki>{{#invoke:String2 | sentence | {{#invoke:WikidataIB |getValue |P136 |name=genre |fetchwikidata=ALL |onlysourced=false}} }}</nowiki></code> in {{Q|Q1396889}} produces:
+* {{#invoke:String2 | sentence | {{#invoke:WikidataIB |getValue |P136 |name=genre |fetchwikidata=ALL |onlysourced=false |qid=Q1396889}} }}
+
+=== Example of calls in an infobox ===
+
+Basic use of getValue:
+*<code><nowiki>{{#invoke:WikidataIB |getValue |P000 |name=fieldname |qid={{{qid|}}} |fetchwikidata={{{fetchwikidata|}}} |onlysourced={{{onlysourced|}}} |{{{localparameter|}}} }}</nowiki></code>
+
+Full collection of parameters:
+*<code><nowiki>{{#invoke:WikidataIB |getValue |P000 |name=fieldname |qid={{{qid|}}} |suppressfields={{{suppressfields|}}} |fetchwikidata={{{fetchwikidata|}}} |onlysourced={{{onlysourced|}}} |noicon={{{noicon|}}} |wdl={{{wikidatalink|}}} |df={{dateformat|}} |bc={{{bc|}}} |prefix= |postfix= |linkprefix= |linkpostfix= |sorted={{{sorted|}}} |sep={{{separator|}}} |list={{listtype|}}} |{{{localparameter|}}} }}</nowiki></code>
+Any of the parameters can, of course, be be fixed for a given field in an infobox, rather than taking the parameter supplied to the infobox, which will affect all fields. For example, one field may set {{para|list|hlist}} where a series of short words is expected; whereas another field could use {{para|list|ubl}} where an unbulleted vertical list of several words on each line is required.
+
+=== Coodinates ===
+
+The getCoords call will display the output of [[Template:Coord]] when supplied with the coordinates returned from Wikidata. It can be coded like this:
+<pre style="line-height:1.2em;">
+|label20 = Coordinates
+| data20 = {{#invoke:WikidataIB |getCoords |name=coordinates |suppressfields={{{suppressfields|}}} |fetchwikidata={{{fetchwikidata|}}} |{{{coordinates|}}} }}
+</pre>
+An example is [[Template:Infobox biosphere reserve]]
+<pre style="line-height:1.2em;">
+{{Infobox biosphere reserve
+| fetchwikidata = ALL
+}}
+</pre>
+Displays coordinates in the usual positions when used in an article where Wikidata has coordinates.
+
+=== Upgrading existing infoboxes ===
+
+Since the parameter {{para|fetchwikidata}} is needed for any Wikidata functionality, an existing infobox may be replaced by an infobox incorporating these calls without any change whatsoever to any article. Each article using the new infobox can later be enabled by supplying {{para|fetchwikidata|ALL}}, or a list of required fields for that article. At that point, the onus is on the editor enabling the functionality to check that no unwanted fields are now being displayed. If so, they can be added to a blacklist for the article by setting {{para|suppressfields}} to the list of unwanted fields.
+
+=== Verifiability ===
+
+Where it will always be essential for a particular field to only contain values that are referenced, use <code>getValue</code>, making sure that {{para|onlysourced}} is ''not'' set to 'false', '0' or 'no'. By default it will exclude values that are unsourced or only sourced to a Wikipedia, thus making the job of checking easier at the article level. If unsourced data is acceptable (!), set {{para|onlysourced|no}}. As it is beyond my wit to produce an automated mechanism that knows whether an existing source is reliable or not in a given context, that job must still be performed at the article level by an editor familiar with the subject. It should always be done when first enabling Wikidata for that article.
+
+== Example of use: Infobox book ==
+
+This section is taken from [[Template:Infobox book/Wikidata/Sandbox/doc]].
+
+=== No Wikidata ===
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| suppressfields =
+| fetchwikidata  =
+| name           = Animal Farm
+| title_orig     = Animal Farm: A Fairy Story
+| image          = Animal Farm - 1st edition.jpg
+| image_size     = 200px
+| caption        = First edition cover
+| author         = [[George Orwell]]
+| country        = United Kingdom
+| language       = English
+| genre          = Political satire
+}}
+</pre>
+Works as a non-aware infobox: only locally supplied parameters are displayed.
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| name           = Animal Farm
+| title_orig     = Animal Farm: A Fairy Story
+| image          = Animal Farm - 1st edition.jpg
+| image_size     = 200px
+| caption        = First edition cover
+| author         = [[George Orwell]]
+| country        = United Kingdom
+| language       = English
+| genre          = Political satire
+}}
+</pre>
+The blacklist and whitelist can be omitted if unused
+
+=== All Wikidata ===
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| fetchwikidata  = author; genre; pub_date; pages; dewey; congress
+}}
+</pre>
+Fetches the author, publication date, number of pages, Dewey index, and Library of Congress catalogue number values from Wikidata.
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| fetchwikidata  = ALL
+}}
+</pre>
+As shorthand, the {{para|fetchwikidata}} parameter can be set to ALL to fetch all available fields.
+Any field can be suppressed by naming it in {{para|suppressfields}}, or overridden by supplying a local value.
+
+=== Never display genre ===
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| suppressfields = genre
+| fetchwikidata  = author; genre; pub_date; pages; dewey; congress
+}}
+</pre>
+The genre field will always be suppressed, even if a local value is supplied.
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| suppressfields = genre
+| fetchwikidata  = author; genre; pub_date; pages; dewey; congress
+| genre          = Political satire
+}}
+</pre>
+
+=== Local override ===
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| fetchwikidata  = author; genre; pub_date; pages; dewey; congress
+| genre          = Political satire
+}}
+</pre>
+The genre field is set to display "Political satire", no matter what is stored in Wikidata.
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| fetchwikidata  = ALL
+| genre          = Novel
+}}
+</pre>
+The genre field is set to display "Novel", no matter what is stored in Wikidata.
+
+=== Don't fetch genre ===
+<pre style="line-height:1.2em;">
+{{Infobox book/Wikidata/Sandbox
+| suppressfields = 
+| fetchwikidata  = author; pub_date; pages; dewey; congress
+}}
+</pre>
+The genre field will not be fetched from Wikidata. Only the author, publication date, number of pages, Dewey index, and Library of Congress catalogue number are imported. A local value for genre will display.
