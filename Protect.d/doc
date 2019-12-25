@@ -1,0 +1,48 @@
+{{Module rating|a}}
+
+This [[Help:Lua metamodules|metamodule]] simplifies error handling in other modules. It transforms a function, which may throw an error, into a function, which returns a specified error message in that case.
+
+== Usage ==
+
+ local protect = require('Module:Protect')
+ local protectedFunc = '''protect(''func'', ''errFormat'', ''options'')'''
+
+=== Arguments ===
+
+* ''{{code|func}}''
+*: Function to be transformed.
+* ''{{code|errFormat}}'' (default: {{code|'Error: %s'}})
+*: Custom error message.
+*: Use {{code|'%s'}} to include the message from a caught error.
+* ''{{code|options}}'' – optional table with the following fields:
+** {{code|raw}} (default: false)
+**: If true, then ''{{code|errFormat}}'' will be used as is, otherwise it will be wrapped inside a tag <code><nowiki><strong class="error"></nowiki></code>.
+** {{code|removeLocation}} (default: true)
+**: If true, removes location information from caught error messages.
+
+=== Return value ===
+
+The resulting {{code|protectedFunc}} is a ''function'', which calls the original function ''{{code|func}}'', passing all arguments to it, and returns all its return values. If ''{{code|func}}'' throws an error, the specified error message is returned instead.
+
+== Example ==
+
+ local protect = require('Module:Protect')
+ 
+ local p = {}
+ 
+ function p.main(frame)
+     if not frame.args[1] then
+         error('missing argument')
+     end
+     return frame.args[1]
+ end
+ 
+ p.main = '''protect'''(p.main)
+ 
+ return p
+
+Invoking the main function without arguments will output: <strong class="error">Error: missing argument</strong>
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+[[Category:Error-handling modules]]
+[[Category:Lua metamodules]]
+}}</includeonly>
