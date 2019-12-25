@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------------
+--                    Module:Template test case/config
+-- This module holds configuration data for [[Module:Template test case]].
+-------------------------------------------------------------------------------
+
+return {
+
+-------------------------------------------------------------------------------
+-- Options
+-------------------------------------------------------------------------------
+
+-- The magic word used in place of the template name when making nowiki
+-- invocations.
+templateNameMagicWord = '__TEMPLATENAME__',
+
+-- The subpage that sandboxes are typically stored on. Used when loading
+-- wrapper template config and when guessing the sandbox template name.
+sandboxSubpage = 'sandbox',
+
+-------------------------------------------------------------------------------
+-- Messages
+-------------------------------------------------------------------------------
+
+msg = {
+
+-- The default header for test cases rendered in columns.
+['columns-header'] = 'Side by side comparison',
+
+-- The error message to use if a templaten option is missing.
+-- $1 - the number of the missing template option.
+['missing-template-option-error'] = "one or more options ending in '$1' " ..
+	"were detected, but no 'template$1' option was found",
+
+-- The error message to use if a nowiki invocation is used but the template
+-- name magic word is not found.
+-- $1 - the value of the template name magic word
+['nowiki-magic-word-error'] = "the template invocation must include '$1' in " ..
+	"place of the template name",
+
+},
+
+-------------------------------------------------------------------------------
+-- Wrapper template config.
+-- The wrapper template config is a table with wrapper template names as keys,
+-- and subtables containing two fields:
+--   func - the function name to be used with that template. This must be a
+--       function exported by the main module. This is optional: the default
+--       value is "table".
+--   args - a table of default arguments to be used with that template. This is
+--       is optional.
+-------------------------------------------------------------------------------
+
+wrappers = {
+	['Template:Test case'] = {},
+	['Template:Testcase table'] = {
+		args = {_format = 'columns'}
+	},
+	['Template:Testcase rows'] = {
+		args = {_format = 'rows'}
+	},
+	['Template:Test case nowiki'] = {
+		func = 'nowiki'
+	},
+	['Template:Nowiki template demo'] = {
+		func = 'nowiki',
+		args = {showheader = false, showtemplate2 = false}
+	},
+	['Template:Collapsible test case'] = {
+		args = {_collapsible = true}
+	},
+	['Template:Collapsible 2 test case'] = {
+		args = {_collapsible = true, _wantdiff = true}
+	},
+	['Template:Inline test case'] = {
+		args = {_format = 'inline', _showcode = true}
+	},
+},
+
+-------------------------------------------------------------------------------
+-- End config
+-------------------------------------------------------------------------------
+
+}
