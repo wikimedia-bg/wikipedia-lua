@@ -1,0 +1,18 @@
+-- This module processes configuration data for use in
+-- [[Module:Template test case]]. It is loaded from the main module with
+-- mw.loadData.
+
+local cfg = require('Module:Template test case/config')
+
+local function escapePattern(s)
+	s = s:gsub('%p', '%%%0')
+	return s
+end
+
+-- Escape config items that need to be used as patterns. Doing it here is more
+-- efficient, as mw.loadData saves them from having to be computed for every
+-- test case on a page.
+cfg.templateNameMagicWordPattern = escapePattern(cfg.templateNameMagicWord)
+cfg.sandboxSubpagePattern = '/' .. escapePattern(cfg.sandboxSubpage) .. '$'
+
+return cfg
