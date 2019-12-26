@@ -370,6 +370,7 @@ end
 
 function p.lsc(frame)
 	local location = frame.args[1]
+	local s = ''
 
 	if location == '' or location == ' ' then
 		return ''
@@ -388,6 +389,10 @@ function p.lsc(frame)
 		if cstr == '' then
 			cstr = wd._property({'linked', 'deprecated+', location, 'P17', date=frame.args[2]})
 		end
+		s = wd._property({'linked', 'deprecated+', location, 'P1448', date=frame.args[2]})
+		if s ~= '' then
+			lstr = lstr:gsub("]]", "|" .. s .. "]]")
+		end
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
@@ -395,6 +400,10 @@ function p.lsc(frame)
 				cstr = wd._property({'linked', 'deprecated+', settlement, 'P17', date=frame.args[2]})
 			end
 			sstr = wd._label({ 'linked', settlement})
+			s = wd._property({'linked', 'deprecated+', settlement, 'P1448', date=frame.args[2]})
+			if s ~= '' then
+				sstr = sstr:gsub("]]", "|" .. s .. "]]")
+			end
 		else
 			if cstr == '' then
 				cstr = wd._property({'linked', 'deprecated+', location, 'P17',  date=frame.args[2]})
