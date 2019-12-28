@@ -3,6 +3,7 @@ return {
 	-----------------------
 	image                   = "P18",
 	author                  = "P50",
+	occupation              = "P106",
 	publisher               = "P123",
 	importedFrom            = "P143",
 	statedIn                = "P248",
