@@ -17,7 +17,7 @@ function getTaxon(id)
 	
 	local result = rank .. ': ' .. latinName .. ' [[{{wd|label|Q1263887}}]]'
 	if parentTaxon then
-		result = 'Q' .. parentTaxon .. '<br>'
+		result = 'Q' .. parentTaxon .. '<br>' .. result
 	end
 	
 	return result
