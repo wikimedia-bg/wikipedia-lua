@@ -25,6 +25,7 @@
 === count ===
 * <code><nowiki>{{#invoke:Wikidata|count|P225}}</nowiki></code> → брой стойности за P225 за текущата страница
 * <code><nowiki>{{#invoke:Wikidata|count|P225|id=Q25662}}</nowiki></code> → брой стойности за P225 за Q25662
+* <code><nowiki>{{#invoke:Wikidata|count|P225|2|qualifier=P405}}</nowiki></code> → брой стойности на P405 за втората стойност на P225
 
 === formatStatements ===
 * <code><nowiki>{{#invoke:Wikidata|formatStatements|property=p18|first=1}}</nowiki></code> → първата стойност на P18 (припокрива: <code><nowiki>{{#invoke:Wikidata|claim|P18}}</nowiki></code>)
