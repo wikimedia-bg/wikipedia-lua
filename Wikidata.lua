@@ -556,7 +556,6 @@ function p.count(frame)
 			   for _ in pairs(qualifierSnaks) do count = count + 1 end
 			end
 		end
-		return nil, formatError("qualifier-not-found")
 	else
 		if claims ~= nil then
 		   for _ in pairs(claims) do count = count + 1 end
