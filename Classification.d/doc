@@ -4,9 +4,11 @@
 {{редактирам}}
 
 == Употреба ==
-<code><nowiki>{{#invoke:Classification|test|Q1263887}}</nowiki></code>
-
-{{#invoke:Classification|test|Q1263887}}
+{| class="wikitable"
+| <code><nowiki>{{#invoke:Classification|test|Q1263887}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q1033449}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q131227}}</nowiki></code> 
+|-
+| {{#invoke:Classification|test|Q1263887}} || {{#invoke:Classification|test|Q1033449}} || {{#invoke:Classification|test|Q131227}}
+|}
 
 == Вижте също ==
 
