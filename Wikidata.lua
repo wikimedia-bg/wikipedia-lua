@@ -449,9 +449,10 @@ function getQualifierSnak(claim, qualifier, qualifierIndex, language)
 				if qualifierSnaks then
 					return qualifierSnaks[qualifierIndex]
 				end
-				for name, snak in pairs(qualifierSnaks) do
+				for name, value in pairs(qualifierSnaks) do
+					local snak = qualifierSnaks[name]
 					if snak.datatype == "monolingualtext" then
-						-- if the snak is monolingual text search for the language
+						-- if the value is monolingual text search for the language
 						local currentLanguage = getSnakValue(snak, "language")
 						if (language and language == currentLanguage) or currentLanguage == "bg" then
 							return snak
