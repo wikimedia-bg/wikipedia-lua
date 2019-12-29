@@ -8,7 +8,7 @@ function getTaxon(id)
 	frame.args["id"] = id
 	frame.args[1] = "P171"
 	frame.args["parameter"] = "numeric-id"
-	local parent = Q..wikidata.claim(frame)
+	local parent = wikidata.claim(frame)
 	
 	return parent
 end
