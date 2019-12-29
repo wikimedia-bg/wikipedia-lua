@@ -20,7 +20,8 @@ function getTaxon(id)
 	
 	frame = {}
 	frame.args = { ['id'] = id, ['lang'] = 'bg' }
-	local bgLabel = firstToUpper(wikidata.getLabel(frame))
+	local bgLabel = wikidata.getLabel(frame)
+	if bgLabel then return bgLabel end
 	
 	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
 	if parentTaxon then
