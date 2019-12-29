@@ -19,7 +19,7 @@ function getTaxon(id)
 	local bgLabel = wikidata.getLabel(frame)
 	
 	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
-	if parentTaxon then
+	if parentTaxon and parentTaxon ~= 'Липсва стойност' then
 		local parentTaxonId = 'Q' .. parentTaxon
 		result = getTaxon(parentTaxonId) .. '<br>' .. result
 	end
