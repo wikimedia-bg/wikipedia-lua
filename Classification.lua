@@ -2,21 +2,10 @@ local p = {}
 local wikidata = require("Модул:Wikidata")
 
 function getTaxon(id)
-	local frame = {}
-	frame.args = { ['id'] = id, [1] = 'P171', ['parameter'] = 'numeric-id' }
-	local parentTaxon = wikidata.claim(frame)
-	
-	frame = {}
-	frame.args = { ['id'] = id, [1] = 'P105' }
-	local rank = wikidata.claim(frame)
-	
-	frame = {}
-	frame.args = { ['id'] = id, [1] = 'P225' }
-	local latinName = wikidata.claim(frame)
-	
-	frame = {}
-	frame.args = { ['id'] = id, ['lang'] = 'bg' }
-	local bgLabel = wikidata.getLabel(frame)
+	local parentTaxon = wikidata.claim({ ['args'] = { ['id'] = id, [1] = 'P171', ['parameter'] = 'numeric-id' } })
+	local rank = wikidata.claim({ ['args'] = { ['id'] = id, [1] = 'P105' } })
+	local latinName = wikidata.claim({ ['args'] = { ['id'] = id, [1] = 'P225' } })
+	local bgLabel = wikidata.getLabel({ ['args'] = { ['id'] = id, ['lang'] = 'bg' } })
 
 	local result =
 		'<tr><td style="text-align: right; padding-right: 5px;">' .. rank .. ':</td>' ..
