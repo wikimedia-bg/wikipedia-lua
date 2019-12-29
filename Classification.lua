@@ -13,7 +13,7 @@ function getTaxon(id)
 	end
 	
 	result = result ..
-		'<tr><td style="text-align: right; padding-right: 5px;">' .. rank .. ':</td>' ..
+		'<tr><td style="text-align: right; padding-right: 5px;">' .. (rank == 'Липсва стойност' and '(без ранг)' or rank) .. ':</td>' ..
 		'<td ' .. (bgLabel and '' or 'colspan="2"') .. ' style="text-align: left; white-space:nowrap;">' .. latinName .. '</td>' ..
 		'<td style="text-align: left;">[[' .. bgLabel .. ']]</td></tr>'
 
