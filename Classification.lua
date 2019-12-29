@@ -2,7 +2,7 @@ local p = {}
 local wikidata = require("Модул:Wikidata")
 
 function firstToUpper(str)
-    return (str:sub(1,1):upper()..str:sub(2))
+    return str:sub(1,1):upper()..str:sub(2)
 end
 
 function getTaxon(id)
@@ -21,7 +21,7 @@ function getTaxon(id)
 	frame = {}
 	frame.args = { ['id'] = id, ['lang'] = 'bg' }
 	local bgLabel = wikidata.getLabel(frame)
-	if bgLabel then return bgLabel end
+	if bgLabel then return bgLabel:sub(1,1):upper() .. bgLabel:sub(2) end
 	
 	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
 	if parentTaxon then
