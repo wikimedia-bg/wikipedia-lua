@@ -10,6 +10,18 @@
 | {{#invoke:Classification|test|Q1263887}} || {{#invoke:Classification|test|Q1033449}} || {{#invoke:Classification|test|Q131227}}
 |}
 
+{| class="wikitable"
+| <code><nowiki>{{#invoke:Classification|test|Q148833}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q21881}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q213938}}</nowiki></code> 
+|-
+| {{#invoke:Classification|test|Q148833}} || {{#invoke:Classification|test|Q21881}} || {{#invoke:Classification|test|Q213938}}
+|}
+
+{| class="wikitable"
+| <code><nowiki>{{#invoke:Classification|test|Q432513}}</nowiki></code>
+|-
+| {{#invoke:Classification|test|Q432513}}
+|}
+
 == Вижте също ==
 
 <includeonly>
