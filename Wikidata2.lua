@@ -476,7 +476,7 @@ function getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 	local snak
 	snak, error = getQualifierSnak(claim, qualifier, qualifierIndex, language)
 	if snak then
-		return qualifierIndex
+		return getSnakValue(snak, parameter)
 	else
 		return nil, error
 	end
@@ -594,25 +594,13 @@ function p.claim(frame)
 
 	local result
 	local error
-	if list then
-		local value
-		-- iterate over all elements and return their value (if existing)
-		result = {}
-		for idx in pairs(claims) do
-			local claim = claims[sortindices[idx]]
-			value, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
-			if not value and showerrors then value = error end
-			if value and references then value = value .. getReferences(frame, claim) end
-			result[#result + 1] = value
-		end
-		result = table.concat(result, list)
-	else
+--..................................................
 		local claim = claims[sortindices[claimIndex]]
 		result, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 		if result and references then
 			result = result .. getReferences(frame, claim)
 		end
-	end
+--..................................................
 
 	if result then return result else
 		if showerrors then return error else return default end
