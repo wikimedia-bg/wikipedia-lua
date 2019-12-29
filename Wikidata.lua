@@ -446,7 +446,7 @@ function getQualifierSnak(claim, qualifier, qualifierIndex, language)
 		if claim.qualifiers then
 			local qualifierSnaks = claim.qualifiers[qualifier]
 			if qualifierSnaks then
-				if qualifierSnaks then
+				if qualifierIndex then
 					return qualifierSnaks[qualifierIndex]
 				end
 				for name, value in pairs(qualifierSnaks) do
