@@ -550,7 +550,7 @@ function p.count(frame)
 	local count = 0
 	if qualifier then
 		local claim = claims[claimIndex]
-		if claim.qualifiers then
+		if claim and claim.qualifiers then
 			local qualifierSnaks = claim.qualifiers[qualifier]
 			if qualifierSnaks ~= nil then
 			   for _ in pairs(qualifierSnaks) do count = count + 1 end
