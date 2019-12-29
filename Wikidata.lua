@@ -549,7 +549,7 @@ function p.count(frame)
 	
 	local count = 0
 	if qualifier then
-		local claim = claims[sortindices[claimIndex]]
+		local claim = claims[claimIndex]
 		if claim.qualifiers then
 			local qualifierSnaks = claim.qualifiers[qualifier]
 			if qualifierSnaks ~= nil then
