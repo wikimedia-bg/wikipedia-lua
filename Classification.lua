@@ -5,12 +5,12 @@ local wd = require("Модул:Wd")
 function getTaxon(id)
 	local frame = {}
 	frame.args = {}
-	frame.args["id"] = id
-	frame.args[1] = "P171"
-	frame.args["parameter"] = "numeric-id"
+	frame.args['id'] = id
+	frame.args[1] = 'P171'
+	frame.args["parameter"] = 'numeric-id'
 	local parent = wikidata.claim(frame)
 	if parent then
-		return Q .. tostring(parent)
+		return 'Q' .. parent
 	end
 	
 	return nil
