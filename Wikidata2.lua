@@ -449,7 +449,19 @@ function getQualifierSnak(claim, qualifier, qualifierIndex, language)
 				if qualifierIndex then
 					return qualifierSnaks[2]
 				end
-
+				for name, value in pairs(qualifierSnaks) do
+					local snak = qualifierSnaks[name]
+					if snak.datatype == "monolingualtext" then
+						-- if the value is monolingual text search for the language
+						local currentLanguage = getSnakValue(snak, "language")
+						if (language and language == currentLanguage) or currentLanguage == "bg" then
+							return snak
+						end
+					else
+						-- returns the 1st entry if the value is not monolingual text
+						return snak
+					end
+				end
 			end
 		end
 		return nil, formatError("qualifier-not-found")
@@ -464,7 +476,7 @@ function getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 	local snak
 	snak, error = getQualifierSnak(claim, qualifier, qualifierIndex, language)
 	if snak then
-		return getSnakValue(snak, parameter)
+		return qualifierIndex
 	else
 		return nil, error
 	end
