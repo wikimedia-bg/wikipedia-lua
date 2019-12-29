@@ -420,35 +420,38 @@ function getSnakValue(snak, parameter)
 	end
 
 	-- call the respective snak parser
-	if snak.datavalue.type == "string" then return snak.datavalue.value
-	elseif snak.datavalue.type == "globecoordinate" then return formatDatavalueCoordinate(snak.datavalue.value, parameter)
-	elseif snak.datavalue.type == "quantity" then return formatDatavalueQuantity(snak.datavalue.value, parameter)
-	elseif snak.datavalue.type == "time" then return formatDatavalueTime(snak.datavalue.value, parameter)
-	elseif snak.datavalue.type == "wikibase-entityid" then return formatDatavalueEntity(snak.datavalue.value, parameter)
-	elseif snak.datavalue.type == "monolingualtext" then return formatDatavalueMonolingualText(snak.datavalue.value, parameter)
-	else return nil, formatError("unknown-datavalue-type")
+	if snak.datavalue.type == "string" then
+		return snak.datavalue.value
+	elseif snak.datavalue.type == "globecoordinate" then
+		return formatDatavalueCoordinate(snak.datavalue.value, parameter)
+	elseif snak.datavalue.type == "quantity" then
+		return formatDatavalueQuantity(snak.datavalue.value, parameter)
+	elseif snak.datavalue.type == "time" then
+		return formatDatavalueTime(snak.datavalue.value, parameter)
+	elseif snak.datavalue.type == "wikibase-entityid" then
+		return formatDatavalueEntity(snak.datavalue.value, parameter)
+	elseif snak.datavalue.type == "monolingualtext" then
+		return formatDatavalueMonolingualText(snak.datavalue.value, parameter)
+	else
+		return nil, formatError("unknown-datavalue-type")
 	end
 end
 
-function getQualifierSnak(claim, qualifierId, language)
+function getQualifierSnak(claim, qualifier, qualifierIndex, language)
 	-- a "snak" is Wikidata terminology for a typed key/value pair
 	-- a claim consists of a main snak holding the main information of this claim,
 	-- as well as a list of attribute snaks and a list of references snaks
-	if qualifierId then
+	if qualifier then
 		-- search the attribute snak with the given qualifier as key
 		if claim.qualifiers then
-			local qualifierSnaks = claim.qualifiers[qualifierId]
+			local qualifierSnaks = claim.qualifiers[qualifier]
 			if qualifierSnaks then
 				for name, value in pairs(qualifierSnaks) do
-					local snak = qualifierSnaks[name]
+					local snak = qualifierSnaks[qualifierIndex and qualifierIndex or name]
 					if snak.datatype == "monolingualtext" then
 						-- if the value is monolingual text search for the language
 						local currentLanguage = getSnakValue(snak, "language")
-						if language then
-							if currentLanguage == language then
-								return snak
-							end
-						elseif currentLanguage == "bg" then
+						if (language and language == currentLanguage) or currentLanguage == "bg" then
 							return snak
 						end
 					else
@@ -465,10 +468,10 @@ function getQualifierSnak(claim, qualifierId, language)
 	end
 end
 
-function getValueOfClaim(claim, qualifierId, parameter, language)
+function getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 	local error
 	local snak
-	snak, error = getQualifierSnak(claim, qualifierId, language)
+	snak, error = getQualifierSnak(claim, qualifier, qualifierIndex, language)
 	if snak then
 		return getSnakValue(snak, parameter)
 	else
@@ -551,7 +554,8 @@ function p.claim(frame)
 	local property = frame.args[1] or ""
 	local claimIndex = frame.args[2] and tonumber(frame.args[2]) or 1
 	local id = frame.args["id"]	-- "id" must be nil, as access to other Wikidata objects is disabled in Mediawiki configuration
-	local qualifierId = frame.args["qualifier"]
+	local qualifier = frame.args["qualifier"]
+	local qualifierIndex = frame.args[3] and tonumber(frame.args[3])
 	local parameter = frame.args["parameter"]
 	local language = frame.args["lang"]
 	local list = frame.args["list"]
@@ -593,7 +597,7 @@ function p.claim(frame)
 		result = {}
 		for idx in pairs(claims) do
 			local claim = claims[sortindices[idx]]
-			value, error = getValueOfClaim(claim, qualifierId, parameter, language)
+			value, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 			if not value and showerrors then value = error end
 			if value and references then value = value .. getReferences(frame, claim) end
 			result[#result + 1] = value
@@ -601,7 +605,7 @@ function p.claim(frame)
 		result = table.concat(result, list)
 	else
 		local claim = claims[sortindices[claimIndex]]
-		result, error = getValueOfClaim(claim, qualifierId, parameter, language)
+		result, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)
 		if result and references then
 			result = result .. getReferences(frame, claim)
 		end
