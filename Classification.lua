@@ -25,7 +25,7 @@ function getTaxon(id)
 
 	if parentTaxon and parentTaxon ~= 'Липсва стойност' then
 		local parentTaxonId = 'Q' .. parentTaxon
-		result = getTaxon(parentTaxonId) .. '<br>' .. result
+		result = getTaxon(parentTaxonId) .. result
 	end
 	
 	return result
