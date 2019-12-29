@@ -4,16 +4,23 @@ local wd = require("Модул:Wd")
 
 function getTaxon(id)
 	local frame = {}
-	frame.args = {}
-	frame.args['id'] = id
-	frame.args[1] = 'P171'
-	frame.args["parameter"] = 'numeric-id'
-	local parent = wikidata.claim(frame)
-	if parent then
-		return 'Q' .. parent
+	frame.args = { ['id'] = id, [1] = 'P171', ['parameter'] = 'numeric-id' }
+	local parentTaxon = wikidata.claim(frame)
+	
+	frame = {}
+	frame.args = { ['id'] = id, [1] = 'P105' }
+	local rank = wikidata.claim(frame)
+	
+	frame = {}
+	frame.args = { ['id'] = id, [1] = 'P225' }
+	local latinName = wikidata.claim(frame)
+	
+	local result = rank .. ': ' .. latinName .. ' [[{{wd|label|Q1263887}}]]'
+	if parentTaxon then
+		result = 'Q' .. parentTaxon .. '<br>'
 	end
 	
-	return nil
+	return result
 end
 
 function p.test(frame)
