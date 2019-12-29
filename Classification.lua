@@ -15,6 +15,8 @@ function getTaxon(id)
 	frame.args = { ['id'] = id, [1] = 'P225' }
 	local latinName = wikidata.claim(frame)
 	
+	frame = {}
+	frame.args = { [1] = id }
 	local bgLabel = wd.label(id)
 	
 	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
