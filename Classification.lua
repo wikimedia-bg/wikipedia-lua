@@ -17,8 +17,8 @@ function getTaxon(id)
 	frame = {}
 	frame.args = { ['id'] = id, ['lang'] = 'bg' }
 	local bgLabel = wikidata.getLabel(frame)
-	
-	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
+
+	local result = '{{Taxobox/row|' .. rank .. '|' .. latinName .. '|' .. bgLabel .. '}}'
 	if parentTaxon and parentTaxon ~= 'Липсва стойност' then
 		local parentTaxonId = 'Q' .. parentTaxon
 		result = getTaxon(parentTaxonId) .. '<br>' .. result
@@ -31,7 +31,7 @@ function p.test(frame)
 	local id = frame.args[1]
 	local result = getTaxon(id)
 
-	return result
+	return '<table style="width:100%">' .. result .. '</table>'
 end
 
 return p
