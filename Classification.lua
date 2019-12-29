@@ -15,7 +15,9 @@ function getTaxon(id)
 	frame.args = { ['id'] = id, [1] = 'P225' }
 	local latinName = wikidata.claim(frame)
 	
-	local result = rank .. ': ' .. latinName .. ' [[{{wd|label|Q1263887}}]]'
+	local bgLabel = wd.label(id)
+	
+	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
 	if parentTaxon then
 		result = 'Q' .. parentTaxon .. '<br>' .. result
 	end
