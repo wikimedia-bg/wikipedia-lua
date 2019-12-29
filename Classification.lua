@@ -2,7 +2,7 @@ local p = {}
 local wikidata = require("Модул:Wikidata")
 
 function firstToUpper(str)
-    return (str:gsub("^%l", string.upper))
+    return (str:sub(1,1):upper()..str:sub(2))
 end
 
 function getTaxon(id)
