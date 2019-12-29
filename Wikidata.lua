@@ -540,13 +540,27 @@ end
 
 function p.count(frame)
 	local property = frame.args[1] or ""
+	local claimIndex = frame.args[2] and tonumber(frame.args[2]) or 1
 	local id = frame.args["id"]
+	local qualifier = frame.args["qualifier"]
+
 	local entity = mw.wikibase.getEntityObject(id)
 	local claims = findClaims(entity, property)
 	
 	local count = 0
-	if claims ~= nil then
-	   for _ in pairs(claims) do count = count + 1 end
+	if qualifier then
+		local claim = claims[sortindices[claimIndex]]
+		if claim.qualifiers then
+			local qualifierSnaks = claim.qualifiers[qualifier]
+			if qualifierSnaks ~= nil then
+			   for _ in pairs(qualifierSnaks) do count = count + 1 end
+			end
+		end
+		return nil, formatError("qualifier-not-found")
+	else
+		if claims ~= nil then
+		   for _ in pairs(claims) do count = count + 1 end
+		end
 	end
 	
 	return count;
