@@ -17,7 +17,7 @@ function getTaxon(id)
 	
 	frame = {}
 	frame.args = { [1] = id }
-	local bgLabel = wd.label(frame)
+	local bgLabel = wd.getLabel(frame)
 	
 	local result = rank .. ': ' .. latinName .. ' [[' .. bgLabel .. ']]'
 	if parentTaxon then
