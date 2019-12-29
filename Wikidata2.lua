@@ -596,7 +596,7 @@ function p.claim(frame)
 	local error
 --..................................................
 		local claim = claims[sortindices[claimIndex]]
-		result, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)..'testing'
+		result, error = getValueOfClaim(claim, qualifier, qualifierIndex, parameter, language)..qualifierIndex
 		if result and references then
 			result = result .. getReferences(frame, claim)
 		end
