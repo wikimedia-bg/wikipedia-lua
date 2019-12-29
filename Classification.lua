@@ -19,8 +19,8 @@ function getTaxon(id)
 	local bgLabel = wikidata.getLabel(frame)
 
 	local result =
-		'<tr><td style="text-align: right; padding-right: 5px;">' .. rank .. ':</td><br>' ..
-		'<td ' .. (bgLabel and '' or 'colspan="2"') .. ' style="text-align: left; white-space:nowrap;">' .. latinName .. '</td><br>' ..
+		'<tr><td style="text-align: right; padding-right: 5px;">' .. rank .. ':</td>' ..
+		'<td ' .. (bgLabel and '' or 'colspan="2"') .. ' style="text-align: left; white-space:nowrap;">' .. latinName .. '</td>' ..
 		'<td style="text-align: left;">[[' .. bgLabel .. ']]</td></tr>'
 
 	if parentTaxon and parentTaxon ~= 'Липсва стойност' then
