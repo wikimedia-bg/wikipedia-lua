@@ -19,6 +19,7 @@
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574}}</nowiki></code> → стойността на P574 за P225
 * <code><nowiki>{{#invoke:Wikidata|claim|P225|qualifier=P574|parameter=time}}</nowiki></code> → P574 за P225 в '''time''' формат (<samp>0000-00-00T00:00:00Z</samp>)
 * <code><nowiki>{{#invoke:Wikidata|claim|P18|2|qualifier=P21}}</nowiki></code> → P21 за втората стойност на P18
+* <code><nowiki>{{#invoke:Wikidata|claim|P18|1|qualifier=P21|2}}</nowiki></code> → втората стойност на P21 за първата стойност на P18
 * <code><nowiki>{{#invoke:Wikidata|claim|P18|3|qualifier=P74|lang=ja}}</nowiki></code> → P74 на японски (при '''monolingual''' стойности; български по подразбиране) за третата стойност на P18
 
 === count ===
