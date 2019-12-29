@@ -9,8 +9,11 @@ function getTaxon(id)
 	frame.args[1] = "P171"
 	frame.args["parameter"] = "numeric-id"
 	local parent = wikidata.claim(frame)
+	if parent then
+		return Q .. tostring(parent)
+	end
 	
-	return parent
+	return nil
 end
 
 function p.test(frame)
