@@ -2,7 +2,9 @@ local p = {}
 local wikidata = require("Модул:Wikidata")
 
 function p.test(frame)
-	return wikidata.claim(frame.args[1]);
+	local property = frame.args[1]
+	
+	return wikidata.claim(frame);
 end
 
 return p
