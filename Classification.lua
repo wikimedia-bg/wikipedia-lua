@@ -2,6 +2,7 @@ local p = {}
 local noValue = 'без стойност'
 local notAllowedParentTaxonRanks = {'grandorder', 'magnorder', 'надимперия' , noValue}
 local bs = '\''
+local firstValueFormat = '^([^,]+).*$'
 local fossilTaxonName = 'изкопаем таксон'
 local monotypicTaxonName = 'монотипен таксон'
 local localRank
@@ -23,6 +24,13 @@ end
 
 function toBold(str)
 	return str and bs .. toItalic(str) .. bs or ''
+end
+
+function getItalicText(str, rank)
+	if rank == 'род' or rank == 'подрод' or rank == 'вид' or rank == 'подвид' then
+		 return toItalic(str)
+	end
+	return str
 end
 
 local function orderedpairs(array, order)
@@ -78,16 +86,17 @@ function getPropertyValue(id, p)
 	return
 end
 
-function getTaxonClassification(id)
+function getTaxonClassification(id, isLocalTaxon)
 	local parent = getClaim(id, 'P171', 1)
 	local parentTaxon = parent and parent.id or nil
-	local rank = mw.ustring.gsub(getPropertyValue(id, 'P105'), '^([^,]+).*$', '%1')
-	local latinName = mw.wikibase.getEntity(id)['claims']['P225'][1].mainsnak.datavalue.value
+	local rank = mw.ustring.gsub(getPropertyValue(id, 'P105'), firstValueFormat, '%1')
+	local latinName = mw.ustring.gsub(getPropertyValue(id, 'P225'), firstValueFormat, '%1')
 	local bgLabel = mw.wikibase.getLabelByLang(id, 'bg')
 	local instanceOf = getPropertyValue(id, 'P31')
 	local fossil = (instanceOf and string.match(instanceOf, fossilTaxonName)) and '†' or ''
-	local isLocalTaxon = localRank == rank
-	local result = parentTaxon and parentTaxon ~= noValue and getTaxonClassification(parentTaxon) or ''
+	
+	isLocalTaxon = localRank == rank or (isLocalTaxon and (localRank == rank or (instanceOf and string.match(instanceOf, monotypicTaxonName))))
+	local result = parentTaxon and parentTaxon ~= noValue and getTaxonClassification(parentTaxon, isLocalTaxon) or ''
 	if isAllowedRank(rank) then
 		result = result .. '<tr><td style="text-align:right; padding-right:5px">' .. rank .. ':</td><td style="text-align:left; white-space:nowrap"'
 		local latinNameText = mw.ustring.gsub(latinName, '(.)%w+%s', '%1. ')
@@ -95,15 +104,11 @@ function getTaxonClassification(id)
 			bgLabel = mw.ustring.upper(mw.ustring.sub(bgLabel, 0, 1)) .. mw.ustring.sub(bgLabel, 2)
 			local bgLabelText = isLocalTaxon and toBold(bgLabel) or toLink(bgLabel)
 			latinNameText = isLocalTaxon and toBold(latinNameText) or latinNameText
-			if rank == 'род' or rank == 'подрод' or rank == 'вид' or rank == 'подвид' then
-				latinNameText = toItalic(latinNameText)
-			end
+			latinNameText = getItalicText(latinNameText, rank)
 			result = result .. '>' .. fossil .. latinNameText .. '</td><td style="text-align: left">' .. bgLabelText .. '</td>'
 		else
 			latinNameText = isLocalTaxon and toBold(latinNameText) or toLink(latinName == latinNameText and latinNameText or latinName .. '|' .. latinNameText)
-			if rank == 'род' or rank == 'подрод' or rank == 'вид' or rank == 'подвид' then
-				latinNameText = toItalic(latinNameText)
-			end
+			latinNameText = getItalicText(latinNameText, rank)
 			result = result .. 'colspan="2">' .. fossil .. latinNameText .. '</td>'
 		end
 	end
@@ -115,7 +120,7 @@ function p.get(frame)
 	if itemId then
 		localRank = getPropertyValue(itemId, 'P105')
 
-		return '<table style="width:260px" border="1"><tr><td><table style="width:260px">' .. getTaxonClassification(itemId) .. '</table></td></tr></table>'
+		return '<table style="width:260px" border="1"><tr><td><table style="width:260px">' .. getTaxonClassification(itemId, true) .. '</table></td></tr></table>'
 	end
 	
 	return nil
