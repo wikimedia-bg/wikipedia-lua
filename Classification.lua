@@ -120,7 +120,7 @@ function p.get(frame)
 	if itemId then
 		localRank = getPropertyValue(itemId, 'P105')
 
-		return '<table style="width:260px" border="1"><tr><td><table style="width:260px">' .. getTaxonClassification(itemId, true) .. '</table></td></tr></table>'
+		return '<table style="width:100%">' .. getTaxonClassification(itemId, true) .. '</table>'
 	end
 	
 	return nil
