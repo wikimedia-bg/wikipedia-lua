@@ -1,18 +1,18 @@
 local p = {}
 local wikidata = require("Модул:Wikidata")
 local noValue = 'Липсва стойност'
---local allowedParentTaxonRanks = {'царство', 'отдел', 'тип', 'надклас', 'клас', 'подклас', 'разред', 'надсемейство', 'семейство', 'подсемейство', 'род', 'вид'}
+local notAllowedParentTaxonRanks = {'grandorder', 'magnorder', 'надимперия' , noValue}
 local bs = '\''
 local fossilTaxonItemId = 23038290
 local monotypicTaxonItemId = 310890
 local localRank
 
---function isAllowedRank(rank)
---  for i = 1, #allowedParentTaxonRanks do
---     if allowedParentTaxonRanks[i] == rank then return true end
---  end
---  return false
---end
+function isAllowedRank(rank)
+  for i = 1, #notAllowedParentTaxonRanks do
+     if notAllowedParentTaxonRanks[i] == rank then return false end
+  end
+  return true
+end
 
 function toLink(str)
 	return str and '[[' .. str .. ']]' or ''
@@ -36,8 +36,7 @@ function getTaxonClassification(id)
 	local fossil = (instanceOf and instanceOf == fossilTaxonItemId) and '†' or ''
 	local isLocalTaxon = localRank == rank
 	local result = parentTaxon and parentTaxon ~= noValue and getTaxonClassification('Q' .. parentTaxon) or ''
-	if rank ~= noValue and rank ~= 'надимперия' then
-		rank = rank == noValue and '(без ранг)' or rank
+	if isAllowedRank(rank) then
 		result = result .. '<tr><td style="text-align:right; padding-right:5px">' .. rank .. ':</td><td style="text-align:left; white-space:nowrap"'
 		
 		local latinNameText = mw.ustring.gsub(latinName, '(.)%w+%s', "%1. ")
