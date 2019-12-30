@@ -5,21 +5,21 @@
 
 == Употреба ==
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|test|Q1263887}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q1033449}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q131227}}</nowiki></code> 
+| <code><nowiki>{{#invoke:Classification|get|Q1263887}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q1033449}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q131227}}</nowiki></code> 
 |-
-| {{#invoke:Classification|test|Q1263887}} || {{#invoke:Classification|test|Q1033449}} || {{#invoke:Classification|test|Q131227}}
+| {{#invoke:Classification|get|Q1263887}} || {{#invoke:Classification|get|Q1033449}} || {{#invoke:Classification|get|Q131227}}
 |}
 
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|test|Q148833}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q21881}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q213938}}</nowiki></code> 
+| <code><nowiki>{{#invoke:Classification|get|Q148833}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q21881}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q213938}}</nowiki></code> 
 |-
-| {{#invoke:Classification|test|Q148833}} || {{#invoke:Classification|test|Q21881}} || {{#invoke:Classification|test|Q213938}}
+| {{#invoke:Classification|get|Q148833}} || {{#invoke:Classification|get|Q21881}} || {{#invoke:Classification|get|Q213938}}
 |}
 
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|test|Q432513}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q20719523}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|test|Q131399}}</nowiki></code> 
+| <code><nowiki>{{#invoke:Classification|get|Q432513}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q20719523}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q131399}}</nowiki></code> 
 |-
-| {{#invoke:Classification|test|Q432513}} || {{#invoke:Classification|test|Q20719523}} || {{#invoke:Classification|test|Q131399}}
+| {{#invoke:Classification|get|Q432513}} || {{#invoke:Classification|get|Q20719523}} || {{#invoke:Classification|get|Q131399}}
 |}
 
 <includeonly>
