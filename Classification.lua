@@ -60,7 +60,7 @@ function getTaxonClassification(id)
 	return result
 end
 
-function p.test(frame)
+function p.get(frame)
 	local itemId = frame.args[1]
 	if itemId then
 		localRank = wikidata.claim({ ['args'] = { ['id'] = itemId, 'P105' } })
