@@ -423,4 +423,31 @@ function p.death_date(frame)
 	return formatDate(prepareDeathDateVarsWikidata(eid))
 end
 
+function p.service_years(frame)
+	local eid = frame.args[1] or ''
+	local occupation = 'P106'
+	local militaryPersonnel = 'Q47064'
+	local startTime = 'P580'
+	local endTime = 'P582'
+	local serviceStart = wd._qualifier({'raw', eid, occupation, militaryPersonnel, startTime}) or ''
+	local serviceEnd = wd._qualifier({'raw', eid, occupation, militaryPersonnel,  endTime}) or ''
+
+	if serviceStart == '' and serviceEnd == '' then
+		return ''
+	end
+
+	local yearStart = string.match(serviceStart, "%d+") or ''
+	local yearEnd = string.match(serviceEnd, "%d+") or ''
+
+	if yearStart == '' then
+		serviceYears = 'до ' .. yearEnd
+	elseif yearEnd == '' then
+		serviceYears = 'от ' .. yearStart
+	else
+		serviceYears = yearStart .. ' – ' .. yearEnd
+	end
+
+	return serviceYears .. ' г.'
+end
+
 return p
