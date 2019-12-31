@@ -5,9 +5,9 @@
 
 == Употреба ==
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|get|Q20719523}}</nowiki></code>
+| <code><nowiki>{{#invoke:Taxobox|get|Q20719523}}</nowiki></code>
 |-
-| {{#invoke:Classification|get|Q20719523}}
+| {{#invoke:Taxobox|get|Q20719523}}
 |}
 
 <includeonly>
