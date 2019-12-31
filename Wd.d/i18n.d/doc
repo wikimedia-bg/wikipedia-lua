@@ -1,1 +1,7 @@
 This submodule is used by [[Module:Wd]] for internationalization (''[[i18n]]'') purposes and has been separated to allow for locale-independent updating of the module's logic.
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
