@@ -17,3 +17,9 @@
 
 '''Дата на смърт:'''
 <code><nowiki>{{#invoke:Person|death_date}}</nowiki></code> или <code><nowiki>{{#invoke:Person|death_date|Q347118}}</nowiki></code>
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
