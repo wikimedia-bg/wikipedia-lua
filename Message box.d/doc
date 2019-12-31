@@ -70,3 +70,9 @@ local box = messageBox.main( boxType, {
 * <code>templateCategoryRequireName</code> - whether the <code>name</code> parameter is required to display the template category.
 * <code>templateErrorCategory</code> - the name of the error category to be used on the template page.
 * <code>templateErrorParamsToCheck</code> - an array of parameter names to check. If any are absent, the <code>templateErrorCategory</code> is applied to the template page.
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
