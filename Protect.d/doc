@@ -46,3 +46,9 @@ Invoking the main function without arguments will output: <strong class="error">
 [[Category:Error-handling modules]]
 [[Category:Lua metamodules]]
 }}</includeonly>
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
