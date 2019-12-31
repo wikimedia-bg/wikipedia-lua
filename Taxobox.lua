@@ -44,8 +44,7 @@ local function orderedpairs(array, order)
 	end
 end
 
-function getClaim(id, property, index)
-	local entity = mw.wikibase.getEntityObject(id)
+function getClaim(entity, property, index)
 	if not entity or not entity.claims then return end
 	
 	local claimsss = entity.claims[property]
@@ -75,8 +74,7 @@ function getClaim(id, property, index)
 	return
 end
 
-function getPropertyValue(id, p)
-	local entity = mw.wikibase.getEntity(id)
+function getPropertyValue(entity, p)
 	if entity then
 		local values = entity:formatPropertyValues(p)
 		if values then
@@ -87,12 +85,13 @@ function getPropertyValue(id, p)
 end
 
 function getTaxonClassification(id, isLocalTaxon)
-	local parent = getClaim(id, 'P171', 1)
+	local entity = mw.wikibase.getEntityObject(id)
+	local parent = getClaim(entity, 'P171', 1)
 	local parentTaxon = parent and parent.id or nil
-	local rank = mw.ustring.gsub(getPropertyValue(id, 'P105'), firstValueFormat, '%1')
-	local latinName = mw.ustring.gsub(getPropertyValue(id, 'P225'), firstValueFormat, '%1')
+	local rank = mw.ustring.gsub(getPropertyValue(entity, 'P105'), firstValueFormat, '%1')
+	local latinName = mw.ustring.gsub(getPropertyValue(entity, 'P225'), firstValueFormat, '%1')
 	local bgLabel = mw.wikibase.getLabelByLang(id, 'bg')
-	local instanceOf = getPropertyValue(id, 'P31')
+	local instanceOf = getPropertyValue(entity, 'P31')
 	local fossil = (instanceOf and string.match(instanceOf, fossilTaxonName)) and '†' or ''
 	
 	isLocalTaxon = localRank == rank or (isLocalTaxon and (localRank == rank or (instanceOf and string.match(instanceOf, monotypicTaxonName))))
@@ -118,7 +117,8 @@ end
 function p.get(frame)
 	local itemId = frame.args[1]
 	if itemId then
-		localRank = getPropertyValue(itemId, 'P105')
+		local entity = mw.wikibase.getEntityObject(itemId)
+		localRank = getPropertyValue(entity, 'P105')
 
 		return '<table style="width:100%">' .. getTaxonClassification(itemId, true) .. '</table>'
 	end
