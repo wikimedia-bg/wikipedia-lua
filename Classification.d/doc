@@ -5,15 +5,9 @@
 
 == Употреба ==
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|get|Q148833}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q1033449}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q213938}}</nowiki></code> 
+| <code><nowiki>{{#invoke:Classification|get|Q20719523}}</nowiki></code>
 |-
-| {{#invoke:Classification|get|Q148833}} || {{#invoke:Classification|get|Q1033449}} || {{#invoke:Classification|get|Q213938}}
-|}
-
-{| class="wikitable"
-| <code><nowiki>{{#invoke:Classification|get|Q20719523}}</nowiki></code> || <code><nowiki>{{#invoke:Classification|get|Q131399}}</nowiki></code> 
-|-
-| {{#invoke:Classification|get|Q20719523}} || {{#invoke:Classification|get|Q131399}}
+| {{#invoke:Classification|get|Q20719523}}
 |}
 
 <includeonly>
