@@ -1,3 +1,4 @@
+{{превод}}
 {{Module rating |protected}}
 {{high risk|800,000|all-pages=yes}}
 This module is designed specifically to implement a mechanism which moves control of whether Wikidata values are used in an infobox from the template coder at the infobox design level to the editor at the article level. It is only intended to be used inside an infobox.
@@ -530,7 +531,7 @@ It works in a similar manner to the [[Module:Wikidata|Dump]] function, but only 
 There is a [[Template:Examine]] which acts as a wrapper for the call.
 * Example: <code><nowiki>{{examine |Q4048254 |P31}}</nowiki></code> →
 {{examine |Q4048254 |P31}}
-
+<!--
 === Function url2 ===
 url2 takes a parameter url= that is a proper url and formats it for use in an infobox.
 
@@ -545,6 +546,7 @@ Comparison with output of {{tl|URL}}:
 }}{{nowiki template demo|prefix=#|format=inline|output=nowiki+|code=<nowiki>{{URL | http://www.example.com/path/ }}</nowiki>
 }}{{nowiki template demo|prefix=#|format=inline|output=nowiki+|code=<nowiki>{{URL | {{wikidata|property|Q23317|P856}} }}</nowiki>
 }}{{nowiki template demo|prefix=#:|format=inline|output=nowiki+|code=<nowiki>{{wikidata|property|Q23317|P856}}</nowiki>}}
+-->
 
 == Coding into an infobox ==
 
