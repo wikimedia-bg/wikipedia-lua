@@ -188,3 +188,9 @@ The maximum number of list items to display can be set with the {{para|limit}} p
 If the {{para|same}} parameter is set to "yes", "y", "true", or "1", the list order is the same for each module call on a given page.
 
 Please see [[Module:List]] for a full explanation of the other parameters.
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
