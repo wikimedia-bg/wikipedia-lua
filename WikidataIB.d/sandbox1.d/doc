@@ -594,3 +594,9 @@ The genre field is set to display "Novel", no matter what is stored in Wikidata.
 }}
 </pre>
 The genre field will not be fetched from Wikidata. Only the author, publication date, number of pages, Dewey index, and Library of Congress catalogue number are imported. A local value for genre will display.
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+
+</includeonly>
