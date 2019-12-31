@@ -5,9 +5,9 @@
 
 == Употреба ==
 {| class="wikitable"
-| <code><nowiki>{{#invoke:Taxobox|get|Q1263887}}</nowiki></code> || <code><nowiki>{{#invoke:Taxobox|get|Q1033449}}</nowiki></code> || <code><nowiki>{{#invoke:Taxobox|get|Q131227}}</nowiki></code> 
+| <code><nowiki>{{#invoke:Taxobox|get|Q1263887}}</nowiki></code> || <code><nowiki>{{#invoke:Taxobox|get|Q25940}}</nowiki></code> || <code><nowiki>{{#invoke:Taxobox|get|Q131227}}</nowiki></code> 
 |-
-| {{#invoke:Taxobox|get|Q1263887}} || {{#invoke:Taxobox|get|Q1033449}} || {{#invoke:Taxobox|get|Q131227}}
+| {{#invoke:Taxobox|get|Q1263887}} || {{#invoke:Taxobox|get|Q25940}} || {{#invoke:Taxobox|get|Q131227}}
 |}
 
 {| class="wikitable"
