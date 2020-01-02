@@ -6,6 +6,67 @@ local firstValueFormat = '^([^,]+).*$'
 local fossilTaxonName = 'изкопаем таксон'
 local monotypicTaxonName = 'монотипен таксон'
 local localRank
+local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
+local IUCN_STATUS = {
+	Q211005 = 'LC',
+	Q719675 = 'NT',
+	Q278113 = 'VU',
+	Q11394 = 'EN',
+	Q219127 = 'CR',
+	Q239509 = 'EW',
+	Q237350 = 'EX',
+	Q3245245 = 'DD'
+}
+
+local TAXONOMICRANK = {
+	domain = 'Q146481',				-- империя
+	superkingdom = 'Q19858692',     -- надцарство
+	kingdom = 'Q36732',             -- царство
+	subkingdom = 'Q2752679',        -- подцарство
+	infrakingdom = 'Q3150876',      -- инфрацарство
+	superphylum = 'Q3978005',       -- надтип
+	phylum = 'Q38348',              -- тип
+	subphylum = 'Q1153785',         -- подтип
+	infraphylum = 'Q2361851',       -- инфратип
+	superclass = 'Q3504061',        -- надклас
+	megaklasse = 'Q60922428',		-- мегаклас
+	class = 'Q37517',               -- клас
+	subclass = 'Q5867051',          -- подклас
+	infraclass = 'Q2007442',        -- инфраклас
+	superorder = 'Q5868144',        -- надразред
+	order = 'Q36602',               -- разред
+	suborder = 'Q5867959',          -- подразред
+	infraorder = 'Q2889003',        -- инфраразред
+	superfamily = 'Q2136103',       -- надсемейство
+	family = 'Q35409',              -- семейство
+	subfamily = 'Q164280',          -- подсемейство
+	supertribe = 'Q14817220',       -- надтриб
+	tribe = 'Q227936',              -- триб
+	subtribe = 'Q3965313',          -- подтриб
+	genus = 'Q34740',               -- род
+	subgenus = 'Q3238261',          -- подрод
+	section = 'Q3181348',           -- секция
+	species = 'Q7432',              -- вид
+	subspecies = 'Q68947',          -- подвид
+	variety = 'Q767728',			-- вариетет
+	clade = 'Q713623',				-- клон
+	unranked = 'unranked'
+}
+
+local LOCALLATINNAME
+local LOCALAUTHORNAME
+local LOCALAUTHORDATE
+
+function printImage(image, description)
+	local title = ''
+	local caption = ''
+	if description then
+		title = '|' .. description
+		caption = string.format('<br/><small>%s</small>', description)
+	end
+	
+	return string.format('[[File:%s|frameless%s]]', image, title) .. caption
+end
 
 function isAllowedRank(rank)
   for i = 1, #notAllowedParentTaxonRanks do
