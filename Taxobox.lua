@@ -57,6 +57,70 @@ local LOCALLATINNAME
 local LOCALAUTHORNAME
 local LOCALAUTHORDATE
 
+function getDate(dateValue)
+	local datetime = dateValue.time
+	if datetime then
+		local day = string.match(datetime, '-0?(%d+)T')
+		local month = string.match(datetime, '-0?(%d+)-')
+		local year = string.match(datetime, '^+?(%d+)')
+		if year then
+			if dateValue.precision == 11 then
+				if day and month then
+					return string.format('%s %s %s г.', day, MONTHS[tonumber(month)], year)
+				end
+			elseif dateValue.precision == 9 then
+				return year .. ' г.'
+			end
+		end
+	end
+	return nil
+end
+
+function getSynonym(synonymId, kingdom)
+	local synonymEntity = mw.wikibase.getEntity(synonymId)
+	if synonymEntity and synonymEntity.claims.P225 then
+		local synonymName = synonymEntity.claims.P225[1].mainsnak.datavalue.value
+		if synonymName then
+			local authority = getAuthority(synonymEntity, kingdom)
+			return string.format("* '''%s''' <small>%s</small>", synonymName, authority)
+		end
+	end
+end
+
+function getStatus(status)
+	local result = ''
+	local category = ''
+	if status == 'LC' then
+		result = result .. '[[File:Status iucn3.1 LC bg.svg|200px|LC]]<br/>[[Незастрашен вид|Незастрашен]]'
+		category = category .. '[[Категория:Незастрашени видове]]'
+	elseif status == 'NT' then
+		result = result .. '[[File:Status iucn3.1 NT bg.svg|200px|NT]]<br/>[[Почти застрашен вид|Почти застрашен]]'
+		category = category .. '[[Категория:Почти застрашени видове]]'
+	elseif status == 'VU' then
+		result = result .. '[[File:Status iucn3.1 VU bg.svg|200px|VU]]<br/>[[Уязвим вид|Уязвим]]'
+		category = category .. '[[Категория:Уязвими видове]]'
+	elseif status == 'EN' then
+		result = result .. '[[File:Status iucn3.1 EN bg.svg|200px|EN]]<br/>[[Застрашен вид|Застрашен]]'
+		category = category .. '[[Категория:Застрашени видове]]'
+	elseif status == 'CR' then
+		result = result .. '[[File:Status iucn3.1 CR bg.svg|200px|CR]]<br/>[[Критично застрашен вид|Критично застрашен]]'
+		category = category .. '[[Категория:Критично застрашени видове]]'
+	elseif status == 'EW' then
+		result = result .. '[[File:Status iucn3.1 EW bg.svg|200px|EW]]<br/>[[Изчезнал в природата вид|Изчезнал в природата]]'
+		category = category .. '[[Категория:Изчезнали в природата видове]]'
+	elseif status == 'EX' then
+		result = result .. '[[File:Status iucn3.1 EX bg.svg|200px|EX]]<br/>[[Изчезнал вид|Изчезнал]]'
+		category = category .. '[[Категория:Изчезнали видове]]'
+	elseif status == 'DD' then
+		result = result .. '[[File:Status none DD.svg|200px|DD]]<br/>Недостатъчно данни'
+		category = category .. '[[Категория:Недостатъчно проучени видове]]'
+	else
+		return nil
+	end
+	
+	return result
+end
+
 function printImage(image, description)
 	local title = ''
 	local caption = ''
