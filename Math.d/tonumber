@@ -1,0 +1,101 @@
+--[[
+
+This module convert strings to numbers.
+
+]]
+local p = {}
+
+-- Get first integer number from string.
+function p.integer( frame )
+    local s = frame.args[1]
+
+	s = string.gsub( s, '<[^<>]+>', '' ) -- strip HTML tags
+    s = string.gsub( s, '[^0-9]', ' ' )
+    s = mw.text.trim( s )
+    s = mw.text.split( s, ' ' )[1]
+    
+    return tonumber( s )
+end
+
+-- Get number from quantity (e.g. from Wikidata).
+function p.quantity( frame )
+	local s = frame.args[1]
+
+	s = string.gsub( s, '<[^<>]+>', '' ) -- strip HTML tags
+    s = string.gsub( s, ' ', '' )
+
+    s = string.gsub( s, 'тыс', '000' )
+    s = string.gsub( s, 'млн', '000000' )
+    s = string.gsub( s, 'млрд', '000000000' )
+
+    s = string.gsub( s, ',(%d%d%d)000', '%1' )
+    s = string.gsub( s, ',(%d%d)000', '%10' )
+    s = string.gsub( s, ',(%d)000', '%100' )
+
+    s = string.gsub( s, '±.*$', '' )
+
+    s = string.gsub( s, '[^0-9]', ' ' )
+    s = mw.text.trim( s )
+
+    s = mw.text.split( s, ' ' )[1]
+
+    return tonumber( s )
+end
+
+-- Get year value from string.
+function p.year( frame )
+    local n = nil
+    local cat = frame.args['cat']
+
+	-- 'году' or 'года'
+    local yearForm = 'году'
+    if frame.args['form'] and frame.args['form'] ~= '' then
+    	yearForm = frame.args['form']
+	end
+
+    local s = frame.args[1]
+	s = string.gsub( s, '<[^<>]+>', '' ) -- strip HTML tags
+
+    local isBce = string.match( s, 'до%sн\.%s?э' )
+    s = string.gsub( s, 'год%sдо%sн\.%s*э\.?', '' )
+    s = string.gsub( s, 'до%sн\.%s*э\.?', '' )
+
+	-- Get first 3- or 4-digit integer number from string.
+    local sParts = string.gsub( s, '[^0-9]', ' ' )
+    sParts = mw.text.trim( sParts )
+    sParts = mw.text.split( sParts, ' +' )
+    for k = #sParts, 1, -1 do
+	    v = sParts[k]
+        if string.match( v, '^[12]%d%d%d$' ) then
+            n = tonumber( v )
+            break
+        end
+	end
+
+	-- The entire string is a number.
+	if not n then
+	    s = string.gsub( s, '[%[%]]', '' )
+	    s = mw.text.trim( s )
+		if string.match( s, '^%d%d?%d?%d?$' ) then
+			n = tonumber( s )
+		end
+	end
+
+	-- Generate category
+	if n then
+	    if isBce then
+	    	if cat then
+	    		return '[[К:' .. cat .. ' ' .. n .. ' ' .. yearForm .. ' до н. э.]]'
+	    	end
+	    	n = -n
+	    else
+	    	if cat then 
+	    		return '[[К:' .. cat .. ' ' .. n .. ' ' .. yearForm .. ']]'
+	    	end
+	    end
+	end
+
+    return n or frame.args['default']
+end
+
+return p
