@@ -53,6 +53,7 @@ local TAXONOMICRANK = {
 	unranked = 'unranked'
 }
 
+local TAXOBOXCOLOR = '#F00'
 local LOCALLATINNAME
 local LOCALAUTHORNAME
 local LOCALAUTHORDATE
@@ -265,13 +266,129 @@ function getTaxonClassification(id, isLocalTaxon)
 	return result
 end
 
+function createNewTrSectionNode(content)
+	local titleNode = mw.html.create('tr')
+		:tag('td')
+			:attr('colspan', 2)
+			:css('text-align', 'center')
+			:css('background', TAXOBOXCOLOR)
+			:wikitext(content)
+			:allDone()
+
+	return titleNode
+end
+
+function renderTaxobox(taxobox)
+	-- TITLE
+	titleNode = createNewTrSectionNode(toBold(taxobox.title))
+
+	-- IMAGES
+	-- ...
+
+	-- AUDIO
+	if taxobox.audio.file then
+		audioNode = mw.html.create('tr')
+			:tag('td')
+				:attr('colspan', 2)
+				:attr('align', 'center')
+				:css('text-align', 'center')
+				:wikitext(printFile(taxobox.audio.file, ''))
+			:allDone()
+	end
+	
+	-- STATUS
+	if taxobox.status.iucn then		
+		statusNode = mw.html.create()
+			:node(createNewTrSectionNode(taxobox.status.title))
+			:tag('tr')
+				:tag('td')
+					:attr('colspan', 2)
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:tag('small')
+						:wikitext(taxobox.status.iucn)
+					:allDone()
+	end
+	
+	-- CLASSIFICATION
+	-- ...
+
+	-- DISTRIBUTION
+	if taxobox.distribution.title then
+		distributionNode = mw.html.create()
+			:node(createNewTrSectionNode(taxobox.distribution.title))
+			:tag('tr')
+				:tag('td')
+					:attr('colspan', 2)
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:wikitext(taxobox.distribution.file)
+				:allDone()
+	end
+	
+	-- SYNONYMS
+	if taxobox.synonyms.title then		
+		synonymsNode = mw.html.create()
+			:node(createNewTrSectionNode(taxobox.synonyms.title))
+			:tag('tr')
+				:tag('td')
+					:attr('colspan', 2)
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:tag('ul')
+						:wikitext(taxobox.synonyms.list)
+					:allDone()
+	end
+	
+	-- COMMONS CATEGORY
+	if taxobox.commons.text then
+		commonsNode = mw.html.create()
+			:node(createNewTrSectionNode(taxobox.commons.text))
+	end
+
+	local root = mw.html.create('table')
+		:addClass('toccolours')
+		:css('float', 'right')
+		:css('clear', 'right')
+		:css('width', '250px')
+		:css('margin-left', '1em')
+		:css('font-size', 'small')
+		:node(titleNode)
+		:node(image1Node)
+		:node(image2Node)
+		:node(audioNode)
+		:node(statusNode)
+		:node(classificationNode)
+		:node(authorityNode)
+		:node(distributionNode)
+		:node(synonymsNode)
+		:node(commonsNode)
+		:allDone()
+		
+	return tostring(root)
+end
+
 function p.get(frame)
+	local taxobox = {
+		image1 = {},
+		image2 = {},
+		audio = {},
+		status = {},
+		classification = { list = {}, rangar = {} },
+		authority = {},
+		distribution = {},
+		synonyms = {},
+		commons = {}
+	}
+	
 	local itemId = frame.args[1]
 	if itemId then
 		local entity = mw.wikibase.getEntityObject(itemId)
 		localRank = getPropertyValue(entity, 'P105')
-
-		return '<table style="width:100%">' .. getTaxonClassification(itemId, true) .. '</table>'
+		taxobox.title = mw.language.getContentLanguage():ucfirst(entity:getLabel('bg'))
+		taxobox.color = TAXOBOXCOLOR
+		--return '<table style="width:100%">' .. getTaxonClassification(itemId, true) .. '</table>'
+		return renderTaxobox(taxobox)
 	end
 	
 	return nil
