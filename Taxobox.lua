@@ -1,7 +1,7 @@
 local p = {}
 local localRank
-local noValue = 'без стойност'
-local ignoredRanks = {'grandorder', 'magnorder', 'надимперия' , noValue}
+local noRank = '(без ранг)'
+local ignoredRanks = { 'надимперия', 'надцарство', 'подцарство', 'инфрацарство', 'подтип', 'инфратип', 'надклас', 'подклас', 'надразред', 'grandorder', 'magnorder', 'подразред', 'надсемейство', 'подсемейство' , noRank }
 local kingdom = ''
 local LOCALLATINNAME = 'TEST'
 local LOCALAUTHORNAME
@@ -42,7 +42,7 @@ local PROPERTY = {
 }
 
 local TAXONOMICRANK = {
-	Q146481 = 'империя',
+	Q146481 = 'империя',	-- { 'империя', 1 }
 	Q19858692 = 'надцарство',
 	Q36732 = 'царство',
 	Q2752679 = 'подцарство',
@@ -152,10 +152,11 @@ local function getAuthority(entity, kingdom)
 							else
 								local splittedName = mw.text.split(authorName, ' ')
 								authorAbbreviation = splittedName[#splittedName]
-							end	
+							end
 						end
 					end
 					
+					-- TODO: remove the link to author when it is from authorName (latin), so when bgwiki page doesn't exist
 					local authorNameLink = authorEntity:getSitelink('bgwiki') or authorName
 					if i == 1 then
 						authorityName = to.link(authorNameLink .. '|' .. authorAbbreviation)
@@ -172,7 +173,7 @@ local function getAuthority(entity, kingdom)
 			if taxonDate then
 				datetime = taxonDate[1].datavalue.value.time
 				authorityDate = mw.text.split(mw.ustring.sub(datetime, 2), '-')[1] .. ' г.'
-			end	
+			end
 		
 			local result = (authorityName and authorityDate) and (authorityName .. ', ' .. authorityDate) or (authorityName or authorityDate or '')
 
@@ -194,6 +195,8 @@ local function getSynonym(synonymId, kingdom)
 		if taxonName then
 			local synonymName = taxonName[1].mainsnak.datavalue.value
 			if synonymName then
+				-- TODO: if kingdom less than genus => synonymName in intalic
+			
 				local authority = getAuthority(synonymEntity, kingdom)
 				return '<li>' .. to.bold(synonymName) .. ' <small>' .. (authority or '') .. '</small></li>'
 			end
@@ -207,46 +210,46 @@ local function getStatus(status)
 		local category = ''
 		if status == 'LC' then
 			result = result .. to.link('Незастрашен вид|Незастрашен')
-			category = to.link('Категория:Незастрашени видове')
+			category = 'Незастрашени'
 		elseif status == 'NT' then
 			result = result .. to.link('Почти застрашен вид|Почти застрашен')
-			category = to.link('Категория:Почти застрашени видове')
+			category = 'Почти застрашени'
 		elseif status == 'VU' then
 			result = result .. to.link('Уязвим вид|Уязвим')
-			category = to.link('Категория:Уязвими видове')
+			category = 'Уязвими'
 		elseif status == 'EN' then
 			result = result .. to.link('Застрашен вид|Застрашен')
-			category = to.link('Категория:Застрашени видове')
+			category = 'Застрашени'
 		elseif status == 'CR' then
 			result = result .. to.link('Критично застрашен вид|Критично застрашен')
-			category = to.link('Категория:Критично застрашени видове')
+			category = 'Критично застрашени'
 		elseif status == 'EW' then
 			result = result .. to.link('Изчезнал в природата вид|Изчезнал в природата')
-			category = to.link('Категория:Изчезнали в природата видове')
+			category = 'Изчезнали в природата'
 		elseif status == 'EX' then
 			result = result .. to.link('Изчезнал вид|Изчезнал')
-			category = to.link('Категория:Изчезнали видове')
+			category = 'Изчезнали'
 		elseif status == 'DD' then
 			result = result .. 'Недостатъчно данни'
-			category = to.link('Категория:Недостатъчно проучени видове')
+			category = 'Недостатъчно проучени'
 		else
 			return nil
 		end
 	
 		if mw.title.getCurrentTitle().namespace == 0 then
-			result = result .. category
+			return result .. to.link(string.format('Категория:%s видове', category))
+		else
+			return result
 		end
-		
-		return result
 	end
 end
 
 local function getDate(dateValue)
-	local datetime = dateValue.time
+	local datetime = dateValue.time										-- '+2020-01-22T11:06:23Z'
 	if datetime then
 		local datetimeTable = {}
 		for m in string.gmatch(datetime, '[^%d]*0?(%d+)[^%d]*') do
-			table.insert(datetimeTable, m)
+			table.insert(datetimeTable, m)								-- m = { 2020, 1, 22, 11, 6, 23 }
 		end
 		if datetimeTable[1] then
 			if dateValue.precision == 11 then
@@ -265,6 +268,7 @@ end
 local function getColor(kingdom)
 	for i, color in pairs(COLORMAP) do
 		for j, name in pairs(color[1]) do
+			-- name:gsub('-', '')
 			if name == kingdom then
 				return color[2]
 			end
@@ -310,7 +314,7 @@ local function getClassification(id, isHighlighted)
 	local entity = mw.wikibase.getEntityObject(id)
 	local parentTaxonId = getClaim(entity, PROPERTY.PARENT_TAXON)
 	local rankId = getClaim(entity, PROPERTY.TAXON_RANK)
-	local rank = TAXONOMICRANK[rankId] or '(без ранг)'
+	local rank = TAXONOMICRANK[rankId] or noRank
 	
 	local latinName = ''
 	local taxonName = entity.claims[PROPERTY.TAXON_NAME]
@@ -318,29 +322,30 @@ local function getClassification(id, isHighlighted)
 		latinName = taxonName[1].mainsnak.datavalue.value
 	end
 	
-	local bgLabel = getbgLabel(entity)	
+	local bgLabel = getbgLabel(entity)
+
 	if rank == 'царство' then
 		kingdom = latinName
 	end
-	
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 	local isMonotypic = instanceOf == ITEM.MONOTYPIC_TAXON
 	local isFossil = instanceOf == ITEM.FOSSIL_TAXON
 		
 	isHighlighted = localRank == rank or (isHighlighted and (localRank == rank or isMonotypic))
-	local result = parentTaxonId and parentTaxonId ~= noValue and '' or '' -- and getClassification(parentTaxonId, isHighlighted) 
+	local result = parentTaxonId and parentTaxonId ~= 'без стойност' and getClassification(parentTaxonId, isHighlighted) or ''
 	if isAllowedRank(rank) then
-		result = result .. '<tr><td style="text-align:right; padding-right:5px">' .. rank .. ':</td><td style="text-align:left; white-space:nowrap"'
-		local latinNameText = mw.ustring.gsub(latinName, '(.)%w+%s', '%1. ')
+		result = result .. '<tr><td style="text-align:right; padding-right:5px">' .. rank .. ':</td>' .. 
+			'<td style="text-align:left">'
+		local latinNameText = mw.ustring.gsub(latinName, '(.)%w+%s', '%1.&nbsp;')
 		if bgLabel then
 			local bgLabelText = isHighlighted and to.bold(bgLabel) or to.link(bgLabel)
 			latinNameText = isHighlighted and to.bold(latinNameText) or latinNameText
 			latinNameText = getItalicText(latinNameText, rank)
-			result = result .. '>' .. (isFossil and '†' or '') .. latinNameText .. '</td><td style="text-align: left">' .. bgLabelText .. '</td></tr>'
+			result = result .. bgLabelText .. ' <small>(' .. (isFossil and '†' or '') .. latinNameText ..  ')</small></td></tr>'
 		else
 			latinNameText = isHighlighted and to.bold(latinNameText) or to.link(latinName == latinNameText and latinNameText or latinName .. '|' .. latinNameText)
 			latinNameText = getItalicText(latinNameText, rank)
-			result = result .. 'colspan="2">' .. (isFossil and '†' or '') .. latinNameText .. '</td></tr>'
+			result = result .. (isFossil and '†' or '') .. latinNameText .. '</td></tr>'
 		end
 	end
 	return result
@@ -359,8 +364,10 @@ local function createFileNode(file)
 			:attr('colspan', 2)
 			:css('padding', '5px')
 			:css('text-align', 'center')
-			:wikitext(to.link(string.format('File:%s|frameless%s|240px', file.name, title)) .. caption)
-			:allDone()
+				:tag('div')
+				:css('display', 'inline-block')
+				:wikitext(to.link(string.format('File:%s|frameless%s|240px', file.name, title)) .. caption)
+				:allDone()
 		
 	return fileNode
 end
@@ -380,9 +387,9 @@ local function renderTaxobox(taxobox)
 			:allDone()
 	
 	-- IMAGES
-	if taxobox.image1.name then		
+	if taxobox.image1.name then
 		image1Node = createFileNode(taxobox.image1)
-		if taxobox.image2.name then			
+		if taxobox.image2.name then
 			image2Node = createFileNode(taxobox.image2)
 		end
 	end
@@ -393,7 +400,7 @@ local function renderTaxobox(taxobox)
 	end
 	
 	-- STATUS
-	if taxobox.status.iucn then		
+	if taxobox.status.iucn then
 		statusNode = mw.html.create()
 			:node(createNewTrSectionNode(taxobox.status.title, taxobox.color))
 			:tag('tr')
@@ -406,11 +413,21 @@ local function renderTaxobox(taxobox)
 	end
 	
 	-- CLASSIFICATION
-	if taxobox.classification.list then
-		-- TODO: ...
-	
+	if taxobox.classification.list then	--taxobox.classification.list[1]
+		classificationNode = mw.html.create()
+			:node(createNewTrSectionNode(taxobox.classification.title, taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:attr('colspan', 2)
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:tag('table')
+						:css('width', '100%')
+						:wikitext(taxobox.classification.list)
+						:allDone()
+
 		-- AUTHORITY
-		if taxobox.authority.name then
+		if taxobox.authority.name then -- mw.ustring.match(TAXONRANK, 'species')
 			local taxonName = LOCALLATINNAME
 			authority = to.link('File:Wikispecies-logo.svg|16px|Уикивидове') .. ' ' .. to.italic(to.bold(to.link('wikispecies:' .. taxobox.authority.link .. '|' .. taxonName)))
 			
@@ -428,11 +445,6 @@ local function renderTaxobox(taxobox)
 						:wikitext(authority)
 						:allDone()
 		end
-		
-		classificationNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.classification.title, taxobox.color))
-			:wikitext(taxonRow)
-			:allDone()
 	end
 
 	-- DISTRIBUTION
@@ -444,7 +456,7 @@ local function renderTaxobox(taxobox)
 	end
 	
 	-- SYNONYMS
-	if taxobox.synonyms.title then		
+	if taxobox.synonyms.title then
 		synonymsNode = mw.html.create()
 			:node(createNewTrSectionNode(taxobox.synonyms.title, taxobox.color))
 			:tag('tr')
@@ -490,7 +502,19 @@ local function getTaxobox(itemId)
 		image2 = {},
 		audio = {},
 		status = {},
-		classification = { list = {} },
+		classification = {
+			list = {
+				[1] = {
+					rank = '',
+					latinName = '',
+					bgName = '',
+					bgSiteLink = '',
+					isFossil = false,
+					--isMonotypic = false,
+					isHighlighted = false
+				}
+			}
+		},
 		authority = {},
 		distribution = {},
 		synonyms = {},
@@ -501,11 +525,15 @@ local function getTaxobox(itemId)
 	local currentPageName = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
 	if entity and entity.claims then
-		taxobox.title = getbgLabel(entity) or currentPageName	
+		taxobox.title = getbgLabel(entity) or currentPageName
 	else
 		taxobox.title = currentPageName
 		return taxobox
 	end
+	
+	-- GET RANK
+	localRank = TAXONOMICRANK[getClaim(entity, PROPERTY.TAXON_RANK)] or noRank
+	taxobox.rank = localRank
 	
 	-- GET IMAGES
 	if entity.claims[PROPERTY.IMAGE] then
@@ -569,7 +597,7 @@ local function getTaxobox(itemId)
 				end
 			end
 		end
-	end	
+	end
 	
 	-- GET AUDIO
 	if entity.claims[PROPERTY.AUDIO] then
@@ -601,7 +629,7 @@ local function getTaxobox(itemId)
 			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
 				local qualifiers = iucnClaim[1].qualifiers
 				local disappearedDate = qualifiers[PROPERTY.DISAPPEARED_DATE]
-				if disappearedDate and disappearedDate[1].datavalue.value then 
+				if disappearedDate and disappearedDate[1].datavalue.value then
 					taxobox.status.iucn = taxobox.status.iucn .. string.format(' (%s)', getDate(disappearedDate[1].datavalue.value))
 				end
 			end
@@ -653,7 +681,7 @@ local function getTaxobox(itemId)
 	
 	-- GET CLASSIFICATION
 	taxobox.classification.title = to.bold('Класификация')
-	taxobox.classification.list = '<table style="width:100%">' .. getClassification(itemId, true) .. '</table>'
+	taxobox.classification.list =  getClassification(itemId, true)
 
 	-- GET AUTHORITY
 	taxobox.authority.name = getAuthority(entity, kingdom)
