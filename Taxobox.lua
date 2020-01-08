@@ -207,28 +207,28 @@ local function getStatus(status)
 		local category = ''
 		if status == 'LC' then
 			result = result .. to.link('Незастрашен вид|Незастрашен')
-			category = category .. to.link('Категория:Незастрашени видове')
+			category = to.link('Категория:Незастрашени видове')
 		elseif status == 'NT' then
 			result = result .. to.link('Почти застрашен вид|Почти застрашен')
-			category = category .. to.link('Категория:Почти застрашени видове')
+			category = to.link('Категория:Почти застрашени видове')
 		elseif status == 'VU' then
 			result = result .. to.link('Уязвим вид|Уязвим')
-			category = category .. to.link('Категория:Уязвими видове')
+			category = to.link('Категория:Уязвими видове')
 		elseif status == 'EN' then
 			result = result .. to.link('Застрашен вид|Застрашен')
-			category = category .. to.link('Категория:Застрашени видове')
+			category = to.link('Категория:Застрашени видове')
 		elseif status == 'CR' then
 			result = result .. to.link('Критично застрашен вид|Критично застрашен')
-			category = category .. to.link('Категория:Критично застрашени видове')
+			category = to.link('Категория:Критично застрашени видове')
 		elseif status == 'EW' then
 			result = result .. to.link('Изчезнал в природата вид|Изчезнал в природата')
-			category = category .. to.link('Категория:Изчезнали в природата видове')
+			category = to.link('Категория:Изчезнали в природата видове')
 		elseif status == 'EX' then
 			result = result .. to.link('Изчезнал вид|Изчезнал')
-			category = category .. to.link('Категория:Изчезнали видове')
+			category = to.link('Категория:Изчезнали видове')
 		elseif status == 'DD' then
 			result = result .. 'Недостатъчно данни'
-			category = category .. to.link('Категория:Недостатъчно проучени видове')
+			category = to.link('Категория:Недостатъчно проучени видове')
 		else
 			return nil
 		end
