@@ -633,6 +633,16 @@ function p.openLibraryLink( id )
 	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary' )
 end
 
+function p.Europeana( id )
+	--P7704's format regex: (place|agent|concept|organisation)/.* (e.g. agent/base/59832)
+	local s1, s2, s3 = string.match(id, '([^/]+)([^%d]+)(%d+)')
+	if not (s1 and s2 and s3) and not (s1 == 'place' or s1 == 'agent' or s1 == 'concept' or s1 == 'organisation') then
+		return false
+	else
+		return '[http://data.europeana.eu/' .. s1 .. s2 .. s3 .. ' ' .. s3 .. ']'..p.getCatForId( 'Europeana' )
+	end
+end
+
 --[[==========================================================================]]
 --[[          Wikidata, navigation bar, and documentation functions           ]]
 --[[==========================================================================]]
@@ -740,6 +750,7 @@ p.conf = {
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
 	{ 'DSI', 'DSI', 2349, p.dsiLink },
 	{ 'EBE', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.EBEIDLink },
+	{ 'Europeana', '[[Europeana]]', 7704, p.Europeana },
 	{ 'FAST', 'FAST', 2163, p.fastLink },
 	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
 	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
