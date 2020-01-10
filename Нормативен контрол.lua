@@ -15,6 +15,7 @@ function p.getCatForId( id )
 	else
 		catName = 'Уикипедия:Други страници с нормативен контрол'
 	end
+	catName = (id == 'Europeana' and 'Europeana') or catName
 	return '[[Категория:' .. catName .. ']]'
 end
 
@@ -699,7 +700,7 @@ function p.docConfTable( frame )
 		local param, link, pid = conf[1], conf[2], conf[3]
 		local category = conf.category or param
 		--cats
-		local articleCat = 'Уикипедия:Статии с нормативен контрол ('..category..')'
+		local articleCat = (category == 'Europeana' and 'Europeana') or 'Уикипедия:Статии с нормативен контрол ('..category..')'
 		--counts
 		local articleCount = lang:formatNum( mw.site.stats.pagesInCategory(articleCat, 'pages') )
 		--concat
