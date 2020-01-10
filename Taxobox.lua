@@ -1,8 +1,7 @@
 local p = {}
 local taxons = {}
 local localRank = {}
-local noRank = { rank = 0 , name = '(без ранг)' }
-local kingdom = ''
+local kingdom
 local LOCALLATINNAME
 local LOCALAUTHORITYNAME
 
