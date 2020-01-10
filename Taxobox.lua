@@ -1,11 +1,10 @@
 local p = {}
-local localRank
-local noRank = '(без ранг)'
-local ignoredRanks = { 'надимперия', 'надцарство', 'подцарство', 'инфрацарство', 'подтип', 'инфратип', 'надклас', 'подклас', 'надразред', 'grandorder', 'magnorder', 'подразред', 'надсемейство', 'подсемейство' , noRank }
+local taxons = {}
+local localRank = {}
+local noRank = { rank = 0 , name = '(без ранг)' }
 local kingdom = ''
-local LOCALLATINNAME = 'TEST'
-local LOCALAUTHORNAME
-local LOCALAUTHORDATE
+local LOCALLATINNAME
+local LOCALAUTHORITYNAME
 
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
 
@@ -42,37 +41,43 @@ local PROPERTY = {
 }
 
 local TAXONOMICRANK = {
-	Q146481 = 'империя',	-- { 'империя', 1 }
-	Q19858692 = 'надцарство',
-	Q36732 = 'царство',
-	Q2752679 = 'подцарство',
-	Q3150876 = 'инфрацарство',
-	Q3978005 = 'надтип',
-	Q38348 = 'тип',
-	Q1153785 = 'подтип',
-	Q2361851 = 'инфратип',
-	Q3504061 = 'надклас',
-	Q60922428 = 'мегаклас',
-	Q37517 = 'клас',
-	Q5867051 = 'подклас',
-	Q2007442 = 'инфраклас',
-	Q5868144 = 'надразред',
-	Q36602 = 'разред',
-	Q5867959 = 'подразред',
-	Q2889003 = 'инфраразред',
-	Q2136103 = 'надсемейство',
-	Q35409 = 'семейство',
-	Q164280 = 'подсемейство',
-	Q14817220 = 'надтриб',
-	Q227936 = 'триб',
-	Q3965313 = 'подтриб',
-	Q34740 = 'род',
-	Q3238261 = 'подрод',
-	Q3181348 = 'секция',
-	Q7432 = 'вид',
-	Q68947 = 'подвид',
-	Q767728 = 'вариетет',
-	Q713623 = 'клон'
+	Q0 = { id = 0, name = '(без ранг)', ignore = true },
+	Q22666877 = { id = 1, name = 'надимперия', ignore = true },
+	Q146481 = { id = 2, name = 'империя', ignore = true },
+	Q19858692 = { id = 3, name = 'надцарство', ignore = true },
+	Q36732 = { id = 4, name = 'царство', ignore = false },
+	Q2752679 = { id = 5, name = 'подцарство', ignore = true },
+	Q3150876 = { id = 6, name = 'инфрацарство', ignore = true },
+	Q3978005 = { id = 7, name = 'надтип', ignore = true },
+	Q38348 = { id = 8, name = 'тип', ignore = false },
+	Q1153785 = { id = 9, name = 'подтип', ignore = true },
+	Q2361851 = { id = 10, name = 'инфратип', ignore = true },
+	Q3504061 = { id = 11, name = 'надклас', ignore = true },
+	Q60922428 = { id = 12, name = 'мегаклас', ignore = true },
+	Q37517 = { id = 13, name = 'клас', ignore = false },
+	Q5867051 = { id = 14, name = 'подклас', ignore = true },
+	Q2007442 = { id = 15, name = 'инфраклас', ignore = true },
+	Q6054237 = { id = 16, name = 'magnorder', ignore = true },
+	Q5868144 = { id = 17, name = 'надразред', ignore = true },
+	Q6462265 = { id = 18, name = 'grandorder', ignore = true },
+	Q7506274= { id = 19, name = 'mirorder', ignore = true },
+	Q36602 = { id = 20, name = 'разред', ignore = false },
+	Q5867959 = { id = 21, name = 'подразред', ignore = true },
+	Q2889003 = { id = 22, name = 'инфраразред', ignore = true },
+	Q6311258= { id = 23, name = 'parvorder', ignore = true },
+	Q2136103 = { id = 24, name = 'надсемейство', ignore = true },
+	Q35409 = { id = 25, name = 'семейство', ignore = false },
+	Q164280 = { id = 26, name = 'подсемейство', ignore = true },
+	Q14817220 = { id = 27, name = 'надтриб', ignore = true },
+	Q227936 = { id = 28, name = 'триб', ignore = false },
+	Q3965313 = { id = 29, name = 'подтриб', ignore = true },
+	Q34740 = { id = 30, name = 'род', ignore = false },
+	Q3238261 = { id = 31, name = 'подрод', ignore = true },
+	Q3181348 = { id = 32, name = 'секция', ignore = false },
+	Q7432 = { id = 33, name = 'вид', ignore = false },
+	Q68947 = { id = 34, name = 'подвид', ignore = false },
+	Q767728 = { id = 35, name = 'вариетет', ignore = false },
+	Q713623 = { id = 36, name = 'клон', ignore = false }
 }
 
 local IUCN_STATUS = {
@@ -112,79 +117,76 @@ local to = {
 	end
 }
 
-local function createNewTrSectionNode(content, color)
-	local titleNode = mw.html.create('tr')
-		:tag('td')
-			:attr('colspan', 2)
-			:css('text-align', 'center')
-			:css('border', '1px solid #aaa')
-			:css('background', color)
-			:wikitext(content)
-			:allDone()
-			
-	return titleNode
+local function isAllowedRank(rank)	
+	return (localRank.id < 13 and rank.id > 3) or not rank.ignore
 end
 
-local function getAuthority(entity, kingdom)
-	local taxonName = entity.claims[PROPERTY.TAXON_NAME]
-	if taxonName then
-		local qualifiers = taxonName[1].qualifiers
-		if qualifiers then
-			local authorityName
-			local taxonAuthor = qualifiers[PROPERTY.TAXON_AUTHOR]
-			if taxonAuthor then
-				local n = #taxonAuthor
-				for i = 1, n do
-					local authorItemId = taxonAuthor[i].datavalue.value.id
-					local authorEntity = mw.wikibase.getEntity(authorItemId)
-					local authorName = authorEntity:getLabel('en')
-					local zoologyName = authorEntity.claims[PROPERTY.ZOOLOGY_NAME]
-					if kingdom == 'Animalia' and zoologyName and zoologyName[1].mainsnak.datavalue then
-						authorAbbreviation = zoologyName[1].mainsnak.datavalue.value
+local function getAuthority(taxonNameClaim, isLocal)
+	local qualifiers = taxonNameClaim[1].qualifiers
+	if qualifiers then
+		local authorityName
+		local localAuthorityName
+		local taxonAuthor = qualifiers[PROPERTY.TAXON_AUTHOR]
+		if taxonAuthor then
+			local n = #taxonAuthor
+			for i = 1, n do
+				local authorItemId = taxonAuthor[i].datavalue.value.id
+				local authorEntity = mw.wikibase.getEntity(authorItemId)
+				local authorName = authorEntity:getLabel('en')
+				local zoologyName = authorEntity.claims[PROPERTY.ZOOLOGY_NAME]
+				if zoologyName and zoologyName[1].mainsnak.datavalue then
+					authorAbbreviation = zoologyName[1].mainsnak.datavalue.value
+				else
+					local botanistName = authorEntity.claims[PROPERTY.BOTANIST_NAME]
+					if botanistName and botanistName[1].mainsnak.datavalue then
+						authorAbbreviation = botanistName[1].mainsnak.datavalue.value
 					else
-						local botanistName = authorEntity.claims[PROPERTY.BOTANIST_NAME]
-						if (kingdom == 'Plantae' or kingdom == 'Fungi') and botanistName and botanistName[1].mainsnak.datavalue then
-							authorAbbreviation = botanistName[1].mainsnak.datavalue.value
+						local familyName = authorEntity.claims[PROPERTY.FAMILY_NAME]
+						if familyName and familyName[1].mainsnak.datavalue then
+							authorAbbreviation = mw.wikibase.getEntity(familyName[1].mainsnak.datavalue.value.id):getLabel()
 						else
-							local familyName = authorEntity.claims[PROPERTY.FAMILY_NAME]
-							if familyName and familyName[1].mainsnak.datavalue then
-								authorAbbreviation = mw.wikibase.getEntity(familyName[1].mainsnak.datavalue.value.id):getLabel()
-							else
-								local splittedName = mw.text.split(authorName, ' ')
-								authorAbbreviation = splittedName[#splittedName]
-							end
+							local splittedName = mw.text.split(authorName, ' ')
+							authorAbbreviation = splittedName[#splittedName]
 						end
 					end
-					
-					-- TODO: remove the link to author when it is from authorName (latin), so when bgwiki page doesn't exist
-					local authorNameLink = authorEntity:getSitelink('bgwiki') or authorName
-					if i == 1 then
-						authorityName = to.link(authorNameLink .. '|' .. authorAbbreviation)
-					elseif i ~= n then
-						authorityName = authorityName .. ', ' .. to.link(authorNameLink .. '|' .. authorAbbreviation)
-					else
-						authorityName = authorityName .. ' & ' .. to.link(authorNameLink .. '|' .. authorAbbreviation)
-					end
+				end
+				
+				local authorNameLink = authorEntity:getSitelink('bgwiki') or authorName
+				if i == 1 then
+					authorityName = to.link(authorNameLink .. '|' .. authorAbbreviation)
+					localAuthorityName = authorAbbreviation
+				elseif i ~= n then
+					authorityName = authorityName .. ', ' .. to.link(authorNameLink .. '|' .. authorAbbreviation)
+					localAuthorityName = localAuthorityName .. ', ' .. authorAbbreviation
+				else
+					authorityName = authorityName .. ' & ' .. to.link(authorNameLink .. '|' .. authorAbbreviation)
+					localAuthorityName = localAuthorityName .. ' & ' .. authorAbbreviation
 				end
 			end
-
-			local authorityDate
-			local taxonDate = qualifiers[PROPERTY.TAXON_DATE]
-			if taxonDate then
-				datetime = taxonDate[1].datavalue.value.time
-				authorityDate = mw.text.split(mw.ustring.sub(datetime, 2), '-')[1] .. ' г.'
-			end
-		
-			local result = (authorityName and authorityDate) and (authorityName .. ', ' .. authorityDate) or (authorityName or authorityDate or '')
-
-			local instanceOf = qualifiers[PROPERTY.INSTANCE_OF]
-			local parentheses
-			if instanceOf and instanceOf[1].datavalue.value.id == ITEM.RECOMBINATION then
-				parentheses = true
-			end
-			
-			return parentheses and '(' .. result .. ')' or result
 		end
+
+		local authorityDate
+		local localAuthorityDate
+		local taxonDate = qualifiers[PROPERTY.TAXON_DATE]
+		if taxonDate then
+			datetime = taxonDate[1].datavalue.value.time
+			localAuthorityDate = mw.text.split(mw.ustring.sub(datetime, 2), '-')[1]
+			authorityDate = localAuthorityDate .. ' г.'
+		end
+	
+		local result = (authorityName and authorityDate) and (authorityName .. ', ' .. authorityDate) or (authorityName or authorityDate or '')
+		
+		if isLocal then
+			LOCALAUTHORITYNAME = (localAuthorityName and localAuthorityDate) and (localAuthorityName .. ', ' .. localAuthorityDate) or (localAuthorityName or localAuthorityDate or '')
+		end
+
+		local instanceOf = qualifiers[PROPERTY.INSTANCE_OF]
+		local parentheses
+		if instanceOf and instanceOf[1].datavalue.value.id == ITEM.RECOMBINATION then
+			parentheses = true
+		end
+		
+		return parentheses and '(' .. result .. ')' or result
 	end
 end
 
@@ -195,10 +197,11 @@ local function getSynonym(synonymId, kingdom)
 		if taxonName then
 			local synonymName = taxonName[1].mainsnak.datavalue.value
 			if synonymName then
-				-- TODO: if kingdom less than genus => synonymName in intalic
-			
-				local authority = getAuthority(synonymEntity, kingdom)
-				return '<li>' .. to.bold(synonymName) .. ' <small>' .. (authority or '') .. '</small></li>'
+				local taxonNameClaim = synonymEntity.claims[PROPERTY.TAXON_NAME]
+				if taxonNameClaim then
+					local authority = getAuthority(taxonNameClaim)
+					return '<li>' .. to.bold(synonymName) .. ' <small>' .. (authority or '') .. '</small></li>'
+				end
 			end
 		end
 	end
@@ -268,7 +271,6 @@ end
 local function getColor(kingdom)
 	for i, color in pairs(COLORMAP) do
 		for j, name in pairs(color[1]) do
-			-- name:gsub('-', '')
 			if name == kingdom then
 				return color[2]
 			end
@@ -287,15 +289,6 @@ local function getbgLabel(entity)
 	end
 end
 
-local function isAllowedRank(rank)
-	for i = 1, #ignoredRanks do
-		if ignoredRanks[i] == rank then
-			return false
-		end
-	end
-	return true
-end
-
 local function getItalicText(str, rank)
 	if rank == 'род' or rank == 'подрод' or rank == 'вид' or rank == 'подвид' then
 		 return to.italic(str)
@@ -303,52 +296,88 @@ local function getItalicText(str, rank)
 	return str
 end
 
-local function getClaim(entity, property)
+local function getClaim(entity, property, index)
 	local claims = entity.claims[property]
-	if claims and claims[1].mainsnak.snaktype ~= 'novalue' and claims[1].mainsnak.datavalue then
-		return entity:getBestStatements(property)[1].mainsnak.datavalue.value.id
+	if claims then
+		if index then
+			local mainsnak = claims[index].mainsnak
+			if mainsnak.snaktype ~= 'novalue' and mainsnak.datavalue then
+				return entity:getBestStatements(property)[index].mainsnak.datavalue.value.id
+			end
+		else
+			local result = nil
+			for i, claim in pairs(claims) do
+				if claim.mainsnak.snaktype ~= 'novalue' and claim.mainsnak.datavalue then
+					local valueId = entity:getBestStatements(property)[i].mainsnak.datavalue.value.id	
+					result = i == 1 and valueId or result .. ',' .. valueId
+				end
+			end
+			return result
+		end
 	end
 end
 
-local function getClassification(id, isHighlighted)
-	local entity = mw.wikibase.getEntityObject(id)
-	local parentTaxonId = getClaim(entity, PROPERTY.PARENT_TAXON)
-	local rankId = getClaim(entity, PROPERTY.TAXON_RANK)
-	local rank = TAXONOMICRANK[rankId] or noRank
+local function getClassification(itemId, isHighlighted)
+	local entity = mw.wikibase.getEntityObject(itemId)
+	local parentTaxonId = getClaim(entity, PROPERTY.PARENT_TAXON, 1)
+	local rankId = getClaim(entity, PROPERTY.TAXON_RANK, 1)
+	local rank = rankId and TAXONOMICRANK[rankId] or TAXONOMICRANK.Q0
 	
 	local latinName = ''
 	local taxonName = entity.claims[PROPERTY.TAXON_NAME]
 	if taxonName and taxonName[1].mainsnak.datavalue then
 		latinName = taxonName[1].mainsnak.datavalue.value
+		if localRank.name == rank.name then
+			LOCALLATINNAME = latinName
+		end
 	end
 	
 	local bgLabel = getbgLabel(entity)
-
-	if rank == 'царство' then
+	local bgSiteLink = entity:getSitelink('bgwiki')
+	
+	if rank.name == 'царство' then
 		kingdom = latinName
 	end
+	
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
-	local isMonotypic = instanceOf == ITEM.MONOTYPIC_TAXON
-	local isFossil = instanceOf == ITEM.FOSSIL_TAXON
-		
-	isHighlighted = localRank == rank or (isHighlighted and (localRank == rank or isMonotypic))
-	local result = parentTaxonId and parentTaxonId ~= 'без стойност' and getClassification(parentTaxonId, isHighlighted) or ''
-	if isAllowedRank(rank) then
-		result = result .. '<tr><td style="text-align:right; padding-right:5px">' .. rank .. ':</td>' .. 
-			'<td style="text-align:left">'
-		local latinNameText = mw.ustring.gsub(latinName, '(.)%w+%s', '%1.&nbsp;')
-		if bgLabel then
-			local bgLabelText = isHighlighted and to.bold(bgLabel) or to.link(bgLabel)
-			latinNameText = isHighlighted and to.bold(latinNameText) or latinNameText
-			latinNameText = getItalicText(latinNameText, rank)
-			result = result .. bgLabelText .. ' <small>(' .. (isFossil and '†' or '') .. latinNameText ..  ')</small></td></tr>'
-		else
-			latinNameText = isHighlighted and to.bold(latinNameText) or to.link(latinName == latinNameText and latinNameText or latinName .. '|' .. latinNameText)
-			latinNameText = getItalicText(latinNameText, rank)
-			result = result .. (isFossil and '†' or '') .. latinNameText .. '</td></tr>'
+	local isMonotypic = instanceOf and string.match(instanceOf, ITEM.MONOTYPIC_TAXON)
+	local isFossil = instanceOf and string.match(instanceOf, ITEM.FOSSIL_TAXON)
+	isHighlighted = localRank.name == rank.name or (isHighlighted and (localRank.name == rank.name or isMonotypic))
+	
+	local authority
+	if isHighlighted then
+		local taxonNameClaim = entity.claims[PROPERTY.TAXON_NAME]
+		if taxonNameClaim then
+			authority = { link = entity:getSitelink('specieswiki') or latinName, name = getAuthority(taxonNameClaim, rank.name == localRank.name) }
 		end
 	end
-	return result
+		
+	table.insert(taxons, {
+		rank = rank,
+		latinName = latinName,
+		bgLabel = bgLabel,
+		bgSiteLink = bgSiteLink,
+		authority = authority,
+		isFossil = isFossil,
+		isHighlighted = isHighlighted
+	})
+
+	if parentTaxonId then
+		getClassification(parentTaxonId, isHighlighted)
+	end
+end
+
+local function createNewTrSectionNode(content, color)
+	local titleNode = mw.html.create('tr')
+		:tag('td')
+			:attr('colspan', 2)
+			:css('text-align', 'center')
+			:css('border', '1px solid #aaa')
+			:css('background', color)
+			:wikitext(content)
+			:allDone()
+			
+	return titleNode
 end
 
 local function createFileNode(file)
@@ -400,22 +429,22 @@ local function renderTaxobox(taxobox)
 	end
 	
 	-- STATUS
-	if taxobox.status.iucn then
+	if taxobox.status then
 		statusNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.status.title, taxobox.color))
+			:node(createNewTrSectionNode(to.bold('Природозащитен статут'), taxobox.color))
 			:tag('tr')
 				:tag('td')
 					:attr('colspan', 2)
 					:attr('align', 'center')
 					:css('text-align', 'center')
-					:wikitext(taxobox.status.iucn)
+					:wikitext(taxobox.status)
 					:allDone()
 	end
 	
 	-- CLASSIFICATION
-	if taxobox.classification.list then	--taxobox.classification.list[1]
+	if taxobox.classification then
 		classificationNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.classification.title, taxobox.color))
+			:node(createNewTrSectionNode(to.bold('Класификация'), taxobox.color))
 			:tag('tr')
 				:tag('td')
 					:attr('colspan', 2)
@@ -423,18 +452,11 @@ local function renderTaxobox(taxobox)
 					:css('text-align', 'center')
 					:tag('table')
 						:css('width', '100%')
-						:wikitext(taxobox.classification.list)
+						:wikitext(taxobox.classification)
 						:allDone()
-
+	
 		-- AUTHORITY
-		if taxobox.authority.name then -- mw.ustring.match(TAXONRANK, 'species')
-			local taxonName = LOCALLATINNAME
-			authority = to.link('File:Wikispecies-logo.svg|16px|Уикивидове') .. ' ' .. to.italic(to.bold(to.link('wikispecies:' .. taxobox.authority.link .. '|' .. taxonName)))
-			
-			if taxobox.authority.name then
-				authority = authority .. '<div style="text-align:center; font-size:smaller">' .. taxobox.authority.name .. '</div>'
-			end
-			
+		if taxobox.authority then
 			authorityNode = mw.html.create()
 				:node(createNewTrSectionNode(to.bold('Научно наименование'), taxobox.color))
 				:tag('tr')
@@ -442,36 +464,36 @@ local function renderTaxobox(taxobox)
 					:tag('td')
 						:attr('colspan', 2)
 						:css('text-align', 'center')
-						:wikitext(authority)
+						:wikitext(taxobox.authority)
 						:allDone()
 		end
 	end
 
 	-- DISTRIBUTION
-	if taxobox.distribution.title then
+	if taxobox.distribution.name then
 		distributionNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.distribution.title, taxobox.color))
+			:node(createNewTrSectionNode(to.bold('Разпространение'), taxobox.color))
 			:node(createFileNode(taxobox.distribution))
 			:allDone()
 	end
 	
 	-- SYNONYMS
-	if taxobox.synonyms.title then
+	if taxobox.synonyms then
 		synonymsNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.synonyms.title, taxobox.color))
+			:node(createNewTrSectionNode(to.bold('Синоними'), taxobox.color))
 			:tag('tr')
 				:tag('td')
 					:attr('colspan', 2)
 					:css('text-align', 'left')
 					:tag('ul')
-						:wikitext(taxobox.synonyms.list)
+						:wikitext(taxobox.synonyms)
 						:allDone()
 	end
 	
 	-- COMMONS CATEGORY
-	if taxobox.commons.text then
+	if taxobox.commons then
 		commonsNode = mw.html.create()
-			:node(createNewTrSectionNode(taxobox.commons.text, taxobox.color))
+			:node(createNewTrSectionNode(taxobox.commons, taxobox.color))
 	end
 
 	local root = mw.html.create('table')
@@ -498,27 +520,30 @@ end
 
 local function getTaxobox(itemId)
 	local taxobox = {
-		image1 = {},
-		image2 = {},
-		audio = {},
-		status = {},
-		classification = {
-			list = {
-				[1] = {
-					rank = '',
-					latinName = '',
-					bgName = '',
-					bgSiteLink = '',
-					isFossil = false,
-					--isMonotypic = false,
-					isHighlighted = false
-				}
-			}
+		title = nil,
+		rank = nil,
+		color = nil,
+		image1 = {
+			name = nil,
+			description = nil
 		},
-		authority = {},
-		distribution = {},
-		synonyms = {},
-		commons = {}
+		image2 = {
+			name = nil,
+			description = nil
+		},
+		audio = {
+			name = nil,
+			description = nil
+		},
+		status = nil,
+		classification = nil,
+		authority = nil,
+		distribution = {
+			name = nil,
+			description = nil
+		},
+		synonyms = nil,
+		commons = nil
 	}
 	
 	-- GET TITLE
@@ -532,8 +557,9 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET RANK
-	localRank = TAXONOMICRANK[getClaim(entity, PROPERTY.TAXON_RANK)] or noRank
-	taxobox.rank = localRank
+	localRankItem = getClaim(entity, PROPERTY.TAXON_RANK, 1)
+	localRank = localRankItem and TAXONOMICRANK[localRankItem] or TAXONOMICRANK.Q0
+	taxobox.rank = localRank	
 	
 	-- GET IMAGES
 	if entity.claims[PROPERTY.IMAGE] then
@@ -618,51 +644,11 @@ local function getTaxobox(itemId)
 			end
 		end
 	end
-	
-	-- GET IUCN STATUS
-	local iucnClaim = entity.claims[PROPERTY.IUCN]
-	if iucnClaim then
-		local status = iucnClaim[1].mainsnak.datavalue.value.id
-		if status and status ~= '' then
-			taxobox.status.title = to.bold('Природозащитен статут')
-			taxobox.status.iucn = getStatus(IUCN_STATUS[status])
-			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
-				local qualifiers = iucnClaim[1].qualifiers
-				local disappearedDate = qualifiers[PROPERTY.DISAPPEARED_DATE]
-				if disappearedDate and disappearedDate[1].datavalue.value then
-					taxobox.status.iucn = taxobox.status.iucn .. string.format(' (%s)', getDate(disappearedDate[1].datavalue.value))
-				end
-			end
-			
-			-- Get IUCN Status Reference
-			local iucnIdClaim = entity.claims[PROPERTY.IUCN_ID]
-			if iucnIdClaim then
-				local iucnTaxonId = iucnIdClaim[1].mainsnak.datavalue.value
-				if iucnTaxonId then
-					local taxonName = LOCALLATINNAME .. (LOCALAUTHORNAME and string.format('(%s, %s)', LOCALAUTHORNAME, LOCALAUTHORDATE) or '')
-					local link = string.format('[https://apiv3.iucnredlist.org/api/v3/taxonredirect/%s %s]', iucnTaxonId, taxonName)
-					local redListLink = '[[Международен съюз за защита на природата|IUCN]] [[Червен списък на световнозастрашените видове|Red List of Threatened Species]]'
-					local refDate = ''
-					if iucnClaim[1].references then
-						local retrieved = iucnClaim[1].references[1].snaks[PROPERTY.RETRIEVED]
-						if retrieved and retrieved[1].datavalue.value then
-							local datetime = getDate(retrieved[1].datavalue.value)
-							refDate = datetime and ' Посетен на ' .. datetime or ''
-						end
-					end
-					local ref = string.format('%s. // %s. International Union for Conservation of Nature.%s <small>(на английски)</small>', link, redListLink, refDate)
-
-					taxobox.status.iucn = taxobox.status.iucn .. mw.getCurrentFrame():extensionTag('ref', ref)
-				end
-			end
-		end
-	end
 
 	-- GET DISTRIBUTION MAP
 	if entity.claims[PROPERTY.RANGE_MAP] then
 		local map = entity:getBestStatements(PROPERTY.RANGE_MAP)
 		if map[1].mainsnak.datavalue then
-			taxobox.distribution.title = to.bold('Разпространение')
 			taxobox.distribution.name = map[1].mainsnak.datavalue.value
 			if map[1].qualifiers then
 				local mediaLegend = map[1].qualifiers[PROPERTY.MEDIA_LEGEND]
@@ -678,28 +664,92 @@ local function getTaxobox(itemId)
 			end
 		end
 	end
-	
-	-- GET CLASSIFICATION
-	taxobox.classification.title = to.bold('Класификация')
-	taxobox.classification.list =  getClassification(itemId, true)
+					
+	-- GET CLASSIFICATION AND AUTHORITY
+	getClassification(itemId, true, {})
+	local result = nil
+	local authorityResult = nil
+	for i=#taxons, 1, -1 do
+		local taxon = taxons[i]
+		if taxon.isHighlighted or isAllowedRank(taxon.rank) then			
+			result = (result or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
+			local latinNameText = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
+			if taxon.isHighlighted then
+				latinNameText = getItalicText(to.bold(latinNameText), taxon.rank.name)
+				if taxon.bgLabel then
+					result = result .. to.bold(taxon.bgLabel) .. ' <small>(' .. (taxon.isFossil and '†' or '') .. latinNameText ..  ')</small></td></tr>'
+				else
+					result = result .. (taxon.isFossil and '†' or '') .. latinNameText .. '</td></tr>'
+				end
+				
+				authorityResult = (authorityResult or '') .. to.link('File:Wikispecies-logo.svg|16px|Уикивидове') .. ' ' .. to.italic(to.bold(to.link('wikispecies:' .. taxon.authority.link .. '|' .. taxon.latinName)))
+				if taxon.authority.name then
+					authorityResult = authorityResult .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
+				end
+			else
+				if taxon.bgLabel then
+					latinNameText = getItalicText(latinNameText, taxon.rank.name)
+					result = result .. to.link(taxon.bgLabel) .. ' <small>(' .. (taxon.isFossil and '†' or '') .. latinNameText ..  ')</small></td></tr>'
+				else
+					latinNameText = to.link(taxon.latinName == latinNameText and latinNameText or taxon.latinName .. '|' .. latinNameText)
+					latinNameText = getItalicText(latinNameText, taxon.rank.name)
+					result = result .. (taxon.isFossil and '†' or '') .. latinNameText .. '</td></tr>'
+				end
+			end
+			
+		end 
+	end
+	taxobox.classification = result
+	taxobox.authority = authorityResult
 
-	-- GET AUTHORITY
-	taxobox.authority.name = getAuthority(entity, kingdom)
-	taxobox.authority.link = entity:getSitelink('specieswiki') or LOCALLATINNAME
+	-- GET IUCN STATUS
+	local iucnClaim = entity.claims[PROPERTY.IUCN]
+	if iucnClaim then
+		local status = iucnClaim[1].mainsnak.datavalue.value.id
+		if status and status ~= '' then
+			taxobox.status = getStatus(IUCN_STATUS[status])
+			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
+				local qualifiers = iucnClaim[1].qualifiers
+				local disappearedDate = qualifiers[PROPERTY.DISAPPEARED_DATE]
+				if disappearedDate and disappearedDate[1].datavalue.value then
+					taxobox.status = taxobox.status .. string.format(' (%s)', getDate(disappearedDate[1].datavalue.value))
+				end
+			end
+			
+			-- Get IUCN Status Reference
+			local iucnIdClaim = entity.claims[PROPERTY.IUCN_ID]
+			if iucnIdClaim then
+				local iucnTaxonId = iucnIdClaim[1].mainsnak.datavalue.value
+				if iucnTaxonId then
+					local taxonName = LOCALLATINNAME .. (LOCALAUTHORITYNAME and string.format(' (%s)', LOCALAUTHORITYNAME) or '')
+					local link = string.format('[https://apiv3.iucnredlist.org/api/v3/taxonredirect/%s %s]', iucnTaxonId, taxonName)
+					local redListLink = '[[Международен съюз за защита на природата|IUCN]] [[Червен списък на световнозастрашените видове|Red List of Threatened Species]]'
+					local refDate = ''
+					if iucnClaim[1].references then
+						local retrieved = iucnClaim[1].references[1].snaks[PROPERTY.RETRIEVED]
+						if retrieved and retrieved[1].datavalue.value then
+							local datetime = getDate(retrieved[1].datavalue.value)
+							refDate = datetime and ' Посетен на ' .. datetime or ''
+						end
+					end
+					local ref = string.format('%s. // %s. International Union for Conservation of Nature.%s <small>(на английски)</small>', link, redListLink, refDate)
+
+					taxobox.status = taxobox.status .. mw.getCurrentFrame():extensionTag('ref', ref)
+				end
+			end
+		end
+	end
 	
 	-- GET SYNONYMS
 	local taxonSynonymClaim = entity.claims[PROPERTY.TAXON_SYNONYM]
 	if taxonSynonymClaim then
-		taxobox.synonyms.title = to.bold('Синоними')
-		local synonyms = ''
+		taxobox.synonyms = ''
 		for i=1, #taxonSynonymClaim do
 			local synonymId = taxonSynonymClaim[i].mainsnak.datavalue.value.id
 			if synonymId then
-				synonyms = synonyms .. getSynonym(synonymId, kingdom)
+				taxobox.synonyms = taxobox.synonyms .. getSynonym(synonymId, kingdom)
 			end
 		end
-		
-		taxobox.synonyms.list = synonyms
 	end
 
 	-- GET COMMONS CATEGORY
@@ -708,7 +758,7 @@ local function getTaxobox(itemId)
 		local commons = commonsCategoryClaim[1].mainsnak.datavalue.value
 		if commons then
 			local commonsLink = tostring(mw.uri.canonicalUrl('Commons:Category:' .. commons))
-			taxobox.commons.text = to.bold('[' .. commonsLink .. '?uselang=bg ' .. taxobox.title .. ']') .. ' в ' .. to.link('Общомедия')
+			taxobox.commons = to.bold('[' .. commonsLink .. '?uselang=bg ' .. taxobox.title .. ']') .. ' в ' .. to.link('Общомедия')
 		end
 	end
 	
