@@ -528,7 +528,8 @@ local function getTaxobox(itemId)
 					result = result .. dead .. latinName
 				end
 				
-				authorityResult = (authorityResult or '') .. to.link('File:Wikispecies-logo.svg|16px|Уикивидове') .. ' ' .. to.italic(to.bold(to.link('wikispecies:' .. taxon.authority.link .. '|' .. taxon.latinName)))
+				local authorityLink = string.format('<div>%s %s</div>', to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(to.link('wikispecies:' .. taxon.authority.link .. '|' .. taxon.latinName))))
+				authorityResult = (authorityResult or '') .. authorityLink
 				if taxon.authority.name then
 					authorityResult = authorityResult .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
 				end
