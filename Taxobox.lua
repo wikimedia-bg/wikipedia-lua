@@ -425,7 +425,7 @@ local function getTaxobox(itemId)
 	if entity and entity.claims then
 		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or currentPageName
 	else
-		taxobox.title = entity:getSitelink('bgwiki') or currentPageName
+		taxobox.title = currentPageName
 		return taxobox
 	end
 	
