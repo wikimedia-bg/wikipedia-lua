@@ -590,11 +590,13 @@ local function getTaxobox(itemId)
 	-- GET SYNONYMS
 	local taxonSynonymClaim = entity.claims[PROPERTY.TAXON_SYNONYM]
 	if taxonSynonymClaim then
-		taxobox.synonyms = ''
 		for i=1, #taxonSynonymClaim do
 			local synonymId = taxonSynonymClaim[i].mainsnak.datavalue.value.id
 			if synonymId then
-				taxobox.synonyms = taxobox.synonyms .. getSynonym(synonymId, RANK)
+				local synonym = getSynonym(synonymId, RANK)
+				if synonym then
+					taxobox.synonyms = (taxobox.synonyms or '') .. synonym
+				end
 			end
 		end
 	end
