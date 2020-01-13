@@ -1038,7 +1038,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 							linkSuffix = suffix
 						else
 							yRound = yRound * yFactor
-							if yRound == 1 then
+							if (yRound == 1) and (not short) then
 								suffix = i18n['datetime']['suffixes']['year']
 							else
 								suffix = i18n['datetime']['suffixes']['years']
