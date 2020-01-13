@@ -1052,7 +1052,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			else
 				yRound = y
 				mayAddCalendar = (yRound*sign >= 1583) -- show Julian calendar only after introduction of Gregorian calendar
-				suffix = i18n['datetime']['suffixes']['year']
+				if not short then
+					suffix = i18n['datetime']['suffixes']['year']
+				end
 			end
 			
 			if mayAddCalendar then
