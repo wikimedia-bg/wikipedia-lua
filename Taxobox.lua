@@ -155,7 +155,7 @@ local function createFileNode(file)
 			:attr('colspan', 2)
 			:css('padding', '5px')
 			:css('text-align', 'center')
-				:tag('div')
+			:tag('div')
 				:css('display', 'inline-block')
 				:wikitext(to.link(string.format('File:%s|frameless%s|240px', file.name, title)) .. caption)
 				:allDone()
@@ -417,8 +417,8 @@ local function getClassification(itemId, isHighlighted, taxons)
 end
 
 local function getTaxobox(itemId)
-	local taxobox = { image1 = {}, image2 = {}, audio = {}, map = {} }
-	
+	local taxobox = { id = itemId, image1 = {}, image2 = {}, audio = {}, map = {} }
+
 	-- GET TITLE
 	local currentPageName = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
@@ -712,7 +712,16 @@ local function renderTaxobox(taxobox)
 		commonsNode = mw.html.create()
 			:node(createSectionNode(taxobox.commons, taxobox.color))
 	end
-
+	
+	-- EDIT LINK
+	editNode = mw.html.create('tr')
+		:tag('td')
+			:attr('colspan', 2)
+			:css('text-align', 'right')
+			:tag('small')
+				:wikitext(to.link(string.format('d:%s|редактиране', taxobox.id)))
+				:allDone()
+				
 	local root = mw.html.create('table')
 		:addClass('infobox infobox-lua')
 		:css('width', '22em')
@@ -730,6 +739,7 @@ local function renderTaxobox(taxobox)
 		:node(distributionNode)
 		:node(synonymsNode)
 		:node(commonsNode)
+		:node(editNode)
 		:allDone()
 
 	return tostring(root)
