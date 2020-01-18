@@ -422,7 +422,7 @@ local function getTaxobox(itemId)
 	-- GET TITLE
 	local currentPageName = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
-	if entity and entity.claims then
+	if entity and entity.claims and entity.claims[PROPERTY.TAXON_NAME] then
 		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or currentPageName
 	else
 		taxobox.title = currentPageName
