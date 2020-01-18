@@ -368,6 +368,17 @@ function joinStrings(strings, separator)
         return res
 end
 
+function relabel(link, newlabel)
+	if newlabel ~= '' then
+		if link:find("|") ~= nil then
+			link = link:gsub("|.*]]", "|" .. newlabel .. "]]")
+		else
+			link = link:gsub("]]", "|" .. newlabel .. "]]")
+		end
+	end
+	return link
+end
+
 function p.lsc(frame)
 	local location = frame.args[1]
 	local s = ''
@@ -384,15 +395,11 @@ function p.lsc(frame)
 	if isCountry(location) then
 		return lstr
 	end
-
 	if isSettlement(location, 1) then
 		if cstr == '' then
 			cstr = wd._property({'linked', 'deprecated+', location, 'P17', date=frame.args[2]})
 		end
-		s = wd._property({'linked', 'deprecated+', location, 'P1448', date=frame.args[2]})
-		if s ~= '' then
-			lstr = lstr:gsub("]]", "|" .. s .. "]]")
-		end
+		lstr = relabel(lstr, wd._property({'linked', 'deprecated+', location, 'P1448', date=frame.args[2]}))
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
@@ -400,10 +407,7 @@ function p.lsc(frame)
 				cstr = wd._property({'linked', 'deprecated+', settlement, 'P17', date=frame.args[2]})
 			end
 			sstr = wd._label({ 'linked', settlement})
-			s = wd._property({'linked', 'deprecated+', settlement, 'P1448', date=frame.args[2]})
-			if s ~= '' then
-				sstr = sstr:gsub("]]", "|" .. s .. "]]")
-			end
+			sstr = relabel(sstr, wd._property({'linked', 'deprecated+', settlement, 'P1448', date=frame.args[2]}))
 		else
 			if cstr == '' then
 				cstr = wd._property({'linked', 'deprecated+', location, 'P17',  date=frame.args[2]})
