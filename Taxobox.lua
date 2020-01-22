@@ -528,7 +528,8 @@ local function getTaxobox(itemId)
 					result = result .. dead .. latinName
 				end
 				
-				local authorityLink = string.format('<div>%s %s</div>', to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(to.link('wikispecies:' .. taxon.authority.link .. '|' .. taxon.latinName))))
+				local spanLink = string.format("<span class='plainlinks'>[%s %s]</span>", tostring(mw.uri.canonicalUrl('Species:' .. taxon.authority.link, 'uselang=bg')), taxon.latinName)
+				local authorityLink = string.format("<div>%s %s</div>", to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(spanLink)))
 				authorityResult = (authorityResult or '') .. authorityLink
 				if taxon.authority.name then
 					authorityResult = authorityResult .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
@@ -607,8 +608,8 @@ local function getTaxobox(itemId)
 	if commonsCategoryClaim then
 		local commons = commonsCategoryClaim[1].mainsnak.datavalue.value
 		if commons then
-			local commonsLink = tostring(mw.uri.canonicalUrl('Commons:Category:' .. commons))
-			taxobox.commons = to.bold('[' .. commonsLink .. '?uselang=bg ' .. taxobox.title .. ']') .. ' в ' .. to.link('Общомедия')
+			local commonsLink = tostring(mw.uri.canonicalUrl('Commons:Category:' .. commons, 'uselang=bg'))
+			taxobox.commons = to.bold('[' .. commonsLink .. ' ' .. taxobox.title .. ']') .. ' в ' .. to.link('Общомедия')
 		end
 	end
 	
@@ -719,8 +720,10 @@ local function renderTaxobox(taxobox)
 			:attr('colspan', 2)
 			:css('text-align', 'right')
 			:tag('small')
-				:wikitext(to.link(string.format('d:%s|редактиране', taxobox.id)))
-				:allDone()
+				:tag('span')
+					:addClass('plainlinks')
+					:wikitext(string.format('[%s редактиране]', tostring(mw.uri.canonicalUrl('Wikidata:' .. taxobox.id, 'uselang=bg'))))
+					:allDone()
 				
 	local root = mw.html.create('table')
 		:addClass('infobox infobox-lua')
