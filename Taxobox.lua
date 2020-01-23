@@ -324,10 +324,13 @@ local function getDate(value)
 end
 
 local function getColor(kingdom)
-	for i, color in pairs(COLORMAP) do
-		for j, name in pairs(color[1]) do
-			if name == kingdom then
-				return color[2]
+	if kingdom then
+		kingdom = kingdom:lower()
+		for i, color in pairs(COLORMAP) do
+			for j, name in pairs(color[1]) do
+				if name == kingdom then
+					return color[2]
+				end
 			end
 		end
 	end
@@ -620,7 +623,7 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET COLOR
-	taxobox.color = getColor(KINGDOM:lower())
+	taxobox.color = getColor(KINGDOM)
 
 	return taxobox
 end
