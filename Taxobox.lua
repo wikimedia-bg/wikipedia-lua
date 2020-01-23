@@ -721,16 +721,18 @@ local function renderTaxobox(taxobox)
 	end
 	
 	-- EDIT LINK
-	editNode = mw.html.create('tr')
-		:tag('td')
-			:attr('colspan', 2)
-			:css('text-align', 'right')
-			:tag('small')
-				:tag('span')
-					:addClass('plainlinks')
-					:wikitext(string.format('[%s редактиране]', tostring(mw.uri.canonicalUrl('Wikidata:' .. taxobox.id, 'uselang=bg'))))
-					:allDone()
-				
+	if taxobox.id then
+		editNode = mw.html.create('tr')
+			:tag('td')
+				:attr('colspan', 2)
+				:css('text-align', 'right')
+				:tag('small')
+					:tag('span')
+						:addClass('plainlinks')
+						:wikitext(string.format('[%s редактиране]', tostring(mw.uri.canonicalUrl('Wikidata:' .. taxobox.id, 'uselang=bg'))))
+						:allDone()
+	end
+	
 	local root = mw.html.create('table')
 		:addClass('infobox infobox-lua')
 		:css('width', '22em')
