@@ -97,13 +97,13 @@ local COLORMAP = {
 	{ { 'plantae' }, '#90EE90' },
 	{ { 'fungi' }, '#ADD8E6' },
 	{ { 'bacteria' }, '#E0D3E0' },
-	{ { 'chromista', 'chromalveolata' }, '#ADFF2F' },
-	{ { 'virus', 'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'i-vii' }, '#EE82EE' },
-	{ { 'archaea', 'euryarchaeota', 'crenarchaeota', 'korarchaeota', 'nanoarchaeota', 'thaumarchaeota' }, '#E2B7B7' },
+	{ { 'chromista' }, '#ADFF2F' },	--'chromalveolata'
+	{ { 'virus' }, '#EE82EE' }, --  'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'i-vii'
+	{ { 'archaea' }, '#E2B7B7' }, -- 'euryarchaeota', 'crenarchaeota', 'korarchaeota', 'nanoarchaeota', 'thaumarchaeota'
 	{ { 'protista' }, '#F0E68C' },
 	{ { 'amoebozoa' }, '#FFC8A0' },
-	{ { 'rhizaria', 'excavata' }, '#EEE9E9' },
-	{ { 'eukaryota', 'bikonta', 'unikonta', 'opisthokonta', 'choanomonada', 'prokaryota' }, '#CDC9C9' }
+	{ { 'rhizaria' }, '#EEE9E9' }, -- 'excavata'
+	{ { 'eukaryota' }, '#CDC9C9' } -- 'bikonta', 'unikonta', 'opisthokonta', 'choanomonada', 'prokaryota'
 }
 
 local to = {
