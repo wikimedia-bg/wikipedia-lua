@@ -540,8 +540,14 @@ local function getTaxobox(itemId)
 					local bgLink = (taxon.bgSiteLink and taxon.bgSiteLink ~= taxon.bgLabel) and taxon.bgSiteLink .. '|' or ''
 					result = result .. to.link(bgLink .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 				else
-					latinName = to.link(taxon.latinName == latinName and latinName or taxon.latinName .. '|' .. latinName)
-					latinName = toItalicIfUnderGenus(latinName, taxon.rank)
+					if taxon.bgSiteLink then
+						latinName = taxon.bgSiteLink .. '|' .. latinName
+					elseif mw.title.new(taxon.latinName).exists then
+						latinName = taxon.latinName .. ' (' .. taxon.rank.name .. ')|' .. latinName
+					elseif taxon.latinName ~= latinName then
+						latinName = taxon.latinName .. '|' .. latinName
+					end
+					latinName = toItalicIfUnderGenus(to.link(latinName), taxon.rank)
 					result = result .. dead .. latinName
 				end
 			end
