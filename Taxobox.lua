@@ -38,7 +38,8 @@ local PROPERTY = {
 	RETRIEVED = 'P813',
 	ZOOLOGY_NAME = 'P835',
 	TAXON_SYNONYM = 'P1420',
-	MEDIA_LEGEND = 'P2096'
+	MEDIA_LEGEND = 'P2096',
+	COLLAGE_IMAGE = 'P2716'
 }
 
 local IUCNSTATUS = {
@@ -440,58 +441,66 @@ local function getTaxobox(itemId)
 	taxobox.title = toItalicIfUnderGenus(taxobox.title, RANK)
 	
 	-- GET IMAGES
-	if entity.claims[PROPERTY.IMAGE] then
-		local sexImage1
-		local sexImage2
-		local images = entity:getBestStatements(PROPERTY.IMAGE)
-		if images then
-			for i, image in pairs(images) do
-				if image.qualifiers then
-					local description = getFileDescription(image)
-					if description then
-						if taxobox.image1.name then
-							taxobox.image2.name = image.mainsnak.datavalue.value
-							taxobox.image2.description = description
-						else
-							taxobox.image1.name = image.mainsnak.datavalue.value
-							taxobox.image1.description = description
-						end
-					end
-					
-					if not taxobox.image2.name then
-						if not taxobox.image1.name and not sexImage2 then
-							local sexOrGender = image.qualifiers[PROPERTY.SEX_OR_GENDER]
-							if sexOrGender then
-								local sex
-								local sexItemId = sexOrGender[1].datavalue.value.id
-								if sexItemId == ITEM.MALE_ORGANISM then
-									sex = to.link('мъжки|♂') .. ' ' .. taxobox.title
-								elseif sexItemId == ITEM.FEMALE_ORGANISM then
-									sex = to.link('женски|♀') .. ' ' .. taxobox.title
-								end
-								if sexImage1 then
-									sexImage2 = { name = image.mainsnak.datavalue.value, description = sex }
-								else
-									sexImage1 = { name = image.mainsnak.datavalue.value, description = sex }
-								end
+	if RANK.id < TAXONOMICRANK.Q7432.id and entity.claims[PROPERTY.COLLAGE_IMAGE] then
+		local collage = entity:getBestStatements(PROPERTY.COLLAGE_IMAGE)
+		if collage[1].mainsnak.datavalue then
+			taxobox.image1.name = collage[1].mainsnak.datavalue.value
+			taxobox.image1.description = getFileDescription(collage[1])
+		end
+	else
+		if entity.claims[PROPERTY.IMAGE] then
+			local sexImage1
+			local sexImage2
+			local images = entity:getBestStatements(PROPERTY.IMAGE)
+			if images then
+				for i, image in pairs(images) do
+					if image.qualifiers then
+						local description = getFileDescription(image)
+						if description then
+							if taxobox.image1.name then
+								taxobox.image2.name = image.mainsnak.datavalue.value
+								taxobox.image2.description = description
+							else
+								taxobox.image1.name = image.mainsnak.datavalue.value
+								taxobox.image1.description = description
 							end
 						end
-					else
-						break
+						
+						if not taxobox.image2.name then
+							if not taxobox.image1.name and not sexImage2 then
+								local sexOrGender = image.qualifiers[PROPERTY.SEX_OR_GENDER]
+								if sexOrGender then
+									local sex
+									local sexItemId = sexOrGender[1].datavalue.value.id
+									if sexItemId == ITEM.MALE_ORGANISM then
+										sex = to.link('мъжки|♂') .. ' ' .. taxobox.title
+									elseif sexItemId == ITEM.FEMALE_ORGANISM then
+										sex = to.link('женски|♀') .. ' ' .. taxobox.title
+									end
+									if sexImage1 then
+										sexImage2 = { name = image.mainsnak.datavalue.value, description = sex }
+									else
+										sexImage1 = { name = image.mainsnak.datavalue.value, description = sex }
+									end
+								end
+							end
+						else
+							break
+						end
 					end
 				end
-			end
-			
-			if not taxobox.image1.name then
-				if sexImage1 then
-					taxobox.image1.name = sexImage1.name
-					taxobox.image1.description = sexImage1.description
-					if sexImage2 then
-						taxobox.image2.name = sexImage2.name
-						taxobox.image2.description = sexImage2.description
+				
+				if not taxobox.image1.name then
+					if sexImage1 then
+						taxobox.image1.name = sexImage1.name
+						taxobox.image1.description = sexImage1.description
+						if sexImage2 then
+							taxobox.image2.name = sexImage2.name
+							taxobox.image2.description = sexImage2.description
+						end
+					else
+						taxobox.image1.name = images[1].mainsnak.datavalue.value
 					end
-				else
-					taxobox.image1.name = images[1].mainsnak.datavalue.value
 				end
 			end
 		end
