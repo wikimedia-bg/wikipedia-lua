@@ -168,11 +168,11 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 	if qualifiers then
 		local authorityName
 		local localAuthorityName
-		local taxonAuthor = qualifiers[PROPERTY.TAXON_AUTHOR]
-		if taxonAuthor then
-			for i = 1, #taxonAuthor do
+		local taxonAuthors = qualifiers[PROPERTY.TAXON_AUTHOR]
+		if taxonAuthors then
+			for i = 1, #taxonAuthors do
 				local authorAbbreviation
-				local authorItemId = taxonAuthor[i].datavalue.value.id
+				local authorItemId = taxonAuthors[i].datavalue.value.id
 				local authorEntity = mw.wikibase.getEntity(authorItemId)
 				local zoologyName = authorEntity.claims[PROPERTY.ZOOLOGY_NAME]
 				if zoologyName and zoologyName[1].mainsnak.datavalue then
@@ -194,15 +194,17 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 				
 				local authorNameLink = authorEntity:getSitelink('bgwiki')
 				local currentName = authorNameLink and to.link(authorNameLink .. '|' .. authorAbbreviation) or authorAbbreviation
-				if i == 1 then
+				
+				if #taxonAuthors == 1 or i == 1 then
 					authorityName = currentName
 					localAuthorityName = authorAbbreviation
-				elseif i ~= #taxonAuthor then
-					authorityName = authorityName .. ', ' .. currentName
-					localAuthorityName = localAuthorityName .. ', ' .. authorAbbreviation
-				else
+				elseif #taxonAuthors == 2 then
 					authorityName = authorityName .. ' & ' .. currentName
 					localAuthorityName = localAuthorityName .. ' & ' .. authorAbbreviation
+				else
+					authorityName = authorityName .. ' et al.'
+					localAuthorityName = localAuthorityName .. ' et al.'
+					break
 				end
 			end
 		end
