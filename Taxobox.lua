@@ -32,11 +32,15 @@ local PROPERTY = {
 	TAXON_AUTHOR = 'P405',
 	BOTANIST_NAME = 'P428',
 	TAXON_DATE = 'P574',
+	START_TIME = 'P580',
+	END_TIME = 'P582',
 	IUCN_ID = 'P627',
 	FAMILY_NAME = 'P734',
 	DISAPPEARED_DATE = 'P746',
 	RETRIEVED = 'P813',
 	ZOOLOGY_NAME = 'P835',
+	EARLIEST_DATE = 'P1319',
+	LATEST_DATE = 'P1326',
 	TAXON_SYNONYM = 'P1420',
 	MEDIA_LEGEND = 'P2096',
 	COLLAGE_IMAGE = 'P2716'
@@ -621,6 +625,11 @@ local function getTaxobox(itemId)
 			end
 		end
 	end
+	
+	-- GET FOSSIL RANGE
+	if true then
+		-- TODO: taxobox.fossilRange
+	end
 
 	-- GET COMMONS CATEGORY
 	local commonsCategoryClaim = entity.claims[PROPERTY.COMMONS_CATEGORY]
@@ -727,6 +736,18 @@ local function renderTaxobox(taxobox)
 						:allDone()
 	end
 	
+	-- FOSSIL RANGE
+	if taxobox.fossilRange then
+		fossilRangeNode = mw.html.create()
+			:node(createSectionNode(to.bold('Обхват на вкаменелости'), taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:attr('colspan', 2)
+					:css('text-align', 'center')
+					:wikitext(taxobox.fossilRange)
+					:allDone()
+	end
+	
 	-- COMMONS CATEGORY
 	if taxobox.commons then
 		commonsNode = mw.html.create()
@@ -762,6 +783,7 @@ local function renderTaxobox(taxobox)
 		:node(authorityNode)
 		:node(distributionNode)
 		:node(synonymsNode)
+		:node(fossilRangeNode)
 		:node(commonsNode)
 		:node(editNode)
 		:allDone()
