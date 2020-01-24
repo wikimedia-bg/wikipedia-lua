@@ -581,8 +581,7 @@ local function getTaxobox(itemId)
 		if status and status ~= '' then
 			taxobox.status = getStatus(IUCNSTATUS[status])
 			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
-				local qualifiers = iucnClaim[1].qualifiers
-				local disappearedDate = qualifiers[PROPERTY.DISAPPEARED_DATE]
+				local disappearedDate = iucnClaim[1].qualifiers[PROPERTY.DISAPPEARED_DATE]
 				if disappearedDate and disappearedDate[1].datavalue.value then
 					taxobox.status = taxobox.status .. string.format(' (%s)', getDate(disappearedDate[1].datavalue.value))
 				end
