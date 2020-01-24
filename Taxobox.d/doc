@@ -2,6 +2,7 @@
 <!-- МОЛЯ ДОБАВЯЙТЕ КАТЕГОРИИТЕ В КРАЯ НА ТАЗИ СТРАНИЦА, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
 == Употреба ==
 {{#invoke:Taxobox|get|Q27075864}}
+{{#invoke:Taxobox|get|Q764}}
 <code><nowiki>{{#invoke:Taxobox|get}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|Q27075864}}</nowiki></code>
 <references />
