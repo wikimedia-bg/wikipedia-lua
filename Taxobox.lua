@@ -97,6 +97,140 @@ local TAXONOMICRANK = {
 	Q713623 = { id = 36, name = 'клон', ignore = false }
 }
 
+local FOSSILSTAGEMAP = {
+	{ age = 0, name = 'настояще' },
+	{ age = 0.00245, name = 'субатлантик' },
+	{ age = 0.00566, name = 'суборий' },
+	{ age = 0.00922, name = 'атлантик' },
+	{ age = 0.01064, name = 'борий' },
+	{ age = 0.01143, name = 'преборий' },
+	{ age = 0.116, name = 'weichselian' },
+	{ age = 0.126, name = 'eemian' },
+	{ age = 0.24, name = 'ранхолабрий' },
+	{ age = 0.352, name = 'wolstonian' },
+	{ age = 0.424, name = 'hoxnian' },
+	{ age = 0.73, name = 'kansan' },
+	{ age = 0.781, name = 'cromer' },
+	{ age = 1.07, name = 'бавелий' },
+	{ age = 1.2, name = 'менапий' },
+	{ age = 1.45, name = 'валий' },
+	{ age = 1.806, name = 'ебуроний' },
+	{ age = 2.4, name = 'тиглий' },
+	{ age = 2.588, name = 'претиглий' },
+	{ age = 3.6, name = 'пияцензий' },
+	{ age = 5.332, name = 'занклий' },
+	{ age = 7.246, name = 'месиний' },
+	{ age = 11.608, name = 'тортоний' },
+	{ age = 13.65, name = 'серавалий' },
+	{ age = 15.97, name = 'лангий' },
+	{ age = 20.43, name = 'бурдигалий' },
+	{ age = 23.03, name = 'аквитаний' },
+	{ age = 28.1, name = 'хатий' },
+	{ age = 33.9, name = 'орелий' },
+	{ age = 37.8, name = 'приабоний' },
+	{ age = 41.2, name = 'бартоний' },
+	{ age = 47.8, name = 'лутеций' },
+	{ age = 56, name = 'ипресий' },
+	{ age = 59.2, name = 'танетий' },
+	{ age = 61.6, name = 'зеландий' },
+	{ age = 66, name = 'даний' },
+	{ age = 70.6, name = 'маастрихтий' },
+	{ age = 83.5, name = 'кампаний' },
+	{ age = 85.8, name = 'сантоний' },
+	{ age = 89.3, name = 'конякий' },
+	{ age = 93.5, name = 'туроний' },
+	{ age = 99.6, name = 'ценоманий' },
+	{ age = 112, name = 'албий' },
+	{ age = 125, name = 'аптий' },
+	{ age = 130, name = 'баремий' },
+	{ age = 136.4, name = 'хотривий' },
+	{ age = 140.2, name = 'валангиний' },
+	{ age = 145.5, name = 'бериасий' },
+	{ age = 152.1, name = 'титоний' },
+	{ age = 157.3, name = 'кимеридгий' },
+	{ age = 163.5, name = 'оксфордий' },
+	{ age = 166.1, name = 'каловий' },
+	{ age = 168.3, name = 'батоний' },
+	{ age = 170.3, name = 'байосий' },
+	{ age = 174.1, name = 'аалений' },
+	{ age = 182.7, name = 'тоархий' },
+	{ age = 190.8, name = 'плиенсбахий' },
+	{ age = 199.3, name = 'синемурий' },
+	{ age = 201.3, name = 'хетангий' },
+	{ age = 208.5, name = 'ретий' },
+	{ age = 228, name = 'норий' },
+	{ age = 235, name = 'карний' },
+	{ age = 242, name = 'ладиний' },
+	{ age = 247.2, name = 'анисий' },
+	{ age = 251.2, name = 'спатий' },
+	{ age = 252.2, name = 'индий' },
+	{ age = 254.1, name = 'чангсингий' },
+	{ age = 259.8, name = 'лонгтаний' },
+	{ age = 265.1, name = 'капитаний' },
+	{ age = 268.8, name = 'уордий' },
+	{ age = 272.3, name = 'роадий' },
+	{ age = 283.5, name = 'кунгурий' },
+	{ age = 290.1, name = 'артинский' },
+	{ age = 295, name = 'сакмарий' },
+	{ age = 298.9, name = 'аселий' },
+	{ age = 303.7, name = 'гжелий' },
+	{ age = 307, name = 'казимовий' },
+	{ age = 315.2, name = 'московий' },
+	{ age = 323.2, name = 'башкирий' },
+	{ age = 330.9, name = 'серпуковий' },
+	{ age = 346.7, name = 'визий' },
+	{ age = 358.9, name = 'турний' },
+	{ age = 372.2, name = 'фамений' },
+	{ age = 382.7, name = 'франий' },
+	{ age = 387.7, name = 'живетий' },
+	{ age = 393.3, name = 'айфелий' },
+	{ age = 407.6, name = 'емсий' },
+	{ age = 410.8, name = 'прагий' },
+	{ age = 419.2, name = 'локовий' },
+	{ age = 423, name = 'придолий' },
+	{ age = 425.6, name = 'лудфордий' },
+	{ age = 427.4, name = 'горстий' },
+	{ age = 430.5, name = 'хомерий' },
+	{ age = 433.4, name = 'шайнуудий' },
+	{ age = 438.5, name = 'телихий' },
+	{ age = 440.8, name = 'аероний' },
+	{ age = 443.4, name = 'руданий' },
+	{ age = 445.2, name = 'хирнантий' },
+	{ age = 453, name = 'катий' },
+	{ age = 458.4, name = 'сандбий' },
+	{ age = 467.3, name = 'дариуилий' },
+	{ age = 470, name = 'дапингий' },
+	{ age = 477.7, name = 'флоий' },
+	{ age = 485.4, name = 'тремадокий' },
+	{ age = 489.5, name = 'мансий' },
+	{ age = 494, name = 'джиангшаний' },
+	{ age = 497, name = 'пейбий' },
+	{ age = 500.5, name = 'гужангий' },
+	{ age = 504.5, name = 'друмий' },
+	{ age = 509, name = 'тойоний' },
+	{ age = 514, name = 'ботомий' },
+	{ age = 521, name = 'ченгжианг' },
+	{ age = 529, name = 'томотий' },
+	{ age = 541, name = 'фортуний' },
+	{ age = 635, name = 'едиакарий' },
+	{ age = 850, name = 'байкалий' },
+	{ age = 1000, name = 'тоний' },
+	{ age = 1050, name = 'синий' },
+	{ age = 1100, name = 'маяний' },
+	{ age = 1200, name = 'стений' },
+	{ age = 1400, name = 'ектасий' },
+	{ age = 1600, name = 'калимий' },
+	{ age = 1800, name = 'статерий' },
+	{ age = 2050, name = 'орозирий' },
+	{ age = 2300, name = 'рясий' },
+	{ age = 2500, name = 'сидерий' },
+	{ age = 2800, name = 'неоархай' },
+	{ age = 3200, name = 'мезоархай' },
+	{ age = 3600, name = 'палеоархай' },
+	{ age = 3800, name = 'еоархай' },
+	{ age = 4567.17, name = 'хадей' }
+}
+
 local COLORMAP = {
 	{ { 'animalia' }, '#D3D3A4' },
 	{ { 'plantae' }, '#90EE90' },
@@ -166,6 +300,16 @@ local function createFileNode(file)
 				:allDone()
 		
 	return node
+end
+
+local function getFossilStage(age)
+	for i,stage in pairs(FOSSILSTAGEMAP) do
+		if age <= stage.age then
+			return to.link(stage.name)
+		end
+	end
+
+	return '?'
 end
 
 local function getAuthority(taxonNameClaim, isCurrentTaxon)
@@ -316,15 +460,23 @@ local function getDate(value)
 		for m in string.gmatch(datetime, '[^%d]*0?(%d+)[^%d]*') do
 			table.insert(datetimeTable, m)
 		end
-		if datetimeTable[1] then
+		local year = datetimeTable[1]
+		if year then
 			if value.precision == 11 then
 				-- 22 януари 2020 г.
 				if datetimeTable[3] and datetimeTable[2] then
-					return string.format('%s %s %s г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], datetimeTable[1])
+					return string.format('%s %s %s г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
 				end
 			elseif value.precision == 9 then
 				-- 2020 г.
-				return datetimeTable[1] .. ' г.'
+				return year .. ' г.'
+			elseif 1 <= value.precision or value.precision <= 2 then
+				-- million years BCE
+				if datetime:sub(1, 1) == '-' then
+					if mw.ustring.match(year, '^%d+$') then
+						return tonumber(year) / 1000000
+					end
+				end
 			end
 		end
 	end
@@ -366,7 +518,7 @@ local function getClaim(entity, property, index)
 			local result = nil
 			for i, claim in pairs(claims) do
 				if claim.mainsnak.snaktype ~= 'novalue' and claim.mainsnak.datavalue then
-					local valueId = entity:getBestStatements(property)[i].mainsnak.datavalue.value.id	
+					local valueId = entity:getBestStatements(property)[i].mainsnak.datavalue.value.id
 					result = i == 1 and valueId or result .. ',' .. valueId
 				end
 			end
@@ -406,7 +558,7 @@ local function getClassification(itemId, isHighlighted, taxons)
 	if isHighlighted then
 		local taxonNameClaim = entity.claims[PROPERTY.TAXON_NAME]
 		if taxonNameClaim then
-			authority = { 
+			authority = {
 				link = entity:getSitelink('specieswiki') or latinName,
 				name = getAuthority(taxonNameClaim, rank.name == RANK.name)
 			}
@@ -569,7 +721,7 @@ local function getTaxobox(itemId)
 				end
 			end
 			result = result .. '</td></tr>'
-		end 
+		end
 	end
 	taxobox.classification = result
 	taxobox.authority = authorityResult
