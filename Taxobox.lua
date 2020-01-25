@@ -124,7 +124,7 @@ local FOSSILSTAGEMAP = {
 	{ age = 13.65, name = 'серавалий' },
 	{ age = 15.97, name = 'лангий' },
 	{ age = 20.43, name = 'бурдигалий' },
-	{ age = 23.03, name = 'аквитаний' },
+	{ age = 23.03, name = 'аквитаний', grade = 2, link = 'Неоген|Н', color = '#FEDD2D' },
 	{ age = 28.1, name = 'хатий' },
 	{ age = 33.9, name = 'орелий' },
 	{ age = 37.8, name = 'приабоний' },
@@ -133,7 +133,7 @@ local FOSSILSTAGEMAP = {
 	{ age = 56, name = 'ипресий' },
 	{ age = 59.2, name = 'танетий' },
 	{ age = 61.6, name = 'зеландий' },
-	{ age = 66, name = 'даний' },
+	{ age = 66, name = 'даний', grade = 2, link = 'Палеоген|Пг', color = '#FEA163' },
 	{ age = 70.6, name = 'маастрихтий' },
 	{ age = 83.5, name = 'кампаний' },
 	{ age = 85.8, name = 'сантоний' },
@@ -145,7 +145,7 @@ local FOSSILSTAGEMAP = {
 	{ age = 130, name = 'баремий' },
 	{ age = 136.4, name = 'хотривий' },
 	{ age = 140.2, name = 'валангиний' },
-	{ age = 145.5, name = 'бериасий' },
+	{ age = 145.5, name = 'бериасий', grade = 2, link = 'Креда|К', color = '#6FC86B' },
 	{ age = 152.1, name = 'титоний' },
 	{ age = 157.3, name = 'кимеридгий' },
 	{ age = 163.5, name = 'оксфордий' },
@@ -156,14 +156,14 @@ local FOSSILSTAGEMAP = {
 	{ age = 182.7, name = 'тоархий' },
 	{ age = 190.8, name = 'плиенсбахий' },
 	{ age = 199.3, name = 'синемурий' },
-	{ age = 201.3, name = 'хетангий' },
+	{ age = 201.3, name = 'хетангий', grade = 2, link = 'Юра|Ю', color = '#00BBE7' },
 	{ age = 208.5, name = 'ретий' },
 	{ age = 228, name = 'норий' },
 	{ age = 235, name = 'карний' },
 	{ age = 242, name = 'ладиний' },
 	{ age = 247.2, name = 'анисий' },
 	{ age = 251.2, name = 'спатий' },
-	{ age = 252.2, name = 'индий' },
+	{ age = 252.2, name = 'индий', grade = 2, link = 'Триас|Т', color = '#994E96' },
 	{ age = 254.1, name = 'чангсингий' },
 	{ age = 259.8, name = 'лонгтаний' },
 	{ age = 265.1, name = 'капитаний' },
@@ -172,21 +172,21 @@ local FOSSILSTAGEMAP = {
 	{ age = 283.5, name = 'кунгурий' },
 	{ age = 290.1, name = 'артинский' },
 	{ age = 295, name = 'сакмарий' },
-	{ age = 298.9, name = 'аселий' },
+	{ age = 298.9, name = 'аселий', grade = 2, link = 'Перм (период)|П', color = '#F7583C' },
 	{ age = 303.7, name = 'гжелий' },
 	{ age = 307, name = 'казимовий' },
 	{ age = 315.2, name = 'московий' },
 	{ age = 323.2, name = 'башкирий' },
 	{ age = 330.9, name = 'серпуковий' },
 	{ age = 346.7, name = 'визий' },
-	{ age = 358.9, name = 'турний' },
+	{ age = 358.9, name = 'турний', grade = 2, link = 'Карбон|К', color = '#3FAEAD' },
 	{ age = 372.2, name = 'фамений' },
 	{ age = 382.7, name = 'франий' },
 	{ age = 387.7, name = 'живетий' },
 	{ age = 393.3, name = 'айфелий' },
 	{ age = 407.6, name = 'емсий' },
 	{ age = 410.8, name = 'прагий' },
-	{ age = 419.2, name = 'локовий' },
+	{ age = 419.2, name = 'локовий', grade = 2, link = 'Девон|Д', color = '#DD9651' },
 	{ age = 423, name = 'придолий' },
 	{ age = 425.6, name = 'лудфордий' },
 	{ age = 427.4, name = 'горстий' },
@@ -194,14 +194,14 @@ local FOSSILSTAGEMAP = {
 	{ age = 433.4, name = 'шайнуудий' },
 	{ age = 438.5, name = 'телихий' },
 	{ age = 440.8, name = 'аероний' },
-	{ age = 443.4, name = 'руданий' },
+	{ age = 443.4, name = 'руданий', grade = 2, link = 'Силур|С', color = '#A6DFC5' },
 	{ age = 445.2, name = 'хирнантий' },
 	{ age = 453, name = 'катий' },
 	{ age = 458.4, name = 'сандбий' },
 	{ age = 467.3, name = 'дариуилий' },
 	{ age = 470, name = 'дапингий' },
 	{ age = 477.7, name = 'флоий' },
-	{ age = 485.4, name = 'тремадокий' },
+	{ age = 485.4, name = 'тремадокий', grade = 2, link = 'Ордовик|О', color = '#00A98A' },
 	{ age = 489.5, name = 'мансий' },
 	{ age = 494, name = 'джиангшаний' },
 	{ age = 497, name = 'пейбий' },
@@ -211,7 +211,7 @@ local FOSSILSTAGEMAP = {
 	{ age = 514, name = 'ботомий' },
 	{ age = 521, name = 'ченгжианг' },
 	{ age = 529, name = 'томотий' },
-	{ age = 541, name = 'фортуний' },
+	{ age = 541, name = 'фортуний', grade = 2, link = 'Камбрий|К', color = '#81AA72' },
 	{ age = 635, name = 'едиакарий' },
 	{ age = 850, name = 'байкалий' },
 	{ age = 1000, name = 'тоний' },
@@ -268,14 +268,14 @@ local function toItalicIfUnderGenus(str, rank)
 	return str
 end
 
-local function createSectionNode(content, color)
+local function createSectionNode(section, color)
 	local node = mw.html.create('tr')
 		:tag('td')
 			:attr('colspan', 2)
 			:css('text-align', 'center')
 			:css('border', '1px solid #aaa')
 			:css('background', color)
-			:wikitext(content)
+			:wikitext(section)
 			:allDone()
 			
 	return node
@@ -302,8 +302,22 @@ local function createFileNode(file)
 	return node
 end
 
-local function getFossilStage(age)
-	for i,stage in pairs(FOSSILSTAGEMAP) do
+local function createFossilRangeDivNode(left, width, color, link)
+	local node = mw.html.create('div')
+		:css('position', 'absolute')
+		:css('height', '100%')
+		:css('left', left .. 'px')
+		:css('width', width .. 'px')
+		:css('background-color', color)
+		:wikitext(to.link(link))
+		:allDone()
+
+	return node
+end
+
+local function getFossilStageName(age)
+	for i=1, #FOSSILSTAGEMAP do
+		local stage = FOSSILSTAGEMAP[i]
 		if age <= stage.age then
 			return to.link(stage.name)
 		end
@@ -481,6 +495,195 @@ local function getDate(value)
 		end
 	end
 end
+
+
+
+-----------------------
+--↓   IN PROGRESS   ↓--
+
+local function printFossilRange(grade, text, startTime, endTime, earliestTime, latestTime, link)
+	local gradient = 'linear-gradient(left,#fff 0%,#fed67b 100%,#7db9e8 100%,#7db9e8 100%,#7db9e8 100%,#7db9e8 100%)'
+	local pad = 35
+	local INFOBOXWIDTH = 250
+
+	-- GET SCALE
+	local index = 0
+	local fossilStageAgesMap = {}
+	for i=#FOSSILSTAGEMAP, 1, -1 do
+		local stage = FOSSILSTAGEMAP[i]
+		if stage.grade == grade then
+			index = index + 1
+			fossilStageAgesMap[index] = {}
+			fossilStageAgesMap[index].age = stage.age
+			fossilStageAgesMap[index].link = stage.link
+			fossilStageAgesMap[index].color = stage.color
+		end
+	end
+
+	local coefficient = (INFOBOXWIDTH - pad) / (fossilStageAgesMap[1].age)
+	local blocks = ''
+	for i=1, #fossilStageAgesMap do
+		local left = INFOBOXWIDTH - coefficient * (fossilStageAgesMap[i].age)
+		local width = INFOBOXWIDTH - left
+		if i < #fossilStageAgesMap then
+			width = width - coefficient * (fossilStageAgesMap[i + 1].age)
+		end
+
+		blocks = blocks .. tostring(createFossilRangeDivNode(left, width, fossilStageAgesMap[i].color, fossilStageAgesMap[i].link))
+	end
+	
+	-- GET BARS
+	local barWidth = coefficient * (startTime - endTime)
+	local barLeft = INFOBOXWIDTH - barWidth - 1
+	local barWidth2 = 0
+	local barLeft2 = 0
+	if earliestTime then
+		barWidth2 = coefficient * (earliestTime - latestTime)
+		barLeft2 = INFOBOXWIDTH - barWidth2 - 1
+	end
+	
+	local fossilRange = mw.html.create('div')
+		:tag('div')
+			:css('text-align', 'center')
+			:wikitext(text)
+			:done()
+		:tag('div')
+			:css('margin', '4px auto 0')
+			:css('clear', 'both')
+			:css('width', INFOBOXWIDTH .. 'px')
+			:css('height', '18px')
+			:css('line-height', '170%')
+			:css('font-size', '80%')
+			:css('overflow', 'visible')
+			:css('border', '1px #666')
+			:css('border-style', 'solid none')
+			:css('padding', '0')
+			:css('position', 'relative')
+			:css('z-index', '0')
+			:tag('div')
+				:css('position', 'absolute')
+				:css('height', '100%')
+				:css('left', '0')
+				:css('width', pad .. 'px')
+				:css('background', '#fff')
+				:css('background', string.format('#fff;background:-moz-%s;background:-webkit-%s;background:-o-%s', gradient, gradient, gradient))
+				:wikitext(to.link(link))
+				:done()
+			:wikitext(blocks)
+			:tag('div')
+				:css('position', 'absolute')
+				:css('height', '100%')
+				:css('background-color', '#666')
+				:css('width', '1px')
+				:css('left', INFOBOXWIDTH .. 'px')
+				:done()
+			:done()
+		:tag('div')
+			:css('margin', '0 auto')
+			:css('line-height', '0')
+			:css('clear', 'both')
+			:css('width', INFOBOXWIDTH .. 'px')
+			:css('height', '8px')
+			:css('overflow', 'visible')
+			:css('padding', '0')
+			:css('position', 'relative')
+			:css('top', '-4px')
+			:css('background-color', 'transparent')
+			:css('z-index', '100')
+			:tag('div')
+				-- earliestTime to latestTime
+				:css('background-color', '#360')
+				:css('position', 'absolute')
+				:css('height', '8px')
+				:css('left', barLeft2 .. 'px')
+				:css('width', barWidth2 .. 'px')
+				:css('opacity', '0.42')
+				:done()
+			:tag('div')
+				-- startTime to endTime
+				:css('background-color', '#6c3')
+				:css('position', 'absolute')
+				:css('height', '6px')
+				:css('left', barLeft .. 'px')
+				:css('width', barWidth .. 'px')
+				:css('border', '1px solid #360')
+				:css('top', '1px')
+				:allDone()
+
+	return tostring(fossilRange)
+end
+
+local function getFossilRange(entity)
+	local startTime
+	local earliestTime
+	local startTimeClaim = entity.claims[PROPERTY.START_TIME]
+	if startTimeClaim then
+		startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value)
+		local qualifiers = startTimeClaim[1].qualifiers
+		if qualifiers and qualifiers[PROPERTY.EARLIEST_DATE] then
+			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
+		end
+	end
+
+	local endTime = startTime and 0 or nil
+	local latestTime = earliestTime and 0 or nil
+	local endTimeClaim = entity.claims[PROPERTY.END_TIME]
+	if endTimeClaim then
+		endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value)
+		local qualifiers = endTimeClaim[1].qualifiers
+		if qualifiers and qualifiers[PROPERTY.LATEST_DATE] then
+			latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value)
+		end
+	end
+
+	if startTime then
+		local startTimeStage = getFossilStageName(startTime)
+		
+		-- GET TEXT
+		local text1 = startTimeStage
+		local text2 = startTime
+		if endTime then
+			local endTimeStage = getFossilStageName(endTime)
+			if startTimeStage ~= endTimeStage then
+				text1 = text1 .. ' – ' .. endTimeStage
+			end
+			text2 = text2 .. '–' .. endTime
+		end
+		local text = string.format('%s, %s Ma', text1, text2)
+
+		-- GET GRADE & LINK
+		-- print geologic time scale
+		-- btr chck for earliestTime
+		local grade
+		local link
+		if 4700 > startTime and startTime >= 541 then
+			-- long fossil range
+			grade = 1
+			link = ''
+		elseif 541 > startTime and startTime >= 65.5 then
+			-- fossil range
+			grade = 2
+			link = 'Прекамбрий|ПреК'
+		elseif 65.5 > startTime and startTime >= 2.588 then
+			-- short fossil range
+			grade = 3
+			link = ''
+		elseif 2.588 > startTime and startTime >= 0 then
+			-- mini fossil range
+			grade = 4
+			link = ''
+		end
+		
+		if grade and text and link then
+			return printFossilRange(grade, text, startTime, endTime, earliestTime, latestTime, link)		
+		end
+	end
+end
+
+--↑   IN PROGRESS   ↑--
+-----------------------
+
+
 
 local function getColor(kingdom)
 	if kingdom then
@@ -778,9 +981,7 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET FOSSIL RANGE
-	if true then
-		-- TODO: taxobox.fossilRange
-	end
+	taxobox.fossilRange = getFossilRange(entity)
 
 	-- GET COMMONS CATEGORY
 	local commonsCategoryClaim = entity.claims[PROPERTY.COMMONS_CATEGORY]
