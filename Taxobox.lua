@@ -664,11 +664,11 @@ local function getFossilRange(entity)
 		-- btr chck for earliestTime
 		local grade
 		local link
-		if 4700 > startTime and startTime >= 541 then
+		if 4700 > startTime and startTime >= 700 then
 			-- long fossil range
 			grade = 1
 			link = ''
-		elseif 541 > startTime and startTime >= 65.5 then
+		elseif 700 > startTime and startTime >= 65.5 then
 			-- fossil range
 			grade = 2
 			link = 'Прекамбрий|ПреК'
