@@ -5,6 +5,7 @@
 {{#invoke:Taxobox|get|Q764}}
 {{#invoke:Taxobox|get|Q733150}}
 {{#invoke:Taxobox|get|Q17592}}
+{{#invoke:Taxobox|get|Q93315}}
 
 <code><nowiki>{{#invoke:Taxobox|get}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|Q27075864}}</nowiki></code>
