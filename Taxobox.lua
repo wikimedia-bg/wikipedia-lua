@@ -105,18 +105,18 @@ local FOSSILSTAGEMAP = {
 	{ age = 0.01064, name = 'борий' },
 	{ age = 0.01143, name = 'преборий' },
 	{ age = 0.116, name = 'weichselian' },
-	{ age = 0.126, name = 'eemian' },
+	{ age = 0.126, name = 'eemian', grade = 4, link = 'Тарантий|Т', color = '#F2F0E9' },
 	{ age = 0.24, name = 'ранхолабрий' },
 	{ age = 0.352, name = 'wolstonian' },
 	{ age = 0.424, name = 'hoxnian' },
 	{ age = 0.73, name = 'kansan' },
-	{ age = 0.781, name = 'cromer' },
-	{ age = 1.07, name = 'бавелий' },
-	{ age = 1.2, name = 'менапий' },
-	{ age = 1.45, name = 'валий' },
-	{ age = 1.806, name = 'ебуроний' },
-	{ age = 2.4, name = 'тиглий' },
-	{ age = 2.588, name = 'претиглий' },
+	{ age = 0.781, name = 'cromerien', grade = 4, link = 'Йоний', color = '#E9E0AD' },
+	{ age = 1.07, name = 'бавелий', grade = 4, link = 'Бавелий|Б', color = '#D8C000' },
+	{ age = 1.2, name = 'менапий', grade = 4, link = 'Менапий|М', color = '#E19402' },
+	{ age = 1.45, name = 'валий', grade = 4, link = 'Валий|В', color = '#DE3F00' },
+	{ age = 1.806, name = 'ебуроний', grade = 4, link = 'Ебуроний|Ебу', color = '#FF5400' },
+	{ age = 2.4, name = 'тиглий', grade = 4, link = 'Тиглий', color = '#FF8300' },
+	{ age = 2.588, name = 'претиглий', grade = 4, link = 'Претиглий|Пт', color = '#FFBF00' },
 	{ age = 3.6, name = 'пияцензий' },
 	{ age = 5.332, name = 'занклий' },
 	{ age = 7.246, name = 'месиний' },
@@ -302,14 +302,14 @@ local function createFileNode(file)
 	return node
 end
 
-local function createFossilRangeDivNode(left, width, color, link)
+local function createFossilRangeBlockNode(block)
 	local node = mw.html.create('div')
 		:css('position', 'absolute')
 		:css('height', '100%')
-		:css('left', left .. 'px')
-		:css('width', width .. 'px')
-		:css('background-color', color)
-		:wikitext(to.link(link))
+		:css('left', block.left .. 'px')
+		:css('width', block.width .. 'px')
+		:css('background-color', block.color)
+		:wikitext(to.link(block.link))
 		:allDone()
 
 	return node
@@ -529,17 +529,25 @@ local function printFossilRange(grade, text, startTime, endTime, earliestTime, l
 			width = width - coefficient * (fossilStageAgesMap[i + 1].age)
 		end
 
-		blocks = blocks .. tostring(createFossilRangeDivNode(left, width, fossilStageAgesMap[i].color, fossilStageAgesMap[i].link))
+		local block = {
+			left = left,
+			width = width,
+			color = fossilStageAgesMap[i].color,
+			link = fossilStageAgesMap[i].link
+		}
+		blocks = blocks .. tostring(createFossilRangeBlockNode(block))
 	end
 	
 	-- GET BARS
 	local barWidth = coefficient * (startTime - endTime)
-	local barLeft = INFOBOXWIDTH - barWidth - 1
+	local delta = coefficient * endTime
+	local barLeft = INFOBOXWIDTH - barWidth - delta - 1
 	local barWidth2 = 0
 	local barLeft2 = 0
 	if earliestTime then
 		barWidth2 = coefficient * (earliestTime - latestTime)
-		barLeft2 = INFOBOXWIDTH - barWidth2 - 1
+		local delta2 = coefficient * latestTime
+		barLeft2 = INFOBOXWIDTH - barWidth2 - delta2 - 1
 	end
 	
 	local fossilRange = mw.html.create('div')
@@ -671,7 +679,7 @@ local function getFossilRange(entity)
 		elseif 2.588 > startTime and startTime >= 0 then
 			-- mini fossil range
 			grade = 4
-			link = ''
+			link = 'Плиоцен|Плц'
 		end
 		
 		if grade and text and link then
