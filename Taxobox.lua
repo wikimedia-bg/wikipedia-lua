@@ -1,7 +1,7 @@
 -- TODO: 'sect.', 'subg.', 'subsp.'
 
 local p = {}
-
+		
 local RANK
 local KINGDOM
 local LATINNAME
@@ -105,19 +105,19 @@ local FOSSILSTAGEMAP = {
 	{ age = 0.01064, name = 'борий' },
 	{ age = 0.01143, name = 'преборий' },
 	{ age = 0.116, name = 'weichselian' },
-	{ age = 0.126, name = 'eemian', grade = 4, link = 'Тарантий|Т', color = '#F2F0E9' },
+	{ age = 0.126, name = 'eemian', grade = 1, link = 'Тарантий|Т', color = '#F2F0E9' },
 	{ age = 0.24, name = 'ранхолабрий' },
 	{ age = 0.352, name = 'wolstonian' },
 	{ age = 0.424, name = 'hoxnian' },
 	{ age = 0.73, name = 'kansan' },
-	{ age = 0.781, name = 'cromerien', grade = 4, link = 'Йоний', color = '#E9E0AD' },
-	{ age = 1.07, name = 'бавелий', grade = 4, link = 'Бавелий|Б', color = '#D8C000' },
-	{ age = 1.2, name = 'менапий', grade = 4, link = 'Менапий|М', color = '#E19402' },
-	{ age = 1.45, name = 'валий', grade = 4, link = 'Валий|В', color = '#DE3F00' },
-	{ age = 1.806, name = 'ебуроний', grade = 4, link = 'Ебуроний|Ебу', color = '#FF5400' },
-	{ age = 2.4, name = 'тиглий', grade = 4, link = 'Тиглий', color = '#FF8300' },
-	{ age = 2.588, name = 'претиглий', grade = 4, link = 'Претиглий|Пт', color = '#FFBF00' },
-	{ age = 3.6, name = 'пияцензий' },
+	{ age = 0.781, name = 'cromerien', grade = 1, link = 'Йоний', color = '#E9E0AD' },
+	{ age = 1.07, name = 'бавелий', grade = 1, link = 'Бавелий|Б', color = '#FFBF00' },
+	{ age = 1.2, name = 'менапий', grade = 1, link = 'Менапий|М', color = '#D8C000' },
+	{ age = 1.45, name = 'валий', grade = 1, link = 'Валий|В', color = '#E19402' },
+	{ age = 1.806, name = 'ебуроний', grade = 1, link = 'Ебуроний|Ебу', color = '#FF8300' },
+	{ age = 2.4, name = 'тиглий', grade = 1, link = 'Тиглий', color = '#E54FFA' },
+	{ age = 2.588, name = 'претиглий', grade = 1, link = 'Претиглий|Пт', color = '#01CBAF' },
+	{ age = 3.6, name = 'пияцензий', grade = 1, link = 'Плиоцен|Плц', color = '#00D001' },
 	{ age = 5.332, name = 'занклий' },
 	{ age = 7.246, name = 'месиний' },
 	{ age = 11.608, name = 'тортоний' },
@@ -212,23 +212,23 @@ local FOSSILSTAGEMAP = {
 	{ age = 521, name = 'ченгжианг' },
 	{ age = 529, name = 'томотий' },
 	{ age = 541, name = 'фортуний', grade = 2, link = 'Камбрий|К', color = '#81AA72' },
-	{ age = 635, name = 'едиакарий' },
+	{ age = 635, name = 'едиакарий', grade = 2, link = 'Прекамбрий|ПреК', color = '#FED67B' },
 	{ age = 850, name = 'байкалий' },
-	{ age = 1000, name = 'тоний' },
+	{ age = 1000, name = 'тоний', grade = 3, link = 'Неопротерозой|Нп', color = '#F6EC39' },
 	{ age = 1050, name = 'синий' },
 	{ age = 1100, name = 'маяний' },
 	{ age = 1200, name = 'стений' },
 	{ age = 1400, name = 'ектасий' },
-	{ age = 1600, name = 'калимий' },
+	{ age = 1600, name = 'калимий', grade = 3, link = 'Мезопротерозой|Мп', color = '#FEB872' },
 	{ age = 1800, name = 'статерий' },
 	{ age = 2050, name = 'орозирий' },
 	{ age = 2300, name = 'рясий' },
-	{ age = 2500, name = 'сидерий' },
-	{ age = 2800, name = 'неоархай' },
-	{ age = 3200, name = 'мезоархай' },
-	{ age = 3600, name = 'палеоархай' },
-	{ age = 3800, name = 'еоархай' },
-	{ age = 4567.17, name = 'хадей' }
+	{ age = 2500, name = 'сидерий', grade = 3, link = 'Палеопротерозой|Пп', color = '#FE5B71' },
+	{ age = 2800, name = 'неоархай', grade = 3, link = 'Неоархай|На', color = '#FE7CA3' },
+	{ age = 3200, name = 'мезоархай', grade = 3, link = 'Мезоархай|Ма', color = '#F85296' },
+	{ age = 3600, name = 'палеоархай', grade = 3, link = 'Палеоархай|Па', color = '#F85296' },
+	{ age = 3800, name = 'еоархай', grade = 3, link = 'Еоархай|Е', color = '#EE007D' },
+	{ age = 4567.17, name = 'хадей', grade = 3, link = 'Хадей', color = '#CB0381' }
 }
 
 local COLORMAP = {
@@ -237,12 +237,12 @@ local COLORMAP = {
 	{ { 'fungi' }, '#ADD8E6' },
 	{ { 'bacteria' }, '#E0D3E0' },
 	{ { 'chromista' }, '#ADFF2F' },	--'chromalveolata'
---	{ { 'virus' }, '#EE82EE' }, --  'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'i-vii'
---	{ { 'archaea' }, '#E2B7B7' }, -- 'euryarchaeota', 'crenarchaeota', 'korarchaeota', 'nanoarchaeota', 'thaumarchaeota'
+--	{ { 'virus', 'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'i-vii' }, '#EE82EE' },
+--	{ { 'archaea', 'euryarchaeota', 'crenarchaeota', 'korarchaeota', 'nanoarchaeota', 'thaumarchaeota' }, '#E2B7B7' },
 --	{ { 'protista' }, '#F0E68C' },
 --	{ { 'amoebozoa' }, '#FFC8A0' },
---	{ { 'rhizaria' }, '#EEE9E9' }, -- 'excavata'
---	{ { 'eukaryota' }, '#CDC9C9' } -- 'bikonta', 'unikonta', 'opisthokonta', 'choanomonada', 'prokaryota'
+--	{ { 'rhizaria', 'excavata' }, '#EEE9E9' },
+--	{ { 'eukaryota', 'bikonta', 'unikonta', 'opisthokonta', 'choanomonada', 'prokaryota' }, '#CDC9C9' }
 }
 
 local to = {
@@ -302,7 +302,12 @@ local function createFileNode(file)
 	return node
 end
 
-local function createFossilRangeBlockNode(block)
+local function createFossilStageBlockNode(block, isFirst)
+	if isFirst then
+		local gradient = string.format('linear-gradient(left,#FFF 0%%,%s 100%%)', block.color)
+		block.color = string.format('#FFF;background:-moz-%s;background:-webkit-%s;background:-o-%s', gradient, gradient, gradient)
+	end
+	
 	local node = mw.html.create('div')
 		:css('position', 'absolute')
 		:css('height', '100%')
@@ -311,8 +316,129 @@ local function createFossilRangeBlockNode(block)
 		:css('background-color', block.color)
 		:wikitext(to.link(block.link))
 		:allDone()
-
+			
 	return node
+end
+
+local function createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
+	local INFOBOXWIDTH = 250
+
+	-- GET GRADE
+	local grade
+	local firstTime = earliestTime and earliestTime > startTime and earliestTime or startTime
+	if 0 <= firstTime and firstTime < 3.5 then
+		grade = 1
+	elseif 3.5 <= firstTime and firstTime < 630 then
+		grade = 2
+	elseif 630 <= firstTime and firstTime < 4700 then
+		grade = 3
+	end
+	
+	-- GET SCALE
+	local scale = ''
+	local index = 0
+	local fossilStageAgesMap = {}
+	for i=#FOSSILSTAGEMAP, 1, -1 do
+		local stage = FOSSILSTAGEMAP[i]
+		if stage.grade == grade then
+			index = index + 1
+			fossilStageAgesMap[index] = {}
+			fossilStageAgesMap[index].age = stage.age
+			fossilStageAgesMap[index].link = stage.link
+			fossilStageAgesMap[index].color = stage.color
+		end
+	end
+
+	local coefficient = INFOBOXWIDTH / (fossilStageAgesMap[1].age)
+	for i=1, #fossilStageAgesMap do
+		local left = INFOBOXWIDTH - coefficient * (fossilStageAgesMap[i].age)
+		local width = INFOBOXWIDTH - left
+		if i < #fossilStageAgesMap then
+			width = width - coefficient * (fossilStageAgesMap[i + 1].age)
+		end
+
+		local block = {
+			left = left,
+			width = width,
+			color = fossilStageAgesMap[i].color,
+			link = fossilStageAgesMap[i].link
+		}
+
+		scale = scale .. tostring(createFossilStageBlockNode(block, i == 1))
+	end
+	
+	-- GET BARS
+	local delta = coefficient * endTime
+	local barStartWidth = coefficient * (startTime - endTime)
+	local barStartLeft = INFOBOXWIDTH - barStartWidth - delta - 1
+	local barEarliestWidth = 0
+	local barEarliestLeft = 0
+	if earliestTime then
+		barEarliestWidth = coefficient * (earliestTime - latestTime)
+		local delta2 = coefficient * latestTime
+		barEarliestLeft = INFOBOXWIDTH - barEarliestWidth - delta2 - 1
+	end
+	
+	local fossilRange = mw.html.create('div')
+		:tag('div')
+			:css('text-align', 'center')
+			:wikitext(text)
+			:done()
+		:tag('div')
+			:css('margin', '4px auto 0')
+			:css('clear', 'both')
+			:css('width', INFOBOXWIDTH .. 'px')
+			:css('height', '18px')
+			:css('line-height', '170%')
+			:css('font-size', '80%')
+			:css('overflow', 'visible')
+			:css('border', '1px #666')
+			:css('border-style', 'solid none')
+			:css('padding', '0')
+			:css('position', 'relative')
+			:css('z-index', '0')
+			:wikitext(scale)
+			:tag('div')
+				:css('position', 'absolute')
+				:css('height', '100%')
+				:css('background-color', '#666')
+				:css('width', '1px')
+				:css('left', INFOBOXWIDTH .. 'px')
+				:done()
+			:done()
+		:tag('div')
+			:css('margin', '0 auto')
+			:css('line-height', '0')
+			:css('clear', 'both')
+			:css('width', INFOBOXWIDTH .. 'px')
+			:css('height', '8px')
+			:css('overflow', 'visible')
+			:css('padding', '0')
+			:css('position', 'relative')
+			:css('top', '-4px')
+			:css('background-color', 'transparent')
+			:css('z-index', '100')
+			:tag('div')
+				-- from earliestTime to latestTime
+				:css('background-color', '#360')
+				:css('position', 'absolute')
+				:css('height', '8px')
+				:css('left', barEarliestLeft .. 'px')
+				:css('width', barEarliestWidth .. 'px')
+				:css('opacity', '0.42')
+				:done()
+			:tag('div')
+				-- from startTime to endTime
+				:css('background-color', '#6c3')
+				:css('position', 'absolute')
+				:css('height', '6px')
+				:css('left', barStartLeft .. 'px')
+				:css('width', barStartWidth .. 'px')
+				:css('border', '1px solid #360')
+				:css('top', '1px')
+				:allDone()
+
+	return tostring(fossilRange)
 end
 
 local function getFossilStageName(age)
@@ -495,203 +621,6 @@ local function getDate(value)
 		end
 	end
 end
-
-
-
------------------------
---↓   IN PROGRESS   ↓--
-
-local function printFossilRange(grade, text, startTime, endTime, earliestTime, latestTime, link)
-	local gradient = 'linear-gradient(left,#fff 0%,#fed67b 100%,#7db9e8 100%,#7db9e8 100%,#7db9e8 100%,#7db9e8 100%)'
-	local pad = 35
-	local INFOBOXWIDTH = 250
-
-	-- GET SCALE
-	local index = 0
-	local fossilStageAgesMap = {}
-	for i=#FOSSILSTAGEMAP, 1, -1 do
-		local stage = FOSSILSTAGEMAP[i]
-		if stage.grade == grade then
-			index = index + 1
-			fossilStageAgesMap[index] = {}
-			fossilStageAgesMap[index].age = stage.age
-			fossilStageAgesMap[index].link = stage.link
-			fossilStageAgesMap[index].color = stage.color
-		end
-	end
-
-	local coefficient = (INFOBOXWIDTH - pad) / (fossilStageAgesMap[1].age)
-	local blocks = ''
-	for i=1, #fossilStageAgesMap do
-		local left = INFOBOXWIDTH - coefficient * (fossilStageAgesMap[i].age)
-		local width = INFOBOXWIDTH - left
-		if i < #fossilStageAgesMap then
-			width = width - coefficient * (fossilStageAgesMap[i + 1].age)
-		end
-
-		local block = {
-			left = left,
-			width = width,
-			color = fossilStageAgesMap[i].color,
-			link = fossilStageAgesMap[i].link
-		}
-		blocks = blocks .. tostring(createFossilRangeBlockNode(block))
-	end
-	
-	-- GET BARS
-	local barWidth = coefficient * (startTime - endTime)
-	local delta = coefficient * endTime
-	local barLeft = INFOBOXWIDTH - barWidth - delta - 1
-	local barWidth2 = 0
-	local barLeft2 = 0
-	if earliestTime then
-		barWidth2 = coefficient * (earliestTime - latestTime)
-		local delta2 = coefficient * latestTime
-		barLeft2 = INFOBOXWIDTH - barWidth2 - delta2 - 1
-	end
-	
-	local fossilRange = mw.html.create('div')
-		:tag('div')
-			:css('text-align', 'center')
-			:wikitext(text)
-			:done()
-		:tag('div')
-			:css('margin', '4px auto 0')
-			:css('clear', 'both')
-			:css('width', INFOBOXWIDTH .. 'px')
-			:css('height', '18px')
-			:css('line-height', '170%')
-			:css('font-size', '80%')
-			:css('overflow', 'visible')
-			:css('border', '1px #666')
-			:css('border-style', 'solid none')
-			:css('padding', '0')
-			:css('position', 'relative')
-			:css('z-index', '0')
-			:tag('div')
-				:css('position', 'absolute')
-				:css('height', '100%')
-				:css('left', '0')
-				:css('width', pad .. 'px')
-				:css('background', '#fff')
-				:css('background', string.format('#fff;background:-moz-%s;background:-webkit-%s;background:-o-%s', gradient, gradient, gradient))
-				:wikitext(to.link(link))
-				:done()
-			:wikitext(blocks)
-			:tag('div')
-				:css('position', 'absolute')
-				:css('height', '100%')
-				:css('background-color', '#666')
-				:css('width', '1px')
-				:css('left', INFOBOXWIDTH .. 'px')
-				:done()
-			:done()
-		:tag('div')
-			:css('margin', '0 auto')
-			:css('line-height', '0')
-			:css('clear', 'both')
-			:css('width', INFOBOXWIDTH .. 'px')
-			:css('height', '8px')
-			:css('overflow', 'visible')
-			:css('padding', '0')
-			:css('position', 'relative')
-			:css('top', '-4px')
-			:css('background-color', 'transparent')
-			:css('z-index', '100')
-			:tag('div')
-				-- earliestTime to latestTime
-				:css('background-color', '#360')
-				:css('position', 'absolute')
-				:css('height', '8px')
-				:css('left', barLeft2 .. 'px')
-				:css('width', barWidth2 .. 'px')
-				:css('opacity', '0.42')
-				:done()
-			:tag('div')
-				-- startTime to endTime
-				:css('background-color', '#6c3')
-				:css('position', 'absolute')
-				:css('height', '6px')
-				:css('left', barLeft .. 'px')
-				:css('width', barWidth .. 'px')
-				:css('border', '1px solid #360')
-				:css('top', '1px')
-				:allDone()
-
-	return tostring(fossilRange)
-end
-
-local function getFossilRange(entity)
-	local startTime
-	local earliestTime
-	local startTimeClaim = entity.claims[PROPERTY.START_TIME]
-	if startTimeClaim then
-		startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value)
-		local qualifiers = startTimeClaim[1].qualifiers
-		if qualifiers and qualifiers[PROPERTY.EARLIEST_DATE] then
-			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
-		end
-	end
-
-	local endTime = startTime and 0 or nil
-	local latestTime = earliestTime and 0 or nil
-	local endTimeClaim = entity.claims[PROPERTY.END_TIME]
-	if endTimeClaim then
-		endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value)
-		local qualifiers = endTimeClaim[1].qualifiers
-		if qualifiers and qualifiers[PROPERTY.LATEST_DATE] then
-			latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value)
-		end
-	end
-
-	if startTime then
-		local startTimeStage = getFossilStageName(startTime)
-		
-		-- GET TEXT
-		local text1 = startTimeStage
-		local text2 = startTime
-		if endTime then
-			local endTimeStage = getFossilStageName(endTime)
-			if startTimeStage ~= endTimeStage then
-				text1 = text1 .. ' – ' .. endTimeStage
-			end
-			text2 = text2 .. '–' .. endTime
-		end
-		local text = string.format('%s, %s Ma', text1, text2)
-
-		-- GET GRADE & LINK
-		-- print geologic time scale
-		-- btr chck for earliestTime
-		local grade
-		local link
-		if 4700 > startTime and startTime >= 700 then
-			-- long fossil range
-			grade = 1
-			link = ''
-		elseif 700 > startTime and startTime >= 65.5 then
-			-- fossil range
-			grade = 2
-			link = 'Прекамбрий|ПреК'
-		elseif 65.5 > startTime and startTime >= 2.588 then
-			-- short fossil range
-			grade = 3
-			link = ''
-		elseif 2.588 > startTime and startTime >= 0 then
-			-- mini fossil range
-			grade = 4
-			link = 'Плиоцен|Плц'
-		end
-		
-		if grade and text and link then
-			return printFossilRange(grade, text, startTime, endTime, earliestTime, latestTime, link)		
-		end
-	end
-end
-
---↑   IN PROGRESS   ↑--
------------------------
-
-
 
 local function getColor(kingdom)
 	if kingdom then
@@ -893,33 +822,33 @@ local function getTaxobox(itemId)
 	
 	-- GET CLASSIFICATION AND AUTHORITY
 	local taxons = getClassification(itemId, true, {})
-	local result = nil
-	local authorityResult = nil
+	local classification = nil
+	local authority = nil
 	for i=#taxons, 1, -1 do
 		local taxon = taxons[i]
 		if taxon.isHighlighted or isAllowedRank(taxon.rank) then
-			result = (result or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
+			classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
 			local latinName = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
 			local dead = taxon.isFossil and '†' or ''
 			if taxon.isHighlighted then
 				latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
 				if taxon.bgLabel then
-					result = result .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
+					classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 				else
-					result = result .. dead .. latinName
+					classification = classification .. dead .. latinName
 				end
 				
 				local spanLink = string.format("<span class='plainlinks'>[%s %s]</span>", tostring(mw.uri.canonicalUrl('Species:' .. taxon.authority.link, 'uselang=bg')), taxon.latinName)
 				local authorityLink = string.format("<div>%s %s</div>", to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(spanLink)))
-				authorityResult = (authorityResult or '') .. authorityLink
+				authority = (authority or '') .. authorityLink
 				if taxon.authority.name then
-					authorityResult = authorityResult .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
+					authority = authority .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
 				end
 			else
 				if taxon.bgLabel then
 					latinName = toItalicIfUnderGenus(latinName, taxon.rank)
 					local bgLink = taxon.bgSiteLink and taxon.bgSiteLink or taxon.bgLabel .. ' (' .. taxon.rank.name .. ')'
-					result = result .. to.link(bgLink .. '|' .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
+					classification = classification .. to.link(bgLink .. '|' .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 				else
 					if taxon.bgSiteLink then
 						latinName = taxon.bgSiteLink .. '|' .. latinName
@@ -928,14 +857,14 @@ local function getTaxobox(itemId)
 					elseif taxon.latinName ~= latinName then
 						latinName = taxon.latinName .. '|' .. latinName
 					end
-					result = result .. dead .. toItalicIfUnderGenus(to.link(latinName), taxon.rank)
+					classification = classification .. dead .. toItalicIfUnderGenus(to.link(latinName), taxon.rank)
 				end
 			end
-			result = result .. '</td></tr>'
+			classification = classification .. '</td></tr>'
 		end
 	end
-	taxobox.classification = result
-	taxobox.authority = authorityResult
+	taxobox.classification = classification
+	taxobox.authority = authority
 
 	-- GET IUCN STATUS
 	local iucnClaim = entity.claims[PROPERTY.IUCN]
@@ -989,7 +918,42 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET FOSSIL RANGE
-	taxobox.fossilRange = getFossilRange(entity)
+	local startTimeClaim = entity.claims[PROPERTY.START_TIME]
+	if startTimeClaim then
+		local earliestTime
+		local startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value)
+		local qualifiers = startTimeClaim[1].qualifiers
+		if qualifiers and qualifiers[PROPERTY.EARLIEST_DATE] then
+			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
+		end
+		
+		local endTime = startTime and 0 or nil
+		local latestTime = earliestTime and 0 or nil
+		local endTimeClaim = entity.claims[PROPERTY.END_TIME]
+		if endTimeClaim then
+			endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value)
+			local qualifiers = endTimeClaim[1].qualifiers
+			if qualifiers and qualifiers[PROPERTY.LATEST_DATE] then
+				latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value)
+			end
+		end
+		
+		-- GET TEXT
+		local startTimeStage = getFossilStageName(startTime)
+		local text1 = startTime
+		if endTime then
+			local endTimeStage = getFossilStageName(endTime)
+			if startTimeStage ~= endTimeStage then
+				startTimeStage = startTimeStage .. ' – ' .. endTimeStage
+			end
+			text1 = startTime .. '–' .. endTime
+		end
+		
+		local text = string.format('%s, %s Ma', startTimeStage, text1)
+		if text then
+			taxobox.fossilRange = createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
+		end
+	end
 
 	-- GET COMMONS CATEGORY
 	local commonsCategoryClaim = entity.claims[PROPERTY.COMMONS_CATEGORY]
