@@ -1,7 +1,7 @@
 -- TODO: 'sect.', 'subg.', 'subsp.'
 
 local p = {}
-		
+
 local RANK
 local KINGDOM
 local LATINNAME
@@ -381,10 +381,12 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 	
 	local fossilRange = mw.html.create('div')
 		:tag('div')
+			-- text
 			:css('text-align', 'center')
 			:wikitext(text)
 			:done()
 		:tag('div')
+			-- scale
 			:css('margin', '4px auto 0')
 			:css('clear', 'both')
 			:css('width', INFOBOXWIDTH .. 'px')
@@ -399,6 +401,7 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 			:css('z-index', '0')
 			:wikitext(scale)
 			:tag('div')
+				-- right border
 				:css('position', 'absolute')
 				:css('height', '100%')
 				:css('background-color', '#666')
@@ -407,6 +410,7 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 				:done()
 			:done()
 		:tag('div')
+			-- bars
 			:css('margin', '0 auto')
 			:css('line-height', '0')
 			:css('clear', 'both')
@@ -846,8 +850,13 @@ local function getTaxobox(itemId)
 				end
 			else
 				if taxon.bgLabel then
+					local bgLink = taxon.bgLabel
+					if taxon.bgSiteLink then
+						bgLink = taxon.bgSiteLink
+					elseif mw.title.new(taxon.bgLabel).exists then
+						bgLink = bgLink .. ' (' .. taxon.rank.name .. ')'
+					end
 					latinName = toItalicIfUnderGenus(latinName, taxon.rank)
-					local bgLink = taxon.bgSiteLink and taxon.bgSiteLink or taxon.bgLabel .. ' (' .. taxon.rank.name .. ')'
 					classification = classification .. to.link(bgLink .. '|' .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 				else
 					if taxon.bgSiteLink then
@@ -927,7 +936,7 @@ local function getTaxobox(itemId)
 			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
 		end
 		
-		local endTime = startTime and 0 or nil
+		local endTime = 0
 		local latestTime = earliestTime and 0 or nil
 		local endTimeClaim = entity.claims[PROPERTY.END_TIME]
 		if endTimeClaim then
@@ -940,19 +949,11 @@ local function getTaxobox(itemId)
 		
 		-- GET TEXT
 		local startTimeStage = getFossilStageName(startTime)
-		local text1 = startTime
-		if endTime then
-			local endTimeStage = getFossilStageName(endTime)
-			if startTimeStage ~= endTimeStage then
-				startTimeStage = startTimeStage .. ' – ' .. endTimeStage
-			end
-			text1 = startTime .. '–' .. endTime
-		end
+		local endTimeStage = getFossilStageName(endTime)
+		local timeStage = startTimeStage .. (startTimeStage ~= endTimeStage and ' – ' .. endTimeStage or '')
+		local text = string.format('%s, %s Ma', timeStage, startTime .. '–' .. endTime)
 		
-		local text = string.format('%s, %s Ma', startTimeStage, text1)
-		if text then
-			taxobox.fossilRange = createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
-		end
+		taxobox.fossilRange = createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
 	end
 
 	-- GET COMMONS CATEGORY
