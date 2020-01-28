@@ -586,7 +586,7 @@ local function getFileDescription(claim)
 	end
 end
 
-local function getDate(value)
+local function getDate(value, getBCE)
 	-- '+2020-01-22T11:06:23Z'
 	local datetime = value.time
 	if datetime then
@@ -597,19 +597,21 @@ local function getDate(value)
 		end
 		local year = datetimeTable[1]
 		if year then
-			if value.precision == 11 then
-				-- 22 януари 2020 г.
-				if datetimeTable[3] and datetimeTable[2] then
-					return string.format('%s %s %s г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
-				end
-			elseif value.precision == 9 then
-				-- 2020 г.
-				return year .. ' г.'
-			elseif 1 <= value.precision or value.precision <= 2 then
+			if getBCE then
 				-- million years BCE
 				if datetime:sub(1, 1) == '-' then
 					if mw.ustring.match(year, '^%d+$') then
 						return tonumber(year) / 1000000
+					end
+				end
+			else
+				if value.precision == 9 then
+					-- 2020 г.
+					return year .. ' г.'
+				elseif value.precision == 11 then
+					-- 22 януари 2020 г.
+					if datetimeTable[3] and datetimeTable[2] then
+						return string.format('%s %s %s г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
 					end
 				end
 			end
@@ -920,22 +922,22 @@ local function getTaxobox(itemId)
 	-- GET FOSSIL RANGE
 	local startTimeClaim = entity.claims[PROPERTY.START_TIME]
 	if startTimeClaim then
-		local startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value)
+		local startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value, true)
 		local earliestTime = startTime
 		local qualifiers = startTimeClaim[1].qualifiers
 		if qualifiers and qualifiers[PROPERTY.EARLIEST_DATE] then
-			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
+			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value, true)
 		end
 		
 		local endTime = 0
 		local latestTime = 0
 		local endTimeClaim = entity.claims[PROPERTY.END_TIME]
 		if endTimeClaim then
-			endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value)
+			endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value, true)
 			latestTime = endTime
 			local qualifiers = endTimeClaim[1].qualifiers
 			if qualifiers and qualifiers[PROPERTY.LATEST_DATE] then
-				latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value)
+				latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value, true)
 			end
 		end
 		
