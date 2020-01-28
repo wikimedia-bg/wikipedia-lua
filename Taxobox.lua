@@ -97,7 +97,7 @@ local TAXONOMICRANK = {
 	Q713623 = { id = 36, name = 'клон', ignore = false }
 }
 
-local FOSSILSTAGEMAP = {
+local FOSSILSTAGES = {
 	{ age = 0, name = 'настояще' },
 	{ age = 0.00245, name = 'субатлантик' },
 	{ age = 0.00566, name = 'суборий' },
@@ -302,19 +302,19 @@ local function createFileNode(file)
 	return node
 end
 
-local function createFossilStageBlockNode(block, isFirst)
+local function createFossilStageBlockNode(left, width, color, link, isFirst)
 	if isFirst then
-		local gradient = string.format('linear-gradient(left,#FFF 0%%,%s 100%%)', block.color)
-		block.color = string.format('#FFF;background:-moz-%s;background:-webkit-%s;background:-o-%s', gradient, gradient, gradient)
+		local gradient = string.format('linear-gradient(left,#FFF 0%%,%s 100%%)', color)
+		color = string.format('#FFF;background:-moz-%s;background:-webkit-%s;background:-o-%s', gradient, gradient, gradient)
 	end
 	
 	local node = mw.html.create('div')
 		:css('position', 'absolute')
 		:css('height', '100%')
-		:css('left', block.left .. 'px')
-		:css('width', block.width .. 'px')
-		:css('background-color', block.color)
-		:wikitext(to.link(block.link))
+		:css('left', left .. 'px')
+		:css('width', width .. 'px')
+		:css('background-color', color)
+		:wikitext(to.link(link))
 		:allDone()
 			
 	return node
@@ -337,117 +337,108 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 	-- GET SCALE
 	local scale = ''
 	local index = 0
-	local fossilStageAgesMap = {}
-	for i=#FOSSILSTAGEMAP, 1, -1 do
-		local stage = FOSSILSTAGEMAP[i]
+	local stages = {}
+	for i=#FOSSILSTAGES, 1, -1 do
+		local stage = FOSSILSTAGES[i]
 		if stage.grade == grade then
 			index = index + 1
-			fossilStageAgesMap[index] = {}
-			fossilStageAgesMap[index].age = stage.age
-			fossilStageAgesMap[index].link = stage.link
-			fossilStageAgesMap[index].color = stage.color
+			stages[index] = {}
+			stages[index].age = stage.age
+			stages[index].link = stage.link
+			stages[index].color = stage.color
 		end
 	end
 
-	local coefficient = INFOBOXWIDTH / (fossilStageAgesMap[1].age)
-	for i=1, #fossilStageAgesMap do
-		local left = INFOBOXWIDTH - coefficient * (fossilStageAgesMap[i].age)
-		local width = INFOBOXWIDTH - left
-		if i < #fossilStageAgesMap then
-			width = width - coefficient * (fossilStageAgesMap[i + 1].age)
+	if grade and #stages > 0 then
+		local coefficient = INFOBOXWIDTH / (stages[1].age)
+		for i=1, #stages do
+			local left = INFOBOXWIDTH - coefficient * (stages[i].age)
+			local width = INFOBOXWIDTH - left
+			if i < #stages then
+				width = width - coefficient * (stages[i + 1].age)
+			end
+			
+			scale = scale .. tostring(createFossilStageBlockNode(left, width, stages[i].color, stages[i].link, i == 1))
 		end
-
-		local block = {
-			left = left,
-			width = width,
-			color = fossilStageAgesMap[i].color,
-			link = fossilStageAgesMap[i].link
-		}
-
-		scale = scale .. tostring(createFossilStageBlockNode(block, i == 1))
-	end
-	
-	-- GET BARS
-	local delta = coefficient * endTime
-	local barStartWidth = coefficient * (startTime - endTime)
-	local barStartLeft = INFOBOXWIDTH - barStartWidth - delta - 1
-	local barEarliestWidth = 0
-	local barEarliestLeft = 0
-	if earliestTime then
-		barEarliestWidth = coefficient * (earliestTime - latestTime)
-		local delta2 = coefficient * latestTime
-		barEarliestLeft = INFOBOXWIDTH - barEarliestWidth - delta2 - 1
-	end
-	
-	local fossilRange = mw.html.create('div')
-		:tag('div')
-			-- text
-			:css('text-align', 'center')
-			:wikitext(text)
-			:done()
-		:tag('div')
-			-- scale
-			:css('margin', '4px auto 0')
-			:css('clear', 'both')
-			:css('width', INFOBOXWIDTH .. 'px')
-			:css('height', '18px')
-			:css('line-height', '170%')
-			:css('font-size', '80%')
-			:css('overflow', 'visible')
-			:css('border', '1px #666')
-			:css('border-style', 'solid none')
-			:css('padding', '0')
-			:css('position', 'relative')
-			:css('z-index', '0')
-			:wikitext(scale)
+		
+		-- GET LIGHT BAR
+		local lightBarWidth = (startTime == earliestTime and endTime == latestTime) and 0 or coefficient * (earliestTime - latestTime)
+		local lightBarLeft = lightBarWidth ~= 0 and INFOBOXWIDTH - lightBarWidth - coefficient * latestTime or 0
+		
+		-- GET SOLID BAR
+		local solidBarWidth = coefficient * (startTime - endTime)
+		local solidBarLeft = INFOBOXWIDTH - solidBarWidth - coefficient * endTime - 1
+		
+		local fossilRange = mw.html.create('div')
 			:tag('div')
-				-- right border
-				:css('position', 'absolute')
-				:css('height', '100%')
-				:css('background-color', '#666')
-				:css('width', '1px')
-				:css('left', INFOBOXWIDTH .. 'px')
+				-- text
+				:css('text-align', 'center')
+				:wikitext(text)
 				:done()
-			:done()
-		:tag('div')
-			-- bars
-			:css('margin', '0 auto')
-			:css('line-height', '0')
-			:css('clear', 'both')
-			:css('width', INFOBOXWIDTH .. 'px')
-			:css('height', '8px')
-			:css('overflow', 'visible')
-			:css('padding', '0')
-			:css('position', 'relative')
-			:css('top', '-4px')
-			:css('background-color', 'transparent')
-			:css('z-index', '100')
 			:tag('div')
-				-- from earliestTime to latestTime
-				:css('background-color', '#360')
-				:css('position', 'absolute')
+				-- geologic time scale
+				:css('margin', '4px auto 0')
+				:css('clear', 'both')
+				:css('width', INFOBOXWIDTH .. 'px')
+				:css('height', '18px')
+				:css('line-height', '170%')
+				:css('font-size', '80%')
+				:css('overflow', 'visible')
+				:css('border', '1px #666')
+				:css('border-style', 'solid none')
+				:css('padding', '0')
+				:css('position', 'relative')
+				:css('z-index', '0')
+				:wikitext(scale)
+				:tag('div')
+					-- right border
+					:css('position', 'absolute')
+					:css('height', '100%')
+					:css('background-color', '#666')
+					:css('width', '1px')
+					:css('left', INFOBOXWIDTH .. 'px')
+					:done()
+				:done()
+			:tag('div')
+				-- light and solid bars
+				:css('margin', '0 auto')
+				:css('line-height', '0')
+				:css('clear', 'both')
+				:css('width', INFOBOXWIDTH .. 'px')
 				:css('height', '8px')
-				:css('left', barEarliestLeft .. 'px')
-				:css('width', barEarliestWidth .. 'px')
-				:css('opacity', '0.42')
-				:done()
-			:tag('div')
-				-- from startTime to endTime
-				:css('background-color', '#6c3')
-				:css('position', 'absolute')
-				:css('height', '6px')
-				:css('left', barStartLeft .. 'px')
-				:css('width', barStartWidth .. 'px')
-				:css('border', '1px solid #360')
-				:css('top', '1px')
-				:allDone()
+				:css('overflow', 'visible')
+				:css('padding', '0')
+				:css('position', 'relative')
+				:css('top', '-4px')
+				:css('background-color', 'transparent')
+				:css('z-index', '100')
+				:tag('div')
+					-- light bar
+					:css('background-color', '#360')
+					:css('position', 'absolute')
+					:css('height', '8px')
+					:css('left', lightBarLeft .. 'px')
+					:css('width', lightBarWidth .. 'px')
+					:css('opacity', '0.42')
+					:done()
+				:tag('div')
+					-- solid bar
+					:css('background-color', '#6c3')
+					:css('position', 'absolute')
+					:css('height', '6px')
+					:css('left', solidBarLeft .. 'px')
+					:css('width', solidBarWidth .. 'px')
+					:css('border', '1px solid #360')
+					:css('top', '1px')
+					:allDone()
 
-	return tostring(fossilRange)
+		return tostring(fossilRange)
+	end
 end
 
 local function getFossilStageName(age)
-	for i=1, #FOSSILSTAGEMAP do
-		local stage = FOSSILSTAGEMAP[i]
+	for i=1, #FOSSILSTAGES do
+		local stage = FOSSILSTAGES[i]
 		if age <= stage.age then
 			return to.link(stage.name)
 		end
@@ -929,25 +920,25 @@ local function getTaxobox(itemId)
 	-- GET FOSSIL RANGE
 	local startTimeClaim = entity.claims[PROPERTY.START_TIME]
 	if startTimeClaim then
-		local earliestTime
 		local startTime = getDate(startTimeClaim[1].mainsnak.datavalue.value)
+		local earliestTime = startTime
 		local qualifiers = startTimeClaim[1].qualifiers
 		if qualifiers and qualifiers[PROPERTY.EARLIEST_DATE] then
 			earliestTime = getDate(qualifiers[PROPERTY.EARLIEST_DATE][1].datavalue.value)
 		end
 		
 		local endTime = 0
-		local latestTime = earliestTime and 0 or nil
+		local latestTime = 0
 		local endTimeClaim = entity.claims[PROPERTY.END_TIME]
 		if endTimeClaim then
 			endTime = getDate(endTimeClaim[1].mainsnak.datavalue.value)
+			latestTime = endTime
 			local qualifiers = endTimeClaim[1].qualifiers
 			if qualifiers and qualifiers[PROPERTY.LATEST_DATE] then
 				latestTime = getDate(qualifiers[PROPERTY.LATEST_DATE][1].datavalue.value)
 			end
 		end
 		
-		-- GET TEXT
 		local startTimeStage = getFossilStageName(startTime)
 		local endTimeStage = getFossilStageName(endTime)
 		local timeStage = startTimeStage .. (startTimeStage ~= endTimeStage and ' – ' .. endTimeStage or '')
