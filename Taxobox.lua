@@ -14,6 +14,7 @@ local ITEM = {
 	RECOMBINATION = 'Q14594740',
 	FOSSIL_TAXON = 'Q23038290',
 	MONOTYPIC_TAXON = 'Q310890',
+	MONOTYPIC_FOSSIL_TAXON = 'Q47487597',
 	MALE_ORGANISM = 'Q44148',
 	FEMALE_ORGANISM = 'Q43445'
 }
@@ -688,8 +689,8 @@ local function getClassification(itemId, isHighlighted, taxons)
 	end
 	
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
-	local isMonotypic = instanceOf and string.match(instanceOf, ITEM.MONOTYPIC_TAXON)
-	local isFossil = instanceOf and string.match(instanceOf, ITEM.FOSSIL_TAXON)
+	local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
+	local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 	isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
 	
 	local authority
