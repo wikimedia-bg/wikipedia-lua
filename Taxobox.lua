@@ -675,7 +675,7 @@ local function getClassification(itemId, isHighlighted, taxons)
 	local taxonName = entity.claims[PROPERTY.TAXON_NAME]
 	if taxonName and taxonName[1].mainsnak.datavalue then
 		latinName = taxonName[1].mainsnak.datavalue.value
-		if RANK.name == rank.name then
+		if not LATINNAME and RANK.name == rank.name then
 			LATINNAME = latinName
 		end
 	end
@@ -683,14 +683,14 @@ local function getClassification(itemId, isHighlighted, taxons)
 	local bgLabel = getbgLabel(entity)
 	local bgSiteLink = entity:getSitelink('bgwiki')
 	
-	if rank.name == 'царство' then
+	if not KINGDOM and rank.name == 'царство' then
 		KINGDOM = latinName
 	end
 	
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 	local isMonotypic = instanceOf and string.match(instanceOf, ITEM.MONOTYPIC_TAXON)
 	local isFossil = instanceOf and string.match(instanceOf, ITEM.FOSSIL_TAXON)
-	isHighlighted = RANK.name == rank.name or (isHighlighted and (RANK.name == rank.name or isMonotypic))
+	isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
 	
 	local authority
 	if isHighlighted then
