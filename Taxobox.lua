@@ -1111,7 +1111,11 @@ local function renderTaxobox(taxobox)
 end
 
 function p.get(frame)
-	local itemId = frame.args[1] or mw.wikibase.getEntityIdForCurrentPage()
+	local itemId = frame.args[1]
+	if not itemId or itemId == '' then
+		itemId = mw.wikibase.getEntityIdForCurrentPage()
+	end
+	
 	local taxobox = getTaxobox(itemId)
 	
 	return renderTaxobox(taxobox)
