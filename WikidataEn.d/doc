@@ -1,5 +1,4 @@
 {{Ombox|image=[[Image:Stop hand nuvola.svg|40px]]|type=delete|text=[[Module:WikidataEn]] is [[deprecation|deprecated]]. Please use [[Module:WikidataIB]] or [[Module:Wd]] instead.}}
-{{module rating|protected}}
 
 == Methods ==
 The module "{{BASEPAGENAME}}" contains the following methods, that allow the calling script to retrieve the value for any property from Wikidata by supplying the property ID as the first parameter:
