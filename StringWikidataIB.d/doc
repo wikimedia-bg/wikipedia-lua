@@ -1,6 +1,4 @@
 {{превод}}
-{{Module rating |protected}}
-{{high risk|800,000|all-pages=yes}}
 This module is designed specifically to implement a mechanism which moves control of whether Wikidata values are used in an infobox from the template coder at the infobox design level to the editor at the article level. It is only intended to be used inside an infobox.
 
 One of the three sandboxes should be used for testing anything other than trivial amendments.
