@@ -104,7 +104,7 @@ local FOSSILSTAGES = {
 	{ age = 0.00245, name = 'субатлантик' },
 	{ age = 0.00566, name = 'суборий' },
 	{ age = 0.00922, name = 'атлантик' },
-	{ age = 0.01064, name = 'борий' },
+	{ age = 0.01064, name = 'борий (период)|борий' },
 	{ age = 0.01143, name = 'преборий' },
 	{ age = 0.116, name = 'weichselian' },
 	{ age = 0.126, name = 'eemian', grade = 1, link = 'Тарантий|Т', color = '#FEFFD1' },
