@@ -1118,6 +1118,11 @@ function p.get(frame)
 	end
 	
 	local taxobox = getTaxobox(itemId)
+
+	local pageTitle = mw.title.getCurrentTitle()
+	if pageTitle.namespace == 0 then
+		mw.getCurrentFrame():callParserFunction('DISPLAYTITLE', toItalicIfUnderGenus(pageTitle.text, RANK))
+	end
 	
 	return renderTaxobox(taxobox)
 end
