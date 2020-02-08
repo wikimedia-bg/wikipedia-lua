@@ -15,12 +15,13 @@ local MONTHS = { 'януари', 'февруари', 'март', 'април', '
 
 local ITEM = {
 	EXTINCT_SPECIES = 'Q237350',
-	RECOMBINATION = 'Q14594740',
+	FEMALE_ORGANISM = 'Q43445',
 	FOSSIL_TAXON = 'Q23038290',
-	MONOTYPIC_TAXON = 'Q310890',
-	MONOTYPIC_FOSSIL_TAXON = 'Q47487597',
 	MALE_ORGANISM = 'Q44148',
-	FEMALE_ORGANISM = 'Q43445'
+	MONOTYPIC_FOSSIL_TAXON = 'Q47487597',
+	MONOTYPIC_TAXON = 'Q310890',
+	POLYPHYLETIC_COMMON_NAME = 'Q55983715',
+	RECOMBINATION = 'Q14594740'
 }
 
 local PROPERTY = {
@@ -727,15 +728,21 @@ local function getTaxobox(itemId)
 	-- GET TITLE
 	local currentPageName = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
-	if entity and entity.claims and entity.claims[PROPERTY.TAXON_NAME] then
+	if entity and entity.claims then
+		local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or currentPageName
+		if string.match(instanceOf, ITEM.POLYPHYLETIC_COMMON_NAME) then
+			taxobox.common = {}
+		elseif not entity.claims[PROPERTY.TAXON_NAME] then
+			return taxobox
+		end
 	else
 		taxobox.title = currentPageName
 		return taxobox
 	end
 	
 	-- GET RANK
-	localRankItem = getClaim(entity, PROPERTY.TAXON_RANK, 1)
+	local localRankItem = getClaim(entity, PROPERTY.TAXON_RANK, 1)
 	RANK = localRankItem and TAXONOMICRANK[localRankItem] or TAXONOMICRANK.Q0
 	taxobox.title = toItalicIfUnderGenus(taxobox.title, RANK)
 	
@@ -824,56 +831,58 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET CLASSIFICATION AND AUTHORITY
-	local taxons = getClassification(itemId, true, {})
-	local classification = nil
-	local authority = nil
-	for i=#taxons, 1, -1 do
-		local taxon = taxons[i]
-		if taxon.isHighlighted or isAllowedRank(taxon.rank) then
-			classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
-			local latinName = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
-			local dead = taxon.isFossil and '†' or ''
-			if taxon.isHighlighted then
-				latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
-				if taxon.bgLabel then
-					classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
-				else
-					classification = classification .. dead .. latinName
-				end
-				
-				local spanLink = string.format("<span class='plainlinks'>[%s %s]</span>", tostring(mw.uri.canonicalUrl('Species:' .. taxon.authority.link, 'uselang=bg')), taxon.latinName)
-				local authorityLink = string.format("<div>%s %s</div>", to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(spanLink)))
-				authority = (authority or '') .. authorityLink
-				if taxon.authority.name then
-					authority = authority .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
-				end
-			else
-				if taxon.bgLabel then
-					local bgLink = taxon.bgLabel
-					if taxon.bgSiteLink then
-						bgLink = taxon.bgSiteLink
-					elseif mw.title.new(taxon.bgLabel).exists and not mw.title.new(taxon.bgLabel).isRedirect then
-						bgLink = bgLink .. ' (' .. taxon.rank.name .. ')'
+	if not taxobox.common then	
+		local taxons = getClassification(itemId, true, {})
+		local classification = nil
+		local authority = nil
+		for i=#taxons, 1, -1 do
+			local taxon = taxons[i]
+			if taxon.isHighlighted or isAllowedRank(taxon.rank) then
+				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
+				local latinName = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
+				local dead = taxon.isFossil and '†' or ''
+				if taxon.isHighlighted then
+					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
+					if taxon.bgLabel then
+						classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
+					else
+						classification = classification .. dead .. latinName
 					end
-					latinName = toItalicIfUnderGenus(latinName, taxon.rank)
-					classification = classification .. to.link(bgLink .. '|' .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
-				else
-					if taxon.bgSiteLink then
-						latinName = taxon.bgSiteLink .. '|' .. latinName
-					elseif mw.title.new(taxon.latinName).exists and not mw.title.new(taxon.latinName).isRedirect then
-						latinName = taxon.latinName .. ' (' .. taxon.rank.name .. ')|' .. latinName
-					elseif taxon.latinName ~= latinName then
-						latinName = taxon.latinName .. '|' .. latinName
+					
+					local spanLink = string.format("<span class='plainlinks'>[%s %s]</span>", tostring(mw.uri.canonicalUrl('Species:' .. taxon.authority.link, 'uselang=bg')), taxon.latinName)
+					local authorityLink = string.format("<div>%s %s</div>", to.link('File:Wikispecies-logo.svg|16px|Уикивидове'), to.italic(to.bold(spanLink)))
+					authority = (authority or '') .. authorityLink
+					if taxon.authority.name then
+						authority = authority .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
 					end
-					classification = classification .. dead .. toItalicIfUnderGenus(to.link(latinName), taxon.rank)
+				else
+					if taxon.bgLabel then
+						local bgLink = taxon.bgLabel
+						if taxon.bgSiteLink then
+							bgLink = taxon.bgSiteLink
+						elseif mw.title.new(taxon.bgLabel).exists and not mw.title.new(taxon.bgLabel).isRedirect then
+							bgLink = bgLink .. ' (' .. taxon.rank.name .. ')'
+						end
+						latinName = toItalicIfUnderGenus(latinName, taxon.rank)
+						classification = classification .. to.link(bgLink .. '|' .. taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
+					else
+						if taxon.bgSiteLink then
+							latinName = taxon.bgSiteLink .. '|' .. latinName
+						elseif mw.title.new(taxon.latinName).exists and not mw.title.new(taxon.latinName).isRedirect then
+							latinName = taxon.latinName .. ' (' .. taxon.rank.name .. ')|' .. latinName
+						elseif taxon.latinName ~= latinName then
+							latinName = taxon.latinName .. '|' .. latinName
+						end
+						classification = classification .. dead .. toItalicIfUnderGenus(to.link(latinName), taxon.rank)
+					end
 				end
+				classification = classification .. '</td></tr>'
 			end
-			classification = classification .. '</td></tr>'
 		end
+		taxobox.classification = classification
+		taxobox.authority = authority
 	end
-	taxobox.classification = classification
-	taxobox.authority = authority
-
+	
 	-- GET IUCN STATUS
 	local iucnClaim = entity.claims[PROPERTY.IUCN]
 	if iucnClaim then
@@ -966,7 +975,7 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET COLOR
-	taxobox.color = getColor(KINGDOM)
+	taxobox.color = taxobox.common and '#DDD' or getColor(KINGDOM)
 
 	return taxobox
 end
@@ -984,6 +993,20 @@ local function renderTaxobox(taxobox)
 			:css('border-spacing', '6px')
 			:wikitext(taxobox.title)
 			:allDone()
+	
+	-- COMMON NAME
+	if taxobox.common then
+		commonNode = mw.html.create('tr')
+			:tag('td')
+				:attr('colspan', 2)
+				:css('text-align', 'center')
+				:tag('div')
+					:css('font-size', 'larger')
+					:wikitext('Общоприето наименование')
+					:done()
+				:wikitext(string.format("Терминът '''„%s“''' се използва на български за няколко отделни таксона.", taxobox.title))
+				:allDone()
+	end
 	
 	-- IMAGES
 	if taxobox.image1.name then
@@ -1099,6 +1122,7 @@ local function renderTaxobox(taxobox)
 		:css('border-spacing', '6px')
 		:css('infobox_v2 vcard')
 		:node(titleNode)
+		:node(commonNode)
 		:node(image1Node)
 		:node(image2Node)
 		:node(audioNode)
