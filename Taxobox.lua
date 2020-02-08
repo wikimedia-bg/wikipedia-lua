@@ -571,10 +571,10 @@ local function getStatus(status)
 		end
 	
 		if mw.title.getCurrentTitle().namespace == 0 then
-			return result .. to.link(string.format('Категория:%s видове', category))
-		else
-			return result
+			result = result .. to.link(string.format('Категория:%s видове', category))
 		end
+		
+		return result
 	end
 end
 
