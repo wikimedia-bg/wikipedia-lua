@@ -876,7 +876,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			end
 		elseif datatype == 'monolingualtext' then
 			if anyLang then
-				return datavalue['text'], datavalue['language']
+				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'], self.langCode)
 			elseif datavalue['language'] == self.langCode then
 				return datavalue['text']
 			else
@@ -1950,6 +1950,11 @@ function State:getReference(statement)
 					end
 				end
 			end
+		end
+		
+		-- skip the whole ref if the URL matches that of wikipedia
+		if params[p.aliasesP.referenceURL] and string.match(params[p.aliasesP.referenceURL][1], 'wikipedia%.org') then
+			return ref
 		end
 		
 		-- get title of general template for citing web references
