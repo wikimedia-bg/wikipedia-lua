@@ -3,7 +3,6 @@
 -- 'sect.', 'subg.', 'subsp.'
 -- Общоприето наименование
 -- Хибрид
--- бъг при монотипни родители (виж Menuridae в Голяма птица лира)
 
 local p = {}
 
@@ -853,7 +852,7 @@ local function getTaxobox(itemId)
 					local bgLink = taxon.bgLabel
 					if taxon.bgSiteLink then
 						bgLink = taxon.bgSiteLink
-					elseif mw.title.new(taxon.bgLabel).exists then
+					elseif mw.title.new(taxon.bgLabel).exists and not mw.title.new(taxon.bgLabel).isRedirect then
 						bgLink = bgLink .. ' (' .. taxon.rank.name .. ')'
 					end
 					latinName = toItalicIfUnderGenus(latinName, taxon.rank)
@@ -861,7 +860,7 @@ local function getTaxobox(itemId)
 				else
 					if taxon.bgSiteLink then
 						latinName = taxon.bgSiteLink .. '|' .. latinName
-					elseif mw.title.new(taxon.latinName).exists then
+					elseif mw.title.new(taxon.latinName).exists and not mw.title.new(taxon.latinName).isRedirect then
 						latinName = taxon.latinName .. ' (' .. taxon.rank.name .. ')|' .. latinName
 					elseif taxon.latinName ~= latinName then
 						latinName = taxon.latinName .. '|' .. latinName
