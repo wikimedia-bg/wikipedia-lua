@@ -131,4 +131,14 @@ function p.addDelimiters(n)
 	end
 end
 
+function p.formatMultilanguageText(text, lang, code)
+	if text and lang and lang ~= code then
+		local dir = mw.language.new(lang):isRTL() and 'rtl' or 'ltr'
+		local attr = {['dir'] = dir, ['lang'] = lang, ['xml:lang'] = lang}
+		return mw.text.tag('span', attr, text)
+	else
+		return nil
+	end
+end
+
 return p
