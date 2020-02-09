@@ -1,0 +1,35 @@
+{{documentation subpage}}
+{{Module rating|protected}}
+
+This module may be used to validate [[International Standard Book Number|ISBN]]s, [[International Standard Music Number|ISMN]]s, and [[International Standard Serial Number|ISSN]]s.
+
+== Usage ==
+For ISBNs,
+* <code><nowiki>{{#invoke:check isxn|check_isbn|978-0-12-345678-9|error={{error-small|Invalid ISBN}}}}</nowiki></code>
+For ISMNs,
+* <code><nowiki>{{#invoke:check isxn|check_ismn|979-0-1234567-8-9|error={{error-small|Invalid ISMN}}}}</nowiki></code>
+For ISSNs,
+* <code><nowiki>{{#invoke:check isxn|check_issn|1234-5678|error={{error-small|Invalid ISSN}}}}</nowiki></code>
+
+== Examples ==
+* <code><nowiki>{{#invoke:check isxn|check_isbn|978-3-16-148410-0|error={{error-small|Invalid ISBN}}}}</nowiki></code> → {{#invoke:check isxn|check_isbn|978-3-16-148410-0|error={{error-small|Invalid ISBN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_isbn|978-0-12-345678-9|error={{error-small|Invalid ISBN}}}}</nowiki></code> → {{#invoke:check isxn|check_isbn|978-0-12-345678-9|error={{error-small|Invalid ISBN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_isbn|ISBN 978-3-16-148410-0|error={{error-small|Invalid ISBN}}}}</nowiki></code> → {{#invoke:check isxn|check_isbn|ISBN 978-3-16-148410-0|error={{error-small|Invalid ISBN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_ismn|979-0-9016791-7-7|error={{error-small|Invalid ISMN}}}}</nowiki></code> → {{#invoke:check isxn|check_ismn|979-0-9016791-7-7|error={{error-small|Invalid ISMN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_ismn|979-0-1234567-8-9|error={{error-small|Invalid ISMN}}}}</nowiki></code> → {{#invoke:check isxn|check_ismn|979-0-1234567-8-9|error={{error-small|Invalid ISMN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_issn|1234-5679|error={{error-small|Invalid ISSN}}}}</nowiki></code> → {{#invoke:check isxn|check_issn|1234-5679|error={{error-small|Invalid ISSN}}}}
+* <code><nowiki>{{#invoke:check isxn|check_issn|1234-5678|error={{error-small|Invalid ISSN}}}}</nowiki></code> → {{#invoke:check isxn|check_issn|1234-5678|error={{error-small|Invalid ISSN}}}}
+
+== Templates/modules using this module ==
+* {{tl|Book list}}
+* {{tl|Graphic novel list}}
+* {{tl|Infobox comic book title}}
+* {{tl|Infobox comics story arc}}
+* {{tl|Infobox comics team and title}}
+* {{tl|ISBN}}
+* {{tl|ISBNT}} and [[Module:ISBNT]]
+* {{tl|ISMN}}
+* {{tl|ISSN}}
+
+== See also ==
+* [[Module:Citation/CS1]], the original source for this module.
