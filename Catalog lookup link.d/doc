@@ -1,0 +1,12 @@
+{{Module rating |release}}
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+== Usage ==
+
+<code><nowiki>{{</nowiki>#invoke:{{BASEPAGENAME}}|main}}</code>
+
+Provides the backend for {{tl|Catalog lookup link}}
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
