@@ -1,0 +1,130 @@
+/*-------------------------< P R O T E C T I O N   I C O N >--------------------
+
+the following line controls the page-protection icon in the upper right corner
+it must remain within this comment
+	{{sandbox other||{{pp-template}}}}
+
+*/
+
+
+/*-------------------------< O V E R R I D E S >--------------------------------
+
+cs1|2 references are wrapped in <cite>...</cite> tags.  Some wikis have not
+chosen to override the generic user agent italic styling as en.wiki has.  This
+(untested) styling should override the user agent default when cs1|2 templates
+are rendered.
+
+Similarly, some languages use different quotation punctuation so that setting
+is also made available here.
+*/
+cite.citation {
+	/* Reset italic styling set by user agent (only for cs1|2 templates; the
+	reason for the .citation qualifier) */
+	font-style: inherit;
+}
+
+.citation q {
+	/* Straight quote marks for <q>; keep same as [[MediaWiki:Common.css]] */
+	quotes: '"' '"' "'" "'";
+}
+
+/* ID and URL access
+Both core and Common.css have selector .mw-parser-output a[href$=".pdf"].external
+for PDF pages. All TemplateStyles pages are hoisted to .mw-parser-output. We need
+to have specificity equal to a[href$=".pdf"].external for locks to override PDF icon.
+
+the .id-lock-... selectors are for use by non-citation templates like {{Catalog lookup link}}
+*/
+
+.id-lock-free a,
+.citation .cs1-lock-free a {
+	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png) no-repeat;
+	background-position: right .1em center;
+}
+
+.id-lock-limited a,
+.id-lock-registration a,
+.citation .cs1-lock-limited a,
+.citation .cs1-lock-registration a {
+	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Lock-gray-alt-2.svg/9px-Lock-gray-alt-2.svg.png) no-repeat;
+	background-position: right .1em center;
+}
+
+.id-lock-subscription a,
+.citation .cs1-lock-subscription a {
+	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Lock-red-alt-2.svg/9px-Lock-red-alt-2.svg.png) no-repeat;
+	background-position: right .1em center;
+}
+
+.cs1-subscription,
+.cs1-registration {
+	color: #555;
+}
+
+.cs1-subscription span,
+.cs1-registration span {
+	border-bottom: 1px dotted;
+	cursor: help;
+}
+
+/* Wikisource icon
+Experiment to see if it is possible/practical to add support for a wikisource
+icon when |chapter= or |title= is wikilinked to a source in wikisource ala cite wikisource
+*/
+.cs1-ws-icon a {
+	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Wikisource-logo.svg/12px-Wikisource-logo.svg.png) no-repeat;
+	background-position: right .1em center;
+}
+
+/* Errors and maintenance */
+code.cs1-code {
+	/* <code>...</code> style override: mediawiki's css definition is specified here:
+	https://git.wikimedia.org/blob/mediawiki%2Fcore.git/69cd73811f7aadd093050dbf20ed70ef0b42a713/skins%2Fcommon%2FcommonElements.css#L199
+	*/
+	color: inherit;
+	background: inherit;
+	border: inherit;	/* code editor doesn't like inherit with border?
+						https://www.w3.org/wiki/CSS/Properties/border
+						suggests that inherit is ok
+						the actual spec says the code editor is correct:
+						https://www.w3.org/TR/css-backgrounds-3/#borders
+						*/
+	padding: inherit;
+}
+
+.cs1-hidden-error {
+	display: none;
+	font-size: 100%;
+}
+
+.cs1-visible-error {
+	font-size: 100%;
+}
+
+.cs1-maint {
+	display: none;
+	color: #33aa33;
+	margin-left: 0.3em;
+}
+
+/* Small text size
+Set small text size in one place. 0.95 (here) * 0.9 (from references list) is
+~0.85, which is the lower bound for size for accessibility. Old styling for this
+was just 0.85. We could write the rule so that when this template is inside
+references/reflist, only then does it multiply by 0.95; else multiply by 0.85 */
+.cs1-subscription,
+.cs1-registration,
+.cs1-format {
+	font-size: 95%;
+}
+
+/* kerning */
+.cs1-kern-left,
+.cs1-kern-wl-left {
+	padding-left: 0.2em;
+}
+
+.cs1-kern-right,
+.cs1-kern-wl-right {
+	padding-right: 0.2em;
+}
