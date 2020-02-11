@@ -474,9 +474,16 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 						local familyName = authorEntity.claims[PROPERTY.FAMILY_NAME]
 						if familyName and familyName[1].mainsnak.datavalue then
 							authorAbbreviation = mw.wikibase.getEntity(familyName[1].mainsnak.datavalue.value.id):getLabel()
-						else
-							local splittedEnName = mw.text.split(authorEntity:getLabel('en'), ' ')
+						end
+					end
+					-- last attempt to get authorAbbreviation if nil
+					if not authorAbbreviation then
+						local authorLabel = authorEntity:getLabel('en')
+						if authorLabel then
+							local splittedEnName = mw.text.split(authorLabel, ' ')
 							authorAbbreviation = splittedEnName[#splittedEnName]
+						else
+							authorAbbreviation = '?'
 						end
 					end
 				end
@@ -610,7 +617,13 @@ local function getDate(value, getBCE)
 					end
 				end
 			else
-				if value.precision == 9 then
+				if value.precision == 7 then
+					-- 16 век
+					return (year / 100) .. ' век'
+				elseif value.precision == 8 then
+					-- 1700-те г.
+					return year .. '-те г.'
+				elseif value.precision == 9 then
 					-- 2020 г.
 					return year .. ' г.'
 				elseif value.precision == 11 then
