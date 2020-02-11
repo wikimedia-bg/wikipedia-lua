@@ -726,7 +726,7 @@ local function getTaxobox(itemId)
 	if entity and entity.claims then
 		local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or taxobox.title
-		if string.match(instanceOf, ITEM.POLYPHYLETIC_COMMON_NAME) then
+		if instanceOf and string.match(instanceOf, ITEM.POLYPHYLETIC_COMMON_NAME) then
 			taxobox.common = {}
 		elseif not entity.claims[PROPERTY.TAXON_NAME] then
 			return taxobox
