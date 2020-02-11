@@ -641,10 +641,7 @@ end
 
 local function getbgLabel(entity)
 	if entity.labels.bg and entity.labels.bg.language == 'bg' then
-		local bgLabel = mw.language.getContentLanguage():ucfirst(entity.labels.bg.value)
-		if mw.ustring.match(bgLabel, '[А-я]') then
-			return bgLabel
-		end
+		return mw.language.getContentLanguage():ucfirst(entity.labels.bg.value)
 	end
 end
 
@@ -724,18 +721,17 @@ local function getTaxobox(itemId)
 	local taxobox = { id = itemId, image1 = {}, image2 = {}, audio = {}, map = {} }
 
 	-- GET TITLE
-	local currentPageName = mw.title.getCurrentTitle().text
+	taxobox.title = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
 	if entity and entity.claims then
 		local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
-		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or currentPageName
+		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or taxobox.title
 		if string.match(instanceOf, ITEM.POLYPHYLETIC_COMMON_NAME) then
 			taxobox.common = {}
 		elseif not entity.claims[PROPERTY.TAXON_NAME] then
 			return taxobox
 		end
 	else
-		taxobox.title = currentPageName
 		return taxobox
 	end
 	
@@ -841,7 +837,7 @@ local function getTaxobox(itemId)
 				local dead = taxon.isFossil and '†' or ''
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
-					if taxon.bgLabel then
+					if taxon.bgLabel and mw.ustring.match(taxon.bgLabel, '[А-я]') then
 						classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 					else
 						classification = classification .. dead .. latinName
@@ -854,7 +850,7 @@ local function getTaxobox(itemId)
 						authority = authority .. '<div style="text-align:center; font-size:smaller">' .. taxon.authority.name .. '</div>'
 					end
 				else
-					if taxon.bgLabel then
+					if taxon.bgLabel and mw.ustring.match(taxon.bgLabel, '[А-я]') then
 						local bgLink = taxon.bgLabel
 						if taxon.bgSiteLink then
 							bgLink = taxon.bgSiteLink
