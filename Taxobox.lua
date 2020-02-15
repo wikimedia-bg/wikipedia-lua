@@ -1,8 +1,7 @@
 -- TODO:
 -- вируси
--- 'sect.', 'subg.', 'subsp.'
--- Общоприето наименование
--- Хибрид
+-- общоприето наименование
+-- хибрид
 
 local p = {}
 
@@ -65,7 +64,7 @@ local IUCNSTATUS = {
 }
 
 local TAXONOMICRANK = {
-	Q0 = { id = 0, name = '(без ранг)', ignore = true },
+	Q0 = { id = 0, name = '(без ранг)', ignore = false },
 	Q22666877 = { id = 1, name = 'надимперия', ignore = true },
 	Q146481 = { id = 2, name = 'империя', ignore = true },
 	Q19858692 = { id = 3, name = 'надцарство', ignore = true },
