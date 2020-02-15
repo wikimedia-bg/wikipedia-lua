@@ -64,7 +64,7 @@ local IUCNSTATUS = {
 }
 
 local TAXONOMICRANK = {
-	Q0 = { id = 0, name = '(без ранг)', ignore = false },
+	Q0 = { id = 0, name = '(без ранг)', ignore = true },
 	Q22666877 = { id = 1, name = 'надимперия', ignore = true },
 	Q146481 = { id = 2, name = 'империя', ignore = true },
 	Q19858692 = { id = 3, name = 'надцарство', ignore = true },
@@ -263,8 +263,12 @@ local to = {
 	end
 }
 
-local function isAllowedRank(rank)
-	return (RANK.id <= TAXONOMICRANK.Q36602.id and rank.id >= TAXONOMICRANK.Q36732.id) or not rank.ignore
+local function isAllowed(taxon)
+	local rank = taxon.rank
+
+	return (RANK.id <= TAXONOMICRANK.Q36602.id and rank.id >= TAXONOMICRANK.Q36732.id)
+		or (rank.id == 0 and mw.ustring.match(taxon.bgLabel, '[А-я]'))
+		or not rank.ignore
 end
 
 local function toItalicIfUnderGenus(str, rank)
@@ -843,7 +847,7 @@ local function getTaxobox(itemId)
 		local authority = nil
 		for i=#taxons, 1, -1 do
 			local taxon = taxons[i]
-			if taxon.isHighlighted or isAllowedRank(taxon.rank) then
+			if taxon.isHighlighted or isAllowed(taxon) then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
 				local latinName = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
 				local dead = taxon.isFossil and '†' or ''
