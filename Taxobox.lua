@@ -42,7 +42,7 @@ local PROPERTY = {
 	IUCN_ID = 'P627',
 	FAMILY_NAME = 'P734',
 	DISAPPEARED_DATE = 'P746',
-	-- SUBJECT_OF = 'P805', -- image qualifier
+	SUBJECT_OF = 'P805',
 	RETRIEVED = 'P813',
 	ZOOLOGY_NAME = 'P835',
 	EARLIEST_DATE = 'P1319',
@@ -655,6 +655,10 @@ local function getColor(kingdom)
 	return '#FFF'
 end
 
+local function getShortName(name)
+	return mw.ustring.gsub(name, '(.)%w+%s', '%1.&nbsp;')
+end
+
 local function getbgLabel(entity)
 	if entity.labels.bg and entity.labels.bg.language == 'bg' then
 		return mw.language.getContentLanguage():ucfirst(entity.labels.bg.value)
@@ -816,6 +820,27 @@ local function getTaxobox(itemId)
 						end
 					else
 						taxobox.image1.name = images[1].mainsnak.datavalue.value
+						if images[1].qualifiers then
+							local subjectOf = images[1].qualifiers[PROPERTY.SUBJECT_OF]
+							if subjectOf and subjectOf[1] and subjectOf[1].datavalue then
+								local imageId = subjectOf[1].datavalue.value.id
+								if imageId then
+									local imageEntity = mw.wikibase.getEntity(imageId)
+									local imageClaim = imageEntity.claims[PROPERTY.TAXON_NAME]
+									if imageClaim and imageClaim[1] and imageClaim[1].mainsnak.datavalue.value then
+										local imageTaxonName = imageClaim[1].mainsnak.datavalue.value
+										local imageBgLabel = imageEntity:getLabel('bg')
+										if imageBgLabel and mw.ustring.match(imageBgLabel, '[А-я]') then
+											local imageSitelink = imageEntity:getSitelink('bgwiki') or imageTaxonName
+											imageBgLabel = imageSitelink .. '|' .. mw.language.getContentLanguage():ucfirst(imageBgLabel)
+											taxobox.image1.description = string.format('%s (%s)', to.link(imageBgLabel), to.italic(getShortName(imageTaxonName)))
+										else
+											taxobox.image1.description = to.italic(to.link(imageTaxonName))
+										end
+									end
+								end
+							end
+						end
 					end
 				end
 			end
@@ -849,7 +874,7 @@ local function getTaxobox(itemId)
 			local taxon = taxons[i]
 			if taxon.isHighlighted or isAllowed(taxon) then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
-				local latinName = mw.ustring.gsub(taxon.latinName, '(.)%w+%s', '%1.&nbsp;')
+				local latinName = getShortName(taxon.latinName)
 				local dead = taxon.isFossil and '†' or ''
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
