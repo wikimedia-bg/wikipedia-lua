@@ -994,7 +994,8 @@ local function getTaxobox(itemId)
 		local startTimeStage = getFossilStageName(startTime)
 		local endTimeStage = getFossilStageName(endTime)
 		local timeStage = startTimeStage .. (startTimeStage ~= endTimeStage and ' – ' .. endTimeStage or '')
-		local text = string.format('%s, %s Ma', timeStage, startTime .. '–' .. endTime)
+		local time = startTime .. (startTime ~= endTime and '–' .. endTime or '')
+		local text = string.format('%s, %s Ma', timeStage, time)
 		
 		taxobox.fossilRange = createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
 	end
