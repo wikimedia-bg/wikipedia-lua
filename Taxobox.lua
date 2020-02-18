@@ -238,17 +238,13 @@ local FOSSILSTAGES = {
 }
 
 local COLORMAP = {
-	{ { 'animalia' }, '#D3D3A4' },
-	{ { 'plantae' }, '#90EE90' },
-	{ { 'fungi' }, '#ADD8E6' },
-	{ { 'bacteria' }, '#E0D3E0' },
-	{ { 'chromista' }, '#ADFF2F' },	--'chromalveolata'
---	{ { 'virus', 'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'i-vii' }, '#EE82EE' },
---	{ { 'archaea', 'euryarchaeota', 'crenarchaeota', 'korarchaeota', 'nanoarchaeota', 'thaumarchaeota' }, '#E2B7B7' },
---	{ { 'protista' }, '#F0E68C' },
---	{ { 'amoebozoa' }, '#FFC8A0' },
---	{ { 'rhizaria', 'excavata' }, '#EEE9E9' },
---	{ { 'eukaryota', 'bikonta', 'unikonta', 'opisthokonta', 'choanomonada', 'prokaryota' }, '#CDC9C9' }
+	ANIMALIA = '#D3D3A4',
+	PLANTAE = '#90EE90',
+	FUNGI = '#ADD8E6',
+	BACTERIA = '#E0D3E0',
+	CHROMISTA = '#ADFF2F',
+	VIRUS = '#EE82EE',
+--	ARCHAEA = '#E2B7B7'
 }
 
 local to = {
@@ -640,21 +636,6 @@ local function getDate(value, getBCE)
 	end
 end
 
-local function getColor(kingdom)
-	if kingdom then
-		kingdom = kingdom:lower()
-		for i, color in pairs(COLORMAP) do
-			for j, name in pairs(color[1]) do
-				if name == kingdom then
-					return color[2]
-				end
-			end
-		end
-	end
-	
-	return '#FFF'
-end
-
 local function getShortName(name)
 	return mw.ustring.gsub(name, '(.)%w+%s', '%1.&nbsp;')
 end
@@ -1011,7 +992,13 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET COLOR
-	taxobox.color = taxobox.common and '#DDD' or getColor(KINGDOM)
+	if taxobox.common then
+		taxobox.color = '#DDD'
+	elseif KINGDOM then
+		taxobox.color = COLORMAP[KINGDOM:upper()] or '#FFF'
+	else
+		taxobox.color = '#FFF'
+	end
 
 	return taxobox
 end
