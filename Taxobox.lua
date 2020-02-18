@@ -20,7 +20,8 @@ local ITEM = {
 	MONOTYPIC_FOSSIL_TAXON = 'Q47487597',
 	MONOTYPIC_TAXON = 'Q310890',
 	POLYPHYLETIC_COMMON_NAME = 'Q55983715',
-	RECOMBINATION = 'Q14594740'
+	RECOMBINATION = 'Q14594740',
+	STRAIN = 'Q855769'
 }
 
 local PROPERTY = {
@@ -100,7 +101,8 @@ local TAXONOMICRANK = {
 	Q7432 = { id = 33, name = 'вид', ignore = false },
 	Q68947 = { id = 34, name = 'подвид', ignore = false },
 	Q767728 = { id = 35, name = 'вариетет', ignore = false },
-	Q713623 = { id = 36, name = 'клон', ignore = false }
+	Q713623 = { id = 36, name = 'клон', ignore = false },
+	Q855769 = { id = 37, name = 'щам', ignore = false }
 }
 
 local FOSSILSTAGES = {
@@ -669,8 +671,9 @@ end
 
 local function getClassification(itemId, isHighlighted, taxons)
 	local entity = mw.wikibase.getEntityObject(itemId)
+	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 	local parentTaxonId = getClaim(entity, PROPERTY.PARENT_TAXON, 1)
-	local rankId = getClaim(entity, PROPERTY.TAXON_RANK, 1)
+	local rankId = instanceOf and string.match(instanceOf, ITEM.STRAIN) and ITEM.STRAIN or getClaim(entity, PROPERTY.TAXON_RANK, 1)
 	local rank = rankId and TAXONOMICRANK[rankId] or TAXONOMICRANK.Q0
 	
 	local latinName = ''
@@ -689,7 +692,6 @@ local function getClassification(itemId, isHighlighted, taxons)
 		KINGDOM = latinName
 	end
 	
-	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 	local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 	local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 	isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
@@ -855,7 +857,7 @@ local function getTaxobox(itemId)
 			local taxon = taxons[i]
 			if taxon.isHighlighted or isAllowed(taxon) then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
-				local latinName = getShortName(taxon.latinName)
+				local latinName = KINGDOM:upper() ~= 'VIRUS' and getShortName(taxon.latinName) or taxon.latinName
 				local dead = taxon.isFossil and '†' or ''
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
