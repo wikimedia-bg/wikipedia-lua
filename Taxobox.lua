@@ -246,7 +246,7 @@ local COLORMAP = {
 	BACTERIA = '#E0D3E0',
 	CHROMISTA = '#ADFF2F',
 	VIRUS = '#EE82EE',
---	ARCHAEA = '#E2B7B7'
+	ARCHAEA = '#E2B7B7'
 }
 
 local to = {
