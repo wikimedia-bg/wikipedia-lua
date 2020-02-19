@@ -1,5 +1,5 @@
 -- TODO:
--- вируси
+-- hide magnorder, grandorder, etc... Q25306
 -- общоприето наименование
 -- хибрид
 
