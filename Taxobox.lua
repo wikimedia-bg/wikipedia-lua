@@ -32,6 +32,7 @@ local PROPERTY = {
 	TAXON_RANK = 'P105',
 	IUCN = 'P141',
 	PARENT_TAXON = 'P171',
+	DEPICTS = '180',
 	RANGE_MAP = 'P181',
 	TAXON_NAME = 'P225',
 	COMMONS_CATEGORY = 'P373',
@@ -43,7 +44,6 @@ local PROPERTY = {
 	IUCN_ID = 'P627',
 	FAMILY_NAME = 'P734',
 	DISAPPEARED_DATE = 'P746',
-	SUBJECT_OF = 'P805',
 	RETRIEVED = 'P813',
 	ZOOLOGY_NAME = 'P835',
 	EARLIEST_DATE = 'P1319',
@@ -804,9 +804,9 @@ local function getTaxobox(itemId)
 					else
 						taxobox.image1.name = images[1].mainsnak.datavalue.value
 						if images[1].qualifiers then
-							local subjectOf = images[1].qualifiers[PROPERTY.SUBJECT_OF]
-							if subjectOf and subjectOf[1] and subjectOf[1].datavalue then
-								local imageId = subjectOf[1].datavalue.value.id
+							local depicts = images[1].qualifiers[PROPERTY.SUBJECT_OF]
+							if depicts and depicts[1] and depicts[1].datavalue then
+								local imageId = depicts[1].datavalue.value.id
 								if imageId then
 									local imageEntity = mw.wikibase.getEntity(imageId)
 									local imageClaim = imageEntity.claims[PROPERTY.TAXON_NAME]
