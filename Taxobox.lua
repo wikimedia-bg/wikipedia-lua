@@ -804,7 +804,7 @@ local function getTaxobox(itemId)
 					else
 						taxobox.image1.name = images[1].mainsnak.datavalue.value
 						if images[1].qualifiers then
-							local depicts = images[1].qualifiers[PROPERTY.SUBJECT_OF]
+							local depicts = images[1].qualifiers[PROPERTY.DEPICTS]
 							if depicts and depicts[1] and depicts[1].datavalue then
 								local imageId = depicts[1].datavalue.value.id
 								if imageId then
