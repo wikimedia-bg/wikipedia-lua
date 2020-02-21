@@ -512,7 +512,7 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 		if taxonDate then
 			datetime = taxonDate[1].datavalue.value.time
 			localAuthorityDate = mw.text.split(mw.ustring.sub(datetime, 2), '-')[1]
-			authorityDate = localAuthorityDate .. ' г.'
+			authorityDate = localAuthorityDate .. '&nbsp;г.'
 		end
 	
 		local result = (authorityName and authorityDate) and (authorityName .. ', ' .. authorityDate) or (authorityName or authorityDate or '')
@@ -626,11 +626,11 @@ local function getDate(value, getBCE)
 					return year .. '-те г.'
 				elseif value.precision == 9 then
 					-- 2020 г.
-					return year .. ' г.'
+					return year .. '&nbsp;г.'
 				elseif value.precision == 11 then
 					-- 22 януари 2020 г.
 					if datetimeTable[3] and datetimeTable[2] then
-						return string.format('%s %s %s г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
+						return string.format('%s %s %s&nbsp;г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
 					end
 				end
 			end
