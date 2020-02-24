@@ -809,16 +809,18 @@ local function getTaxobox(itemId)
 								local imageId = depicts[1].datavalue.value.id
 								if imageId then
 									local imageEntity = mw.wikibase.getEntity(imageId)
-									local imageClaim = imageEntity.claims[PROPERTY.TAXON_NAME]
-									if imageClaim and imageClaim[1] and imageClaim[1].mainsnak.datavalue.value then
-										local imageTaxonName = imageClaim[1].mainsnak.datavalue.value
-										local imageBgLabel = imageEntity:getLabel('bg')
-										if imageBgLabel and mw.ustring.match(imageBgLabel, '[А-я]') then
-											local imageSitelink = imageEntity:getSitelink('bgwiki') or imageTaxonName
-											imageBgLabel = imageSitelink .. '|' .. mw.language.getContentLanguage():ucfirst(imageBgLabel)
-											taxobox.image1.description = string.format('%s (%s)', to.link(imageBgLabel), to.italic(getShortName(imageTaxonName)))
-										else
-											taxobox.image1.description = to.italic(to.link(imageTaxonName))
+									if imageEntity and imageEntity.claims then
+										local imageClaim = imageEntity.claims[PROPERTY.TAXON_NAME]
+										if imageClaim and imageClaim[1] and imageClaim[1].mainsnak.datavalue.value then
+											local imageTaxonName = imageClaim[1].mainsnak.datavalue.value
+											local imageBgLabel = imageEntity:getLabel('bg')
+											if imageBgLabel and mw.ustring.match(imageBgLabel, '[А-я]') then
+												local imageSitelink = imageEntity:getSitelink('bgwiki') or imageTaxonName
+												imageBgLabel = imageSitelink .. '|' .. mw.language.getContentLanguage():ucfirst(imageBgLabel)
+												taxobox.image1.description = string.format('%s (%s)', to.link(imageBgLabel), to.italic(getShortName(imageTaxonName)))
+											else
+												taxobox.image1.description = to.italic(to.link(imageTaxonName))
+											end
 										end
 									end
 								end
