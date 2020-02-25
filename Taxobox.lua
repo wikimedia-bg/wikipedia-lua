@@ -1,5 +1,4 @@
 -- TODO:
--- hide magnorder, grandorder, etc... Q25306
 -- общоприето наименование
 -- хибрид
 
@@ -265,10 +264,22 @@ local to = {
 
 local function isAllowed(taxon)
 	local rank = taxon.rank
-
-	return (RANK.id <= TAXONOMICRANK.Q36602.id and rank.id >= TAXONOMICRANK.Q36732.id)
-		or (rank.id == 0 and mw.ustring.match(taxon.bgLabel, '[А-я]'))
-		or not rank.ignore
+	local ordoId = TAXONOMICRANK.Q36602.id
+	local kingdomId = TAXONOMICRANK.Q36732.id
+	
+	if RANK.id <= kingdomId and RANK.id ~= 0 then
+		-- if RANK is above kingdom → display all
+		return true
+	elseif RANK.id <= ordoId and rank.id > kingdomId and mw.ustring.match(rank.name, '[А-я]') then
+		-- if RANK is above ordo → display all below kingdom with cyrillic rank names
+		return true
+	elseif rank.id == 0 and mw.ustring.match(taxon.bgLabel, '[А-я]') then
+		-- "без ранг" taxons without cyrillic name will be skipped
+		return true
+	else
+		-- display all which are not ignored
+		return not rank.ignore
+	end
 end
 
 local function toItalicIfUnderGenus(str, rank)
