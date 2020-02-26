@@ -1,6 +1,6 @@
 -- TODO:
--- общоприето наименование
--- хибрид
+--- общоприето наименование (includes, excludes)
+--- хибрид
 
 local p = {}
 
@@ -49,7 +49,8 @@ local PROPERTY = {
 	LATEST_DATE = 'P1326',
 	TAXON_SYNONYM = 'P1420',
 	MEDIA_LEGEND = 'P2096',
-	COLLAGE_IMAGE = 'P2716'
+	COLLAGE_IMAGE = 'P2716',
+	VIRUS_GENOME = 'P4628'
 }
 
 local IUCNSTATUS = {
@@ -61,6 +62,20 @@ local IUCNSTATUS = {
 	Q239509 = 'EW',
 	Q237350 = 'EX',
 	Q3245245 = 'DD'
+}
+
+local BALTIMORE = {
+	Q2901600 = { group = 'I', label = 'двДНК', genome = 'dsDNA' },
+	Q9094469 = { group = 'II', label = 'евДНК', genome = 'ssDNA' },
+	Q3307900 = { group = 'III', label = 'двРНК', genome = 'dsRNA' },
+	Q9094478 = { group = 'IV', label = 'евРНК', genome = 'ssRNA+' },
+	Q9285327 = { group = 'V', label = 'евРНК', genome = 'ssRNA-' },
+	Q3933801 = { group = 'VI', label = 'евРНК-РВ', genome = 'ssRNA-RT' },
+	Q3754200 = { group = 'VII', label = 'двДНК-РВ', genome = 'dsDNA-RT' },
+	Q44209729 = 'Q9094469',	-- ssDNA(-)
+	Q44209788 = 'Q9094469',	-- ssDNA(+)
+	Q44209909 = 'Q9094469',	-- ssDNA(±)
+	Q44209519 = 'Q9285327'	-- ssRNA(±)
 }
 
 local TAXONOMICRANK = {
@@ -863,6 +878,22 @@ local function getTaxobox(itemId)
 		end
 	end
 	
+	-- GET VIRUS GROUP
+	local virusGenomeClaim = entity.claims[PROPERTY.VIRUS_GENOME]
+	if virusGenomeClaim then
+		local virusGenome = virusGenomeClaim[1].mainsnak.datavalue.value.id
+		if virusGenome then
+			local baltimore = BALTIMORE[virusGenome]
+			if baltimore then
+				if not baltimore.group and baltimore:sub(1, 1) == 'Q' then
+					baltimore = BALTIMORE[baltimore]
+				end
+				
+				taxobox.virus = baltimore
+			end
+		end
+	end
+	
 	-- GET CLASSIFICATION AND AUTHORITY
 	if not taxobox.common then	
 		local taxons = getClassification(itemId, true, {})
@@ -871,7 +902,7 @@ local function getTaxobox(itemId)
 		for i=#taxons, 1, -1 do
 			local taxon = taxons[i]
 			if taxon.isHighlighted or isAllowed(taxon) then
-				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td style="text-align:left">'
+				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td>'
 				local latinName = KINGDOM and KINGDOM:upper() ~= 'VIRUS' and getShortName(taxon.latinName) or taxon.latinName
 				local dead = taxon.isFossil and '†' or ''
 				if taxon.isHighlighted then
@@ -1071,6 +1102,18 @@ local function renderTaxobox(taxobox)
 					:allDone()
 	end
 	
+	-- VIRUS GROUP
+	if taxobox.virus then
+		local virus = taxobox.virus
+		virusNode = mw.html.create()
+			:node(createSectionNode(to.bold('Геном'), taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:css('text-align', 'center')
+					:wikitext(string.format('[[Класификация на Балтимор|Група]] %s: [[%s вирус]]и <small>(%s)</small>', virus.group, virus.label, virus.genome))
+					:allDone()
+	end
+	
 	-- CLASSIFICATION
 	if taxobox.classification then
 		classificationNode = mw.html.create()
@@ -1078,7 +1121,6 @@ local function renderTaxobox(taxobox)
 			:tag('tr')
 				:tag('td')
 					:attr('align', 'center')
-					:css('text-align', 'center')
 					:tag('table')
 						:css('width', '100%')
 						:wikitext(taxobox.classification)
@@ -1159,6 +1201,7 @@ local function renderTaxobox(taxobox)
 		:node(image2Node)
 		:node(audioNode)
 		:node(statusNode)
+		:node(virusNode)
 		:node(classificationNode)
 		:node(authorityNode)
 		:node(distributionNode)
