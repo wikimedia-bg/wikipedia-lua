@@ -1116,18 +1116,6 @@ local function renderTaxobox(taxobox)
 		audioNode = createFileNode(taxobox.audio)
 	end
 	
-	-- BG RED BOOK
-	if taxobox.statusBg then
-		bgStatusNode = mw.html.create()
-			:node(createSectionNode(to.bold(' Червена книга на България'), taxobox.color))
-			:tag('tr')
-				:tag('td')
-					:attr('align', 'center')
-					:css('text-align', 'center')
-					:wikitext(taxobox.statusBg)
-					:allDone()
-	end
-	
 	-- STATUS
 	if taxobox.status then
 		statusNode = mw.html.create()
@@ -1137,6 +1125,18 @@ local function renderTaxobox(taxobox)
 					:attr('align', 'center')
 					:css('text-align', 'center')
 					:wikitext(taxobox.status)
+					:allDone()
+	end
+	
+	-- BG RED BOOK
+	if taxobox.statusBg then
+		bgStatusNode = mw.html.create()
+			:node(createSectionNode(to.bold(' Червена книга на България'), taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:wikitext(taxobox.statusBg)
 					:allDone()
 	end
 	
@@ -1238,8 +1238,8 @@ local function renderTaxobox(taxobox)
 		:node(image1Node)
 		:node(image2Node)
 		:node(audioNode)
-		:node(bgStatusNode)
 		:node(statusNode)
+		:node(bgStatusNode)
 		:node(virusNode)
 		:node(classificationNode)
 		:node(authorityNode)
