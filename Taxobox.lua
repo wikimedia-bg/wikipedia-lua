@@ -470,8 +470,8 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 	end
 end
 
-local function getArg(name)
-	return name ~= '' and name or nil
+local function getArg(arg)
+	return arg ~= '' and arg or nil
 end
 
 local function getFossilStageName(age)
@@ -750,6 +750,28 @@ local function getClassification(itemId, isHighlighted, taxons)
 	})
 	
 	return parentTaxonId and getClassification(parentTaxonId, isHighlighted, taxons) or taxons
+end
+
+local function getExternalParameters(args, taxobox)
+	-- BG RED BOOK
+	local statusBg = getArg(args.statusBg)
+	if statusBg then
+		taxobox.statusBg = getStatus(statusBg)
+		local statusBgRef = getArg(args.statusBgRef)
+		if statusBgRef then
+			taxobox.statusBg = taxobox.statusBg .. mw.getCurrentFrame():extensionTag('ref', statusBgRef)
+		end
+	end
+	
+	-- IMAGE WITH CAPTION
+	local image = getArg(args.image)
+	if image then
+		taxobox.image1.name = image
+		taxobox.image1.description = getArg(args.imageCaption) 
+		taxobox.image2 = {}
+	end
+	
+	return taxobox
 end
 
 local function getTaxobox(itemId)
@@ -1094,6 +1116,18 @@ local function renderTaxobox(taxobox)
 		audioNode = createFileNode(taxobox.audio)
 	end
 	
+	-- BG RED BOOK
+	if taxobox.statusBg then
+		statusNode = mw.html.create()
+			:node(createSectionNode(to.bold(' Червена книга на България'), taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:attr('align', 'center')
+					:css('text-align', 'center')
+					:wikitext(taxobox.statusBg)
+					:allDone()
+	end
+	
 	-- STATUS
 	if taxobox.status then
 		statusNode = mw.html.create()
@@ -1225,21 +1259,15 @@ function p.get(frame)
 	end
 	
 	local taxobox = getTaxobox(itemId)
-
+	
+	-- Update page title to italic if necessary
 	local pageTitle = mw.title.getCurrentTitle()
 	if pageTitle.namespace == 0 then
 		mw.getCurrentFrame():callParserFunction('DISPLAYTITLE', toItalicIfUnderGenus(pageTitle.text, RANK))
 	end
 	
-	-- ADDITIONAL PARAMETERS
-	taxobox.statusBg = getArg(frame.args.statusBg)
-	taxobox.statusBgRef = getArg(frame.args.statusBgRef)
-	local image = getArg(frame.args.image)
-	if image then
-		taxobox.image1.name = image
-		taxobox.image1.description = getArg(frame.args.imageCaption) 
-		taxobox.image2 = {}
-	end
+	-- Check for additional parameters
+	taxobox = getExternalParameters(frame.args, taxobox)
 	
 	return renderTaxobox(taxobox)
 end
