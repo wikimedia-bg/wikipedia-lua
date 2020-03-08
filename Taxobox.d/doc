@@ -10,7 +10,8 @@
 
 <code><nowiki>{{#invoke:Taxobox|get}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|Q82069695}}</nowiki></code><br>
-<code><nowiki>{{#invoke:Taxobox|get|status_bg=CR|status_bg_ref=}}</nowiki></code>
+<code><nowiki>{{#invoke:Taxobox|get|status_bg=CR|status_bg_ref=изт.}}</nowiki></code>
+<code><nowiki>{{#invoke:Taxobox|get|image=Panther.jpg|image_caption=Пантера}}</nowiki></code>
 <references />
 
 == Описание ==
