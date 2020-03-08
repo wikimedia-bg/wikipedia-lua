@@ -470,6 +470,10 @@ local function createFossilScaleNode(text, startTime, endTime, earliestTime, lat
 	end
 end
 
+local function getArg(name)
+	return name ~= '' and name or nil
+end
+
 local function getFossilStageName(age)
 	for i=1, #FOSSILSTAGES do
 		local stage = FOSSILSTAGES[i]
@@ -1225,6 +1229,16 @@ function p.get(frame)
 	local pageTitle = mw.title.getCurrentTitle()
 	if pageTitle.namespace == 0 then
 		mw.getCurrentFrame():callParserFunction('DISPLAYTITLE', toItalicIfUnderGenus(pageTitle.text, RANK))
+	end
+	
+	-- ADDITIONAL PARAMETERS
+	taxobox.statusBg = getArg(frame.args.statusBg)
+	taxobox.statusBgRef = getArg(frame.args.statusBgRef)
+	local image = getArg(frame.args.image)
+	if image then
+		taxobox.image1.name = image
+		taxobox.image1.description = getArg(frame.args.imageCaption) 
+		taxobox.image2 = {}
 	end
 	
 	return renderTaxobox(taxobox)
