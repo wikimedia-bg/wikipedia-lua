@@ -1118,7 +1118,7 @@ local function renderTaxobox(taxobox)
 	
 	-- BG RED BOOK
 	if taxobox.statusBg then
-		statusNode = mw.html.create()
+		bgStatusNode = mw.html.create()
 			:node(createSectionNode(to.bold(' Червена книга на България'), taxobox.color))
 			:tag('tr')
 				:tag('td')
@@ -1238,6 +1238,7 @@ local function renderTaxobox(taxobox)
 		:node(image1Node)
 		:node(image2Node)
 		:node(audioNode)
+		:node(bgStatusNode)
 		:node(statusNode)
 		:node(virusNode)
 		:node(classificationNode)
