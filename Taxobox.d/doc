@@ -3,7 +3,7 @@
 == Употреба ==
 {{Taxobox|Q17745998
 | status_bg         = CR
-| status_bg_ref     = <ref>{{Червена книга| title = {{PAGENAME}} | redbooklink = http://e-ecodb.bas.bg/rdb/bg/vol1/Veraniso.html | downloaded = 8 юли 2013}}</ref>
+| status_bg_ref     = {{Червена книга| title = {{PAGENAME}} | redbooklink = http://e-ecodb.bas.bg/rdb/bg/vol1/Veraniso.html | downloaded = 8 юли 2013}}
 }}
 
 {{#invoke:Taxobox|get|Q82069695}}
