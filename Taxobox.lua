@@ -759,6 +759,10 @@ local function getExternalParameters(args, taxobox)
 	local statusBg = getArg(args.statusBg)
 	if statusBg then
 		taxobox.statusBg = getStatus(statusBg)
+		local statusBgExtinct = getArg(args.statusBgExtinct)
+		if statusBgExtinct then
+			taxobox.statusBg =  string.format('%s (%s)', taxobox.statusBg, statusBgExtinct)
+		end
 		local statusBgRef = getArg(args.statusBgRef)
 		if statusBgRef then
 			taxobox.statusBg = taxobox.statusBg .. mw.getCurrentFrame():extensionTag('ref', statusBgRef)
@@ -984,7 +988,7 @@ local function getTaxobox(itemId)
 			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
 				local disappearedDate = iucnClaim[1].qualifiers[PROPERTY.DISAPPEARED_DATE]
 				if disappearedDate and disappearedDate[1].datavalue.value then
-					taxobox.status = taxobox.status .. string.format(' (%s)', getDate(disappearedDate[1].datavalue.value))
+					taxobox.status = string.format('%s (%s)', taxobox.status, getDate(disappearedDate[1].datavalue.value))
 				end
 			end
 			
