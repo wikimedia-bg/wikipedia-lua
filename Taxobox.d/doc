@@ -3,8 +3,6 @@
 == Употреба ==
 {{#invoke:Taxobox|get|Q182573}}
 
-{{#invoke:Taxobox|get|Q82069695}}
-
 <code><nowiki>{{#invoke:Taxobox|get}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|Q82069695}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|statusBg=CR|statusBgRef=изт.}}</nowiki></code>
