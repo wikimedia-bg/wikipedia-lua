@@ -957,13 +957,15 @@ local function getTaxobox(itemId)
 						HYBRID = {{}, {}}
 						HYBRID[1].name = taxonNameHybridParent1[1].mainsnak.datavalue.value
 						HYBRID[2].name = taxonNameHybridParent2[1].mainsnak.datavalue.value
-						local hybridParentSex1 = hybridClaim[1].qualifiers[PROPERTY.SEX_OR_GENDER]
-						local hybridParentSex2 = hybridClaim[2].qualifiers[PROPERTY.SEX_OR_GENDER]
-						if hybridParentSex1 and hybridParentSex2 then
-							local hybridSexId1 = hybridParentSex1[1].datavalue.value.id
-							HYBRID[1].sex = to.link(hybridSexId1 == ITEM.MALE_ORGANISM and MALE or (hybridSexId1 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
-							local hybridSexId2 = hybridParentSex2[1].datavalue.value.id
-							HYBRID[2].sex = to.link(hybridSexId2 == ITEM.MALE_ORGANISM and MALE or (hybridSexId2 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
+						if hybridClaim[1].qualifiers and hybridClaim[2].qualifiers then
+							local hybridParentSex1 = hybridClaim[1].qualifiers[PROPERTY.SEX_OR_GENDER]
+							local hybridParentSex2 = hybridClaim[2].qualifiers[PROPERTY.SEX_OR_GENDER]
+							if hybridParentSex1 and hybridParentSex2 then
+								local hybridSexId1 = hybridParentSex1[1].datavalue.value.id
+								HYBRID[1].sex = to.link(hybridSexId1 == ITEM.MALE_ORGANISM and MALE or (hybridSexId1 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
+								local hybridSexId2 = hybridParentSex2[1].datavalue.value.id
+								HYBRID[2].sex = to.link(hybridSexId2 == ITEM.MALE_ORGANISM and MALE or (hybridSexId2 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
+							end
 						end
 					end
 				end
