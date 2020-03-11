@@ -758,7 +758,7 @@ local function getExternalParameters(args, taxobox)
 	-- BG RED BOOK
 	local statusBg = getArg(args.statusBg)
 	if statusBg then
-		taxobox.statusBg = getStatus(statusBg)
+		taxobox.statusBg = getStatus(statusBg:upper())
 		local statusBgExtinct = getArg(args.statusBgExtinct)
 		if statusBgExtinct then
 			taxobox.statusBg =  string.format('%s (%s)', taxobox.statusBg, statusBgExtinct)
