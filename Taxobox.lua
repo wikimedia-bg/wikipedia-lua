@@ -767,9 +767,13 @@ local function getExternalParameters(args, taxobox)
 		if statusBgRef then
 			taxobox.statusBg = taxobox.statusBg .. mw.getCurrentFrame():extensionTag('ref', statusBgRef)
 		end
+		
+		if mw.title.getCurrentTitle().namespace == 0 then
+			taxobox.statusBg = taxobox.statusBg .. to.link('Категория:Червена книга на България')
+		end
 	end
 	
-	-- IMAGE WITH CAPTION
+	-- IMAGE AND CAPTION
 	local image = getArg(args.image)
 	if image then
 		taxobox.image1.name = image
