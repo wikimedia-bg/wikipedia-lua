@@ -765,7 +765,7 @@ local function getExternalParameters(args, taxobox)
 		end
 		local statusBgRef = getArg(args.statusBgRef)
 		if statusBgRef then
-			taxobox.statusBg = taxobox.statusBg .. mw.getCurrentFrame():extensionTag('ref', statusBgRef)
+			taxobox.statusBg = taxobox.statusBg .. statusBgRef
 		end
 		
 		if mw.title.getCurrentTitle().namespace == 0 then
