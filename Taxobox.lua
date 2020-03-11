@@ -10,6 +10,8 @@ local LATINNAME
 local AUTHORITY
 local HYBRID
 
+local MALE = 'мъжки|♂'
+local FEMALE = 'женски|♀'
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
 
 local ITEM = {
@@ -848,9 +850,9 @@ local function getTaxobox(itemId)
 									local sex
 									local sexItemId = sexOrGender[1].datavalue.value.id
 									if sexItemId == ITEM.MALE_ORGANISM then
-										sex = to.link('мъжки|♂') .. ' ' .. taxobox.title
+										sex = to.link(MALE) .. ' ' .. taxobox.title
 									elseif sexItemId == ITEM.FEMALE_ORGANISM then
-										sex = to.link('женски|♀') .. ' ' .. taxobox.title
+										sex = to.link(FEMALE) .. ' ' .. taxobox.title
 									end
 									if sexImage1 then
 										sexImage2 = { name = image.mainsnak.datavalue.value, description = sex }
@@ -959,9 +961,9 @@ local function getTaxobox(itemId)
 						local hybridParentSex2 = hybridClaim[2].qualifiers[PROPERTY.SEX_OR_GENDER]
 						if hybridParentSex1 and hybridParentSex2 then
 							local hybridSexId1 = hybridParentSex1[1].datavalue.value.id
-							HYBRID[1].sex = to.link(hybridSexId1 == ITEM.MALE_ORGANISM and 'мъжки|♂' or (hybridSexId1 == ITEM.FEMALE_ORGANISM and 'женски|♀' or nil))
+							HYBRID[1].sex = to.link(hybridSexId1 == ITEM.MALE_ORGANISM and MALE or (hybridSexId1 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
 							local hybridSexId2 = hybridParentSex2[1].datavalue.value.id
-							HYBRID[2].sex = to.link(hybridSexId2 == ITEM.MALE_ORGANISM and 'мъжки|♂' or (hybridSexId2 == ITEM.FEMALE_ORGANISM and 'женски|♀' or nil))
+							HYBRID[2].sex = to.link(hybridSexId2 == ITEM.MALE_ORGANISM and MALE or (hybridSexId2 == ITEM.FEMALE_ORGANISM and FEMALE or nil))
 						end
 					end
 				end
