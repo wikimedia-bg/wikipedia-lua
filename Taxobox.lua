@@ -8,6 +8,7 @@ local RANK
 local KINGDOM
 local LATINNAME
 local AUTHORITY
+local HYBRID
 
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
 
@@ -48,6 +49,7 @@ local PROPERTY = {
 	EARLIEST_DATE = 'P1319',
 	LATEST_DATE = 'P1326',
 	TAXON_SYNONYM = 'P1420',
+	PARENT_TAXON_HYBRID = 'P1531',
 	MEDIA_LEGEND = 'P2096',
 	COLLAGE_IMAGE = 'P2716',
 	VIRUS_GENOME = 'P4628'
@@ -119,7 +121,8 @@ local TAXONOMICRANK = {
 	Q68947 = { id = 37, name = 'подвид', ignore = false },
 	Q767728 = { id = 38, name = 'вариетет', ignore = false },
 	Q713623 = { id = 39, name = 'клон', ignore = false },
-	Q855769 = { id = 40, name = 'щам', ignore = false }
+	Q855769 = { id = 40, name = 'щам', ignore = false },
+	HYBRID = { id = 41, name = 'хибрид', ignore = false }
 }
 
 local FOSSILSTAGES = {
@@ -695,8 +698,11 @@ local function getClaim(entity, property, index)
 			local result = nil
 			for i, claim in pairs(claims) do
 				if claim.mainsnak.snaktype ~= 'novalue' and claim.mainsnak.datavalue then
-					local valueId = entity:getBestStatements(property)[i].mainsnak.datavalue.value.id
-					result = i == 1 and valueId or result .. ',' .. valueId
+					local statement = entity:getBestStatements(property)[i]
+					if statement then
+						local valueId = statement.mainsnak.datavalue.value.id
+						result = i == 1 and valueId or result .. ',' .. valueId
+					end
 				end
 			end
 			return result
@@ -708,8 +714,9 @@ local function getClassification(itemId, isHighlighted, taxons)
 	local entity = mw.wikibase.getEntityObject(itemId)
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 	local parentTaxonId = getClaim(entity, PROPERTY.PARENT_TAXON, 1)
+	local isHybrid = getClaim(entity, PROPERTY.PARENT_TAXON_HYBRID)
 	local rankId = instanceOf and string.match(instanceOf, ITEM.STRAIN) and ITEM.STRAIN or getClaim(entity, PROPERTY.TAXON_RANK, 1)
-	local rank = rankId and TAXONOMICRANK[rankId] or TAXONOMICRANK.Q0
+	local rank = isHybrid and TAXONOMICRANK.HYBRID or (rankId and TAXONOMICRANK[rankId] or TAXONOMICRANK.Q0)
 	
 	local latinName = ''
 	local taxonName = entity.claims[PROPERTY.TAXON_NAME]
@@ -931,6 +938,37 @@ local function getTaxobox(itemId)
 		end
 	end
 	
+	-- GET HYBRID
+	local hybridClaim = entity.claims[PROPERTY.PARENT_TAXON_HYBRID]
+	if hybridClaim then
+		if hybridClaim[1] and hybridClaim[2] then
+			local hybridParentId1 = hybridClaim[1].mainsnak.datavalue.value.id
+			local hybridParentId2 = hybridClaim[2].mainsnak.datavalue.value.id
+			if hybridParentId1 and hybridParentId2 then
+				local entityHybridParent1 = mw.wikibase.getEntityObject(hybridParentId1)
+				local entityHybridParent2 = mw.wikibase.getEntityObject(hybridParentId2)
+				if entityHybridParent1 and entityHybridParent2 then
+					local taxonNameHybridParent1 = entityHybridParent1.claims[PROPERTY.TAXON_NAME]
+					local taxonNameHybridParent2 = entityHybridParent2.claims[PROPERTY.TAXON_NAME]
+					if taxonNameHybridParent1 and taxonNameHybridParent2 then
+						RANK = TAXONOMICRANK.HYBRID
+						HYBRID = {{}, {}}
+						HYBRID[1].name = taxonNameHybridParent1[1].mainsnak.datavalue.value
+						HYBRID[2].name = taxonNameHybridParent2[1].mainsnak.datavalue.value
+						local hybridParentSex1 = hybridClaim[1].qualifiers[PROPERTY.SEX_OR_GENDER]
+						local hybridParentSex2 = hybridClaim[2].qualifiers[PROPERTY.SEX_OR_GENDER]
+						if hybridParentSex1 and hybridParentSex2 then
+							local hybridSexId1 = hybridParentSex1[1].datavalue.value.id
+							HYBRID[1].sex = to.link(hybridSexId1 == ITEM.MALE_ORGANISM and 'мъжки|♂' or (hybridSexId1 == ITEM.FEMALE_ORGANISM and 'женски|♀' or nil))
+							local hybridSexId2 = hybridParentSex2[1].datavalue.value.id
+							HYBRID[2].sex = to.link(hybridSexId2 == ITEM.MALE_ORGANISM and 'мъжки|♂' or (hybridSexId2 == ITEM.FEMALE_ORGANISM and 'женски|♀' or nil))
+						end
+					end
+				end
+			end
+		end
+	end
+	
 	-- GET CLASSIFICATION AND AUTHORITY
 	if not taxobox.common then	
 		local taxons = getClassification(itemId, true, {})
@@ -944,6 +982,9 @@ local function getTaxobox(itemId)
 				local dead = taxon.isFossil and '†' or ''
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
+					if HYBRID and RANK == TAXONOMICRANK.HYBRID and string.find(latinName, '×') then
+						latinName = to.bold(HYBRID[1].sex .. to.italic(getShortName(HYBRID[1].name)) .. ' × ' .. HYBRID[2].sex .. to.italic(getShortName(HYBRID[2].name)))
+					end
 					if taxon.bgLabel and mw.ustring.match(taxon.bgLabel, '[А-я]') then
 						classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
 					else
