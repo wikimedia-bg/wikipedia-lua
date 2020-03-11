@@ -985,7 +985,7 @@ local function getTaxobox(itemId)
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
 					if HYBRID and RANK == TAXONOMICRANK.HYBRID and string.find(latinName, '×') then
-						latinName = to.bold(HYBRID[1].sex .. to.italic(getShortName(HYBRID[1].name)) .. ' × ' .. HYBRID[2].sex .. to.italic(getShortName(HYBRID[2].name)))
+						latinName = to.bold(to.italic(HYBRID[1].sex .. getShortName(HYBRID[1].name)) .. ' × ' .. to.italic(HYBRID[2].sex .. getShortName(HYBRID[2].name)))
 					end
 					if taxon.bgLabel and mw.ustring.match(taxon.bgLabel, '[А-я]') then
 						classification = classification .. to.bold(taxon.bgLabel) .. ' <small>(' .. dead .. latinName ..  ')</small>'
