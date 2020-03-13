@@ -980,7 +980,7 @@ local function getTaxobox(itemId)
 		local authority = nil
 		for i=#taxons, 1, -1 do
 			local taxon = taxons[i]
-			if taxon.isHighlighted or isAllowed(taxon) then
+			if taxon.isHighlighted or isAllowed(taxon) or i == 2 then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td>'
 				local latinName = KINGDOM and KINGDOM:upper() ~= 'VIRUS' and getShortName(taxon.latinName) or taxon.latinName
 				local dead = taxon.isFossil and '†' or ''
