@@ -44,6 +44,7 @@ local PROPERTY = {
 	START_TIME = 'P580',
 	END_TIME = 'P582',
 	IUCN_ID = 'P627',
+	REPLACED_SYNONYM = 'P694',
 	FAMILY_NAME = 'P734',
 	DISAPPEARED_DATE = 'P746',
 	RETRIEVED = 'P813',
@@ -571,18 +572,29 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 	end
 end
 
-local function getSynonym(synonymId, rank)
-	local synonymEntity = mw.wikibase.getEntity(synonymId)
-	if synonymEntity then
-		local taxonNameClaim = synonymEntity.claims[PROPERTY.TAXON_NAME]
-		if taxonNameClaim then
-			local synonymName = taxonNameClaim[1].mainsnak.datavalue.value
-			if synonymName then
-				local authority = getAuthority(taxonNameClaim)
-				return '<li>' .. toItalicIfUnderGenus(to.bold(synonymName), rank) .. ' <small>' .. (authority or '') .. '</small></li>'
+local function getSynonyms(entity, property)
+	local synonyms
+	local taxonSynonymClaim = entity.claims[property]
+	if taxonSynonymClaim then
+		for i=1, #taxonSynonymClaim do
+			local synonymId = taxonSynonymClaim[i].mainsnak.datavalue.value.id
+			if synonymId then
+				local synonymEntity = mw.wikibase.getEntity(synonymId)
+				if synonymEntity then
+					local taxonNameClaim = synonymEntity.claims[PROPERTY.TAXON_NAME]
+					if taxonNameClaim then
+						local synonymName = taxonNameClaim[1].mainsnak.datavalue.value
+						if synonymName then
+							local authority = getAuthority(taxonNameClaim)
+							synonyms = string.format('%s<li>%s <small>%s</small></li>', synonyms or '', toItalicIfUnderGenus(to.bold(synonymName), RANK), authority or '')
+						end
+					end
+				end
 			end
 		end
 	end
+	
+	return synonyms
 end
 
 local function getStatus(status)
@@ -1067,17 +1079,13 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET SYNONYMS
-	local taxonSynonymClaim = entity.claims[PROPERTY.TAXON_SYNONYM]
-	if taxonSynonymClaim then
-		for i=1, #taxonSynonymClaim do
-			local synonymId = taxonSynonymClaim[i].mainsnak.datavalue.value.id
-			if synonymId then
-				local synonym = getSynonym(synonymId, RANK)
-				if synonym then
-					taxobox.synonyms = (taxobox.synonyms or '') .. synonym
-				end
-			end
-		end
+	local taxonSynonyms = getSynonyms(entity, PROPERTY.TAXON_SYNONYM)
+	if taxonSynonyms then
+		taxobox.synonyms = taxonSynonyms
+	end
+	local replacedSynonyms = getSynonyms(entity, PROPERTY.REPLACED_SYNONYM)
+	if replacedSynonyms then
+		taxobox.synonyms = (taxobox.synonyms or '') .. replacedSynonyms
 	end
 	
 	-- GET FOSSIL RANGE
