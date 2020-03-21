@@ -291,7 +291,10 @@ local function isAllowed(taxon)
 	local ordoId = TAXONOMICRANK.Q36602.id
 	local kingdomId = TAXONOMICRANK.Q36732.id
 	
-	if RANK.id <= kingdomId and RANK.id ~= 0 then
+	if not KINGDOM then
+		 -- unknown kingdom
+		return true
+	elseif RANK.id <= kingdomId and RANK.id ~= 0 then
 		-- if RANK is above kingdom → display all
 		return true
 	elseif RANK.id <= ordoId and rank.id > kingdomId and mw.ustring.match(rank.name, '[А-я]') then
