@@ -583,7 +583,7 @@ local function getSynonyms(entity, property)
 			local synonymId = taxonSynonymClaim[i].mainsnak.datavalue.value.id
 			if synonymId then
 				local synonymEntity = mw.wikibase.getEntity(synonymId)
-				if synonymEntity then
+				if synonymEntity and synonymEntity.claims then
 					local taxonNameClaim = synonymEntity.claims[PROPERTY.TAXON_NAME]
 					if taxonNameClaim then
 						local synonymName = taxonNameClaim[1].mainsnak.datavalue.value
