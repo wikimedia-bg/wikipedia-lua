@@ -40,6 +40,7 @@ local PROPERTY = {
 	COMMONS_CATEGORY = 'P373',
 	TAXON_AUTHOR = 'P405',
 	BOTANIST_NAME = 'P428',
+	BASIONYM = P566,
 	TAXON_DATE = 'P574',
 	START_TIME = 'P580',
 	END_TIME = 'P582',
@@ -1089,6 +1090,10 @@ local function getTaxobox(itemId)
 	local replacedSynonyms = getSynonyms(entity, PROPERTY.REPLACED_SYNONYM)
 	if replacedSynonyms then
 		taxobox.synonyms = (taxobox.synonyms or '') .. replacedSynonyms
+	end
+	local basionyms = getSynonyms(entity, PROPERTY.BASIONYM)
+	if basionyms then
+		taxobox.synonyms = (taxobox.synonyms or '') .. basionyms
 	end
 	
 	-- GET FOSSIL RANGE
