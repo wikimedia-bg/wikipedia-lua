@@ -337,13 +337,14 @@ local function createFileNode(file)
 		caption = string.format('<div>%s</div>', file.description)
 	end
 	
+	local image = file.name:sub(1, 1) == '<' and file.name or to.link(string.format('File:%s|frameless%s|240px', file.name, title))
 	local node = mw.html.create('tr')
 		:tag('td')
 			:css('padding', '5px')
 			:css('text-align', 'center')
 			:tag('div')
 				:css('display', 'inline-block')
-				:wikitext(to.link(string.format('File:%s|frameless%s|240px', file.name, title)) .. caption)
+				:wikitext(image .. caption)
 				:allDone()
 		
 	return node
