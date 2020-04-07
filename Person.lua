@@ -301,6 +301,10 @@ function inArray (array, value)
 end
 
 function isCountry(qid)
+        if isSettlement(qid, 0) then
+                return false
+        end
+
         local countries = {'Q6256', 'Q3624078', 'Q1151405', 'Q161243', 'Q15239622', 'Q2577883', 'Q3024240', 'Q6726158', 'Q15634554'}
         local s = wd._properties ({ 'raw', qid, 'P31', sep='', ["sep%s"]='\t' })
 
