@@ -729,37 +729,39 @@ end
 
 local function getCommonNameData(entity)
 	local instanceOfs = entity.claims[PROPERTY.INSTANCE_OF]
-	for i = 1, #instanceOfs do
-		if instanceOfs[i].mainsnak.datavalue.value and instanceOfs[i].mainsnak.datavalue.value.id == ITEM.POLYPHYLETIC_COMMON_NAME then
-			local commonname = {}
-			
-			-- GET COMMON NAME INCLUDES
-			local qualifiers = instanceOfs[i].qualifiers
-			if qualifiers then
-				local of = qualifiers[PROPERTY.OF]
-				if of then
-					local includes
-					for j = 1, #of do
-						if of[j] and of[j].datavalue and of[j].datavalue.value.id then
-							local includesId = of[j].datavalue.value.id
-							local includesEntity = mw.wikibase.getEntity(includesId)
-							if includesEntity and includesEntity.claims then
-								local includesTaxonName = includesEntity.claims[PROPERTY.TAXON_NAME]
-								if includesTaxonName and includesTaxonName[1] and includesTaxonName[1].mainsnak.datavalue.value then
-									includes = string.format('%s<li>%s</li>', includes or '', to.link(includesTaxonName[1].mainsnak.datavalue.value))
+	if instanceOfs then
+		for i = 1, #instanceOfs do
+			if instanceOfs[i].mainsnak.datavalue.value and instanceOfs[i].mainsnak.datavalue.value.id == ITEM.POLYPHYLETIC_COMMON_NAME then
+				local commonname = {}
+				
+				-- GET COMMON NAME INCLUDES
+				local qualifiers = instanceOfs[i].qualifiers
+				if qualifiers then
+					local of = qualifiers[PROPERTY.OF]
+					if of then
+						local includes
+						for j = 1, #of do
+							if of[j] and of[j].datavalue and of[j].datavalue.value.id then
+								local includesId = of[j].datavalue.value.id
+								local includesEntity = mw.wikibase.getEntity(includesId)
+								if includesEntity and includesEntity.claims then
+									local includesTaxonName = includesEntity.claims[PROPERTY.TAXON_NAME]
+									if includesTaxonName and includesTaxonName[1] and includesTaxonName[1].mainsnak.datavalue.value then
+										includes = string.format('%s<li>%s</li>', includes or '', to.link(includesTaxonName[1].mainsnak.datavalue.value))
+									end
 								end
 							end
 						end
+						
+						commonname.includes = includes
 					end
-					
-					commonname.includes = includes
 				end
+				
+				-- GET COMMON NAME PARENT
+				commonname.parent = getClaim(entity, PROPERTY.SUBCLASS_OF, 1)
+				
+				return commonname
 			end
-			
-			-- GET COMMON NAME PARENT
-			commonname.parent = getClaim(entity, PROPERTY.SUBCLASS_OF, 1)
-			
-			return commonname
 		end
 	end
 end
