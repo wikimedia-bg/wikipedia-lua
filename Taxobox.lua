@@ -1,7 +1,3 @@
--- TODO:
---- общоприето наименование (includes, excludes)
---- хибрид
-
 local p = {}
 
 local RANK
@@ -37,6 +33,7 @@ local PROPERTY = {
 	DEPICTS = 'P180',
 	RANGE_MAP = 'P181',
 	TAXON_NAME = 'P225',
+	SUBCLASS_OF = 'P279',
 	COMMONS_CATEGORY = 'P373',
 	TAXON_AUTHOR = 'P405',
 	BOTANIST_NAME = 'P428',
@@ -45,6 +42,7 @@ local PROPERTY = {
 	START_TIME = 'P580',
 	END_TIME = 'P582',
 	IUCN_ID = 'P627',
+	OF = 'P642',
 	REPLACED_SYNONYM = 'P694',
 	FAMILY_NAME = 'P734',
 	DISAPPEARED_DATE = 'P746',
@@ -729,6 +727,43 @@ local function getClaim(entity, property, index)
 	end
 end
 
+local function getCommonNameData(entity)
+	local instanceOfs = entity.claims[PROPERTY.INSTANCE_OF]
+	for i = 1, #instanceOfs do
+		if instanceOfs[i].mainsnak.datavalue.value and instanceOfs[i].mainsnak.datavalue.value.id == ITEM.POLYPHYLETIC_COMMON_NAME then
+			local commonname = {}
+			
+			-- GET COMMON NAME INCLUDES
+			local qualifiers = instanceOfs[i].qualifiers
+			if qualifiers then
+				local of = qualifiers[PROPERTY.OF]
+				if of then
+					local includes
+					for j = 1, #of do
+						if of[j] and of[j].datavalue and of[j].datavalue.value.id then
+							local includesId = of[j].datavalue.value.id
+							local includesEntity = mw.wikibase.getEntity(includesId)
+							if includesEntity and includesEntity.claims then
+								local includesTaxonName = includesEntity.claims[PROPERTY.TAXON_NAME]
+								if includesTaxonName and includesTaxonName[1] and includesTaxonName[1].mainsnak.datavalue.value then
+									includes = string.format('%s<li>%s</li>', includes or '', to.link(includesTaxonName[1].mainsnak.datavalue.value))
+								end
+							end
+						end
+					end
+					
+					commonname.includes = includes
+				end
+			end
+			
+			-- GET COMMON NAME PARENT
+			commonname.parent = getClaim(entity, PROPERTY.SUBCLASS_OF, 1)
+			
+			return commonname
+		end
+	end
+end
+
 local function getClassification(itemId, isHighlighted, taxons)
 	local entity = mw.wikibase.getEntityObject(itemId)
 	local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
@@ -818,11 +853,9 @@ local function getTaxobox(itemId)
 	taxobox.title = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
 	if entity and entity.claims then
-		local instanceOf = getClaim(entity, PROPERTY.INSTANCE_OF)
 		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or taxobox.title
-		if instanceOf and string.match(instanceOf, ITEM.POLYPHYLETIC_COMMON_NAME) then
-			taxobox.common = {}
-		elseif not entity.claims[PROPERTY.TAXON_NAME] then
+		taxobox.commonname = getCommonNameData(entity)
+		if not taxobox.commonname and not entity.claims[PROPERTY.TAXON_NAME] then
 			return taxobox
 		end
 	else
@@ -991,8 +1024,8 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET CLASSIFICATION AND AUTHORITY
-	if not taxobox.common then	
-		local taxons = getClassification(itemId, true, {})
+	if not taxobox.commonname or taxobox.commonname.parent then
+		local taxons = taxobox.commonname and taxobox.commonname.parent and getClassification(taxobox.commonname.parent, false, {}) or getClassification(itemId, true, {})
 		local classification = nil
 		local authority = nil
 		for i=#taxons, 1, -1 do
@@ -1139,7 +1172,7 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET COLOR
-	if taxobox.common then
+	if taxobox.commonname then
 		taxobox.color = '#DDD'
 	elseif KINGDOM then
 		taxobox.color = COLORMAP[KINGDOM:upper()] or '#FFF'
@@ -1164,7 +1197,7 @@ local function renderTaxobox(taxobox)
 			:allDone()
 	
 	-- COMMON NAME
-	if taxobox.common then
+	if taxobox.commonname then
 		commonNode = mw.html.create('tr')
 			:tag('td')
 				:css('text-align', 'center')
@@ -1235,6 +1268,18 @@ local function renderTaxobox(taxobox)
 					:tag('table')
 						:css('width', '100%')
 						:wikitext(taxobox.classification)
+						:allDone()
+	end
+	
+	-- INCLUDES
+	if taxobox.commonname and taxobox.commonname.includes then
+		includesNode = mw.html.create()
+			:node(createSectionNode(to.bold('Включени групи'), taxobox.color))
+			:tag('tr')
+				:tag('td')
+					:css('text-align', 'left')
+					:tag('ul')
+						:wikitext(taxobox.commonname.includes)
 						:allDone()
 	end
 	
@@ -1315,6 +1360,7 @@ local function renderTaxobox(taxobox)
 		:node(bgStatusNode)
 		:node(virusNode)
 		:node(classificationNode)
+		:node(includesNode)
 		:node(authorityNode)
 		:node(distributionNode)
 		:node(synonymsNode)
