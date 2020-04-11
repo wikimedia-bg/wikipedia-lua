@@ -506,46 +506,48 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 		if taxonAuthors then
 			for i = 1, #taxonAuthors do
 				local authorAbbreviation
-				local authorItemId = taxonAuthors[i].datavalue.value.id
-				local authorEntity = mw.wikibase.getEntity(authorItemId)
-				local zoologyName = authorEntity.claims[PROPERTY.ZOOLOGY_NAME]
-				if zoologyName and zoologyName[1].mainsnak.datavalue then
-					authorAbbreviation = zoologyName[1].mainsnak.datavalue.value
-				else
-					local botanistName = authorEntity.claims[PROPERTY.BOTANIST_NAME]
-					if botanistName and botanistName[1].mainsnak.datavalue then
-						authorAbbreviation = botanistName[1].mainsnak.datavalue.value
+				if taxonAuthors[i].datavalue then
+					local authorItemId = taxonAuthors[i].datavalue.value.id
+					local authorEntity = mw.wikibase.getEntity(authorItemId)
+					local zoologyName = authorEntity.claims[PROPERTY.ZOOLOGY_NAME]
+					if zoologyName and zoologyName[1].mainsnak.datavalue then
+						authorAbbreviation = zoologyName[1].mainsnak.datavalue.value
 					else
-						local familyName = authorEntity.claims[PROPERTY.FAMILY_NAME]
-						if familyName and familyName[1].mainsnak.datavalue then
-							authorAbbreviation = mw.wikibase.getEntity(familyName[1].mainsnak.datavalue.value.id):getLabel()
-						end
-					end
-					-- last attempt to get authorAbbreviation if nil
-					if not authorAbbreviation then
-						local authorLabel = authorEntity:getLabel('en')
-						if authorLabel then
-							local splittedEnName = mw.text.split(authorLabel, ' ')
-							authorAbbreviation = splittedEnName[#splittedEnName]
+						local botanistName = authorEntity.claims[PROPERTY.BOTANIST_NAME]
+						if botanistName and botanistName[1].mainsnak.datavalue then
+							authorAbbreviation = botanistName[1].mainsnak.datavalue.value
 						else
-							authorAbbreviation = '?'
+							local familyName = authorEntity.claims[PROPERTY.FAMILY_NAME]
+							if familyName and familyName[1].mainsnak.datavalue then
+								authorAbbreviation = mw.wikibase.getEntity(familyName[1].mainsnak.datavalue.value.id):getLabel()
+							end
+						end
+						-- last attempt to get authorAbbreviation if nil
+						if not authorAbbreviation then
+							local authorLabel = authorEntity:getLabel('en')
+							if authorLabel then
+								local splittedEnName = mw.text.split(authorLabel, ' ')
+								authorAbbreviation = splittedEnName[#splittedEnName]
+							else
+								authorAbbreviation = '?'
+							end
 						end
 					end
-				end
-				
-				local authorNameLink = authorEntity:getSitelink('bgwiki')
-				local currentName = authorNameLink and to.link(authorNameLink .. '|' .. authorAbbreviation) or authorAbbreviation
-				
-				if #taxonAuthors == 1 or i == 1 then
-					authorityName = currentName
-					localAuthorityName = authorAbbreviation
-				elseif #taxonAuthors == 2 then
-					authorityName = authorityName .. ' & ' .. currentName
-					localAuthorityName = localAuthorityName .. ' & ' .. authorAbbreviation
-				else
-					authorityName = authorityName .. ' et al.'
-					localAuthorityName = localAuthorityName .. ' et al.'
-					break
+					
+					local authorNameLink = authorEntity:getSitelink('bgwiki')
+					local currentName = authorNameLink and to.link(authorNameLink .. '|' .. authorAbbreviation) or authorAbbreviation
+					
+					if #taxonAuthors == 1 or i == 1 then
+						authorityName = currentName
+						localAuthorityName = authorAbbreviation
+					elseif #taxonAuthors == 2 then
+						authorityName = authorityName .. ' & ' .. currentName
+						localAuthorityName = localAuthorityName .. ' & ' .. authorAbbreviation
+					else
+						authorityName = authorityName .. ' et al.'
+						localAuthorityName = localAuthorityName .. ' et al.'
+						break
+					end
 				end
 			end
 		end
