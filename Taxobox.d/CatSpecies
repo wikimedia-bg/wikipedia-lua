@@ -1,0 +1,32 @@
+local p = {}
+
+local function count(categories)
+	local count = 0
+	for i=1, #categories do
+		if mw.title.new('Категория:Уикипедия:Видове ' .. categories[i]).exists then
+			count = count + mw.site.stats.pagesInCategory('Уикипедия:Видове ' .. categories[i], 'pages')
+		end
+	end
+	
+	return count
+end
+
+function p.plants()
+	local plants = { 'спорови растения', 'голосеменни растения', 'едносемеделни растения', 'двусемеделни растения', 'неваскуларни растения', 'водорасли', 'растения' }
+	
+	return count(plants)
+end
+
+function p.animals()
+	local animals = { 'бозайници', 'влечуги', 'земноводни', 'лъчеперки', 'мекотели', 'хрущялни риби', 'червеи', 'мешести', 'членестоноги', 'птици', 'животни' }
+	
+	return count(animals)
+end
+
+function p.all(frame)
+	local all = { 'chromalveolata', 'бактерии', 'вируси', 'гъби', 'протисти', 'археи', 'amoebozoa', 'excavata', 'rhizaria' }
+
+	return p.plants() + p.animals() + count(all)
+end
+
+return p
