@@ -711,7 +711,10 @@ local function getClaim(entity, property, index)
 		if index then
 			local mainsnak = claims[index].mainsnak
 			if mainsnak.snaktype ~= 'novalue' and mainsnak.datavalue then
-				return entity:getBestStatements(property)[index].mainsnak.datavalue.value.id
+				local bestStatement = entity:getBestStatements(property)[index]
+				if bestStatement then
+					return bestStatement.mainsnak.datavalue.value.id
+				end
 			end
 		else
 			local result = nil
