@@ -5,7 +5,6 @@
 <code><nowiki>{{#invoke:Taxobox|get|Q82069695}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|statusBg=CR|statusBgRef=изт.}}</nowiki></code><br>
 <code><nowiki>{{#invoke:Taxobox|get|image=Panther.jpg|imageCaption=Пантера}}</nowiki></code>
-<references />
 
 == Описание ==
 '''Модул:Taxobox''' създава инфокутия с таксономична информация от Уикиданни, разпределена в следните 13 групи:
