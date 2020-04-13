@@ -784,40 +784,44 @@ local function getClassification(itemId, isHighlighted, taxons)
 			LATINNAME = latinName
 		end
 	end
-	
-	local bgLabel = getbgLabel(entity)
-	local bgSiteLink = entity:getSitelink('bgwiki')
-	
-	if not KINGDOM and rank.name == 'царство' then
-		KINGDOM = latinName
-	end
-	
-	local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
-	local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
-	isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
-	
-	local authority
-	if isHighlighted then
-		local taxonNameClaim = entity.claims[PROPERTY.TAXON_NAME]
-		if taxonNameClaim then
-			authority = {
-				link = entity:getSitelink('specieswiki') or latinName,
-				name = getAuthority(taxonNameClaim, rank.name == RANK.name)
-			}
-		end
-	end
 		
-	table.insert(taxons, {
-		rank = rank,
-		latinName = latinName,
-		bgLabel = bgLabel,
-		bgSiteLink = bgSiteLink,
-		authority = authority,
-		isFossil = isFossil,
-		isHighlighted = isHighlighted
-	})
-	
-	return parentTaxonId and getClassification(parentTaxonId, isHighlighted, taxons) or taxons
+	if latinName == '' then
+		return taxons
+	else
+		local bgLabel = getbgLabel(entity)
+		local bgSiteLink = entity:getSitelink('bgwiki')
+		
+		if not KINGDOM and rank.name == 'царство' then
+			KINGDOM = latinName
+		end
+		
+		local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
+		local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
+		isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
+		
+		local authority
+		if isHighlighted then
+			local taxonNameClaim = entity.claims[PROPERTY.TAXON_NAME]
+			if taxonNameClaim then
+				authority = {
+					link = entity:getSitelink('specieswiki') or latinName,
+					name = getAuthority(taxonNameClaim, rank.name == RANK.name)
+				}
+			end
+		end
+		
+		table.insert(taxons, {
+			rank = rank,
+			latinName = latinName,
+			bgLabel = bgLabel,
+			bgSiteLink = bgSiteLink,
+			authority = authority,
+			isFossil = isFossil,
+			isHighlighted = isHighlighted
+		})
+		
+		return parentTaxonId and getClassification(parentTaxonId, isHighlighted, taxons) or taxons
+	end
 end
 
 local function getExternalParameters(args, taxobox)
