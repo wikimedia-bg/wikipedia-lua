@@ -71,8 +71,6 @@ local function getCat()
 						end
 						
 						return 'Уикипедия:Видове животни'
-					else
-						return 'Уикипедия:Таксономия'
 					end
 				else
 					if domain == 'Archaea' then
@@ -80,12 +78,12 @@ local function getCat()
 	                else
 						if false then
 						   return 'Уикипедия:Видове вируси'
-						else
-						   return 'Уикипедия:Таксономия'
 						end
 					end
 				end
-	        end
+			end
+        	
+        	return 'Уикипедия:Таксономия'
 		end
 	end	
 end
