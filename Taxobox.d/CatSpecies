@@ -3,89 +3,66 @@ local p = {}
 local rank
 local taxons
 
-local function isPartOf(str)
-	local names = mw.text.split(str, '|')
-	for i=1, #taxons do
-		for j=1, #names do
-			if taxons[i].taxonName == names[j] then
-				return true
-			end
-		end
-	end
-end
+local cat = 'Категория:'
+local catSpecies = 'Уикипедия:Видове '
+
+local CATS = {
+	-- PLANTS
+	{ 'Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta', 'голосеменни растения' },
+	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
+	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
+	{ 'Liliopsida', 'едносемеделни растения' },
+	{ 'Magnoliopsida', 'двусемеделни растения' },
+	{ 'Charophyta|Chlorophyta', 'водорасли' },
+
+	-- ANIMALS
+	{ 'Chondrichthyes', 'хрущялни риби' },
+	{ 'Actinopterygii', 'лъчеперки' },
+	{ 'Amphibia', 'земноводни' },
+	{ 'Reptilia', 'влечуги' },
+	{ 'Aves', 'птици' },
+	{ 'Mammalia', 'бозайници' },
+	{ 'Arthropoda', 'членестоноги' },
+	{ 'Platyhelminthes|Acanthocephala|Nematoda|Annelida', 'червеи' },
+	{ 'Mollusca', 'мекотели' },
+	{ 'Cnidaria', 'мешести' },
+
+	-- ORGANISMS
+	{ 'Amoebozoa', 'amoebozoa' },
+	{ 'Rhizaria', 'rhizaria' },
+	{ 'Archaea', 'археи' },
+	{ 'Virus', 'вируси' },
+	{ 'Bacteria', 'бактерии' },
+	{ 'Excavata', 'excavata' },
+	{ 'Chromalveolata', 'chromalveolata' },
+	{ 'Protista', 'протисти' },
+	{ 'Fungi', 'гъби' },
+	{ 'Plantae', 'растения' },
+	{ 'Animalia', 'животни' }
+}
 
 local function getCat()
 	if rank == species then
-		-- PLANTS
-		if isPartOf('Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta') then
-			return 'Уикипедия:Видове голосеменни растения'
-		elseif isPartOf('Pteridophyta|Polypodiophyta|Lycopodiophyta') then
-			return 'Уикипедия:Видове спорови растения'
-		elseif isPartOf('Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta') then
-			return 'Уикипедия:Видове неваскуларни растения'
-		elseif isPartOf('Liliopsida') then
-			return 'Уикипедия:Видове едносемеделни растения'
-		elseif isPartOf('Magnoliopsida') then
-			return 'Уикипедия:Видове двусемеделни растения'
-		elseif isPartOf('Charophyta|Chlorophyta') then
-			return 'Уикипедия:Видове водорасли'
-			
-		-- ANIMALS
-		elseif isPartOf('Chondrichthyes') then
-			return 'Уикипедия:Видове хрущялни риби'
-		elseif isPartOf('Actinopterygii') then
-			return 'Уикипедия:Видове лъчеперки'
-		elseif isPartOf('Amphibia') then
-			return 'Уикипедия:Видове земноводни'
-		elseif isPartOf('Reptilia') then
-			return 'Уикипедия:Видове влечуги'
-		elseif isPartOf('Aves') then
-			return 'Уикипедия:Видове птици'
-		elseif isPartOf('Mammalia') then
-			return 'Уикипедия:Видове бозайници'
-		elseif isPartOf('Arthropoda') then
-			return 'Уикипедия:Видове членестоноги'
-		elseif isPartOf('Platyhelminthes|Acanthocephala|Nematoda|Annelida') then
-			return 'Уикипедия:Видове червеи'
-		elseif isPartOf('Mollusca') then
-			return 'Уикипедия:Видове мекотели'
-		elseif isPartOf('Cnidaria') then
-			return 'Уикипедия:Видове мешести'
-		
-		-- ORGANISMS
-		elseif isPartOf('Amoebozoa') then
-			return 'Уикипедия:Видове amoebozoa'
-		elseif isPartOf('Rhizaria') then
-			return 'Уикипедия:Видове rhizaria'
-		elseif isPartOf('Archaea') then
-			return 'Уикипедия:Видове археи'
-		elseif isPartOf('Virus') then
-			return 'Уикипедия:Видове вируси'
-		elseif isPartOf('Bacteria') then
-			return 'Уикипедия:Видове бактерии'
-		elseif isPartOf('Excavata') then
-			return 'Уикипедия:Видове excavata'
-		elseif isPartOf('Chromalveolata') then
-			return 'Уикипедия:Видове chromalveolata'
-		elseif isPartOf('Protista') then
-			return 'Уикипедия:Видове протисти'
-		elseif isPartOf('Fungi') then
-			return 'Уикипедия:Видове гъби'
-		elseif isPartOf('Plantae') then
-			return 'Уикипедия:Видове растения'
-		elseif isPartOf('Animalia') then
-			return 'Уикипедия:Видове животни'
-		else
-        	return 'Уикипедия:Таксономия'
+		for i=1, #CATS do
+			local names = mw.text.split(CATS[i].name, '|')
+			for j=1, #taxons do
+				for k=1, #names do
+					if taxons[j].taxonName == names[k] then
+						return cat .. catSpecies .. CATS[i].cat
+					end
+				end
+			end
 		end
+		
+		return cat .. 'Уикипедия:Таксономия'
 	end	
 end
 
 local function count(categories)
 	local count = 0
 	for i=1, #categories do
-		if mw.title.new('Категория:Уикипедия:Видове ' .. categories[i]).exists then
-			count = count + mw.site.stats.pagesInCategory('Уикипедия:Видове ' .. categories[i], 'pages')
+		if mw.title.new(cat .. catSpecies .. categories[i]).exists then
+			count = count + mw.site.stats.pagesInCategory(catSpecies .. categories[i], 'pages')
 		end
 	end
 	
