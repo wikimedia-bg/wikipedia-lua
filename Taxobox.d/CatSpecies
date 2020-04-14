@@ -7,7 +7,7 @@ local function contains(str)
 	local names = mw.text.split(str, '|')
 	for i=1, #taxons do
 		for j=1, #names do
-			if taxons[1].taxonName == names[j] then
+			if taxons[i].taxonName == names[j] then
 				return true
 			end
 		end
