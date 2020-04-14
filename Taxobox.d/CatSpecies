@@ -3,17 +3,57 @@ local p = {}
 local rank
 local taxons
 
-local function contains(name)
+local function contains(str)
+	local names = mw.text.split(str, '|')
 	for i=1, #taxons do
-		if taxons[1].taxonName == name then
-			return true
+		for j=1, #names do
+			if taxons[1].taxonName == names[j] then
+				return true
+			end
 		end
 	end
 end
 
 local function getCat()
 	if rank == species then
-		if contains('Amoebozoa') then
+		-- PLANTS
+		if contains('Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta') then
+			return 'Уикипедия:Видове голосеменни растения'
+		elseif contains('Pteridophyta|Polypodiophyta|Lycopodiophyta') then
+			return 'Уикипедия:Видове спорови растения'
+		elseif contains('Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta') then
+			return 'Уикипедия:Видове неваскуларни растения'
+		elseif contains('Liliopsida') then
+			return 'Уикипедия:Видове едносемеделни растения'
+		elseif contains('Magnoliopsida') then
+			return 'Уикипедия:Видове двусемеделни растения'
+		elseif contains('Charophyta|Chlorophyta') then
+			return 'Уикипедия:Видове водорасли'
+			
+		-- ANIMALS
+		elseif contains('Chondrichthyes') then
+			return 'Уикипедия:Видове хрущялни риби'
+		elseif contains('Actinopterygii') then
+			return 'Уикипедия:Видове лъчеперки'
+		elseif contains('Amphibia') then
+			return 'Уикипедия:Видове земноводни'
+		elseif contains('Reptilia') then
+			return 'Уикипедия:Видове влечуги'
+		elseif contains('Aves') then
+			return 'Уикипедия:Видове птици'
+		elseif contains('Mammalia') then
+			return 'Уикипедия:Видове бозайници'
+		elseif contains('Arthropoda') then
+			return 'Уикипедия:Видове членестоноги'
+		elseif contains('Platyhelminthes|Acanthocephala|Nematoda|Annelida') then
+			return 'Уикипедия:Видове червеи'
+		elseif contains('Mollusca') then
+			return 'Уикипедия:Видове мекотели'
+		elseif contains('Cnidaria') then
+			return 'Уикипедия:Видове мешести'
+		
+		-- ORGANISMS
+		elseif contains('Amoebozoa') then
 			return 'Уикипедия:Видове amoebozoa'
 		elseif contains('Rhizaria') then
 			return 'Уикипедия:Видове rhizaria'
@@ -32,44 +72,8 @@ local function getCat()
 		elseif contains('Fungi') then
 			return 'Уикипедия:Видове гъби'
 		elseif contains('Plantae') then
-			if contains('Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta') then
-				return 'Уикипедия:Видове голосеменни растения'
-			elseif contains('Pteridophyta|Polypodiophyta|Lycopodiophyta') then
-				return 'Уикипедия:Видове спорови растения'
-			elseif contains('Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta') then
-				return 'Уикипедия:Видове неваскуларни растения'
-			elseif contains('Charophyta|Chlorophyta') then
-				return 'Уикипедия:Видове водорасли'
-			elseif contains('Liliopsida') then
-				return 'Уикипедия:Видове едносемеделни растения'
-			elseif contains('Magnoliopsida') then
-				return 'Уикипедия:Видове двусемеделни растения'
-			end
-
 			return 'Уикипедия:Видове растения'
 		elseif contains('Animalia') then
-			if contains('Chondrichthyes') then
-				return 'Уикипедия:Видове хрущялни риби'
-			elseif contains('Actinopterygii') then
-				return 'Уикипедия:Видове лъчеперки'
-			elseif contains('Amphibia') then
-				return 'Уикипедия:Видове земноводни'
-			elseif contains('Reptilia') then
-				return 'Уикипедия:Видове влечуги'
-			elseif contains('Aves') then
-				return 'Уикипедия:Видове птици'
-			elseif contains('Mammalia') then
-				return 'Уикипедия:Видове бозайници'
-			elseif contains('Arthropoda') then
-				return 'Уикипедия:Видове членестоноги'
-			elseif contains('Platyhelminthes|Acanthocephala|Nematoda|Annelida') then
-				return 'Уикипедия:Видове червеи'
-			elseif contains('Mollusca') then
-				return 'Уикипедия:Видове мекотели'
-			elseif contains('Cnidaria') then
-				return 'Уикипедия:Видове мешести'
-			end
-
 			return 'Уикипедия:Видове животни'
 		else
         	return 'Уикипедия:Таксономия'
