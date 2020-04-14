@@ -44,11 +44,11 @@ local CATS = {
 local function getCat()
 	if rank == species then
 		for i=1, #CATS do
-			local names = mw.text.split(CATS[i].name, '|')
+			local names = mw.text.split(CATS[i][1], '|')
 			for j=1, #taxons do
 				for k=1, #names do
 					if taxons[j].taxonName == names[k] then
-						return cat .. catSpecies .. CATS[i].cat
+						return cat .. catSpecies .. CATS[i][2]
 					end
 				end
 			end
