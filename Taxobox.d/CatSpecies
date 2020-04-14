@@ -47,7 +47,7 @@ local function getCat()
 			local names = mw.text.split(CATS[i][1], '|')
 			for j=1, #taxons do
 				for k=1, #names do
-					if taxons[j].taxonName == names[k] then
+					if taxons[j].latinName == names[k] then
 						return cat .. catSpecies .. CATS[i][2]
 					end
 				end
