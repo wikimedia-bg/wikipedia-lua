@@ -28,13 +28,13 @@ local CATS = {
 	{ 'Cnidaria', 'мешести' },
 
 	-- ORGANISMS
+	{ 'Chromalveolata', 'chromalveolata' },
 	{ 'Amoebozoa', 'amoebozoa' },
 	{ 'Rhizaria', 'rhizaria' },
+	{ 'Excavata', 'excavata' },
 	{ 'Archaea', 'археи' },
 	{ 'Virus', 'вируси' },
 	{ 'Bacteria', 'бактерии' },
-	{ 'Excavata', 'excavata' },
-	{ 'Chromalveolata', 'chromalveolata' },
 	{ 'Protista', 'протисти' },
 	{ 'Fungi', 'гъби' },
 	{ 'Plantae', 'растения' },
