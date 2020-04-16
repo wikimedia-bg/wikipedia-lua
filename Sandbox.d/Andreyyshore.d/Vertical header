@@ -1,0 +1,147 @@
+local p = {}
+
+function p.stack(str, vertAlign, noBold)
+	local t = {}
+	local breakPattern = "<[bB][rR] */? *>"
+	local function splitLines(line)
+		table.insert(t, line)
+		return ""
+	end
+	local text = mw.ustring.toNFC(str):gsub("%[%[([^%[%]%|]+)%|([^%[%]%|]+)%]%]", function(a, b)
+		return "[[" .. a .. "|" .. b:gsub(breakPattern, "]]<br>[[" .. a .. "|") .. "]]"
+	end)
+	splitLines(text:gsub("(.-)(" .. breakPattern .. ")", splitLines))
+	for k, v in pairs(t) do
+		t[k] = (
+			mw.ustring.gsub(
+				mw.ustring.gsub(v, "([^'%[%]])", "%1<br>"),
+				"'([^'])", "'<br>%1"
+			)
+			:gsub("(''+)<br>", "%1")
+			:gsub("(%[%[+)<br>", "%1")
+			:gsub("<br>(%]+)", "%1<br>")
+			:gsub("%[%[([^%[%]]+)%]%]", function(n)
+				local inBrackets = n
+				local stripped = ""
+				if inBrackets:find("%|") == nil then
+					inBrackets = inBrackets:gsub("<br>", "") .. "|" .. inBrackets
+				else
+					stripped = inBrackets:match("^[^%|]+%|"):gsub("<br>", "")
+					inBrackets = stripped .. inBrackets:gsub("^[^%|]+%|<br>", "")
+				end
+				return "[[" .. inBrackets .. "]]"
+			end)
+			:gsub("<br>$", "")
+		)
+	end
+	if #t == 1 then return t[1] end
+	local dom1 = mw.html.create("tr")
+	if noBold ~= "" then dom1:css("font-weight", "normal") end
+	local dom2
+	for _, v in pairs(t) do
+		dom1:wikitext(
+			tostring(
+				mw.html.create("td")
+					:css({
+						["border"] = "none",
+						["padding"] = 0,
+						["vertical-align"] = vertAlign,
+						["width"] = "1em",
+						["max-width"] = "1em"
+					})
+					:wikitext(v)
+			)
+		)
+	end
+	dom2 = mw.html.create("table")
+		:wikitext(tostring(dom1))
+		:css({
+			["margin"] = "auto",
+			["border-collapse"] = "collapse",
+			["vertical-align"] = "inherit"
+		})
+		:attr({cellspacing = 0, cellpadding = 0})
+	return tostring(dom2)
+end
+
+function p.cell(frame)
+	local text = frame.args.text
+	local sortPadding = frame.args.sortPadding
+	local vertAlign = frame.args.vertAlign
+	local maxWidth = frame.args.maxWidth
+	local noBold = frame.args.noBold
+	local style = frame.args.style:gsub("\"", "&quot;")
+	local cellStyle = frame.args.cellstyle:gsub("\"", "&quot;")
+	local wikiText = "class = \"nowrap"
+	local normalAlign = ""
+	-- local stupidIEAlign = ""
+	local stack = frame.args.stack
+	local breakPattern = "<[bB][rR] */? *>"
+	local rows = 1
+	local width = 0
+	if maxWidth ~= "" then
+		width = maxWidth
+	else
+		for eachMatch in text:gmatch(breakPattern) do
+			rows = rows + 1
+		end
+		width = rows * 0.875
+		width = width .. "em"
+	end
+	if sortPadding == "" then
+		wikiText = wikiText .. " unsortable"
+	end
+	wikiText = wikiText .. "\" style=\"line-height:"
+	if stack == "" then
+		wikiText = wikiText .. "99"
+	else
+		wikiText = wikiText .. "120"
+	end
+	wikiText = wikiText .. "%;vertical-align:" .. vertAlign .. ";padding:"
+	if sortPadding == "" then
+		wikiText = wikiText .. ".4em"
+	else
+		wikiText = wikiText .. "21px"
+	end
+	if (stack ~= "" and text:find(breakPattern) ~= nil) then
+		wikiText = wikiText .. " .2em"
+	else
+		wikiText = wikiText .. " .4em"
+	end
+	wikiText = wikiText .. " .2em;background-position:50% .4em !important;"
+	if stack == "" then
+		wikiText = wikiText .. "min-width:" .. width .. ";max-width:" .. width ..
+			";width:" .. width .. ";overflow:hidden;" .. cellStyle .. "\""
+	end
+	wikiText = wikiText .. " | <div style=\""
+	if stack == "" then
+		wikiText = wikiText .. frame:preprocess("{{writing-mode|v1}}{{Transform-rotate|180}}") ..
+			"-ms-transform: none \ ;padding-left:1px;"
+		if vertAlign == "top" then
+			normalAlign = "right"
+			-- stupidIEAlign = "left"
+		elseif vertAlign == "middle" then
+			normalAlign = "center"
+			-- stupidIEAlign = "center"
+		else
+			normalAlign = "left"
+			-- stupidIEAlign = "right"
+		end
+	else normalAlign = "center"
+	end
+	wikiText = wikiText .. "text-align:" .. normalAlign .. ";" -- text-align:" .. stupidIEAlign .. " \ ;"
+	wikiText = wikiText .. style .. "\">"
+	local textToAdd = text
+	if stack ~= "" then
+		textToAdd = p.stack(text, vertAlign, noBold)
+	end
+	if noBold == "" then
+		wikiText = wikiText .. textToAdd
+	else
+		wikiText = wikiText .. frame:preprocess("{{nobold|1=" .. textToAdd .. "}}")
+	end
+	wikiText = wikiText .. "</div>"
+	return wikiText
+end
+
+return p
