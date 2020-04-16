@@ -33,7 +33,7 @@ function p.cell(frame)
 	end
 	wikiText = wikiText .. " .4em .2em;background-position:50% .4em !important;"
 	wikiText = wikiText .. "min-width:" .. width .. ";max-width:" .. width .. ";width:" .. width .. ";overflow:hidden;" .. cellStyle .. "\""
-	wikiText = wikiText .. " | <div style=\"" .. frame:preprocess("{{writing-mode|v1}}{{Transform-rotate|180}}") .. "-ms-transform: none \ ;padding-left:1px;text-align:"
+	wikiText = wikiText .. " | <div style=\"" .. frame:preprocess("{{writing-mode|v1}}{{Вертикално|180}}") .. "-ms-transform: none \ ;padding-left:1px;text-align:"
 	if vertAlign == "top" then
 		normalAlign = "right"
 		-- stupidIEAlign = "left"
