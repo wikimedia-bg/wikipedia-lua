@@ -115,7 +115,7 @@ function p.cell(frame)
 	end
 	wikiText = wikiText .. " | <div style=\""
 	if stack == "" then
-		wikiText = wikiText .. frame:preprocess("{{writing-mode|v1}}{{Transform-rotate|180}}") ..
+		wikiText = wikiText .. frame:preprocess("{{writing-mode|v1}}{{Вертикално|180}}") ..
 			"-ms-transform: none \ ;padding-left:1px;"
 		if vertAlign == "top" then
 			normalAlign = "right"
