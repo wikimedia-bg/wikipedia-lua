@@ -864,13 +864,14 @@ local function getTaxobox(itemId)
 	local brokenTaxoboxCategory = 'Повредени таксокутии'
 	
 	-- GET TITLE
-	taxobox.title = mw.title.getCurrentTitle().text
+	local currentTitle = mw.title.getCurrentTitle().text
+	taxobox.title = currentTitle
 	local entity = mw.wikibase.getEntity(itemId)
 	if entity and entity.claims then
 		local bgLabel = getbgLabel(entity)
 		taxobox.title = bgLabel or entity:getSitelink('bgwiki') or taxobox.title
 		taxobox.commonname = getCommonNameData(entity)
-		if not mw.ustring.match(taxobox.title, '[А-я]') and mw.ustring.match(bgLabel or '', '[А-я]') then
+		if not mw.ustring.match(currentTitle, '[А-я]') and mw.ustring.match(bgLabel or '', '[А-я]') then
 			table.insert(CATEGORIES, 'Статии за преместване')
 		end
 		if not taxobox.commonname and not entity.claims[PROPERTY.TAXON_NAME] then
