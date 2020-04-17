@@ -301,7 +301,7 @@ local function isAllowed(taxon)
 	elseif RANK.id <= ordoId and rank.id > kingdomId and mw.ustring.match(rank.name, '[А-я]') then
 		-- if RANK is above ordo → display all below kingdom with cyrillic rank names
 		return true
-	elseif rank.id == 0 and mw.ustring.match(taxon.bgLabel, '[А-я]') then
+	elseif rank.id == 0 and mw.ustring.match(taxon.bgLabel or '', '[А-я]') then
 		-- "без ранг" taxons without cyrillic name will be skipped
 		return true
 	else
