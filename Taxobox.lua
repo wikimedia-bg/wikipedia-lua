@@ -861,7 +861,7 @@ end
 
 local function getTaxobox(itemId)
 	local taxobox = { id = itemId, image1 = {}, image2 = {}, audio = {}, map = {} }
-	local brokenTaxoboxCategory = 'Уикипедия:Повредени таксокутии'
+	local brokenTaxoboxCategory = 'Повредени таксокутии'
 	
 	-- GET TITLE
 	taxobox.title = mw.title.getCurrentTitle().text
