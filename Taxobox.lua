@@ -6,6 +6,7 @@ local LATINNAME
 local AUTHORITY
 local HYBRID
 
+local CATEGORIES = {}
 local MALE = 'мъжки|♂'
 local FEMALE = 'женски|♀'
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
@@ -635,10 +636,8 @@ local function getStatus(status)
 		else
 			return nil
 		end
-	
-		if mw.title.getCurrentTitle().namespace == 0 then
-			result = result .. to.link(string.format('Категория:%s видове', category))
-		end
+		
+		table.insert(CATEGORIES, category .. ' видове')
 		
 		return result
 	end
@@ -787,6 +786,9 @@ local function getClassification(itemId, isHighlighted, taxons)
 		latinName = taxonName[1].mainsnak.datavalue.value
 		if not LATINNAME and RANK.name == rank.name then
 			LATINNAME = latinName
+			if not mw.title.new(LATINNAME).exists then
+				table.insert(CATEGORIES, 'Липсващи номенклатурни имена на таксони')
+			end
 		end
 	end
 		
@@ -843,9 +845,7 @@ local function getExternalParameters(args, taxobox)
 			taxobox.statusBg = taxobox.statusBg .. statusBgRef
 		end
 		
-		if mw.title.getCurrentTitle().namespace == 0 then
-			taxobox.statusBg = taxobox.statusBg .. to.link('Категория:Червена книга на България')
-		end
+		table.insert(CATEGORIES, 'Червена книга на България')
 	end
 	
 	-- IMAGE AND CAPTION
@@ -861,17 +861,24 @@ end
 
 local function getTaxobox(itemId)
 	local taxobox = { id = itemId, image1 = {}, image2 = {}, audio = {}, map = {} }
-
+	local brokenTaxoboxCategory = 'Уикипедия:Повредени таксокутии'
+	
 	-- GET TITLE
 	taxobox.title = mw.title.getCurrentTitle().text
 	local entity = mw.wikibase.getEntity(itemId)
 	if entity and entity.claims then
-		taxobox.title = getbgLabel(entity) or entity:getSitelink('bgwiki') or taxobox.title
+		local bgLabel = getbgLabel(entity)
+		taxobox.title = bgLabel or entity:getSitelink('bgwiki') or taxobox.title
 		taxobox.commonname = getCommonNameData(entity)
+		if not mw.ustring.match(taxobox.title, '[А-я]') and mw.ustring.match(bgLabel or '', '[А-я]') then
+			table.insert(CATEGORIES, 'Статии за преместване')
+		end
 		if not taxobox.commonname and not entity.claims[PROPERTY.TAXON_NAME] then
+			table.insert(CATEGORIES, brokenTaxoboxCategory)
 			return taxobox
 		end
 	else
+		table.insert(CATEGORIES, brokenTaxoboxCategory)
 		return taxobox
 	end
 	
@@ -1357,6 +1364,13 @@ local function renderTaxobox(taxobox)
 						:allDone()
 	end
 	
+	-- CATEGORIES
+	if mw.title.getCurrentTitle().namespace == 0 then
+		for i=1, #CATEGORIES do
+			categories = (categories or '') .. to.link('Категория:' .. CATEGORIES[i])
+		end
+	end
+	
 	local root = mw.html.create('table')
 		:addClass('infobox infobox-lua')
 		:css('width', '22em')
@@ -1380,6 +1394,7 @@ local function renderTaxobox(taxobox)
 		:node(fossilRangeNode)
 		:node(commonsNode)
 		:node(editNode)
+		:wikitext(categories)
 		:allDone()
 
 	return tostring(root)
