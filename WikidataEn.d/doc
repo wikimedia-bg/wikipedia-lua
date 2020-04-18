@@ -107,11 +107,11 @@ Use code like this to link to another wiki. English Wikivoyage in the example:
 == Testing ==
 === Testing spouse ===
 Copy and paste the following into any article and preview it (please don't save!):
-<source lang="moin">
+<syntaxhighlight lang="moin">
  * - {{#invoke:Wikidata|getValue|P26|}}
  * - {{#invoke:Wikidata|getValue|P26|FETCH_WIKIDATA}}
  * - {{#invoke:Wikidata|getValue|P26|[[Hillary Rodham Clinton]]}}
-</source>
+</syntaxhighlight>
 
 In [[Bill Clinton]] you should get:
 * -
@@ -138,11 +138,11 @@ In [[Franz Kafka]] you should get:
 
 === Testing birthplace ===
 Copy and paste the following into any article and preview it (please don't save!):
-<source lang="moin">
+<syntaxhighlight lang="moin">
  * - {{#invoke:Wikidata|getValue|P19|}}
  * - {{#invoke:Wikidata|getValue|P19|FETCH_WIKIDATA}}
  * - {{#invoke:Wikidata|getValue|P19|[[Newport]]}}
-</source>
+</syntaxhighlight>
 Try [[William Ellery]] and check that the Wikidata call correctly disambiguates.
 
 === Testing getValue, getRawValue and getDateValue ===
