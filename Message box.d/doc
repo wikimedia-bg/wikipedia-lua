@@ -3,19 +3,19 @@
 
 За да ползвате настоящия модул в друг Lua модул, е необходимо първо да го заредите.
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 local messageBox = require('Модул:Message box')
-</source>
+</syntaxhighlight>
 
 Използвайте <code>main</code> функцията, за да създадете съобщително каре (message box). Като самата функция приема два аргумента: първия е типа на карето (като символен низ), а втория е таблица съдържаща параметрите на карето.
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 local box = messageBox.main( boxType, {
     param1 = param1,
     param2 = param2,
     -- Още параметри...
 })
-</source>
+</syntaxhighlight>
 
 Достъпни са седен вида кутии:
 
