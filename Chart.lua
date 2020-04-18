@@ -1,4 +1,4 @@
---<source lang=lua>
+--<syntaxhighlight lang="lua">
 --[[
     keywords are used for languages: they are the names of the actual
     parameters of the template
@@ -440,4 +440,4 @@ return {
     [keywords.barChart] = barChart,
     [keywords.pieChart] = pieChart,
 }
---</source>
+--</syntaxhighlight>
