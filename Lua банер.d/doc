@@ -4,15 +4,15 @@
 
 За да ползвате модула в друг Lua модул, е необходимо първо да го заредите.
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 local mLuaBanner = require('Модул:Lua банер')
-</source>
+</syntaxhighlight>
 
 След което използвайте <code>main</code> функцията, за да създадете съобщително каре.
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 mLuaBanner._main(args)
-</source>
+</syntaxhighlight>
 
 Заместете <var>args</var> с таблица съдържащаа аргументите, които ще бъдат подадени на модула. За пълен списък с възможните аргументи посетете шаблона {{tl|lua}}.
 
