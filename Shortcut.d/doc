@@ -10,15 +10,15 @@
 
 Преди да ползвате модула е необходимо да го заредите.
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 local mShortcut = require('Модул:Shortcut')
-</source>
+</syntaxhighlight>
 
 След което за създаване карета на ползвайте следния синтаксис:
 
-<source lang="lua">
+<syntaxhighlight lang="lua">
 mShortcut._main(shortcuts, options, frame, cfg)
-</source>
+</syntaxhighlight>
 
 * <var>shortcuts</var>: масив съдържащ съкратените имена на страниците. (задължителен)
 * <var>options</var>: таблица с опции. Поддържа следните ключове:
