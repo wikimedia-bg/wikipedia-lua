@@ -503,4 +503,27 @@ function str.unlink( frame )
     return result;
 end
 
+
+--[[
+Joins strings with a given separator ignoring empty strings
+]]
+function str.join( frame )
+    local separator = '';
+    local result = '';
+ 
+    for i, v in ipairs(frame.args) do
+        if (i == 1) then
+            separator = v;
+        elseif (v ~= '') then
+            if (result ~= '') then
+                result = result .. separator .. v;
+            else
+                result = v
+            end
+        end
+    end
+
+    return result;
+end
+
 return str
