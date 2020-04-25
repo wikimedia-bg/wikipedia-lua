@@ -20,6 +20,7 @@ local CATS = {
 	{ 'Bacteria', 'бактерии' },
 	{ 'Virus', 'вируси' },
 	{ 'Archaea', 'археи' },
+	{ 'Chromista', 'хромисти' },
 	{ 'Excavata', 'excavata' },
 	{ 'Rhizaria', 'rhizaria' },
 	{ 'Amoebozoa', 'amoebozoa' },
