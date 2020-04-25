@@ -17,12 +17,12 @@ local CATS = {
 	{ 'Plantae', 'растения' },
 	{ 'Fungi', 'гъби' },
 	{ 'Protista', 'протисти' },
+	{ 'Protozoa', 'първаци' },
 	{ 'Bacteria', 'бактерии' },
 	{ 'Virus', 'вируси' },
 	{ 'Archaea', 'археи' },
 	{ 'Chromista', 'хромисти' },
 	{ 'Excavata', 'excavata' },
-	{ 'Amoebozoa', 'amoebozoa' },
 	{ 'Chromalveolata', 'chromalveolata' },
 
 	-- ANIMALS
