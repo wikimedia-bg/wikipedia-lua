@@ -42,8 +42,8 @@ local CATS = {
 	{ 'Gymnospermae', 'голосеменни растения' },
 	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
 	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
-	{ 'Liliopsida', 'едносемеделни растения' },
-	{ 'Magnoliopsida', 'двусемеделни растения' },
+	{ 'Liliopsida|monocots', 'едносемеделни растения' },
+	{ 'Magnoliopsida|Dicotyledones', 'двусемеделни растения' },
 	{ 'Charophyta|Chlorophyta', 'водорасли' }
 }
 
