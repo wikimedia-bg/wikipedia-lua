@@ -38,13 +38,13 @@ local CATS = {
 	{ 'Cnidaria', 'мешести' },
 
 	-- PLANTS
+	{ 'Tracheophyta', 'васкуларни растения' },
 	{ 'Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta', 'голосеменни растения' },
 	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
 	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
 	{ 'Liliopsida', 'едносемеделни растения' },
 	{ 'Magnoliopsida', 'двусемеделни растения' },
-	{ 'Charophyta|Chlorophyta', 'водорасли' },
-	{ 'Tracheophyta', 'васкуларни растения' }
+	{ 'Charophyta|Chlorophyta', 'водорасли' }
 }
 
 local ITEM = {
