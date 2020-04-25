@@ -22,7 +22,6 @@ local CATS = {
 	{ 'Archaea', 'археи' },
 	{ 'Chromista', 'хромисти' },
 	{ 'Excavata', 'excavata' },
-	{ 'Rhizaria', 'rhizaria' },
 	{ 'Amoebozoa', 'amoebozoa' },
 	{ 'Chromalveolata', 'chromalveolata' },
 
