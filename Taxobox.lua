@@ -39,7 +39,7 @@ local CATS = {
 
 	-- PLANTS
 	{ 'Tracheophyta', 'васкуларни растения' },
-	{ 'Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta', 'голосеменни растения' },
+	{ 'Gymnospermae', 'голосеменни растения' },
 	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
 	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
 	{ 'Liliopsida', 'едносемеделни растения' },
