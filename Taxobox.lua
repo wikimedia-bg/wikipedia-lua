@@ -11,6 +11,42 @@ local MALE = 'мъжки|♂'
 local FEMALE = 'женски|♀'
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
 
+local CATS = {
+	-- ORGANISMS
+	{ 'Animalia', 'животни' },
+	{ 'Plantae', 'растения' },
+	{ 'Fungi', 'гъби' },
+	{ 'Protista', 'протисти' },
+	{ 'Bacteria', 'бактерии' },
+	{ 'Virus', 'вируси' },
+	{ 'Archaea', 'археи' },
+	{ 'Excavata', 'excavata' },
+	{ 'Rhizaria', 'rhizaria' },
+	{ 'Amoebozoa', 'amoebozoa' },
+	{ 'Chromalveolata', 'chromalveolata' },
+
+	-- ANIMALS
+	{ 'Chondrichthyes', 'хрущялни риби' },
+	{ 'Actinopterygii', 'лъчеперки' },
+	{ 'Amphibia', 'земноводни' },
+	{ 'Reptilia', 'влечуги' },
+	{ 'Aves', 'птици' },
+	{ 'Mammalia', 'бозайници' },
+	{ 'Arthropoda', 'членестоноги' },
+	{ 'Platyhelminthes|Acanthocephala|Nematoda|Annelida', 'червеи' },
+	{ 'Mollusca', 'мекотели' },
+	{ 'Cnidaria', 'мешести' },
+
+	-- PLANTS
+	{ 'Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta', 'голосеменни растения' },
+	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
+	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
+	{ 'Liliopsida', 'едносемеделни растения' },
+	{ 'Magnoliopsida', 'двусемеделни растения' },
+	{ 'Charophyta|Chlorophyta', 'водорасли' },
+	{ 'Tracheophyta', 'васкуларни растения' }
+}
+
 local ITEM = {
 	EXTINCT_SPECIES = 'Q237350',
 	FEMALE_ORGANISM = 'Q43445',
@@ -1049,8 +1085,23 @@ local function getTaxobox(itemId)
 		local taxons = taxobox.commonname and taxobox.commonname.parent and getClassification(taxobox.commonname.parent, false, {}) or getClassification(itemId, true, {})
 		local classification = nil
 		local authority = nil
+		local catSpecies = nil
 		for i=#taxons, 1, -1 do
 			local taxon = taxons[i]
+			if RANK == TAXONOMICRANK.Q7432 then
+				if not catSpecies then
+					catSpecies = 'Видове организми'
+				end
+				for i=1, #CATS do
+					local names = mw.text.split(CATS[i][1], '|')
+					for j=1, #names do
+						if taxon.latinName == names[j] then
+							catSpecies = 'Видове ' .. CATS[i][2]
+						end
+					end
+				end
+			end
+			
 			if taxon.isHighlighted or isAllowed(taxon) or i == 2 then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td>'
 				local latinName = KINGDOM and KINGDOM:upper() ~= 'VIRUS' and getShortName(taxon.latinName) or taxon.latinName
@@ -1098,6 +1149,9 @@ local function getTaxobox(itemId)
 		end
 		taxobox.classification = classification
 		taxobox.authority = authority
+		if catSpecies then
+			table.insert(CATEGORIES, catSpecies)
+		end
 	end
 	
 	-- GET IUCN STATUS
