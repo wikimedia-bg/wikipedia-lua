@@ -1,68 +1,10 @@
 local p = {}
 
-local rank
-local taxons
-
-local cat = 'Категория:'
-local catSpecies = 'Уикипедия:Видове '
-
-local CATS = {
-	-- PLANTS
-	{ 'Pinophyta|Cycadophyta|Ginkgophyta|Gnetophyta', 'голосеменни растения' },
-	{ 'Pteridophyta|Polypodiophyta|Lycopodiophyta', 'спорови растения' },
-	{ 'Marchantiophyta|Hepatophyta|Hepaticophyta|Bryophyta|Anthocerotophyta', 'неваскуларни растения' },
-	{ 'Liliopsida', 'едносемеделни растения' },
-	{ 'Magnoliopsida', 'двусемеделни растения' },
-	{ 'Charophyta|Chlorophyta', 'водорасли' },
-
-	-- ANIMALS
-	{ 'Chondrichthyes', 'хрущялни риби' },
-	{ 'Actinopterygii', 'лъчеперки' },
-	{ 'Amphibia', 'земноводни' },
-	{ 'Reptilia', 'влечуги' },
-	{ 'Aves', 'птици' },
-	{ 'Mammalia', 'бозайници' },
-	{ 'Arthropoda', 'членестоноги' },
-	{ 'Platyhelminthes|Acanthocephala|Nematoda|Annelida', 'червеи' },
-	{ 'Mollusca', 'мекотели' },
-	{ 'Cnidaria', 'мешести' },
-
-	-- ORGANISMS
-	{ 'Chromalveolata', 'chromalveolata' },
-	{ 'Amoebozoa', 'amoebozoa' },
-	{ 'Rhizaria', 'rhizaria' },
-	{ 'Excavata', 'excavata' },
-	{ 'Archaea', 'археи' },
-	{ 'Virus', 'вируси' },
-	{ 'Bacteria', 'бактерии' },
-	{ 'Protista', 'протисти' },
-	{ 'Fungi', 'гъби' },
-	{ 'Plantae', 'растения' },
-	{ 'Animalia', 'животни' }
-}
-
-local function getCat()
-	if rank == species then
-		for i=1, #CATS do
-			local names = mw.text.split(CATS[i][1], '|')
-			for j=1, #taxons do
-				for k=1, #names do
-					if taxons[j].latinName == names[k] then
-						return cat .. catSpecies .. CATS[i][2]
-					end
-				end
-			end
-		end
-		
-		return cat .. 'Уикипедия:Таксономия'
-	end	
-end
-
 local function count(categories)
 	local count = 0
 	for i=1, #categories do
-		if mw.title.new(cat .. catSpecies .. categories[i]).exists then
-			count = count + mw.site.stats.pagesInCategory(catSpecies .. categories[i], 'pages')
+		if mw.title.new('Категория:Видове ' .. categories[i]).exists then
+			count = count + mw.site.stats.pagesInCategory('Видове ' .. categories[i], 'pages')
 		end
 	end
 	
