@@ -24,7 +24,7 @@ function p.animals()
 end
 
 function p.all(frame)
-	local all = { 'chromalveolata', 'бактерии', 'вируси', 'гъби', 'протисти', 'археи', 'amoebozoa', 'excavata', 'rhizaria' }
+	local all = { 'chromalveolata', 'бактерии', 'вируси', 'гъби', 'протисти', 'археи', 'хромисти', 'amoebozoa', 'excavata', 'rhizaria' }
 
 	return p.plants() + p.animals() + count(all)
 end
