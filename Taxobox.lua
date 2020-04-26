@@ -31,6 +31,7 @@ local CATS = {
 	{ 'Aves', 'птици' },
 	{ 'Mammalia', 'бозайници' },
 	{ 'Arthropoda', 'членестоноги' },
+	{ 'Echinodermata', 'иглокожи' },
 	{ 'Platyhelminthes|Acanthocephala|Nematoda|Annelida', 'червеи' },
 	{ 'Mollusca', 'мекотели' },
 	{ 'Cnidaria', 'мешести' },
