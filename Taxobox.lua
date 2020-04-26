@@ -42,6 +42,10 @@ local CATS = {
 	{ 'Pteridophyta|Lycopodiophyta', 'спорови растения' },
 	{ 'Liliopsida|monocots', 'едносемеделни растения' },
 	{ 'Magnoliopsida|Dicotyledones', 'двусемеделни растения' },
+	{ 'Pinophyta', 'иглолистни растения' },
+	{ 'rosids', 'розиди' },
+	{ 'asterids', 'астериди' },
+	{ 'magnoliids', 'магнолииди' },
 	{ 'Marchantiophyta|Anthocerotophyta|Bryophyta', 'мъхове' },
 	{ 'Chlorophyta|Charophyta', 'водорасли' }
 }
