@@ -43,11 +43,11 @@ local CATS = {
 	{ 'Magnoliopsida|Dicotyledones', 'двусемеделни растения' },
 	{ 'Pinophyta', 'иглолистни растения' },
 	{ 'Caryophyllales', 'карамфилоцветни' },
+	{ 'Ranunculales', 'лютикоцветни' },
 	{ 'rosids', 'розиди' },
 	{ 'asterids', 'астериди' },
 	{ 'magnoliids', 'магнолииди' },
-	{ 'Marchantiophyta|Anthocerotophyta|Bryophyta', 'мъхове' },
-	{ 'Chlorophyta|Charophyta', 'водорасли' }
+	{ 'Marchantiophyta|Anthocerotophyta|Bryophyta|Chlorophyta|Charophyta', 'мъхове и водорасли' }
 }
 
 local ITEM = {
@@ -1098,7 +1098,7 @@ local function getTaxobox(itemId)
 				for i=1, #CATS do
 					local names = mw.text.split(CATS[i][1], '|')
 					for j=1, #names do
-						if taxon.latinName == names[j] then
+						if taxon.latinName:lower() == names[j]:lower() then
 							catSpecies = 'Видове ' .. CATS[i][2]
 						end
 					end
