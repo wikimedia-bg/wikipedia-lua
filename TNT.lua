@@ -154,6 +154,11 @@ loadData = function(dataset, lang)
 		error(formatMessage(i18nDataset, 'error_no_dataset', {}))
 	end
 
+	-- Give helpful error to thirdparties who try and copy this module.
+	if not mw.ext or not mw.ext.data or not mw.ext.data.get then
+		error('Missing JsonConfig extension; Cannot load https://commons.wikimedia.org/wiki/Data:' .. dataset)
+	end
+
 	local data = mw.ext.data.get(dataset, lang)
 
 	if data == false then
