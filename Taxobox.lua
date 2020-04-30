@@ -37,12 +37,12 @@ local CATS = {
 	{ 'Cnidaria', 'мешести' },
 
 	-- PLANTS
-	{ 'Gymnospermae', 'голосеменни растения' },
-	{ 'Pteridophyta|Lycopodiophyta', 'спорови растения' },
-	{ 'Liliopsida|monocots', 'едносемеделни растения' },
-	{ 'Magnoliopsida|Dicotyledones', 'двусемеделни растения' },
-	{ 'Pinophyta', 'иглолистни растения' },
+	{ 'Pteridophyta|Lycopodiophyta', 'спорови' },
+	{ 'Liliopsida|monocots', 'едносемеделни' },
+	{ 'Gymnospermae', 'голосеменни' },
+	{ 'Pinophyta', 'иглолистни' },
 	{ 'Caryophyllales', 'карамфилоцветни' },
+	{ 'Saxifragales', 'каменоломкоцветни' },
 	{ 'Ranunculales', 'лютикоцветни' },
 	{ 'rosids', 'розиди' },
 	{ 'asterids', 'астериди' },
