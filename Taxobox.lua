@@ -670,7 +670,7 @@ local function getStatus(status)
 			result = result .. to.link('Изчезнал вид|Изчезнал')
 			category = 'Изчезнали'
 		elseif status == 'DD' then
-			result = result .. 'Недостатъчно данни'
+			result = result .. to.link('Недостатъчно проучен вид|Недостатъчно данни')
 			category = 'Недостатъчно проучени'
 		else
 			return nil
