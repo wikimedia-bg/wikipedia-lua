@@ -1383,12 +1383,16 @@ local function renderTaxobox(taxobox)
 	
 	-- SYNONYMS
 	if taxobox.synonyms then
+		local r,count = string.gsub(taxobox.synonyms, '<li>', '')
 		synonymsNode = mw.html.create()
 			:node(createSectionNode(to.bold('Синоними'), taxobox.color))
 			:tag('tr')
 				:tag('td')
+					:addClass(count > 5 and 'mw-collapsible mw-collapsed mw-made-collapsible' or '')
 					:css('text-align', 'left')
 					:tag('ul')
+						:css('padding-top', count > 5 and '15px' or '0')
+						:addClass('mw-collapsible-content')
 						:wikitext(taxobox.synonyms)
 						:allDone()
 	end
