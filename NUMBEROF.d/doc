@@ -1,0 +1,7 @@
+{{#ifeq:{{SUBPAGENAME}}|sandbox||}}
+{{lua|Module:NUMBEROF/data}}
+* The module implements {{tl|NUMBEROF}}.
+* The module uses [[commons:Data:Wikipedia statistics/config.tab]] to support configuration and [[commons:Data:Wikipedia statistics/data.tab]] for data.
+** data.tab is updated by bot multiple times a day
+* The module loads [[Module:NUMBEROF/data]] once per page [not per template invocation].
+* The module was originally developed on Enwiki.
