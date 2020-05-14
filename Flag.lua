@@ -65,6 +65,46 @@ function flag.flagwithiso(frame)
     return '';
 end
 
+function flagbyqid(qid, time, width, link)
+    local image = '';
+    if (link == '') then
+      link = wd._title({qid});
+    end
+
+    if ((time ~= nil) and (time ~= '')) then
+      image = wd._property({"raw", qid, "P41", date=time});
+    end
+    if (image == '') then
+      image = wd._property({"raw", qid, "P41"});
+    end
+ 
+    return '<span class="flagicon">' ..
+              '[[Файл:' .. image .. '|' .. width ..'px|border|' .. 'link='..link..'|'..link ..']]' ..
+          '</span>';
+end
+
+function flag.flagbyqid(frame)
+    local qid = mw.text.trim(frame.args[1]);
+    local time = mw.text.trim(frame.args[2]);
+    local width = '20';
+    if(qid~=nil) then
+      local link = wd._title({qid});
+      return flagbyqid(qid, time, width, link);
+    end;
+    return '';
+end
+
+function flag.flagnamebyqid(frame)
+    local qid = mw.text.trim(frame.args[1]);
+    local time = mw.text.trim(frame.args[2]);
+    local width = '20';
+    if(qid~=nil) then
+      local link = wd._title({qid});
+      return flagbyqid(qid, time, width, link) .. ' [[' .. link .. ']]';
+    end;
+    return '';
+end
+
 function flag.flag(frame)
     local qid = nil;
     local subject = mw.text.trim(frame.args[1]);
@@ -81,21 +121,7 @@ function flag.flag(frame)
     end
 
     if(qid~=nil) then
-      local image = '';
-      if (link == '') then
-        link = wd._title({qid});
-      end
-
-      if ((time ~= nil) and (time ~= '')) then
-        image = wd._property({"raw", qid, "P41", date=time});
-      end
-      if (image == '') then
-        image = wd._property({"raw", qid, "P41"});
-      end
-  
-      return '<span class="flagicon">' ..
-                '[[Файл:' .. image .. '|' .. width ..'px|border|' .. 'link='..link..'|'..link ..']]' ..
-            '</span>';
+      return flagbyqid(qid, time, width, link);
     end;
     return '';
 end
