@@ -15,35 +15,37 @@ end
 function flag.getqid(key)
     local qid = nil;
 
+    -- checks for a name in the local database
+    qid = gdata.qidByName[mw.ustring.lower(key)];
+    if(qid~=nil) then
+        return 'Q' .. qid
+    end;
+
+    -- checks for an ISO code in the local database
     if(#key==3) then
       qid = gdata.qidByIso[key];
       if(qid~=nil) then
-        qid = 'Q' .. qid;
+        return 'Q' .. qid;
       end;
     end;
 
-    if((qid==nil) and (key:sub(1,1) == 'Q')) then
-      qid = key;
+    -- checks for a valid QID
+    if mw.wikibase.isValidEntityId(key) and mw.wikibase.entityExists(key) then
+      return key;
     end
 
-    return qid;
+    -- checks for a title in Wikidata
+    return mw.wikibase.getEntityIdForTitle(key)
 end
 
 -- TODO: трябва да се слее с flag с допълнителни параметри, които да поддържат Шаблон:Флагче с ISO, Шаблон:Флагче с име, Шаблон:Флагче+
 function flag.flagwithiso(frame)
-    local qid = nil;
     local subject = mw.text.trim(frame.args[1]);
     local time = mw.text.trim(frame.args[2]);
     local width = mw.text.trim(frame.args[3]);
     local link = '';
 
-    qid = gdata.qidByName[mw.ustring.lower(subject)];
-    if(qid~=nil) then
-      qid = 'Q' .. qid;
-      link = subject;
-    else
-      qid = flag.getqid(subject);
-    end
+    local qid = flag.getqid(subject);
 
     if(qid~=nil) then
       local image = '';
@@ -278,19 +280,12 @@ function formatimage(qid, time, width, link)
 end
 
 function flag.flag(frame)
-    local qid = nil;
     local subject = mw.text.trim(frame.args[1]);
     local time = mw.text.trim(frame.args[2]);
     local width = mw.text.trim(frame.args[3]);
     local link = '';
 
-    qid = gdata.qidByName[mw.ustring.lower(subject)];
-    if(qid~=nil) then
-      qid = 'Q' .. qid;
-      link = subject;
-    else
-      qid = flag.getqid(subject);
-    end
+    local qid = flag.getqid(subject);
 
     if(qid~=nil) then
       return formatimage(qid, time, width, link);
