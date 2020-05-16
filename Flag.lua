@@ -38,35 +38,6 @@ function flag.getqid(key)
     return mw.wikibase.getEntityIdForTitle(key)
 end
 
--- TODO: трябва да се слее с flag с допълнителни параметри, които да поддържат Шаблон:Флагче с ISO, Шаблон:Флагче с име, Шаблон:Флагче+
-function flag.flagwithiso(frame)
-    local subject = mw.text.trim(frame.args[1]);
-    local time = mw.text.trim(frame.args[2]);
-    local width = mw.text.trim(frame.args[3]);
-    local link = '';
-
-    local qid = flag.getqid(subject);
-
-    if(qid~=nil) then
-      local image = '';
-      if (link == '') then
-        link = wd._title({qid});
-      end
-
-      if ((time ~= nil) and (time ~= '')) then
-        image = wd._property({"raw", qid, "P41", date=time});
-      end
-      if (image == '') then
-        image = wd._property({"raw", qid, "P41"});
-      end
-  
-      return '<span class="flagicon">' ..
-                '[[Файл:' .. image .. '|' .. width ..'px|border|' .. 'link='..link..'|'..link ..']]&nbsp;[[' .. link .. '|' .. subject .. ']]' ..
-            '</span>';
-    end;
-    return '';
-end
-
 function getrank(rankstring) 
     if rankstring == 'preferred' then
         return 2
