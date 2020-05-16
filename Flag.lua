@@ -277,28 +277,6 @@ function formatimage(qid, time, width, link)
           '</span>';
 end
 
-function flag.flagbyqid(frame)
-    local qid = mw.text.trim(frame.args[1]);
-    local time = mw.text.trim(frame.args[2]);
-    local width = '20';
-    if(qid~=nil) then
-      local link = wd._title({qid});
-      return formatimage(qid, time, width, link);
-    end;
-    return '';
-end
-
-function flag.flagnamebyqid(frame)
-    local qid = mw.text.trim(frame.args[1]);
-    local time = mw.text.trim(frame.args[2]);
-    local width = '20';
-    if(qid~=nil) then
-      local link = wd._title({qid});
-      return formatimage(qid, time, width, link) .. ' [[' .. link .. ']]';
-    end;
-    return '';
-end
-
 function flag.flag(frame)
     local qid = nil;
     local subject = mw.text.trim(frame.args[1]);
