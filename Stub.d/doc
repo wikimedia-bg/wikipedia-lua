@@ -2,11 +2,16 @@
 <!-- МОЛЯ ДОБАВЯЙТЕ КАТЕГОРИИТЕ В КРАЯ НА ТАЗИ СТРАНИЦА, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
 == Употреба ==
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
-<code><nowiki>{{#invoke:Stub|get|биология}}</nowiki></code><br>
-<code><nowiki>{{#invoke:Stub|get|биология|Китай}}</nowiki></code><br>
-<code><nowiki>{{#invoke:Stub|get|xxx}}</nowiki></code>
+{{#invoke:Stub|get}}
 
-{{#invoke:Stub|get|биология|Китай}}
+<code><nowiki>{{#invoke:Stub|get|биология}}</nowiki></code><br>
+{{#invoke:Stub|get|биология}}
+
+<code><nowiki>{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}</nowiki></code><br>
+{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}
+
+<code><nowiki>{{#invoke:Stub|get|xxx}}</nowiki></code>
+{{#invoke:Stub|get|xxx}}
 
 == Описание ==
 
