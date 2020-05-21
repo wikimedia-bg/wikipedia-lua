@@ -3,13 +3,13 @@
 == Употреба ==
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
 {{#invoke:Stub|get}}
-
+<br>
 <code><nowiki>{{#invoke:Stub|get|статистика}}</nowiki></code><br>
 {{#invoke:Stub|get|статистика}}
-
+<br>
 <code><nowiki>{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}</nowiki></code><br>
 {{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}
-
+<br>
 <code><nowiki>{{#invoke:Stub|get|xxx}}</nowiki></code>
 {{#invoke:Stub|get|xxx}}
 
