@@ -526,9 +526,18 @@ local function toLower(str)
 	return mw.language.getContentLanguage():lc(str)
 end
 
-local function printStub(theme, image)
+local function printStub(theme, image, plural)
 	local editLink = tostring(mw.uri.canonicalUrl(mw.title.getCurrentTitle().fullText, 'action=edit'))
-	local themeText = theme and string.format(', свързана %s [[%s]]', mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с', theme) or ''
+	
+	local themeText = ''
+	if theme then
+		if plural then
+			themeText = string.format(' за [[%s]]', theme)
+		else
+			themeText = string.format(', свързана %s [[%s]]', mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с', theme)
+		end
+	end
+	
 	local text = string.format("''Тази статия%s все още е [[Уикипедия:Мъниче|мъниче]]. Помогнете на Уикипедия, като я [%s редактирате] и разширите.''", themeText, editLink)
 	local stub = mw.html.create()
 		:tag('div')
