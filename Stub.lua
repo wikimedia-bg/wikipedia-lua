@@ -358,7 +358,7 @@ local THEMES = {
 	{ 'турски-актьори', 'Turkey film clapperboard.svg' },
 	{ 'учен', 'Einstein_template.png' },
 	{ 'фараон', 'Pharaoh with Blue crown mirror.svg' },
-	{ 'физик', 'Albert_Einstein_Head.jpg|30px' },
+	{ 'физик', 'Albert_Einstein_Head.jpg' },
 	{ 'французи', 'Crystal Clear app Login Manager.png' },
 	{ 'футболист', 'Football pictogram.svg' },
 	{ 'художник', 'Vincent Willem van Gogh 107.jpg' },
