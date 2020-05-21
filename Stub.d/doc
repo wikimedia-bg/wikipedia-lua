@@ -4,16 +4,22 @@
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
 {{#invoke:Stub|get}}
 <br>
-<code><nowiki>{{#invoke:Stub|get|статистика}}</nowiki></code><br>
-{{#invoke:Stub|get|статистика}}
-<br>
-<code><nowiki>{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}</nowiki></code><br>
-{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}
+<code><nowiki>{{#invoke:Stub|get|география|статистика|Китай}}</nowiki></code><br>
+{{#invoke:Stub|get|география|статистика|Китай}}
 <br>
 <code><nowiki>{{#invoke:Stub|get|xxx}}</nowiki></code>
 {{#invoke:Stub|get|xxx}}
 
 == Описание ==
+Всички теми се намират в <code>THEMES</code>, като всеки запис представлява списък на всички възможни имена за дадена тема (напр. <code>'Съветски съюз|СССР'</code>) заедно с картинка асоциирана с темата (напр. <code>'Flag of the Soviet Union.svg'</code>).
+
+Всички тематични имена ще извикват успешно модула, но той ще използва само първото от тях. Т.е. записа <code><nowiki>{{#invoke:Stub|get|СССР}}</nowiki></code> ще доведе до:
+{{#invoke:Stub|get|СССР}}
+<br>
+
+Наличието на главни и малки букви при извикване името на дадена тема се игнорира, което ще рече че запис като <code><nowiki>{{#invoke:Stub|get|поРтуГАЛия}}</nowiki></code> ще доведе до:
+{{#invoke:Stub|get|поРтуГАЛия}}
+<br>
 
 <includeonly>
 <!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
