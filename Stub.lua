@@ -360,7 +360,7 @@ local THEMES = {
 	{ 'фараон', 'Pharaoh with Blue crown mirror.svg' },
 	{ 'физик', 'Albert_Einstein_Head.jpg' },
 	{ 'французи', 'Crystal Clear app Login Manager.png' },
-	{ 'футболист', 'Football pictogram.svg' },
+	{ 'футболист', 'Football pictogram.svg', 'футболисти' },
 	{ 'художник', 'Vincent Willem van Gogh 107.jpg' },
 	{ 'човек', 'Crystal Clear app Login Manager.png' },
 	{ 'юрист', 'Scale of justice.svg' },
@@ -531,11 +531,8 @@ local function printStub(theme, image, plural)
 	
 	local themeText = ''
 	if theme then
-		if plural then
-			themeText = string.format(' за [[%s]]', theme)
-		else
-			themeText = string.format(', свързана %s [[%s]]', mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с', theme)
-		end
+		themeText = plural and ' за' or (', свързана ' .. (mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с'))
+		themeText = string.format('%s [[%s]]', themeText, theme)
 	end
 	
 	local text = string.format("''Тази статия%s все още е [[Уикипедия:Мъниче|мъниче]]. Помогнете на Уикипедия, като я [%s редактирате] и разширите.''", themeText, editLink)
@@ -567,8 +564,9 @@ function p.get(frame)
 				local themes = mw.text.split(THEMES[i][1], '|')
 				for j=1, #themes do
 					if toLower(theme) == toLower(themes[j]) then
-						stub = (stub and stub or '') .. printStub(themes[1], THEMES[i][2])
-						category = string.format('%s[[%s за %s]]', category and category or '', STUBCAT, themes[1])
+						local plural = THEMES[i][3]
+						stub = (stub and stub or '') .. printStub(themes[1], THEMES[i][2], plural)
+						category = string.format('%s[[%s за %s]]', category and category or '', STUBCAT, plural and plural or themes[1])
 						break
 					end
 				end
