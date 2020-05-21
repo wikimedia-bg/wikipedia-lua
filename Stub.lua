@@ -552,7 +552,7 @@ end
 function p.get(frame)
 	local stub
 	local category
-	if frame.args[1] then
+	if frame.args[1] and frame.args[1] ~= '' then
 		for i, theme in pairs(frame.args) do
 			for i=1, #THEMES do
 				local themes = mw.text.split(THEMES[i][1], '|')
