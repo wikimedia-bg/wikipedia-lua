@@ -4,8 +4,8 @@
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
 {{#invoke:Stub|get}}
 
-<code><nowiki>{{#invoke:Stub|get|биология}}</nowiki></code><br>
-{{#invoke:Stub|get|биология}}
+<code><nowiki>{{#invoke:Stub|get|статистика}}</nowiki></code><br>
+{{#invoke:Stub|get|статистика}}
 
 <code><nowiki>{{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}</nowiki></code><br>
 {{#invoke:Stub|get|Холандия|китай|поРтуГАЛия}}
