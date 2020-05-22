@@ -174,7 +174,7 @@ local THEMES = {
 	{ 'Северна Ирландия', 'Ni smaller.png' },
 	{ 'Северна Корея-гео', 'Flag-map of North Korea.svg' },
 	{ 'Северна Корея', 'Flag of North Korea.svg' },
-	{ 'Северна Македония', 'Flag map of North Macedonia.svg' },
+	{ 'Северна Македония|Република Македония|Македония', 'Flag map of North Macedonia.svg' },
 	{ 'Сейшелски острови', 'Flag of the Seychelles.svg' },
 	{ 'Селище-Русия', 'Flag-map of Russia.svg' },
 	{ 'Сенегал', 'Flag of Senegal.svg' },
