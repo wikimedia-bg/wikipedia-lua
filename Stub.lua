@@ -358,7 +358,7 @@ local THEMES = {
 	{ 'французи', 'Crystal Clear app Login Manager.png' },
 	{ 'футболист', 'Football pictogram.svg', 'футболисти' },
 	{ 'художник', 'Vincent Willem van Gogh 107.jpg', 'художници' },
-	{ 'човек', 'Crystal Clear app Login Manager.png', 'хора' },
+	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
 	{ 'шахматист', 'Chess.svg', 'шахматисти' },
 	{ 'юрист', 'Scale of justice.svg' },
 	
