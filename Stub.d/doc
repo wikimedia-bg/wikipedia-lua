@@ -4,6 +4,12 @@
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
 {{#invoke:Stub|get}}
 <br>
+<code><nowiki>{{#invoke:Stub|get|раздел}}</nowiki></code><br>
+{{#invoke:Stub|get|раздел}}
+<br>
+<code><nowiki>{{#invoke:Stub|get|микро}}</nowiki></code><br>
+{{#invoke:Stub|get|микро}}
+<br>
 <code><nowiki>{{#invoke:Stub|get|география|статистика|България|футболист}}</nowiki></code><br>
 {{#invoke:Stub|get|география|статистика|България|футболист}}
 
