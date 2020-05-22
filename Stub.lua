@@ -339,7 +339,7 @@ local THEMES = {
 	{ 'медик', 'Stethoscope-2.png' },
 	{ 'музикант', 'Musical notes.svg' },
 	{ 'папа', 'Emblem of the Papacy SE.svg' },
-	{ 'писател', 'Quill and ink-wikipedia.png' },
+	{ 'писател', 'Quill and ink-wikipedia.png', 'писатели' },
 	{ 'политик', 'People Politician.png' },
 	{ 'порно актьор', 'Pink silhouette.svg' },
 	{ 'престъпник', 'Anthonygaggi.jpg' },
