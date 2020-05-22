@@ -416,7 +416,6 @@ local THEMES = {
 	{ 'интернет', 'Gtk-dialog-info.svg' },
 	{ 'ислям', 'Allah-green.svg' },
 	{ 'келти', 'Celtic carre chien.jpg' },
-	{ 'кино', 'Movie template.gif' },
 	{ 'книга', 'Books-aj.svg aj ashton 01.svg' },
 	{ 'комикс', 'Speech balloon.svg' },
 	{ 'комп', 'Nuvola apps mycomputer.svg' },
@@ -520,6 +519,16 @@ local THEMES = {
 	{ 'шинтоизъм', 'Black Shintoist symbol.PNG' },
 	{ 'юдаизъм', 'Star of David2.svg' },
 	{ 'язовир', 'Presa de contraforts.svg' },
+	
+	------
+	
+	{ 'кино', 'Movie template.gif' },
+	{ 'американско кино', 'United States film.png' },
+	{ 'британско кино', 'UK film clapperboard.svg' },
+	{ 'българско кино', 'Movie template.gif' },
+	{ 'германско кино', 'Flag of Germany.svg' },
+	{ 'италианско кино', 'Flag of Italy.svg' },
+	{ 'френско кино', 'Flag of France.svg' },
 }
 
 local function toLower(str)
