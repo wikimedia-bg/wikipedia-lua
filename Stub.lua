@@ -321,7 +321,7 @@ local THEMES = {
 	{ 'български актьори', 'Bulgaria film clapperboard.svg' },
 	{ 'български владетел', 'Crown of Bulgaria.svg', 'български владетели' },
 	{ 'български футболист', 'Football pictogram.svg', 'български футболисти' },
-	{ 'българин', 'Bulgaria people stub icon.svg', 'българи' },
+	{ 'българин|българи', 'Bulgaria people stub icon.svg', 'българи' },
 	{ 'викинги', 'Vikingshipshortened.png' },
 	{ 'военен', 'Army-personnel-icon.png', 'военни личности' },
 	{ 'германец', 'Flag of Germany.svg', 'германци' },
