@@ -328,7 +328,7 @@ local THEMES = {
 	{ 'грък', 'Greece people stub icon.png', 'гърци' },
 	{ 'дипломат', 'Crystal_personal.png', 'дипломати' },
 	{ 'етнолог', 'Tree diagram_en.svg' },
-	{ 'журналисти|журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG' },
+	{ 'журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG', 'журналисти' },
 	{ 'индианци', 'NSRW Sitting Bull.jpg' },
 	{ 'инженер', 'Engineering.png', 'инженери' },
 	{ 'канадец', 'Flag of Canada.svg', 'канадци' },
