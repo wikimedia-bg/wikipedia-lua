@@ -58,7 +58,7 @@ local THEMES = {
 	{ 'Гренландия', 'Flag of Greenland.svg|border' },
 	{ 'Грузия', 'Flag of Georgia.svg' },
 	{ 'Гърция', 'Flag-map of Greece.svg' },
-	{ 'ДР Конго', 'Flag of the Democratic Republic of the Congo.svg' },
+	{ 'Демократична република Конго|ДР Конго', 'Flag of the Democratic Republic of the Congo.svg' },
 	{ 'Дакия', 'Dacian symbols.png' },
 	{ 'Дания', 'Flag of Denmark.svg' },
 	{ 'Джибути', 'Flag of Djibouti.svg' },
