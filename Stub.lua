@@ -42,7 +42,7 @@ local THEMES = {
 	{ 'България', 'Flag of Bulgaria.svg|border' },
 	{ 'Вануату', 'Flag of Vanuatu.svg' },
 	{ 'Варна', 'Gerb_varna.jpg' },
-	{ 'Ватикан', 'Flag of the Vatican City.svg' },
+	{ 'Ватикан', 'Flag of the Vatican City.svg', 'Ватикана'},
 	{ 'Великобритания', 'Flag of the United Kingdom.svg' },
 	{ 'Венецуела', 'Flag of Venezuela.svg' },
 	{ 'Виетнам', 'Flag of Vietnam.svg' },
