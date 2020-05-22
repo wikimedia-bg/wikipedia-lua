@@ -310,7 +310,7 @@ local THEMES = {
 	-- ХОРА
 	{ 'актьор', 'Ausuebende Audiovision.png', 'актьори' },
 	{ 'алпинист', 'Climber silhouette.svg', 'алпинисти' },
-	{ 'американец', 'USA-people-stub-icon.png', 'американци' },
+	{ 'американец|американци', 'USA-people-stub-icon.png', 'американци' },
 	{ 'астроном', 'Astronomer.svg', 'астрономи' },
 	{ 'барабанист', 'Trixon Tom.jpg', 'музиканти' },
 	{ 'баскетболист', 'Basketball Clipart.svg' },
