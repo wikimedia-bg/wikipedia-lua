@@ -354,12 +354,12 @@ local THEMES = {
 	{ 'учен', 'Einstein_template.png', 'учени' },
 	{ 'фараон', 'Pharaoh with Blue crown mirror.svg' },
 	{ 'физик', 'Albert_Einstein_Head.jpg', 'физици' },
-	{ 'французи', 'Crystal Clear app Login Manager.png' },
+	{ 'французин', 'Crystal Clear app Login Manager.png', 'французи' },
 	{ 'футболист', 'Football pictogram.svg', 'футболисти' },
 	{ 'художник', 'Vincent Willem van Gogh 107.jpg', 'художници' },
 	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
 	{ 'шахматист', 'Chess.svg', 'шахматисти' },
-	{ 'юрист', 'Scale of justice.svg' },
+	{ 'юрист', 'Scale of justice.svg', 'юристи' },
 	
 	-- ДРУГИ
 	{ 'авиация', 'Aero-stub img.svg' },
