@@ -183,7 +183,7 @@ local THEMES = {
 	{ 'Сирия', 'Flag of the United Arab Republic.svg' },
 	{ 'Словакия', 'Flag of Slovakia.svg|border' },
 	{ 'Словения', 'Flag of Slovenia.svg' },
-	{ 'Соломонови острови', 'Flag of the Solomon Islands.svg', 'Соломоновите острови' },
+	{ 'Соломоновите острови|Соломонови острови', 'Flag of the Solomon Islands.svg', 'Соломоновите острови' },
 	{ 'Сомалия-гео', 'Flag-map of Somalia.svg' },
 	{ 'Сомалия', 'Flag of Somalia.svg' },
 	{ 'Судан', 'Flag of Sudan.svg' },
