@@ -424,7 +424,7 @@ local THEMES = {
 	{ 'космос', 'Gas giants in the solar system.jpg' },
 	{ 'криптовалута', 'Bitcoin Digital Currency Logo.png' },
 	{ 'кръстоносни', 'Modlicisekrizak.jpg' },
-	{ 'куче', 'Dog.svg', 'кучета' },
+	{ 'куче|кинология', 'Dog.svg', 'кучета' },
 	{ 'лгбт', 'Gay flag.svg' },
 	{ 'линукс', 'Tux.svg' },
 	{ 'литература', 'Book template.svg' },
