@@ -156,7 +156,7 @@ local THEMES = {
 	{ 'Полша', 'Poland map flag.svg|border' },
 	{ 'Португалия', 'Flag of Portugal.svg' },
 	{ 'Пуерто Рико', 'Flag of Puerto Rico.svg' },
-	{ 'РЮА', 'Flag of South Africa.svg' },
+	{ 'РЮА|ЮАР', 'Flag of South Africa.svg' },
 	{ 'Ирландия|Република Ирландия|Ейре', 'Flag of Ireland.svg' },
 	{ 'Република Конго', 'Flag of the Republic of the Congo.svg' },
 	{ 'Република Сръбска|Сръбска', 'Flag of the Republika Srpska.svg|border' },
