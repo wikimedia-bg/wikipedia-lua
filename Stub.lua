@@ -164,7 +164,7 @@ local THEMES = {
 	{ 'Румъния', 'Flag of Romania.svg' },
 	{ 'Русия', 'Flag of Russia.svg|border' },
 	{ 'САЩ', 'Flag of the USA.svg' },
-	{ 'Съветския съюз|Съветски съюз|СССР', 'Flag of the Soviet Union.svg', 'Съветски съюз' },
+	{ 'Съветския съюз|Съветски съюз|СССР', 'Flag of the Soviet Union.svg', 'Съветския съюз' },
 	{ 'Салвадор|Ел Салвадор', 'Flag of El Salvador.svg' },
 	{ 'Самоа', 'Flag of Samoa.svg' },
 	{ 'Сан Марино', 'Flag of San Marino.svg' },
