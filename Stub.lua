@@ -157,7 +157,7 @@ local THEMES = {
 	{ 'Португалия', 'Flag of Portugal.svg' },
 	{ 'Пуерто Рико', 'Flag of Puerto Rico.svg' },
 	{ 'РЮА', 'Flag of South Africa.svg' },
-	{ 'Република Ирландия', 'Flag of Ireland.svg' },
+	{ 'Ирландия|Република Ирландия', 'Flag of Ireland.svg' },
 	{ 'Република Конго', 'Flag of the Republic of the Congo.svg' },
 	{ 'Република Сръбска', 'Flag of the Republika Srpska.svg|border' },
 	{ 'Руанда', 'Flag of Rwanda.svg' },
