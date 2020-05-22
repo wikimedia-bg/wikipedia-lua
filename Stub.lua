@@ -368,7 +368,7 @@ local THEMES = {
 	
 	-- ДРУГИ
 	{ 'авиация', 'Aero-stub img.svg' },
-	{ 'автомобил', 'Red Gallardo icon.png', 'автомобил' },
+	{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
 	{ 'албум', 'Gnome-dev-cdrom-audio.svg', 'музикални албуми' },
 	{ 'аниманга', 'Anime stub 2.svg' },
 	{ 'артилерия', 'P military green.png' },
