@@ -567,26 +567,30 @@ local function printStub(theme, image, plural)
 end
 
 function p.get(frame)
-	local stub
-	local category
+	local stub = ''
+	local category = ''
 	if frame.args[1] and frame.args[1] ~= '' then
 		for i, theme in pairs(frame.args) do
-			for i=1, #THEMES do
-				local themes = mw.text.split(THEMES[i][1], '|')
-				for j=1, #themes do
-					if toLower(theme) == toLower(themes[j]) then
-						local plural = THEMES[i][3]
-						stub = (stub and stub or '') .. printStub(themes[1], THEMES[i][2], plural)
-						category = string.format('%s[[%s за %s]]', category and category or '', STUBCAT, plural and plural or themes[1])
-						break
+			if theme ~= '' then
+				local found = false
+				for i=1, #THEMES do
+					local themes = mw.text.split(THEMES[i][1], '|')
+					for j=1, #themes do
+						if toLower(theme) == toLower(themes[j]) then
+							local plural = THEMES[i][3]
+							stub = stub .. printStub(themes[1], THEMES[i][2], plural)
+							category = string.format('%s[[%s за %s]]', category, STUBCAT, plural and plural or themes[1])
+							found = true
+							break
+						end
 					end
 				end
+				
+				if not found then
+					stub = stub .. '<div><strong class="error">Грешка в записа: Неразпозната тема "' .. frame.args[i] .. '"</strong></div>'
+					category = category .. '[[Категория:Страници с грешки]]'
+				end
 			end
-		end
-		
-		if not stub then
-			stub = '<div><strong class="error">Грешка в записа: Неразпозната тема "' .. frame.args[1] .. '"</strong></div>'
-			category = '[[Категория:Страници с грешки]]'
 		end
 	else
 		stub = printStub(nil, 'M Puzzle.png')
