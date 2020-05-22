@@ -34,7 +34,7 @@ local THEMES = {
 	{ 'Бенин', 'Flag of Benin.svg' },
 	{ 'Бермудски острови', 'Flag of Bermuda.svg' },
 	{ 'Боливия', 'Flag of Bolivia.svg' },
-	{ 'Босна и Херцеговина', 'Flag of Bosnia and Herzegovina.svg' },
+	{ 'Босна и Херцеговина|Босна', 'Flag of Bosnia and Herzegovina.svg' },
 	{ 'Ботсвана', 'Flag of Botswana.svg' },
 	{ 'Бразилия', 'Flag of Brazil.svg' },
 	{ 'Буркина Фасо', 'Flag of Burkina Faso.svg' },
