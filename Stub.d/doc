@@ -4,8 +4,8 @@
 <code><nowiki>{{#invoke:Stub|get}}</nowiki></code><br>
 {{#invoke:Stub|get}}
 <br>
-<code><nowiki>{{#invoke:Stub|get|география|статистика|xxx|България|футболист}}</nowiki></code><br>
-{{#invoke:Stub|get|география|статистика|xxx|България|футболист}}
+<code><nowiki>{{#invoke:Stub|get|география|статистика|България|футболист}}</nowiki></code><br>
+{{#invoke:Stub|get|география|статистика|България|футболист}}
 
 == Описание ==
 Всички теми се намират в <code>THEMES</code>, като всеки запис представлява списък на всички възможни имена за дадена тема разделени с <code>|</code> (напр. <code>'Съветски съюз|СССР'</code>) заедно с картинка асоциирана с темата (напр. <code>'Flag of the Soviet Union.svg'</code>) и категория (не задължителна).
