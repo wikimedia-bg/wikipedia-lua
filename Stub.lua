@@ -101,7 +101,7 @@ local THEMES = {
 	{ 'Коморски острови', 'Flag of the Comoros.svg' },
 	{ 'Косово', 'Flag of Kosovo.svg' },
 	{ 'Коста Рика', 'Flag of Costa Rica.svg' },
-	{ 'Кот д’Ивоар', 'Flag of Cote d\'Ivoire.svg' },
+	{ 'Кот д\'Ивоар', 'Flag of Cote d\'Ivoire.svg' },
 	{ 'Куба', 'Flag of Cuba.svg' },
 	{ 'Лаос', 'Flag of Laos.svg' },
 	{ 'Латвия', 'Flag of Latvia.svg' },
