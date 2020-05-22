@@ -159,7 +159,7 @@ local THEMES = {
 	{ 'РЮА', 'Flag of South Africa.svg' },
 	{ 'Ирландия|Република Ирландия|Ейре', 'Flag of Ireland.svg' },
 	{ 'Република Конго', 'Flag of the Republic of the Congo.svg' },
-	{ 'Република Сръбска', 'Flag of the Republika Srpska.svg|border' },
+	{ 'Република Сръбска|Сръбска', 'Flag of the Republika Srpska.svg|border' },
 	{ 'Руанда', 'Flag of Rwanda.svg' },
 	{ 'Румъния', 'Flag of Romania.svg' },
 	{ 'Русия', 'Flag of Russia.svg|border' },
