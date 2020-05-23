@@ -228,9 +228,8 @@ local THEMES = {
 	{ 'място в Северна Корея|Северна Корея-гео', 'Flag-map of North Korea.svg' },
 	{ 'място в Сомалия|Сомалия-гео', 'Flag-map of Somalia.svg' },
 	{ 'място в Турция|Турция-гео', 'Flag-map of Turkey.svg' },
-	{ 'място в Уганда|Уганда-гео', 'UgandaFlagColors.svg' },
 	{ 'място в Хърватия|Хърватия-гео', 'Flag_map_of_Croatia.svg' },
-	{ 'място в ЧАД|Чад-гео', 'Flag-map of Chad.svg' },
+	{ 'място в Чад|Чад-гео', 'Flag-map of Chad.svg' },
 	{ 'място в Швеция|Швеция-гео', 'Sverige FlaggKarta.svg' },
 	
 	-- НАУКА
@@ -336,6 +335,7 @@ local THEMES = {
 	{ 'канадец', 'Flag of Canada.svg', 'канадци' },
 	{ 'китарист', 'RockNRollGuitarist.svg', 'музиканти' },
 	{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
+	{ 'северномакедонец|македонец|Северна Македония-личност', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
 	{ 'манекен', 'Topmodel.svg' },
 	{ 'медик', 'Stethoscope-2.png', 'медици' },
 	{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
