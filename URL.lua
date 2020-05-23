@@ -23,11 +23,7 @@ function p._url(url, text)
     text = trim(text or '')
     
     if url == '' then
-        if text == '' then
-            return mw.getCurrentFrame():expandTemplate{ title = 'tlx', args = { 'URL', "''example.com''", "''optional display text''" } }
-        else
-            return text
-        end
+        return text
     end
     
     -- If the URL contains any unencoded spaces, encode them, because MediaWiki will otherwise interpret a space as the end of the URL.
