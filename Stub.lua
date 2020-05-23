@@ -251,7 +251,7 @@ local THEMES = {
 	{ 'география|географ', 'Geographylogo.svg' },
 	{ 'геология', 'Geological hammer.svg' },
 	{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
-	{ 'древногръцката митология|гръцка митология', 'Flag of Georgia.svg', 'древногръцка митология' },
+	{ 'древногръцката митология|гръцка митология', 'Minotaur.jpg', 'древногръцка митология' },
 	{ 'екология', 'Forestry Leśnictwo (Beentree).svg' },
 	{ 'електроника', 'Transistor stub.svg' },
 	{ 'електротехника', 'Transformer-hightolow-ironcore.png' },
