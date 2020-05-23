@@ -436,6 +436,7 @@ local THEMES = {
 	{ 'физик', 'Albert_Einstein_Head.jpg', 'физици' },
 	{ 'французин', 'Crystal Clear app Login Manager.png', 'французи' },
 	{ 'футболист', 'Football pictogram.svg', 'футболисти' },
+	{ 'химик', 'AlfredNobel adjusted.jpg', 'химици' },
 	{ 'художник', 'Vincent Willem van Gogh 107.jpg', 'художници' },
 	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
 	{ 'шахматист', 'Chess.svg', 'шахматисти' },
