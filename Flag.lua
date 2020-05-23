@@ -207,11 +207,15 @@ function indaterange(aY, aM, aD, startTime, endTime)
 end
 
 function getflagimage(qid, time)
-    statements = mw.wikibase.getAllStatements( qid, 'P41' )
+    local statements = mw.wikibase.getAllStatements(qid, 'P41')
     if next(statements) == nil then
        return ''
     end;
-    aY, aM, aD = parseDate(time);
+    local aY, aM, aD = parseDate(time);
+    if aY then -- if there is an year specified in the time arg but no month or day
+    	if not aM then aM = 0 end -- make it zero so it won't get assigned the current month
+    	if not aD then aD = 0 end -- same as month
+    end
     
     local fi = statements[1]['mainsnak']['datavalue']['value'];
     local rank = getrank(statements[1]['rank']);
