@@ -48,7 +48,7 @@ local THEMES = {
 	{ 'Венецуела', 'Flag of Venezuela.svg' },
 	{ 'Виетнам', 'Flag of Vietnam.svg' },
 	{ 'Вирджиния', 'Flag of Virginia.svg' },
-	{ 'Върмонт', 'Flag of Vermont.svg' },
+	{ 'Върмонт|Вермонт', 'Flag of Vermont.svg' },
 	{ 'Габон', 'Flag of Gabon.svg' },
 	{ 'Гамбия', 'Flag of The Gambia.svg' },
 	{ 'Гана', 'Flag of Ghana.svg' },
