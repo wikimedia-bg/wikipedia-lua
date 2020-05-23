@@ -226,7 +226,7 @@ local THEMES = {
 
 	{ 'място в Малави|Малави-гео', 'Flag-map of Malawi.svg' },
 	{ 'място в Мали|Мали-гео', 'Flag-map of Mali.svg' },
-	{ 'място в Северна Корея|Северна Корея-гео', 'Flag-map of North Korea.svg' },
+	{ 'място в Северна Корея|Северна Корея-гео|КНДР-гео', 'Flag-map of North Korea.svg' },
 	{ 'място в Сомалия|Сомалия-гео', 'Flag-map of Somalia.svg' },
 	{ 'място в Турция|Турция-гео', 'Flag-map of Turkey.svg' },
 	{ 'място в Хърватия|Хърватия-гео', 'Flag_map_of_Croatia.svg' },
