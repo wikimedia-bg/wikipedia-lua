@@ -229,6 +229,7 @@ local THEMES = {
 	{ 'Географията на Уганда|Уганда-гео', 'UgandaFlagColors.svg' },
 	{ 'Географията на Хърватия|Хърватия-гео', 'Flag_map_of_Croatia.svg' },
 	{ 'Географията на Чад|Чад-гео', 'Flag-map of Chad.svg' },
+	{ 'Географията на Швеция|Швеция-гео', 'Sverige FlaggKarta.svg' },
 	
 	-- НАУКА
 	{ 'алгология', 'Algae Graphic.svg' },
@@ -308,7 +309,7 @@ local THEMES = {
 	{ 'актьор', 'Ausuebende Audiovision.png', 'актьори' },
 	{ 'алпинист', 'Climber silhouette.svg', 'алпинисти' },
 	{ 'американец|американци', 'USA-people-stub-icon.png', 'американци' },
-	{ 'арумъните|армъни', 'Aromanian flag.svg', 'арумъни' },
+	{ 'арумъните|арумъни|армъни', 'Aromanian flag.svg', 'арумъни' },
 	{ 'астроном', 'Astronomer.svg', 'астрономи' },
 	{ 'барабанист', 'Trixon Tom.jpg', 'музиканти' },
 	{ 'баскетболист', 'Basketball Clipart.svg' },
