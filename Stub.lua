@@ -473,7 +473,7 @@ local THEMES = {
 	{ 'дзен', 'Enso2.png' },
 	{ 'домейн', 'Crystal Clear app browser.png' },
 	{ 'език', 'Globe of letters.svg' },
-	{ 'електронна игра', 'Nuvola apps package games.png', 'електронни игри' },
+	{ 'електронна игра|компютърна игра', 'Nuvola apps package games.png', 'електронни игри' },
 	{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
 	{ 'железопътна гара', 'Template Railway Stop.svg' },
 	{ 'животно|животни', 'Crystal Clear app babelfish vector.svg', 'животни' },
