@@ -711,7 +711,7 @@ end
 function p.copyTable(inTable)
 	if type(inTable) ~= 'table' then return inTable end
 	local outTable = setmetatable({}, getmetatable(inTable))
-	for key, value in pairs (inTable) do outTable[copyTable(key)] = copyTable(value) end
+	for key, value in pairs (inTable) do outTable[p.copyTable(key)] = p.copyTable(value) end
 	return outTable
 end
 
@@ -948,7 +948,7 @@ function p.authorityControl(frame)
 			list1 = table.concat(elements)
 			})
 		outString = outString .. elementsCat .. suppressedIdCat
-		if testcases or namespace ~= 0 then
+		if testcases then
 			outString = mw.ustring.gsub(outString, '(%[%[)(Категория)', '%1:%2') --for easier checking
 		end
 	end
