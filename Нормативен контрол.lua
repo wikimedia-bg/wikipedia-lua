@@ -492,10 +492,15 @@ end
 
 function p.lnbLink( id )
 	--P1368's format regex: \d{9} (e.g. 123456789)
-	if not string.match( id, '^%d%d%d%d%d%d%d%d%d$' ) then
-		return false
+	if #id < 9 then
+		-- sometimes the id could be valid with less than 9 digits
+		-- so we have to insert the (extra) leading zero(s) to pass the match
+		id = string.rep('0', 9 - #id) .. id
 	end
-	return '[https://kopkatalogs.lv/F?func=direct&local_base=lnc10&doc_number='..id..'&P_CON_LNG=ENG '..id..']'..p.getCatForId( 'LNB' )
+	if id:match('^%d%d%d%d%d%d%d%d%d$') then
+		return '[https://kopkatalogs.lv/F?func=direct&local_base=lnc10&doc_number='..id..'&P_CON_LNG=ENG '..id..']'..p.getCatForId( 'LNB' )
+	end
+	return false
 end
 
 function p.nskLink( id )
@@ -634,40 +639,56 @@ function p.openLibraryLink( id )
 	return '[https://openlibrary.org/works/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'OpenLibrary' )
 end
 
-function p.Europeana( id )
-	--P7704's format regex: (place|agent|concept|organisation)/.* (e.g. agent/base/59832)
-	local s1, s2, s3 = string.match(id, '([^/]+)([^%d]+)(%d+)')
-	if not (s1 and s2 and s3) and not (s1 == 'place' or s1 == 'agent' or s1 == 'concept' or s1 == 'organisation') then
-		return false
-	else
-		return '[http://data.europeana.eu/' .. s1 .. s2 .. s3 .. ' ' .. s3 .. ']'..p.getCatForId( 'Europeana' )
+function p.europeanaLink(id)
+	--P7704's format regex: (place|agent|concept|organisation)/base/[1-9]\d+ (e.g. agent/base/59832)
+	local s1, s2, s3 = id:match('^([^/]+)([^%d]+)([1-9]%d+)$')
+	if (s1 and s2 and s3) and (s1 == 'place' or s1 == 'agent' or s1 == 'concept' or s1 == 'organisation') then
+ 		return '[http://data.europeana.eu/' .. id .. ' ' .. s3 .. ']' .. p.getCatForId('Europeana')
 	end
+	return false
+end
+
+function p.oclcLink(id)
+	--P243's format regex: 0*[1-9]\d* (e.g. 57722711)
+	if id:match('^0*[1-9]%d*$') then
+		return '[https://www.worldcat.org/oclc/' .. id .. ' ' .. id .. ']' .. p.getCatForId('OCLC')
+	end
+	return false
+end
+
+function p.worldcatidLink(id)
+	--P7859's format regex: (viaf|lccn|np)-.+ (e.g. lccn-n88603570)
+	local s1, s2, s3 = id:match('^(%l+)(%-)(.+)$')
+	if (s1 and s2 and s3) and (s1 == 'viaf' or s1 == 'lccn' or s1 == 'np') then
+		return '[https://www.worldcat.org/identities/' .. id .. ' ' .. id:gsub('%%20', ' ') .. ']' .. p.getCatForId('WorldCat')
+	end
+	return false
 end
 
 --[[==========================================================================]]
 --[[          Wikidata, navigation bar, and documentation functions           ]]
 --[[==========================================================================]]
 
-function p.getIdsFromWikidata( itemId, property )
+function p.getIdsFromWikidata(itemId, property)
 	local ids = {}
-	local statements = mw.wikibase.getBestStatements( itemId, property )
+	local statements = mw.wikibase.getBestStatements(itemId, property)
 	if statements then
-		for _, statement in ipairs( statements ) do
+		for _, statement in ipairs(statements) do
 			if statement.mainsnak.datavalue then
-				table.insert( ids, statement.mainsnak.datavalue.value )
+				table.insert(ids, statement.mainsnak.datavalue.value)
 			end
 		end
 	end
 	return ids
 end
 
-function p.matchesWikidataRequirements( itemId, reqs )
-	for _, group in ipairs( reqs ) do
+function p.matchesWikidataRequirements(itemId, reqs)
+	for _, group in ipairs(reqs) do
 		local property = 'P' .. group[1]
 		local qid = group[2]
-		local statements = mw.wikibase.getBestStatements( itemId, property )
+		local statements = mw.wikibase.getBestStatements(itemId, property)
 		if statements then
-			for _, statement in ipairs( statements ) do
+			for _, statement in ipairs(statements) do
 				if statement.mainsnak.datavalue then
 					if statement.mainsnak.datavalue.value['numeric-id'] == qid then
 						return true
@@ -675,20 +696,27 @@ function p.matchesWikidataRequirements( itemId, reqs )
 	return false
 end
 
-function p.createRow( id, label, rawValue, link, withUid )
+function p.createRow(id, label, rawValue, link, withUid)
 	if link then
 		if withUid then
-			return '*' .. label .. ' <span class="uid">' .. link .. '</span>\n'
+			return '* ' .. label .. ' <span class="uid">' .. link .. '</span>\n'
 		end
-		return '*' .. label .. ' ' .. link .. '\n'
+		return '* ' .. label .. ' ' .. link .. '\n'
 	end
 
 	local catName = 'Уикипедия:Страници с невалиден нормативен контрол'
-	return '*<span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' е невалиден</span>[[Категория:' .. catName .. ']]\n'
+	return '* <span class="error">Нормативният контрол ' .. id .. ': ' .. rawValue .. ' е невалиден</span>[[Категория:' .. catName .. ']]\n'
+end
+
+function p.copyTable(inTable)
+	if type(inTable) ~= 'table' then return inTable end
+	local outTable = setmetatable({}, getmetatable(inTable))
+	for key, value in pairs (inTable) do outTable[copyTable(key)] = copyTable(value) end
+	return outTable
 end
 
 -- Creates a human-readable standalone wikitable version of p.conf, and tracking categories with page counts, for use in the documentation
-function p.docConfTable( frame )
+function p.docConfTable(frame)
 	local wikiTable = '{| class="wikitable sortable"\n'..
 					  '|-\n'..
 					  '!Параметър'..
@@ -696,13 +724,13 @@ function p.docConfTable( frame )
 					  '!!data-sort-type="number"|Свойство<br />в Уикиданни'..
 					  '!!Брой в<br />категория\n'
 	local lang = mw.getContentLanguage()
-	for _, conf in pairs( p.conf ) do
+	for _, conf in pairs(p.conf) do
 		local param, link, pid = conf[1], conf[2], conf[3]
 		local category = conf.category or param
 		--cats
 		local articleCat = (category == 'Europeana' and 'Europeana') or 'Уикипедия:Статии с нормативен контрол ('..category..')'
 		--counts
-		local articleCount = lang:formatNum( mw.site.stats.pagesInCategory(articleCat, 'pages') )
+		local articleCount = lang:formatNum(mw.site.stats.pagesInCategory(articleCat, 'pages'))
 		--concat
 		wikiTable = wikiTable..
 					'|-\n'..
@@ -711,18 +739,7 @@ function p.docConfTable( frame )
 					'||data-sort-value="'..pid..'"|[[:d:property:P'..pid..'|P'..pid..']]'..
 					'||style="text-align:right"|[[:Категория:'..articleCat..'|'..articleCount..']]\n'
 	end
-	--other tracking cats
-	local WCat =       'Уикипедия:Статии с нормативен контрол (WorldCat)'
-	--cat counts
-	local WCount =       lang:formatNum( mw.site.stats.pagesInCategory(WCat, 'pages') )
-	--then assemble
-	return wikiTable..
-					'|-\n'..
-					'|WORLDCATID'..
-					'||[[Онлайн компютърен библиотечен център|WorldCat]]'..
-					'||data-sort-value="0"|—'..
-					'||style="text-align:right"|[[:Категория:'..WCat..'|'..WCount..']]\n'..
-					'|}'
+	return wikiTable .. '|}'
 end
 
 --[[==========================================================================]]
@@ -751,7 +768,7 @@ p.conf = {
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
 	{ 'DSI', 'DSI', 2349, p.dsiLink },
 	{ 'EBE', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.EBEIDLink },
-	{ 'Europeana', '[[Europeana]]', 7704, p.Europeana },
+	{ 'Europeana', '[[Europeana]]', 7704, p.europeanaLink },
 	{ 'FAST', 'FAST', 2163, p.fastLink },
 	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
 	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
@@ -782,6 +799,7 @@ p.conf = {
 	{ 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, p.nkcLink },
 	{ 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, p.nlaLink },
 	{ 'NSK', 'NSK', 1375, p.nskLink },
+	{ 'OCLC', '[[Онлайн компютърен библиотечен център|OCLC]]', 243, p.oclcLink },
 	{ 'OpenLibrary', 'Open Library', 648, p.openLibraryLink },
 	{ 'ORCID', 'ORCID', 496, p.orcidLink },
 	{ 'PIC', 'PIC', 2750, p.picLink },
@@ -801,6 +819,7 @@ p.conf = {
 	{ 'ULAN', 'ULAN', 245, p.ulanLink },
 	{ 'USCongress', 'US Congress', 1157, p.uscongressLink },
 	{ 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, p.viafLink },
+	{ 'WORLDCATID', 'WorldCat', 7859, p.worldcatidLink },
 }
 
 -- Legitimate aliases to p.conf, for convenience
@@ -810,6 +829,7 @@ p.aliases = {
 	{ 'NLG', 'EBE' },
 	{ 'autores', 'autores.uy' },
 	{ 'SNAC', 'SNAC-ID' },
+	{ 'WorldCat', 'WORLDCATID' },
 }
 
 -- Deprecated aliases to p.conf, which also get assigned to a tracking cat
@@ -826,20 +846,18 @@ p.deprecated = {
 --[[                                   Main                                   ]]
 --[[==========================================================================]]
 
-function p.authorityControl( frame )
+function p.authorityControl(frame)
 	local resolveEntity = require('Модул:ResolveEntityId')
 	local title = mw.title.getCurrentTitle()
 	local namespace = title.namespace
 	local talkspace = (mw.site.talkNamespaces[namespace] ~= nil)
-	local testcases = (string.sub(title.subpageText,1,9) == 'testcases')
-	local parentArgs = frame:getParent().args
+	local testcases = (string.sub(title.subpageText, 1, 9) == 'testcases')
+	local parentArgs = p.copyTable(frame:getParent().args)
 	local elements = {} --create/insert rows later
-	local worldcatCat = ''
 	local suppressedIdCat = ''
-	local deprecatedIdCat = ''
 	
 	--Format args
-	for k, v in pairs( frame:getParent().args ) do
+	for k, v in pairs(frame:getParent().args) do
 		if type(k) == 'string' then
 			--make args case insensitive
 			local lowerk = mw.ustring.lower(k)
@@ -851,21 +869,18 @@ function p.authorityControl( frame )
 	end
 	
 	--Redirect aliases to proper parameter names
-	for _, a in pairs( p.aliases ) do
+	for _, a in pairs(p.aliases) do
 		local alias, param = mw.ustring.lower(a[1]), mw.ustring.lower(a[2])
 		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[alias] then
 			parentArgs[param] = parentArgs[alias]
 		end
 	end
 	
-	--Redirect deprecated parameters to proper parameter names, and assign tracking cat
-	for _, d in pairs( p.deprecated ) do
+	--Redirect deprecated parameters to proper parameter names
+	for _, d in pairs(p.deprecated) do
 		local dep, param = mw.ustring.lower(d[1]), mw.ustring.lower(d[2])
 		if (parentArgs[param] == nil or parentArgs[param] == '') and parentArgs[dep] then
 			parentArgs[param] = parentArgs[dep]
-			if namespace == 0 then
-				deprecatedIdCat = '[[Категория:Уикипедия:Статии с отпаднал нормативен контрол|'..dep..']]'
-			end
 		end
 	end
 	
@@ -882,19 +897,19 @@ function p.authorityControl( frame )
 	
 	--Wikidata fallback if requested
 	if itemId then
-		for _, params in ipairs( p.conf ) do
+		for _, params in ipairs(p.conf) do
 			if params[3] > 0 then
 				params[1] = mw.ustring.lower(params[1])
 				local val = parentArgs[params[1]]
 				if val == nil or val == '' then
 					local canUseWikidata = nil
 					if reqs[params[1]] then
-						canUseWikidata = p.matchesWikidataRequirements( itemId, reqs[params[1]] )
+						canUseWikidata = p.matchesWikidataRequirements(itemId, reqs[params[1]])
 					else
 						canUseWikidata = true
 					end
 					if canUseWikidata then
-						local wikidataIds = p.getIdsFromWikidata( itemId, 'P' .. params[3] )
+						local wikidataIds = p.getIdsFromWikidata(itemId, 'P' .. params[3])
 						if wikidataIds[1] then
 							if val == '' and (namespace == 0 or testcases) then
 								suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол]]'
@@ -904,41 +919,18 @@ function p.authorityControl( frame )
 	
 	--Configured rows
 	local rct = 0
-	for _, params in ipairs( p.conf ) do
+	for _, params in ipairs(p.conf) do
 		local val = parentArgs[mw.ustring.lower(params[1])]
 		if val and val ~= '' then
-			table.insert( elements, p.createRow( params[1], params[2] .. ':', val, params[4]( val ), true ) )
+			local uid = true
+			if params[1] == 'WORLDCATID' then
+				uid = false
+			end
+			table.insert(elements, p.createRow(params[1], params[2] .. ':', val, params[4](val), uid))
 			rct = rct + 1
 		end
 	end
-	
-	--WorldCat
-	local worldcatId = parentArgs[mw.ustring.lower('WORLDCATID')]
-	if worldcatId and worldcatId ~= '' then --if unsuppressed & present
-		table.insert( elements, p.createRow( 'WORLDCATID', '', worldcatId, '[[Онлайн компютърен библиотечен център|WorldCat]]: [https://www.worldcat.org/identities/'..worldcatId..' '..worldcatId..']', false ) ) --Validation?
-		worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
-	elseif worldcatId == nil then --if unsuppressed & absent
-		local lccnId = parentArgs[mw.ustring.lower('LCCN')]
-		local viafId = parentArgs[mw.ustring.lower('VIAF')]
-		if lccnId and lccnId ~= '' and p.lccnLink( lccnId ) then --LCCN must be unsuppressed & validated
-			local lccnParts = p.splitLccn( lccnId )
-			if lccnParts and lccnParts[1] ~= 'sh' then
-				local lccnIdFmtd = lccnParts[1] .. lccnParts[2] .. '-' .. lccnParts[3]
-				table.insert( elements, p.createRow( 'LCCN', '', lccnId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през LCCN): [https://www.worldcat.org/identities/lccn-'..lccnIdFmtd..' '..lccnIdFmtd..']', false ) )
-				if (namespace == 0) then 
-					worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
-				end
-			end
-		elseif viafId and viafId ~= '' and p.viafLink( viafId ) then --VIAF must be unsuppressed & validated
-			table.insert( elements, p.createRow( 'VIAF', '', viafId, '[[Онлайн компютърен библиотечен център|WorldCat]] (през VIAF): [https://www.worldcat.org/identities/containsVIAFID/'..viafId..' '..viafId..']', false ) )
-			if (namespace == 0) then 
-				worldcatCat = '[[Категория:Уикипедия:Статии с нормативен контрол (WorldCat)]]'
-			end
-		end
-	elseif worldcatId == '' then --if suppressed
-		suppressedIdCat = '[[Категория:Уикипедия:Статии с потиснат идентификатор на нормативен контрол]]'
-	end
-	
+
 	local Navbox = require('Модул:Navbox')
 	local elementsCat = ''
 	if rct > 20 then
@@ -949,19 +941,15 @@ function p.authorityControl( frame )
 	if #elements > 0 then
 		local args = {}
 		if testcases and itemId then args = { qid = itemId } end --expensive
-		outString = Navbox._navbox( {
+		outString = Navbox._navbox({
 			name  = 'Нормативен контрол',
 			bodyclass = 'hlist hlist-big plainlinks',
 			group1 = '[[Нормативен контрол]]',
-			list1 = table.concat( elements )
-			} )
-		local auxCats = worldcatCat .. elementsCat .. suppressedIdCat .. deprecatedIdCat
-		if testcases then
-			auxCats = mw.ustring.gsub(auxCats, '(%[%[)(Категория)', '%1:%2') --for easier checking
-		end
-		outString = outString .. auxCats
-		if namespace ~= 0 then
-			outString = mw.ustring.gsub(outString, '(%[%[)(Категория:Уикипедия:Статии)', '%1:%2') --by definition
+			list1 = table.concat(elements)
+			})
+		outString = outString .. elementsCat .. suppressedIdCat
+		if testcases or namespace ~= 0 then
+			outString = mw.ustring.gsub(outString, '(%[%[)(Категория)', '%1:%2') --for easier checking
 		end
 	end
 	
