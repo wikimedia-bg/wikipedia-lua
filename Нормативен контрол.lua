@@ -819,7 +819,7 @@ p.conf = {
 	{ 'ULAN', 'ULAN', 245, p.ulanLink },
 	{ 'USCongress', 'US Congress', 1157, p.uscongressLink },
 	{ 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, p.viafLink },
-	{ 'WORLDCATID', 'WorldCat', 7859, p.worldcatidLink },
+	{ 'WORLDCATID', 'WorldCat', 7859, p.worldcatidLink, category = 'WorldCat' },
 }
 
 -- Legitimate aliases to p.conf, for convenience
