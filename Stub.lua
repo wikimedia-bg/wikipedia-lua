@@ -217,7 +217,7 @@ local THEMES = {
 	{ 'Хонконг', 'Flag of Hong Kong.svg' },
 	{ 'Хърватия-гео', 'Flag_map_of_Croatia.svg' },
 	{ 'Хърватия', 'Flag of Croatia.svg' },
-	{ 'ЦАР', 'Flag of the Central African Republic.svg' },
+	{ 'Централноафриканската република|ЦАР', 'Flag of the Central African Republic.svg' },
 	{ 'Чад-гео', 'Flag-map of Chad.svg' },
 	{ 'Чад', 'Flag of Chad.svg' },
 	{ 'Черна гора', 'Flag of Montenegro.svg' },
