@@ -319,6 +319,7 @@ local THEMES = {
 	{ 'бойно изкуство', 'Yin and Yang symbol.svg', 'бойни изкуства' },
 	{ 'ботаника', 'Leaf.png' },
 	{ 'будизъм', 'Dharma Wheel.svg' },
+	{ 'военна история', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 	{ 'география|географ', 'Geographylogo.svg' },
 	{ 'геология', 'Geological hammer.svg' },
 	{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
