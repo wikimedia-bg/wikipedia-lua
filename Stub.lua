@@ -563,7 +563,7 @@ local THEMES = {
 	{ 'викинги', 'Vikingshipshortened.png' },
 	{ 'вино', 'Red_Wine_Glass.jpg' },
 	{ 'висше училище', 'Graduation hat.svg' },
-	{ 'властелинът на пръстените', 'Unico Anello.png' },
+	{ 'Властелинът на пръстените', 'Unico Anello.png' },
 	{ 'водопад', 'Reichenbach.JPG' },
 	{ 'военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 	{ 'военно отличие', 'Орден „За Военна Заслуга“ I степен (без шарф и без звезда).jpg', 'военни отличия' },
