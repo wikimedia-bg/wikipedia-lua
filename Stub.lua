@@ -626,7 +626,7 @@ local THEMES = {
 	{ 'море', 'India Landscape.jpg' },
 	{ 'мост', 'Bridge drawing.svg' },
 	{ 'мотоциклет', 'Motorsport stub.svg', 'мотоциклети' },
-	{ 'музей', 'David face.png' },
+	{ 'музей', 'David face.png', 'музеи' },
 	{ 'музикален инструмент', 'Saxophone-icon.svg', 'музикални инструменти' },
 	{ 'мъглявина', 'Ring Nebula.jpg' },
 	{ 'награда', 'Cup of Gold.svg', 'отличия' },
