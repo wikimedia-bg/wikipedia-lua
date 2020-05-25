@@ -149,7 +149,7 @@ local THEMES = {
 	{ 'Мадрид', 'Flag of the Community of Madrid.svg' },
 	{ 'Малави', 'Flag of Malawi.svg' },
 	{ 'Малайзия', 'Flag of Malaysia.svg' },
-	{ 'Малдиви', 'Flag of Maldives.svg' },
+	{ 'Малдивите|Малдиви', 'Flag of Maldives.svg' },
 	{ 'Мали', 'Flag of Mali.svg' },
 	{ 'Малта', 'Flag of Malta.svg' },
 	{ 'Мароко', 'Flag of Morocco.svg' },
