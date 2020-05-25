@@ -396,7 +396,7 @@ local THEMES = {
 	{ 'будизъм', 'Dharma Wheel.svg' },
 	{ 'военна история на България', 'Bulgaria war flag.png' },
 	{ 'военна история', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
-	{ 'география|географ', 'Geographylogo.svg' },
+	{ 'география|географ|гео', 'Geographylogo.svg' },
 	{ 'геология', 'Geological hammer.svg' },
 	{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
 	{ 'древногръцката митология|гръцка митология', 'Minotaur.jpg', 'древногръцка митология' },
