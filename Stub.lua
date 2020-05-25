@@ -549,7 +549,7 @@ local THEMES = {
 	{ 'Че Гевара', 'Che por Jim Fitzpatrick.svg' },
 	{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
 	{ 'албум', 'Gnome-dev-cdrom-audio.svg', 'музикални албуми' },
-	{ 'аниме и манга|аниманга', 'Anime stub 2.svg' },
+	{ 'аниманга', 'Anime stub 2.svg' },
 	{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 	{ 'артилерия', 'P military green.png' },
 	{ 'астероид', '951 Gaspra.jpg', 'астероиди' },
