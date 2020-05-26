@@ -539,7 +539,6 @@ local THEMES = {
 	{ 'ЛГБТ', 'Gay flag.svg' },
 	{ 'НЛО', 'Nuvola apps konquest.png' },
 	{ 'Нацистка Германия', 'Reichsadler.svg' },
-	{ 'ПСВ', 'Vickers machine gun in the Battle of Passchendaele - September 1917.jpg' },
 	{ 'ПФК Светкавица (Търговище)', 'Svetkavitza.png' },
 	{ 'Руска-военна', 'Flag of the Ministry of Defence of the Russian Federation.svg' },
 	{ 'ТНО-К', '(253) mathilde crop.jpg' },
