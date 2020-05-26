@@ -656,7 +656,7 @@ local THEMES = {
 	{ 'радио', 'Radio icon.png' },
 	{ 'радиолюбителство', 'International amateur radio symbol.svg ' },
 	{ 'размножаване', 'ChromosomeArt.jpg' },
-	{ 'ракета', 'Shuttle.svg', 'ракети' },
+	{ 'ракета|ракети', 'Shuttle.svg', 'ракетна техника и космически апарати' },
 	{ 'растение|растения', 'Dahlia redoute.JPG', 'растения' },
 	{ 'революция', 'Fist .svg' },
 	{ 'река', 'Eugène Galien-Laloue Village on a River.jpg', 'реки' },
