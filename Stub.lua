@@ -594,7 +594,7 @@ local THEMES = {
 	{ 'игра', 'Tic tac toe.svg', 'игри' },
 	{ 'играчка', 'Rubiks cube scrambled.jpg', 'играчки' },
 	{ 'изкуствен спътник', 'Nasa swift satellite.jpg', 'изкуствени спътници' },
-	{ 'изчислителна техника|комп', 'Nuvola apps mycomputer.svg' },
+	{ 'изчислителна техника|компютър|компютри|комп', 'Nuvola apps mycomputer.svg' },
 	{ 'име', 'IPA Unicode 0x026E.svg', 'имена' },
 	{ 'ислям', 'Allah-green.svg' },
 	{ 'келти', 'Celtic carre chien.jpg' },
