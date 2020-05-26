@@ -645,7 +645,7 @@ local THEMES = {
 	{ 'планина', 'Refuge icone.svg', 'география' },
 	{ 'подводница', 'Orzel.svg', 'подводници' },
 	{ 'покер', '11g poker chips.jpg' },
-	{ 'православното християнство|православие', 'Cross of the Russian Orthodox Church 01.svg' },
+	{ 'православие', 'Cross of the Russian Orthodox Church 01.svg' },
 	{ 'праистория', 'Combarelles-mammouth.png' },
 	{ 'природа', 'N nature.svg' },
 	{ 'първата световна война|псв', 'Vickers machine gun in the Battle of Passchendaele - September 1917.jpg' },
