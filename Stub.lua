@@ -563,7 +563,7 @@ local THEMES = {
 	{ 'вино', 'Red_Wine_Glass.jpg' },
 	{ 'Властелинът на пръстените', 'Unico Anello.png' },
 	{ 'водопад', 'Reichenbach.JPG' },
-	{ 'военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
+	{ 'военно дело|военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 	{ 'военно звание|звание', 'Army-USA-OR-04a.svg', 'военни звания' },
 	{ 'военно отличие|отличие', 'Орден „За Военна Заслуга“ I степен (без шарф и без звезда).jpg', 'военни отличия' },
 	{ 'вулкан', 'Noto Project Volcano Emoji.svg', 'вулкани' },
