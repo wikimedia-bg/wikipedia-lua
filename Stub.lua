@@ -732,8 +732,11 @@ local function printStub(theme, image, plural)
 	
 	local themeText = ''
 	if theme then
-		themeText = plural and ' за' or (', свързана ' .. (mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с'))
-		themeText = string.format('%s [[%s]]', themeText, theme)
+		if plural then
+			themeText = ' за [[' .. theme .. ']]'
+		else
+			themeText = ', свързана ' .. (mw.ustring.match(toLower(theme), '^[сз]') and 'със' or 'с') .. ' [[' .. theme .. ']],'
+		end
 	end
 	
 	local text = string.format("''Тази статия%s все още е [[Уикипедия:Мъниче|мъниче]]. Помогнете на Уикипедия, като я [%s редактирате] и разширите.''", themeText, editLink)
