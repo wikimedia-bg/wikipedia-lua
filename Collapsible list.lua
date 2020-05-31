@@ -53,14 +53,14 @@ local function buildList( args )
     listItems = table.concat( listItems )
     
     -- Get class, style and title data.
-    local div1class = formatAttributes( 'class', 'NavFrame', not args.expand and 'collapsed' )
+    local div1class = formatAttributes( 'class', 'mw-collapsible', not args.expand and 'mw-collapsed' )
     local div1style = formatAttributes(
         'style',
         args.frame_style,
         args.framestyle,
         not ( args.frame_style or args.framestyle ) and 'border: none; padding: 0;'
     )
-    local div2class = formatAttributes( 'class', 'NavHead' )
+    local div2class = formatAttributes( 'class', '' )
     local div2style = formatAttributes(
         'style',
         'font-size: 105%;',
@@ -69,7 +69,7 @@ local function buildList( args )
         not ( args.title_style or args.titlestyle ) and 'background: transparent; text-align: left;'
     )
     local title = args.title or 'List'
-    local ulclass = formatAttributes( 'class', 'NavContent', args.hlist and 'hlist' )
+    local ulclass = formatAttributes( 'class', 'mw-collapsible-content', args.hlist and 'hlist' )
     local ulstyle = formatAttributes( 
         'style',
         not args.bullets and 'list-style: none none; margin-left: 0;',
