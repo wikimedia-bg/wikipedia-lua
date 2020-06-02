@@ -12,7 +12,7 @@ function p.tonumber(frame)
 		getArgs = require('Module:Arguments').getArgs
 	end
 	args = getArgs(frame)
-	return stringToNumber( args[1] )
+	return p.stringToNumber( args[1] )
 end
 
 function p.stringToNumber(str)
