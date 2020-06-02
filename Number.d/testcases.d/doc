@@ -1,0 +1,2 @@
+== [[Module:Number]] ==
+{{#invoke:Number/testcases|run}}
