@@ -6,3 +6,9 @@
 
 === Примери ===
 * <code><nowiki>{{#invoke:Number|tonumber|123 456,89}}</nowiki></code> връща {{#invoke:Number|tonumber|123 456,89}}
+
+----
+
+== [[Module:Number/testcases|Тестове]] ==
+
+{{#invoke:Number/testcases|run|displayMode=short}}
