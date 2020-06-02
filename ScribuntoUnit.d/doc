@@ -1,0 +1,183 @@
+This module provides unit tests for other [[Help:Lua|Lua]] modules. To test a module, you must create a separate test module, usually located at <code>Module:''Module name''/testcases</code>. The module is tested with the ScribuntoUnit module, which verifies that the operations defined in the test module produce the expected results.
+
+== Test module structure ==
+
+To make a test module (test suite), start with the following code:
+
+<syntaxhighlight lang="lua">
+local myModule = require('Module:MyModule') -- the module to be tested
+local ScribuntoUnit = require('Module:ScribuntoUnit')
+local suite = ScribuntoUnit:new()
+</syntaxhighlight>
+
+After you have done this you can add individual test functions to the <code>suite</code> object. Any function that begins with <code>test</code> is treated as a test. (Other functions will be ignored by ScribuntoUnit, but can be used in the tests themselves.)
+
+<syntaxhighlight lang="lua">
+function suite:testSomeCall()
+    self:assertEquals('expected value', myModule.someCall(123))
+    self:assertEquals('other expected value', myModule.someCall(456))
+end
+
+function suite:testSomeOtherCall()
+    self:assertEquals('expected value', myModule.someOtherCall(123))
+    self:assertEquals('other expected value', myModule.someOtherCall(456))
+end
+</syntaxhighlight>
+
+The tests you write should make assertions, and ScribuntoUnit will check whether those assertions are true. For example, <code>assertEquals</code> checks that both of the arguments it is given are equal. If ScribuntoUnit doesn't find an assertion to be true, then the test will fail and an error message will be generated. The error message will show which assertion failed verification (other checks on the assertions are not made at this time).
+
+To finish the test module, you need to return the <code>suite</code> object.
+
+<syntaxhighlight lang="lua">
+return suite
+</syntaxhighlight>
+
+== Running the tests ==
+
+The tests can be run in two ways: through the Lua debug console, and from a wiki page using #invoke. If you are running the tests through the debug console, use the code <code>require('Module:MyModule/testcases').run()</code>. If you are running them from a wiki page, use the code <code><nowiki>{{#invoke:MyModule/testcases|run}}</nowiki></code>. This will generate a table containing the results. It is also possible to display a more compact table by using the code <code><nowiki>{{#invoke:MyModule/testcases|run|displayMode=short}}</nowiki></code>.
+
+== Tests ==
+
+=== Error messages ===
+
+The last parameter of all the test methods is a message that is displayed if validation fails.
+
+<syntaxhighlight lang="lua">
+self:assertEquals("expected value", myModule.someCall(123), "The call to myModule.someCall(123) didn't return the expected value.")
+</syntaxhighlight>
+
+=== assertTrue, assertFalse ===
+
+<syntaxhighlight lang="lua">
+self:assertTrue(expression, message)
+self:assertFalse(expression, message)
+</syntaxhighlight>
+
+These test whether the given expression evaluates to <code>true</code> or <code>false</code>. Note that in Lua <code>false</code> and <code>nil</code> evaluate to <code>false</code>, and everything else evaluates to <code>true</code>.
+
+<syntaxhighlight lang="lua">
+self:assertTrue(2 + 2 == 4)
+self:assertTrue('foo')
+self:assertFalse(2 + 2 == 5)
+self:assertFalse(nil)
+</syntaxhighlight>
+
+=== assertStringContains ===
+
+<syntaxhighlight lang="lua">
+self:assertStringContains(pattern, s, plain, message)
+</syntaxhighlight>
+
+This tests whether <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
+
+If the string is not found, the error message shows the values of <code>pattern</code> and <code>s</code>; if <code>s</code> is more than 70 characters long then a truncated version is displayed. This method is useful for testing specific behaviours in complex wikitext.
+
+<syntaxhighlight lang="lua">
+self:assertStringContains("foo", "foobar") -- passes
+self:assertStringContains("foo", "fobar") -- fails
+self:assertStringContains(".oo", "foobar") -- passes: matches "foo"
+self:assertStringContains(".oo", "foobar", true) -- fails: . is interpreted as a literal character
+</syntaxhighlight>
+
+=== assertNotStringContains ===
+
+<syntaxhighlight lang="lua">
+self:assertNotStringContains(pattern, s, plain, message)
+</syntaxhighlight>
+
+This is the opposite of <code>assertStringContains</code>. The test will fail if <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
+
+<syntaxhighlight lang="lua">
+self:assertNotStringContains("foo", "foobar") -- fails
+self:assertNotStringContains("foo", "fobar") -- passes
+self:assertNotStringContains(".oo", "foobar") -- fails: matches "foo"
+self:assertNotStringContains(".oo", "foobar", true) -- passes: . is interpreted as a literal character
+</syntaxhighlight>
+
+=== assertEquals ===
+
+<syntaxhighlight lang="lua">
+self:assertEquals(expected, actual, message)
+</syntaxhighlight>
+
+This tests whether the first parameter is equal to the second parameter. If both parameters are numbers, the values are instead compared using {{code|assertWithinDelta}} with delta 1e-8 (0.00000001) since numbers are represented as floating point numberss with limited precision.
+
+<syntaxhighlight lang="lua">
+self:assertEquals(4, calculator.add(2, 2))
+</syntaxhighlight>
+
+=== assertWithinDelta ===
+
+<syntaxhighlight lang="lua">
+self:assertWithinDelta(expected, actual, delta, message)
+</syntaxhighlight>
+
+For two numbers, this tests whether the first is within a given distance (delta) from the second. This is useful to compare floating point numbers, which are used to represent numbers in the standard installation of Lua. (To be precise, it uses double-precision floating point numbers.) For example, on the version of Scribunto installed on the English Wikipedia, the expression <code>0.3 – 0.2 == 0.1</code> evaluates to <code>false</code>. This is because in practice, the expression <code>0.3 – 0.2</code> equals <code>0.09999999999999997780…</code> and the number <code>0.1</code> equals <code>0.10000000000000000555…</code>. The slight error between the two means that Lua does not consider them equal. Therefore, to test for equality between two floating point numbers, we should accept values within a small distance (delta) of each other, not just equal values. Note that this problem does not affect integers, which can be represented exactly using double-precision floating point numbers up to values of 2^53.
+
+<syntaxhighlight lang="lua">
+self:assertWithinDelta(0.1, calculator.subtract(0.3, 0.2), 1e-10)
+</syntaxhighlight>
+
+=== assertDeepEquals ===
+
+<syntaxhighlight lang="lua">
+self:assertDeepEquals(expected, actual, message)
+</syntaxhighlight>
+
+This tests whether the first parameter is equal to the second parameter. If the parameters are tables, they are compared recursively, and their [[Extension:Scribunto/Lua reference manual#Metatables|__eq metamethods]] are respected.
+
+<syntaxhighlight lang="lua">
+self:assertDeepEquals(table1, table2)
+</syntaxhighlight>
+
+=== assertTemplateEquals ===
+
+<syntaxhighlight lang="lua">
+self:assertTemplateEquals(expected, template, args, message)
+</syntaxhighlight>
+
+This tests whether the first parameter equals a template call. The second parameter is the template name, and the third parameter is a table of the template arguments.
+
+<syntaxhighlight lang="lua">
+self:assertTemplateEquals(4, 'add', {2, 2}) -- true if {{add|2|2}} equals 4
+</syntaxhighlight>
+
+Note that some tags written in XML notation cannot be tested correctly; see the note for the <code>assertResultEquals</code> function below.
+
+=== assertResultEquals ===
+
+<syntaxhighlight lang="lua">
+self:assertResultEquals(expected, text, message)
+</syntaxhighlight>
+
+This tests whether the first parameter equals the expansion of any wikitext. The second parameter can be any wikitext.
+
+<syntaxhighlight lang="lua">
+self:assertResultEquals(4, '{{#invoke:Calculator|add|2|2}}')
+</syntaxhighlight>
+
+Note that some special tags written in XML notation, such as <code><nowiki><pre></nowiki></code>, <code><nowiki><nowiki></nowiki></code>, <code><nowiki><gallery></nowiki></code> and <code><nowiki><ref></nowiki></code> cannot be compared correctly. These tags are converted to [[strip marker]]s before they are processed by Lua. Strip markers are unique, even when generated from identical input, so any tests testing these tags for equality will fail. This also applies to the <code>assertTemplateEquals</code> and <code>assertSameResult</code> functions.
+
+=== assertSameResult ===
+
+<syntaxhighlight lang="lua">
+self:assertSameResult(text1, text2, message)
+</syntaxhighlight>
+
+This tests whether the expansion of a given string of wikitext equals the expansion of another string of wikitext. This can be useful for verifying that a module behaves in the same way as a template it is intended to replace.
+
+<syntaxhighlight lang="lua">
+self:assertSameResult('{{add|2|2}}', '{{#invoke:Calculator|add|2|2}}')
+</syntaxhighlight>
+
+Note that some tags written in XML notation cannot be tested correctly; see the note for the <code>assertResultEquals</code> function above.
+
+=== assertThrows ===
+<syntaxhighlight lang="lua">
+self:assertThrows(fn, expectedMessage, message)
+</syntaxhighlight>
+
+This tests whether a given function throws an exception.  If <code>expectedMessage</code> is not <code>nil</code>, it will check that an exception was thrown with the given error message.
+
+== See also ==
+* [[Module:UnitTests]]
