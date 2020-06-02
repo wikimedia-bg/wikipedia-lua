@@ -1,0 +1,27 @@
+-- Unit tests for [[Module:Number]]
+
+local ScribuntoUnit = require('Module:ScribuntoUnit')
+local suite = ScribuntoUnit:new()
+local libName = 'Number'
+
+-- Helper to run all tests using sandbox version of the library from the debug console. To run against main lib, use  =p.run()
+function suite.runSandbox()
+	local frame = mw.getCurrentFrame():newChild{title='testcases', args={module=libName .. '/sandbox', displayMode='log'}}
+	return suite.run(frame)
+end
+
+-- Allow test runner to use the sandbox and the primary versions of the library with the same testcases
+function suite:module()
+	return require('Module:' .. (self.frame and self.frame.args.module or libName))
+end
+
+
+function suite:testStringToNumeric()
+    local tt = self:module()
+    self:assertEquals(123456789.0123, tt.stringToNumber('123 456 789,0123'))
+    self:assertEquals(123456789.0123, tt.stringToNumber('123' .. string.char(160) .. '456' .. string.char(160) .. '789,0123'))
+    self:assertEquals(123456789, tt.stringToNumber('123 456 789'))
+    self:assertEquals(123.45, tt.stringToNumber('123,45'))
+end
+
+return suite
