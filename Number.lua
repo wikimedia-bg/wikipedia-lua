@@ -8,11 +8,7 @@ Unit tests for this module are available at Module:Number/testcases.
 local p = {}
 
 function p.tonumber(frame)
-	if not getArgs then
-		getArgs = require('Module:Arguments').getArgs
-	end
-	args = getArgs(frame)
-	return p.stringToNumber( args[1] )
+	return p.stringToNumber( frame.args[1] )
 end
 
 function p.stringToNumber(str)
