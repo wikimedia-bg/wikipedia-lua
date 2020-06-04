@@ -68,7 +68,7 @@ self:assertFalse(nil)
 self:assertStringContains(pattern, s, plain, message)
 </syntaxhighlight>
 
-This tests whether <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
+This tests whether <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[mw:Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
 
 If the string is not found, the error message shows the values of <code>pattern</code> and <code>s</code>; if <code>s</code> is more than 70 characters long then a truncated version is displayed. This method is useful for testing specific behaviours in complex wikitext.
 
@@ -85,7 +85,7 @@ self:assertStringContains(".oo", "foobar", true) -- fails: . is interpreted as a
 self:assertNotStringContains(pattern, s, plain, message)
 </syntaxhighlight>
 
-This is the opposite of <code>assertStringContains</code>. The test will fail if <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
+This is the opposite of <code>assertStringContains</code>. The test will fail if <code>pattern</code> is found in the string <code>s</code>. If <code>plain</code> is true, then <code>pattern</code> is interpreted as literal text; otherwise, <code>pattern</code> is interpreted as a [[mw:Extension:Scribunto/Lua reference manual#Ustring patterns|ustring pattern]].
 
 <syntaxhighlight lang="lua">
 self:assertNotStringContains("foo", "foobar") -- fails
@@ -124,7 +124,7 @@ self:assertWithinDelta(0.1, calculator.subtract(0.3, 0.2), 1e-10)
 self:assertDeepEquals(expected, actual, message)
 </syntaxhighlight>
 
-This tests whether the first parameter is equal to the second parameter. If the parameters are tables, they are compared recursively, and their [[Extension:Scribunto/Lua reference manual#Metatables|__eq metamethods]] are respected.
+This tests whether the first parameter is equal to the second parameter. If the parameters are tables, they are compared recursively, and their [[mw:Extension:Scribunto/Lua reference manual#Metatables|__eq metamethods]] are respected.
 
 <syntaxhighlight lang="lua">
 self:assertDeepEquals(table1, table2)
@@ -156,7 +156,7 @@ This tests whether the first parameter equals the expansion of any wikitext. The
 self:assertResultEquals(4, '{{#invoke:Calculator|add|2|2}}')
 </syntaxhighlight>
 
-Note that some special tags written in XML notation, such as <code><nowiki><pre></nowiki></code>, <code><nowiki><nowiki></nowiki></code>, <code><nowiki><gallery></nowiki></code> and <code><nowiki><ref></nowiki></code> cannot be compared correctly. These tags are converted to [[strip marker]]s before they are processed by Lua. Strip markers are unique, even when generated from identical input, so any tests testing these tags for equality will fail. This also applies to the <code>assertTemplateEquals</code> and <code>assertSameResult</code> functions.
+Note that some special tags written in XML notation, such as <code><nowiki><pre></nowiki></code>, <code><nowiki><nowiki></nowiki></code>, <code><nowiki><gallery></nowiki></code> and <code><nowiki><ref></nowiki></code> cannot be compared correctly. These tags are converted to [[mw:strip marker|strip marker]]s before they are processed by Lua. Strip markers are unique, even when generated from identical input, so any tests testing these tags for equality will fail. This also applies to the <code>assertTemplateEquals</code> and <code>assertSameResult</code> functions.
 
 === assertSameResult ===
 
