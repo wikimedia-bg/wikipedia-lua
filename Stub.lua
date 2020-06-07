@@ -638,7 +638,7 @@ local THEMES = {
 	{ 'парична единица', '5000 Tugriks - Recto.jpg', 'парични единици' },
 	{ 'парк', 'Forestry Leśnictwo (Beentree)2.svg' },
 	{ 'парламент', 'Bulgarie Assemblee 2017.svg' },
-	{ 'партия', 'Political_template.gif' },
+	{ 'партия', 'Political_template.gif', 'партии' },
 	{ 'песен', 'Musical notes.svg', 'песни' },
 	{ 'планина', 'Refuge icone.svg', 'география' },
 	{ 'подводница', 'Orzel.svg', 'подводници' },
