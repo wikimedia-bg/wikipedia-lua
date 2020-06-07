@@ -498,7 +498,6 @@ local THEMES = {
 	{ 'престъпник', 'Anthonygaggi.jpg', 'престъпници' },
 	{ 'психолог', 'Sigmund freud um 1905.jpg', 'психолози' },
 	{ 'режисьор', 'Filmreel-icon.svg', 'режисьори' },
-	{ 'робот', 'Cartoon Robot.svg', 'роботи' },
 	{ 'руснак', 'Flag of Russia.svg', 'руснаци' },
 	{ 'светец', 'Saint-stub-icon.jpg', 'светци' },
 	{ 'северномакедонец|македонец|Северна Македония-личност|РМ-личност', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
