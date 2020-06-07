@@ -463,7 +463,7 @@ local THEMES = {
 	{ 'филология', 'Feather writing.svg' },
 	{ 'философия', 'Philosophy_template.gif' },
 	{ 'фонетика', 'Linguistics stub.svg' },
-	{ 'фотография', 'Crystal Clear device camera.png' },
+	{ 'фотография|фотограф', 'Crystal Clear device camera.png' },
 	{ 'хералдика', 'Azure,_a_bend_Or.svg' },
 	{ 'химия', 'Nuvola apps edu science.svg' },
 	{ 'ядрена енергетика', 'Nuclear power plant.svg' },
