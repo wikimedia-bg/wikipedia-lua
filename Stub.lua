@@ -607,7 +607,7 @@ local THEMES = {
 	{ 'птици', 'Ruddy-turnstone-icon.png' },
 	{ 'пустиня', 'Emojione 1F42B.svg', 'пустини' },
 	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
-	{ 'пътища', 'CH-Hinweissignal-Autobahn.svg' },
+	{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
 	{ 'радио', 'Radio icon.png' },
 	{ 'радиолюбителство', 'International amateur radio symbol.svg ' },
 	{ 'размножаване', 'ChromosomeArt.jpg' },
