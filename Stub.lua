@@ -555,7 +555,7 @@ local THEMES = {
 	{ 'Библията|библия', 'Decalogue parchment by Jekuthiel Sofer 1768.jpg' },
 	{ 'бойна ракета', 'Agm119_penguin.png', 'бойни ракети' },
 	{ 'бомбардировач', 'B-2 icon.svg', 'бомбардировачи' },
-	{ 'бронирани', 'Panzer aus Zusatzzeichen 1049-12.svg' },
+	{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
 	{ 'броня', 'Late medieval armour complete (gothic plate armour).jpg' },
 	{ 'вестник', 'newspaper.svg', 'вестници' },
 	{ 'викинги', 'Vikingshipshortened.png' },
