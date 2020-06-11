@@ -1,7 +1,7 @@
 {{#ifeq:{{SUBPAGENAME}}|sandbox||}}
-{{lua|Module:NUMBEROF/data}}
-* The module implements {{tl|NUMBEROF}}.
-* The module uses [[commons:Data:Wikipedia statistics/config.tab]] to support configuration and [[commons:Data:Wikipedia statistics/data.tab]] for data.
-** data.tab is updated by bot multiple times a day
-* The module loads [[Module:NUMBEROF/data]] once per page [not per template invocation].
+{{lua|Module:NUMBEROF/data|Module:NUMBEROF/rank|Module:NUMBEROF/other}}
+* The module implements {{tl|NUMBEROF}} and {{tl|Wikipedia rank by size}}.
+* The module uses [[commons:Data:Wikipedia statistics/data.tab]] for statistics and [[:c:Special:PrefixIndex?prefix=Wikipedia+statistics%2Frank%2F&namespace=486|commons:Data:Wikipedia statistics/rank/]] for rankings.
+** data.tab and /rank/*.tab are updated by bot multiple times a day
+* The module loads [[Module:NUMBEROF/data]], [[Module:NUMBEROF/rank]] and [[Module:NUMBEROF/other]] once per page [not per template invocation].
 * The module was originally developed on Enwiki.
