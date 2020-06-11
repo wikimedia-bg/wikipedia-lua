@@ -1,0 +1,39 @@
+-- Return a table of statistics to be accessed once per page using mw.loadData.
+-- For each sister project, the table ranks each site by its number of articles.
+
+local projects = {
+	'wikipedia',
+}
+
+local function getData(statistics)
+	local iSite, iArticles
+	for i, v in ipairs(statistics.schema.fields) do
+		if v.name == 'site' then
+			iSite = i
+		elseif v.name == 'articles' then
+			iArticles = i
+		end
+	end
+	local rankBySite, rankByIndex = {}, {}
+	for _, v in ipairs(statistics.data) do
+		rankBySite[v[iSite]] = v[iArticles]   -- rank of site from number of articles
+		rankByIndex[v[iArticles]] = v[iSite]  -- inverse
+	end
+	return {
+		rankByIndex = rankByIndex,  -- rankByIndex[1] == 'en'
+		rankBySite = rankBySite,    -- rankBySite['en'] == 1
+	}
+end
+
+local function makeData()
+	-- For example, data to rank each language for sister project wikipedia is at
+	-- https://commons.wikimedia.org/wiki/Data:Wikipedia_statistics/rank/wikipedia.tab
+	local result = {}
+	for _, project in ipairs(projects) do
+		local file = 'Wikipedia statistics/rank/' .. project .. '.tab'
+		result[project] = getData(mw.ext.data.get(file))
+	end
+	return result
+end
+
+return makeData()
