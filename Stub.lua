@@ -384,7 +384,7 @@ local THEMES = {
 	{ 'анимация', 'Animhorse.gif' },
 	{ 'антропология', 'Neutered kokopelli.svg' },
 	{ 'археология', 'Farm-Fresh vase.png' },
-	{ 'архитектура|архитект', 'Corinthian_capital.png' },
+	{ 'архитектура|архитект|сграда', 'Corinthian_capital.png' },
 	{ 'астрология', 'Mercury symbol.svg' },
 	{ 'астрономията|астрономия', 'Pleiades small.jpg', 'астрономия' },
 	{ 'биология', 'Butterfly_template.png' },
