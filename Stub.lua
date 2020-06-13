@@ -373,6 +373,7 @@ local THEMES = {
 	{ 'окръг Сонома', 'California map showing Sonoma County.png' },
 	
 	-- селище
+	{ 'селище|населено място|град|село', 'Geographylogo.svg', 'селища' },
 	{ 'селище в България|Селище-България', 'Bulgaria stub.svg', 'селища в България' },
 	{ 'селище в Русия|Селище-Русия', 'Flag-map of Russia.svg', 'селища в Русия' },
 	
