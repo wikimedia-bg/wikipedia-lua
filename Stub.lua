@@ -159,6 +159,7 @@ local THEMES = {
 	{ 'Марий Ел', 'Mari-El-geo-stub.svg' },
 	{ 'Мароко', 'Flag of Morocco.svg' },
 	{ 'Марс', 'Mars (white background).jpg' },
+	{ 'Маршаловите острови|Маршалови острови', 'Flag of the Marshall Islands.svg' },
 	{ 'Масачузетс', 'Flag of Massachusetts.svg|border' },
 	{ 'Мейн', 'Flag of Maine.svg' },
 	{ 'Мексико', 'Flag of Mexico.svg' },
