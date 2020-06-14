@@ -445,6 +445,7 @@ local THEMES = {
 	{ 'сеизмология|земетресение', 'Seismographs.jpg' },
 	{ 'социология', 'People icon.svg' },
 	{ 'статистика', 'Bellcurve.svg' },
+	{ 'стопанска история', 'TwoCoins.svg' },
 	{ 'телекомуникации', 'Mobiel1.GIF' },
 	{ 'техника', 'Spur Gear 12mm, 18t.svg' },
 	{ 'технология', 'N icon technology.png' },
