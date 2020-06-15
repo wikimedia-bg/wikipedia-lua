@@ -603,6 +603,7 @@ local THEMES = {
 	{ 'подводница', 'Orzel.svg', 'подводници' },
 	{ 'покер', '11g poker chips.jpg' },
 	{ 'православие', 'Cross of the Russian Orthodox Church 01.svg' },
+	{ 'празник', 'Calendar icon.svg' },
 	{ 'праистория', 'Combarelles-mammouth.png' },
 	{ 'първата световна война|псв', 'Vickers machine gun in the Battle of Passchendaele - September 1917.jpg' },
 	{ 'птици', 'Ruddy-turnstone-icon.png' },
