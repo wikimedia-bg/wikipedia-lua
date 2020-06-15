@@ -465,7 +465,6 @@ local THEMES = {
 	{ 'ядрена физика', 'Gammadecay-1.jpg' },
 	
 	-- ХОРА
-	{ 'австрийски актьор', 'Austria film clapperboard.png', 'австрийски актьори' },
 	{ 'немски писател|Германия-писател', 'Flag of Germany.svg', 'немски писатели' },
 	{ 'актьор', 'Ausuebende Audiovision.png', 'актьори' },
 	{ 'алпинист', 'Climber silhouette.svg', 'алпинисти' },
