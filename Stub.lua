@@ -121,7 +121,7 @@ local THEMES = {
 	{ 'Квебек', 'Flag of Quebec.svg' },
 	{ 'Кения', 'Flag of Kenya.svg' },
 	{ 'Кентъки', 'Flag of Kentucky.svg' },
-	{ 'Кипър', 'Flag of Cyprus.svg' },
+	{ 'Кипър', 'Flag of Cyprus.svg|border' },
 	{ 'Киргизстан', 'Flag of Kyrgyzstan.svg' },
 	{ 'Кирибати', 'Flag of Kiribati.svg' },
 	{ 'Китай|китаец|китайци', 'Flag of China.svg' },
