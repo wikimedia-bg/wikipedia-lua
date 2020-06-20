@@ -572,7 +572,7 @@ local THEMES = {
 	{ 'ислям', 'Allah-green.svg' },
 	{ 'книга', 'Books-aj.svg aj ashton 01.svg', 'книги' },
 	{ 'комикси|комикс', 'Speech balloon.svg' },
-	{ 'компания', 'Factory 1.png' },
+	{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 	{ 'комуникация', 'Telecom-icon.svg' },
 	{ 'конфуцианство', 'Black Confucian symbol.PNG' },
 	{ 'корабоплаване', 'ShipClipart.png' },
