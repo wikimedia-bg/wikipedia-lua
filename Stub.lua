@@ -531,7 +531,7 @@ local THEMES = {
 	{ 'Хари Потър', 'HP1 template.gif' },
 	{ 'ЦСКА (София)|ЦСКА', 'CSKA Sofia logo.svg', 'ЦСКА' },
 	{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
-	{ 'албум', 'Gnome-dev-cdrom-audio.svg', 'музикални албуми' },
+	{ 'музикален албум|албум', 'Gnome-dev-cdrom-audio.svg', 'музикални албуми' },
 	{ 'аниманга', 'Anime stub 2.svg' },
 	{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 	{ 'артилерия', 'P military green.png' },
