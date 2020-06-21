@@ -604,6 +604,7 @@ local THEMES = {
 	{ 'православие', 'Cross of the Russian Orthodox Church 01.svg' },
 	{ 'празник', 'Calendar icon.svg', 'празници' },
 	{ 'праистория', 'Combarelles-mammouth.png' },
+	{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
 	{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
 	{ 'птици', 'Ruddy-turnstone-icon.png' },
 	{ 'пустиня', 'Emojione 1F42B.svg', 'пустини' },
