@@ -580,6 +580,7 @@ local THEMES = {
 	{ 'куче|кинология', 'Dog.svg', 'кучета' },
 	{ 'литература', 'Book template.svg' },
 	{ 'обзавеждане|мебел', 'Furniture template.svg' },
+	{ 'маркетинг', 'Human-emblem-marketing.svg' },
 	{ 'Междузвездни войни', 'Star_wars2.svg' },
 	{ 'международни отношения', 'Society.png' },
 	{ 'минерал', 'Topaze Brésil2.jpg', 'минерали' },
