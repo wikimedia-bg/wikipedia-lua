@@ -554,7 +554,7 @@ local THEMES = {
 	{ 'десерт', 'Cassata.jpg', 'десерти' },
 	{ 'дзен', 'Enso2.png' },
 	{ 'водоем|море|язовир|езеро|река', 'Roundtanglelake.JPG', 'водоеми' },
-	{ 'електронна игра|компютърна игра', 'Nuvola apps package games.png', 'електронни игри' },
+	{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
 	{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
 	{ 'животно|животни', 'Crystal Clear app babelfish vector.svg', 'животни' },
 	{ 'заболяване', 'Esculaap4.svg', 'заболявания' },
