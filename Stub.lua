@@ -634,6 +634,7 @@ local THEMES = {
 	{ 'феминизъм', 'FemalePink.png' },
 	{ 'фентъзи', 'Dwarf.jpg' },
 	{ 'филм', 'Sound mp3.png', 'филми' },
+	{ 'финанси', '5000 Tugriks - Recto.jpg' },
 	{ 'Формула 1|Ф1', 'Ferrari stub.gif' },
 	{ 'хардуер', 'Nuvola apps kcmprocessor.png' },
 	{ 'хранително-вкусовата промишленост|хвп', 'Factory Automation Robotics Palettizing Bread.jpg' },
