@@ -553,6 +553,7 @@ local THEMES = {
 	{ 'даоизъм', 'Yin and Yang symbol.svg' },
 	{ 'десерт', 'Cassata.jpg', 'десерти' },
 	{ 'дзен', 'Enso2.png' },
+	{ 'епископ', 'Gold cross.png ', 'епископи' },
 	{ 'водоем|море|язовир|езеро|река', 'Roundtanglelake.JPG', 'водоеми' },
 	{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
 	{ 'еукариот|еукариоти', 'Cronoflagelado2.svg', 'еукариоти' },
