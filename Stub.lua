@@ -472,7 +472,7 @@ local THEMES = {
 	{ 'арумъните|арумъни|армъни', 'Aromanian flag.svg', 'арумъни' },
 	{ 'астроном', 'Astronomer.svg', 'астрономи' },
 	{ 'бизнесмен', 'Crystal kchart.png', 'бизнесмени' },
-	{ 'благородник', 'Coat of arms of Brabant.svg', 'благородници' },
+	{ 'благородник|аристократ', 'Coat of arms of Brabant.svg', 'благородници' },
 	{ 'британци', 'Flag of the United Kingdom.svg' },
 	{ 'българин|българи', 'Bulgaria people stub icon.svg', 'българи' },
 	{ 'български владетел', 'Crown of Bulgaria.svg', 'български владетели' },
