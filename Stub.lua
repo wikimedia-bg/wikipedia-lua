@@ -434,6 +434,7 @@ local THEMES = {
 	{ 'науки за Земята', 'Terrestrial globe.svg' },
 	{ 'неврология', 'Neuro-stub.png' },
 	{ 'неорганична химия', 'Phosphonium-3D-balls.png' },
+	{ 'общество', 'Society.png' },
 	{ 'органична химия', 'Cyclooctatetraene-3D-vdW.png' },
 	{ 'офталмология', 'Blue eye.svg' },
 	{ 'палеонтология', 'Anning plesiosaur.jpg' },
