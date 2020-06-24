@@ -490,7 +490,7 @@ local THEMES = {
 	{ 'канадец', 'Flag of Canada.svg', 'канадци' },
 	{ 'китарист', 'RockNRollGuitarist.svg', 'китаристи' },
 	{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
-	{ 'медик', 'Stethoscope-2.png', 'медици' },
+	{ 'медик|лекар', 'Stethoscope-2.png', 'медици' },
 	{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
 	{ 'музикант', 'Musical notes.svg', 'музиканти' },
 	{ 'оператор', 'Filmreel-icon.svg', 'оператори' },
