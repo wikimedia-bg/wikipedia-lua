@@ -538,6 +538,7 @@ local THEMES = {
 	{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 	{ 'артилерия', 'P military green.png' },
 	{ 'астероид', '951 Gaspra.jpg', 'астероиди' },
+	{ 'астрономически обект', 'Pleiades small.jpg', 'астрономически обекти' },
 	{ 'Библията|библия', 'Decalogue parchment by Jekuthiel Sofer 1768.jpg' },
 	{ 'бойна ракета', 'Agm119_penguin.png', 'бойни ракети' },
 	{ 'бомбардировач', 'B-2 icon.svg', 'бомбардировачи' },
