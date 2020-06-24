@@ -353,7 +353,8 @@ local THEMES = {
 	{ 'Ярославска област', 'Flag-map of Yaroslavl Oblast.svg' },
 	
 	-- гео
-	{ 'географски обект|място', 'Geographylogo.svg' },
+	{ 'място', 'Geographylogo.svg' },
+	{ 'географски обект', 'Geographylogo.svg' },
 	{ 'място в Малави|Малави-гео', 'Flag-map of Malawi.svg' },
 	{ 'място в Мали|Мали-гео', 'Flag-map of Mali.svg' },
 	{ 'място в Северна Корея|Северна Корея-гео|КНДР-гео', 'Flag-map of North Korea.svg' },
