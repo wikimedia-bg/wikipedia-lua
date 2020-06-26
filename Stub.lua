@@ -545,6 +545,7 @@ local THEMES = {
 	{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
 	{ 'вестник', 'newspaper.svg', 'вестници' },
 	{ 'вино', 'Red_Wine_Glass.jpg' },
+	{ 'вирус|вируси', 'Polio.jpg', 'вируси' },
 	{ 'Властелинът на пръстените', 'Unico Anello.png' },
 	{ 'военно дело|военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 	{ 'военно звание|звание', 'Army-USA-OR-04a.svg', 'военни звания' },
