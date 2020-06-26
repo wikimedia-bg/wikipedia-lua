@@ -580,6 +580,7 @@ local THEMES = {
 	{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 	{ 'конфуцианство', 'Black Confucian symbol.PNG' },
 	{ 'корабоплаване', 'ShipClipart.png' },
+	{ 'космически изследвания', 'Gas giants in the solar system.jpg' },
 	{ 'космос', 'Gas giants in the solar system.jpg' },
 	{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
 	{ 'куче|кинология', 'Dog.svg', 'кучета' },
