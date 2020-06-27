@@ -465,6 +465,26 @@ local THEMES = {
 	{ 'ядрена енергетика', 'Nuclear power plant.svg' },
 	{ 'ядрена физика', 'Gammadecay-1.jpg' },
 	
+	-- СПОРТ
+	{ 'баскетбол', 'Basketball.png' },
+	{ 'бойно изкуство', 'Yin and Yang symbol.svg', 'бойни изкуства' },
+	{ 'бокс|боксьор', 'Icon-boxing-gloves.jpg' },
+	{ 'волейбол', 'Volley ball angelo gelmi 01.svg' },
+	{ 'колоездене|колоездач', 'Pictgram bicycle man.svg' },
+	{ 'спорт', 'Crystal Clear app clicknrun.png' },
+	{ 'тенис|тенисист', 'Tennis icon.png' },
+	{ 'футбол', 'Soccerball.svg' },
+	{ 'шахмат', 'Chess.svg' },
+	
+	-- КИНО
+	{ 'кино', 'Movie template.gif' },
+	{ 'американско кино', 'United States film.png' },
+	{ 'британско кино', 'UK film clapperboard.svg' },
+	{ 'българско кино', 'Movie template.gif' },
+	{ 'германско кино', 'Flag of Germany.svg' },
+	{ 'италианско кино', 'Flag of Italy.svg' },
+	{ 'френско кино', 'Flag of France.svg' },
+	
 	-- ХОРА
 	{ 'немски писател|Германия-писател', 'Flag of Germany.svg', 'немски писатели' },
 	{ 'актьор', 'Ausuebende Audiovision.png', 'актьори' },
@@ -655,28 +675,6 @@ local THEMES = {
 	{ 'шинтоизъм', 'Black Shintoist symbol.PNG' },
 	{ 'юдаизъм', 'Star of David2.svg' },
 	{ 'язовир', 'Presa de contraforts.svg', 'язовири' },
-	
-	------
-	
-	{ 'баскетбол', 'Basketball.png' },
-	{ 'бойно изкуство', 'Yin and Yang symbol.svg', 'бойни изкуства' },
-	{ 'бокс|боксьор', 'Icon-boxing-gloves.jpg' },
-	{ 'волейбол', 'Volley ball angelo gelmi 01.svg' },
-	{ 'колоездене|колоездач', 'Pictgram bicycle man.svg' },
-	{ 'спорт', 'Crystal Clear app clicknrun.png' },
-	{ 'тенис|тенисист', 'Tennis icon.png' },
-	{ 'футбол', 'Soccerball.svg' },
-	{ 'шахмат', 'Chess.svg' },
-	
-	------
-	
-	{ 'кино', 'Movie template.gif' },
-	{ 'американско кино', 'United States film.png' },
-	{ 'британско кино', 'UK film clapperboard.svg' },
-	{ 'българско кино', 'Movie template.gif' },
-	{ 'германско кино', 'Flag of Germany.svg' },
-	{ 'италианско кино', 'Flag of Italy.svg' },
-	{ 'френско кино', 'Flag of France.svg' },
 }
 
 local function toLower(str)
