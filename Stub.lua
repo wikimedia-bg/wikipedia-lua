@@ -500,7 +500,7 @@ local THEMES = {
 	{ 'германец', 'Flag of Germany.svg', 'германци' },
 	{ 'грък', 'Greece people stub icon.png', 'гърци' },
 	{ 'дипломат', 'Crystal_personal.png', 'дипломати' },
-	{ 'епископ', 'Gold cross.png ', 'епископи' },
+	{ 'християнски духовник|епископ|игумен', 'Gold cross.png ', 'християнски духовници' },
 	{ 'журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG', 'журналисти' },
 	{ 'изследовател', 'Marco Polo portrait.jpg', 'изследователи' },
 	{ 'индианци', 'NSRW Sitting Bull.jpg' },
