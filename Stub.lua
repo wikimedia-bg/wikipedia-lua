@@ -609,7 +609,7 @@ local THEMES = {
 	{ 'мотоциклет', 'Motorsport stub.svg', 'мотоциклети' },
 	{ 'музей', 'David face.png', 'музеи' },
 	{ 'музикален инструмент', 'Saxophone-icon.svg', 'музикални инструменти' },
-	{ 'награда', 'Cup of Gold.svg', 'отличия' },
+	{ 'награда|отличие', 'Cup of Gold.svg', 'отличия' },
 	{ 'напитка', 'Emojione BW 1F378.svg', 'напитки' },
 	{ 'облекло', 'Signorina in viola.svg' },
 	{ 'образование', 'Nuvola apps bookcase.png' },
