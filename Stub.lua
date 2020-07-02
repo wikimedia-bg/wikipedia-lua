@@ -407,7 +407,7 @@ local THEMES = {
 	{ 'енергетика', 'Rostock Steinkohlekraftwerk 2.jpg' },
 	{ 'етика', 'Sanzio_01_Plato_Aristotle.jpg' },
 	{ 'етнография', 'Divotino-traditional-embroidery-1.jpg' },
-	{ 'етнология|етнолог|етнос|народ', 'A shrunken head Wellcome M0000158.jpg' },
+	{ 'етнос|етническа група|народ', 'Logo sociology.svg', 'етноси' },
 	{ 'етология', 'Chicken on a skateboard.JPG' },
 	{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
 	{ 'изкуство', 'David face.png' },
