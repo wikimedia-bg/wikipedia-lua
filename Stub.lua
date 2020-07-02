@@ -415,6 +415,7 @@ local THEMES = {
 	{ 'индуизъм', 'AUM symbol, the primary (highest) name of the God as per the Vedas.svg' },
 	{ 'инженерство', 'Nuvola apps kfig.svg' },
 	{ 'информатика', 'Computer-blue.svg' },
+	{ 'историческо събитие|събитие', 'HSHistory.svg', 'събития' },
 	{ 'история', 'P history yellow.png' },
 	{ 'история на България|История-България', 'BG His.jpg' },
 	{ 'история на Германия|Германия-история', 'Berlin Brandenburger Tor BW 2 Ausschnitt.jpg' },
