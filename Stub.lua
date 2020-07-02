@@ -400,7 +400,7 @@ local THEMES = {
 	{ 'геология', 'Geological hammer.svg' },
 	{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
 	{ 'древногръцката митология|гръцка митология', 'Minotaur.jpg', 'древногръцка митология' },
-	{ 'език|диалект|езикова група|езиково семейство|говор', 'Lang-stub', 'езици' },
+	{ 'език|диалект|езикова група|езиково семейство|говор', 'Noun project 1822.svg', 'езици' },
 	{ 'екология', 'Forestry Leśnictwo (Beentree).svg' },
 	{ 'електроника', 'Transistor stub.svg' },
 	{ 'електротехника', 'Transformer-hightolow-ironcore.png' },
