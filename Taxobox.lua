@@ -1422,7 +1422,7 @@ local function renderTaxobox(taxobox)
 				:tag('small')
 					:tag('span')
 						:addClass('plainlinks')
-						:wikitext(string.format('[%s редактиране]', tostring(mw.uri.canonicalUrl('Wikidata:' .. taxobox.id, 'uselang=bg'))))
+						:wikitext(string.format('[ [%s редактиране] ]', tostring(mw.uri.canonicalUrl('Wikidata:' .. taxobox.id, 'uselang=bg'))))
 						:allDone()
 	end
 	
