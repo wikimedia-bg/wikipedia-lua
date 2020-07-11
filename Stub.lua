@@ -395,6 +395,7 @@ local THEMES = {
 	{ 'биохимия', 'AlphaHelixSection (yellow).svg' },
 	{ 'ботаника', 'Leaf.png' },
 	{ 'будизъм', 'Dharma Wheel.svg' },
+	{ 'военен конфликт|битка|война|бой|сражение|революция|бунт|въстание', 'Belegeringen 2.svg', 'военни конфликти' },
 	{ 'военна история на България', 'Bulgaria war flag.png' },
 	{ 'военна история', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 	{ 'география|географ', 'Geographylogo.svg' },
