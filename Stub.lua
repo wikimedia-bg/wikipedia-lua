@@ -255,6 +255,7 @@ local THEMES = {
 	{ 'Тенеси', 'Flag of Tennessee.svg' },
 	{ 'Того', 'Flag of Togo.svg' },
 	{ 'Тонга', 'Flag of Tonga.svg' },
+	{ 'Тринидад и Тобаго|Тринидад', 'Flag of Trinidad and Tobago.svg' },
 	{ 'Тунис', 'Flag of Tunisia.svg' },
 	{ 'Туркменистан', 'Flag of Turkmenistan.svg' },
 	{ 'Турция', 'Flag-map of Turkey.svg' },
