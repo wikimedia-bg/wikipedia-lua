@@ -419,6 +419,7 @@ local THEMES = {
 	{ 'индуизъм', 'AUM symbol, the primary (highest) name of the God as per the Vedas.svg' },
 	{ 'инженерство', 'Nuvola apps kfig.svg' },
 	{ 'информатика', 'Computer-blue.svg' },
+	{ 'исторически период|епоха|ера', 'P writing icon.svg', 'исторически периоди' },
 	{ 'историческо събитие|събитие', 'HSHistory.svg', 'събития' },
 	{ 'история', 'P history yellow.png' },
 	{ 'история на България|История-България', 'BG His.jpg' },
