@@ -451,6 +451,7 @@ local THEMES = {
 	{ 'право', 'Scale of justice 2.svg' },
 	{ 'псевдонаука', 'Outline-body-Aura.png' },
 	{ 'психология', 'Psi2.svg' },
+	{ 'род|династия|семейство|фамилия', 'OOjs UI-like kinship-progressive-black.svg', 'родове' },
 	{ 'сеизмология|земетресение', 'Seismographs.jpg' },
 	{ 'социология', 'People icon.svg' },
 	{ 'статистика', 'Bellcurve.svg' },
