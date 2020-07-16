@@ -453,6 +453,7 @@ local THEMES = {
 	{ 'психология', 'Psi2.svg' },
 	{ 'род|династия|семейство|фамилия', 'OOjs UI-like kinship-progressive-black.svg', 'родове' },
 	{ 'сеизмология|земетресение', 'Seismographs.jpg' },
+	{ 'социална група|общност', 'Society.png', 'социални групи' },
 	{ 'социология', 'People icon.svg' },
 	{ 'статистика', 'Bellcurve.svg' },
 	{ 'стопанска история', 'TwoCoins.svg' },
