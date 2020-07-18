@@ -426,7 +426,6 @@ local THEMES = {
 	{ 'историческо събитие|събитие', 'HSHistory.svg', 'събития' },
 	{ 'история', 'P history yellow.png' },
 	{ 'история на България|История-България', 'BG His.jpg' },
-	{ 'история на Германия|Германия-история', 'Berlin Brandenburger Tor BW 2 Ausschnitt.jpg' },
 	{ 'криптозоология|криптиди', 'Mammouth.png' },
 	{ 'култура', 'Art template.gif' },
 	{ 'лингвистика|езикознание|фонетика', 'Linguistics stub.svg' },
