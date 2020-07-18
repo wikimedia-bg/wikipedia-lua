@@ -296,6 +296,7 @@ local THEMES = {
 	{ 'Шумен', 'Emblem of Shumen.png' },
 	{ 'щата Монтана|Монтана', 'Flag of Montana.svg', 'Монтана' },
 	{ 'щата Ню Йорк|Ню Йорк', 'Flag of New York.svg', 'Ню Йорк' },
+	{ 'Югославия', 'Flag of Yugoslavia (1918–1941).svg' },
 	{ 'Южна Америка', 'TinySouthAmerica.png' },
 	{ 'Южна Африка', 'africa-countries-southern.png' },
 	{ 'Южна Дакота', 'Flag of South Dakota.svg' },
