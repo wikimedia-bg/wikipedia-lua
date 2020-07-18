@@ -643,7 +643,6 @@ local THEMES = {
 	{ 'птици', 'Ruddy-turnstone-icon.png' },
 	{ 'пустиня', 'Emojione 1F42B.svg', 'пустини' },
 	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
-	{ 'първата световна война|псв', 'Vickers machine gun in the Battle of Passchendaele - September 1917.jpg' },
 	{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
 	{ 'радио', 'Radio icon.png' },
 	{ 'размножаване', 'ChromosomeArt.jpg' },
