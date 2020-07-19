@@ -355,6 +355,7 @@ local THEMES = {
 	
 	-- гео
 	{ 'място', 'Geographylogo.svg' },
+	{ 'вид място', 'Geographylogo.svg', 'видове места' },
 	{ 'географски обект', 'Geographylogo.svg' },
 	{ 'измислено място', 'Crystal Clear app wp.png', 'измислени места' },
 	{ 'историческа област|историческа държава', 'Map icon.svg', 'исторически области' },
