@@ -642,6 +642,7 @@ local THEMES = {
 	{ 'произведение|творба', 'Deus Drawing.png', 'произведения' },
 	{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
 	{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
+	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
 	{ 'птици', 'Ruddy-turnstone-icon.png' },
 	{ 'пустиня', 'Emojione 1F42B.svg', 'пустини' },
 	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
