@@ -380,7 +380,7 @@ local THEMES = {
 	{ 'окръг Сонома', 'California map showing Sonoma County.png' },
 	
 	-- селище
-	{ 'селище|населено място|град|село', 'Geographylogo.svg', 'селища' },
+	{ 'селище|населено място|град|село', 'Pictograma Poblado.PNG', 'селища' },
 	{ 'селище в България|Селище-България', 'Bulgaria stub.svg', 'селища в България' },
 	{ 'селище в Русия|Селище-Русия', 'Flag-map of Russia.svg', 'селища в Русия' },
 	
@@ -390,6 +390,7 @@ local THEMES = {
 	{ 'анатомия', 'Gray188.png' },
 	{ 'анимация', 'Animhorse.gif' },
 	{ 'антропология', 'Neutered kokopelli.svg' },
+	{ 'археологически обект', 'Noun Project Archaeology icon 1616685 cc.svg', 'археологически обекти' },
 	{ 'археология', 'Farm-Fresh vase.png' },
 	{ 'архитектура|архитект', 'Corinthian_capital.png' },
 	{ 'астрология', 'Mercury symbol.svg' },
