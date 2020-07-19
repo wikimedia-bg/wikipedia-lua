@@ -639,7 +639,6 @@ local THEMES = {
 	{ 'покер', '11g poker chips.jpg' },
 	{ 'православие', 'Cross of the Russian Orthodox Church 01.svg' },
 	{ 'празник', 'Calendar icon.svg', 'празници' },
-	{ 'праистория', 'Combarelles-mammouth.png' },
 	{ 'произведение|творба', 'Deus Drawing.png', 'произведения' },
 	{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
 	{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
