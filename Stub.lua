@@ -682,6 +682,7 @@ local THEMES = {
 	{ 'християнство', 'Gold cross.png ' },
 	{ 'шинтоизъм', 'Black Shintoist symbol.PNG' },
 	{ 'юдаизъм', 'Star of David2.svg' },
+	{ 'явление', 'Noun Big Bang Icon 58857.svg', 'явления' },
 	{ 'язовир', 'Presa de contraforts.svg', 'язовири' },
 }
 
