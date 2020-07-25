@@ -587,6 +587,7 @@ local THEMES = {
 	{ 'десерт', 'Cassata.jpg', 'десерти' },
 	{ 'дзен', 'Enso2.png' },
 	{ 'документ|договор', 'Crystal Clear mimetype document2.png', 'документи' },
+	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
 	{ 'водоем|море|язовир|езеро|река', 'Roundtanglelake.JPG', 'водоеми' },
 	{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
 	{ 'еукариот|еукариоти', 'Cronoflagelado2.svg', 'еукариоти' },
