@@ -464,7 +464,7 @@ local THEMES = {
 	{ 'титла|пост|длъжност', 'Crown of Italy.svg', 'титли' },
 	{ 'търговия', 'CashRegister.svg' },
 	{ 'фармакология', 'Emoji u1f48a.svg' },
-	{ 'физика', 'Science.jpg' },
+	{ 'физика|ядрена физика', 'Science.jpg' },
 	{ 'физикохимия', 'Anode effect steel.jpg' },
 	{ 'физиология', 'Semipermeable membrane (svg).svg' },
 	{ 'физическа география', 'Orografia.jpg' },
@@ -473,7 +473,6 @@ local THEMES = {
 	{ 'хералдика', 'Azure,_a_bend_Or.svg' },
 	{ 'химия', 'Nuvola apps edu science.svg' },
 	{ 'ядрена енергетика', 'Nuclear power plant.svg' },
-	{ 'ядрена физика', 'Gammadecay-1.jpg' },
 	
 	-- СПОРТ
 	{ 'баскетбол', 'Basketball.png' },
