@@ -1,74 +1,10 @@
 
---[[--------------------------< P A R A M E T E R S   N O T   S U P P O R T E D >------------------------------
-
-This is a list of parameters that once were but now are no longer supported:
-
-	['albumlink'] = nil,														-- unique alias of titlelink used by old cite AV media notes
-	['albumtype'] = nil,														-- controled inappropriate functionality in the old cite AV media notes
-	['artist'] = nil,															-- unique alias of others used by old cite AV media notes
-	['ARXIV'] = nil,															-- not an initialization
-	['Author'] = nil,															-- non-standard capitalization
-	['authorformat'] = nil,														-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['author-format'] = nil,													-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['author-name-separator'] = nil,											-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['author-separator'] = nil,													-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['began'] = nil,															-- module handles date ranges; cite episode and cite series
-	['BIBCODE'] = nil,															-- not an initialization
-	['callsign'] = nil,															-- cite interview removed
-	['call-sign'] = nil,														-- cite interview removed
-	['chapterlink'] = nil,														-- if ever necessary to link to a chapter article, |chapter= can be wikilinked 
-	['chapter-link'] = nil,														-- 
-	['city'] = nil,																-- cite interview removed
-	['coauthor'] = nil,															-- redundant to |authorn=; not made part of metadata
-	['coauthors'] = nil,														-- redundant to |authorn=; not made part of metadata
-	['cointerviewers'] = nil,													-- unique alias of others used by old cite interview
-	['day'] = nil,																-- deprecated in {{citation/core}} and somehow undeprecated in Module:Citation/CS1 and now finally removed
-	['director'] = nil,															-- unique alias of author used by old cite DVD-notes
-	['doi_brokendate'] = nil,    												-- alias of doi-broken-date
-	['doi_inactivedate'] = nil,													-- alias of doi-inactive-date
-	['DoiBroken'] = nil,														-- not used, non-standard captialization
-	['Editor'] = nil,															-- non-standard capitalization
-	['editorformat'] = nil,														-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['EditorSurname'] = nil,													-- non-standard capitalization
-	['editor-format'] = nil,													-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['EditorGiven'] = nil,														-- non-standard capitalization
-	['editor-name-separator'] = nil,											-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['editor-separator'] = nil,													-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['Embargo'] = nil,															-- not used, non-standard capitalization
-	['ended'] = nil,															-- module handles date ranges; cite episode and cite series
-	['in'] = nil,																-- ambiguous between use for language, appearance of a lesser work in an edited work
-	['interviewers'] = nil,														-- only need InterviewerList support
-	['month'] = nil,															-- functionality supported by |date=
-	['name-separator'] = nil,													-- primarily used to support Vancouver format which functionality now part of name-list-format
-	['notestitle'] = nil,														-- unique alias of chapter used by old cite AV media notes
-	['PPrefix'] = nil,															-- non-standard capitalization
-	['PPPrefix'] = nil,															-- not used, non-standard capitalization
-	['pp-prefix'] = nil,														-- not used, not documented
-	['p-prefix'] = nil,															-- not used, not documented
-	['program'] = nil,															-- cite interview removed
-	['publisherid'] = nil,														-- unique alias of id used by old cite AV media notes and old cite DVD-notes
-	['Ref'] = nil,																-- non-standard capitalization
-	['separator'] = nil,														-- this functionality now provided by |mode=
-	['template doc demo'] = nil,												-- alias of template doc demo
-	['titleyear'] = nil,														-- unique alias of origyear used by old cite DVD-notes
-	['trans_chapter'] = nil,													-- alias of trans-chapter
-	['trans_title'] = nil,														-- alias of trans-title
-
-	['Author#'] = nil,															-- non-standard capitalization
-	['authors#'] = nil,															-- no need for multiple lists of author names
-	['Editor#'] = nil,															-- non-standard capitalization
-	['editors#'] = nil,															-- no need for multiple lists of editor names
-	['EditorGiven#'] = nil,														-- non-standard capitalization
-	['EditorSurname#'] = nil,													-- non-standard capitalization
-
-]]
-
 --[[--------------------------< S U P P O R T E D   P A R A M E T E R S >--------------------------------------
 
 Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
 	true - these parameters are valid and supported parameters
 	false - these parameters are deprecated but still supported
-	nil - these parameters are no longer supported (when setting a parameter to nil, leave a comment stating the reasons for invalidating the parameter)
+	nil - these parameters are no longer supported. remove entirely
 	
 ]]
 
@@ -78,8 +14,6 @@ local basic_arguments = {
 	['accessdate'] = true,
 	['access-date'] = true,
 	['agency'] = true,
-	['airdate'] = true,
-	['air-date'] = true,
 	['archivedate'] = true,
 	['archive-date'] = true,
 	['archive-format'] = true,
@@ -89,11 +23,10 @@ local basic_arguments = {
 	['article-format'] = true,
 	['article-url'] = true,
 	['article-url-access'] = true,
-	['arxiv'] = true,
+	['arxiv'] = true,															-- cite arxiv; here because allowed in cite ... as identifier
 	['asin'] = true,
 	['ASIN'] = true,
 	['asin-tld'] = true,
-	['ASIN-TLD'] = false,														-- not an identifier but an identifier-modifier
 	['at'] = true,
 	['author'] = true,
 	['author-first'] = true,
@@ -115,7 +48,6 @@ local basic_arguments = {
 	['chapter-url'] = true,
 	['chapter-url-access'] = true,
 	['citeseerx'] = true,
-	['class'] = false,															-- cite arxiv only; general use deprecated
 	['collaboration'] = true,
 	['conference'] = true,
 	['conference-format'] = true,
@@ -125,6 +57,7 @@ local basic_arguments = {
 	['contribution-format'] = true,
 	['contributionurl'] = true,
 	['contribution-url'] = true,
+	['contribution-url-access'] = true,
 	['contributor'] = true,
 	['contributor-first'] = true,
 	['contributor-last'] = true,
@@ -132,18 +65,18 @@ local basic_arguments = {
 	['contributor-surname'] = true,
 	['contributor-link'] = true,
 	['contributor-mask'] = true,
-	['credits'] = true,															-- cite episode, cite serial
 	['date'] = true,
-	['deadurl'] = true,
-	['dead-url'] = true,
 	['degree'] = true,
 	['department'] = true,
 	['df'] = true,
 	['dictionary'] = true,
 	['displayauthors'] = true,
 	['display-authors'] = true,
+	['display-contributors'] = true,
 	['displayeditors'] = true,
 	['display-editors'] = true,
+	['display-interviewers'] = true,
+	['display-translators'] = true,
 	['docket'] = true,
 	['doi'] = true,
 	['DOI'] = true,
@@ -171,10 +104,7 @@ local basic_arguments = {
 	['entry-format'] = true,
 	['entry-url'] = true,
 	['entry-url-access'] = true,
-	['episode'] = true,															-- cite serial only TODO: make available to cite episode?
-	['episodelink'] = true,														-- cite episode and cite serial
-	['episode-link'] = true,													-- cite episode and cite serial
-	['eprint'] = true,															-- cite arxiv and arxiv identifiers
+	['eprint'] = true,															-- cite arxiv; here because allowed in cite ... as identifier
 	['event'] = true,
 	['event-format'] = true,
 	['eventurl'] = true,
@@ -223,8 +153,6 @@ local basic_arguments = {
 	['lay-date'] = true,
 	['laysource'] = true,
 	['lay-source'] = true,
-	['laysummary'] = true,
-	['lay-summary'] = true,
 	['lay-format'] = true,
 	['layurl'] = true,
 	['lay-url'] = true,
@@ -234,19 +162,12 @@ local basic_arguments = {
 	['magazine'] = true,
 	['mailinglist'] = true,														-- cite mailing list only
 	['mailing-list'] = true,													-- cite mailing list only
-	['map'] = true,																-- cite map only
-	['map-format'] = true,														-- cite map only
-	['mapurl'] = true,															-- cite map only
-	['map-url'] = true,															-- cite map only
 	['medium'] = true,
-	['message-id'] = true,														-- cite newsgroup
 	['minutes'] = true,
 	['mode'] = true,
 	['mr'] = true,
 	['MR'] = true,
 	['name-list-format'] = true,
-	['network'] = true,
-	['newsgroup'] = true,
 	['newspaper'] = true,
 	['nocat'] = true,
 	['no-cat'] = true,
@@ -286,16 +207,26 @@ local basic_arguments = {
 	['quotation'] = true,
 	['quote'] = true,
 	['ref'] = true,
-	['registration'] = true,
 	['rfc'] = true,
 	['RFC'] = true,
+	['sbn'] = true,
+	['SBN'] = true,
 	['scale'] = true,
+	['script-article'] = true,
 	['script-chapter'] = true,
+	['script-contribution'] = true,
+	['script-entry'] = true,
+	['script-journal'] = true,
+	['script-magazine'] = true,
+	['script-newspaper'] = true,
+	['script-periodical'] = true,
+	['script-section'] = true,
 	['script-title'] = true,
+	['script-website'] = true,
+	['script-work'] = true,
 	['season'] = true,
 	['section'] = true,
 	['section-format'] = true,
-	['sections'] = true,														-- cite map only
 	['sectionurl'] = true,
 	['section-url'] = true,
 	['section-url-access'] = true,
@@ -307,16 +238,15 @@ local basic_arguments = {
 	['seriesnumber'] = true,
 	['series-number'] = true,
 	['series-separator'] = true,
-	['sheet'] = true,															-- cite map only
-	['sheets'] = true,															-- cite map only
 	['ssrn'] = true,
 	['SSRN'] = true,
-	['station'] = true,
 	['subject'] = true,
 	['subjectlink'] = true,
 	['subject-link'] = true,
-	['subscription'] = true,
 	['surname'] = true,
+	['s2cid'] = true,
+	['S2CID'] = true,
+	['s2cid-access'] = true,
 	['template-doc-demo'] = true,
 	['time'] = true,
 	['timecaption'] = true,
@@ -324,13 +254,10 @@ local basic_arguments = {
 	['title'] = true,
 	['titlelink'] = true,
 	['title-link'] = true,
-	['trans-chapter'] = true,
-	['trans-map'] = true,
 	['transcript'] = true,
 	['transcript-format'] = true,
 	['transcripturl'] = true,
 	['transcript-url'] = true,
-	['trans-title'] = true,
 	['translator'] = true,
 	['translator-first'] = true,
 	['translator-last'] = true,
@@ -338,10 +265,23 @@ local basic_arguments = {
 	['translator-surname'] = true,
 	['translator-link'] = true,
 	['translator-mask'] = true,
+	['trans-article'] = true,
+	['trans-chapter'] = true,
+	['trans-contribution'] = true,
+	['trans-entry'] = true,
+	['trans-journal'] = true,
+	['trans-magazine'] = true,
+	['trans-newspaper'] = true,
+	['trans-periodical'] = true,
+	['trans-section'] = true,
+	['trans-title'] = true,
+	['trans-website'] = true,
+	['trans-work'] = true,
 	['type'] = true,
 	['url'] = true,
 	['URL'] = true,
 	['url-access'] = true,
+	['url-status'] = true,
 	['vauthors'] = true,
 	['veditors'] = true,
 	['version'] = true,
@@ -400,6 +340,7 @@ local numbered_arguments = {
 	['editor-surname#'] = true,
 	['first#'] = true,
 	['given#'] = true,
+	['host#'] = true,
 	['interviewer#'] = true,
 	['interviewer-first#'] = true,
 	['interviewer#-first'] = true,
@@ -431,67 +372,35 @@ local numbered_arguments = {
 	['translator#-mask'] = true,
 }
 
---[[--------------------------< C I T E   A R X I V   S U P P O R T E D   P A R A M E T E R S >----------------
 
-Cite arXiv uses the limited set of parameters defined in the limited_basic_arguments and limited_numbered_arguments
-tables.  Those lists are supplemented with this list of parameters that are exclusive to cite arXiv but not supported
-by other cs1 templates that use the limited parameter set.
+--[[--------------------------< P R E P R I N T   S U P P O R T E D   P A R A M E T E R S >--------------------
 
-Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
-	true - these parameters are valid and supported parameters
-	false - these parameters are deprecated but still supported
-	nil - these parameters are no longer supported (when setting a parameter to nil, leave a comment stating the reasons for invalidating the parameter)
-	
-]]
+Cite arXiv, cite biorxiv, cite citeseerx, and cite ssrn are preprint templates that use the limited set of parameters
+defined in the limited_basic_arguments and limited_numbered_arguments tables.  Those lists are supplemented with a
+template-specific list of parameters that are required by the particular template and may be exclusive to one of the
+preprint templates.  Some of these parameters may also be available to the general cs1|2 templates.
 
---[[
-This is a list of parameters that once were but now are no longer supported:
-	['ARXIV'] = nil,															-- not an initialization
-	['version'] = nil,															-- this is the cite arxiv parameter; |version= still supported by other cs1|2 templates
+Same conventions for true/false/nil as above.
 
 ]]
 
-local arxiv_basic_arguments = {
-	['arxiv'] = true,															-- cite arxiv and arxiv identifiers
-	['class'] = true,															-- cite arxiv only
-	['eprint'] = true,															-- cite arxiv and arxiv identifiers
-}
-
-
---[[--------------------------< C I T E   B I O R X I V   S U P P O R T E D   P A R A M E T E R S >------------
-
-Cite biorxiv uses the limited set of parameters defined in the limited_basic_arguments and limited_numbered_arguments
-tables.  Those lists are supplemented with this list of parameters that are exclusive to cite biorxiv but not supported
-by other cs1 templates that use the limited parameter set.
-
-Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
-	true - these parameters are valid and supported parameters
-	false - these parameters are deprecated but still supported
-	nil - these parameters are no longer supported (when setting a parameter to nil, leave a comment stating the reasons for invalidating the parameter)
-	
-]]
-
-local biorxiv_basic_arguments = {
-	['biorxiv'] = true,
-}
-
-
---[[--------------------------< C I T E   C I T E S E E R X   S U P P O R T E D   P A R A M E T E R S >--------
-
-Cite citeseerx uses the limited set of parameters defined in the limited_basic_arguments and limited_numbered_arguments
-tables.  Those lists are supplemented with this list of parameters that are exclusive to cite citeseerx but not supported
-by other cs1 templates that use the limited parameter set.
-
-Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
-	true - these parameters are valid and supported parameters
-	false - these parameters are deprecated but still supported
-	nil - these parameters are no longer supported (when setting a parameter to nil, leave a comment stating the reasons for invalidating the parameter)
-	
-]]
-
-local citeseerx_basic_arguments = {
-	['citeseerx'] = true,
-}
+local preprint_arguments = {
+	arxiv = {
+		['arxiv'] = true,														-- cite arxiv and arxiv identifiers
+		['class'] = true,														-- cite arxiv only
+		['eprint'] = true,														-- cite arxiv and arxiv identifiers
+		},
+	biorxiv = {
+		['biorxiv'] = true,
+		},
+	citeseerx = {
+		['citeseerx'] = true,
+		},
+	ssrn = {
+		['ssrn'] = true,
+		['SSRN'] = true,
+		},
+	}
 
 
 --[[--------------------------< L I M I T E D   S U P P O R T E D   P A R A M E T E R S >----------------------
@@ -500,10 +409,7 @@ This is an experiment that attempts to use validate() and a limited list of vali
 parameters provided in a cite arxiv, cite biorxiv, or cite citeseerx templates.  These parameters are common to
 all three templates
 
-Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
-	true - these parameters are valid and supported parameters
-	false - these parameters are deprecated but still supported
-	nil - these parameters are no longer supported (when setting a parameter to nil, leave a comment stating the reasons for invalidating the parameter)
+Same conventions for true/false/nil as above.
 	
 ]]
 
@@ -520,6 +426,7 @@ local limited_basic_arguments = {
 	['collaboration'] = true,
 	['date'] = true,
 	['df'] = true,
+	['displayauthors'] = true,
 	['display-authors'] = true,
 	['first'] = true,
 	['given'] = true,
@@ -544,11 +451,13 @@ local limited_basic_arguments = {
 	['surname'] = true,
 	['template-doc-demo'] = true,
 	['title'] = true,
+	['trans-title'] = true,
 	['url'] = true,
 	['URL'] = true,
 	['vauthors'] = true,
 	['year'] = true,
 }
+
 local limited_numbered_arguments = {
 	['author#'] = true,
 	['author-first#'] = true,
@@ -567,14 +476,83 @@ local limited_numbered_arguments = {
 	['given#'] = true,
 	['last#'] = true,
 	['surname#'] = true,
-}
+	}
+
+
+--[[--------------------------< U N I Q U E _ A R G U M E N T S >----------------------------------------------
+
+some templates have unique parameters.  Those templates and their unique parameters are listed here. Keys in this
+table are the template's CitationClass parameter value
+
+Same conventions for true/false/nil as above.
+
+]]
+
+local unique_arguments = {
+	episode = {
+		['airdate'] = true,
+		['air-date'] = true,
+		['credits'] = true,
+		['episodelink'] = true,													-- aliases of |title-link=
+		['episode-link'] = true,
+		['network'] = true,
+		['station'] = true,
+		},
+	map = {
+		['map'] = true,
+		['map-format'] = true,
+		['mapurl'] = true,
+		['map-url'] = true,
+		['map-url-access'] = true,
+		['script-map'] = true,
+		['sections'] = true,
+		['sheet'] = true,
+		['sheets'] = true,
+		['trans-map'] = true,
+		},
+	newsgroup = {
+		['message-id'] = true,
+		['newsgroup'] = true,
+		},
+	serial = {
+		['airdate'] = true,
+		['air-date'] = true,
+		['credits'] = true,
+		['episode'] = true,														-- cite serial only TODO: make available to cite episode?
+		['episodelink'] = true,													-- aliases of |title-link=
+		['episode-link'] = true,
+		['network'] = true,
+		['station'] = true,
+		},
+	}
+
+
+--[[--------------------------< T E M P L A T E _ L I S T _ G E T >--------------------------------------------
+
+gets a list of the templates from table t
+
+]]
+
+local function template_list_get (t)
+	local out = {};																-- a table for output
+	for k, _ in pairs (t) do													-- spin through the table and collect the keys
+		table.insert (out, k)													-- add each key to the output table
+	end
+	return out;																	-- and done
+end
+
+
+--[[--------------------------< E X P O R T E D   T A B L E S >------------------------------------------------
+]]
 
 return {
 	basic_arguments = basic_arguments,
 	numbered_arguments = numbered_arguments,
 	limited_basic_arguments = limited_basic_arguments,
 	limited_numbered_arguments = limited_numbered_arguments,
-	arxiv_basic_arguments = arxiv_basic_arguments,
-	biorxiv_basic_arguments = biorxiv_basic_arguments,
-	citeseerx_basic_arguments = citeseerx_basic_arguments
-};
+
+	preprint_arguments = preprint_arguments,
+	preprint_template_list = template_list_get (preprint_arguments),			-- make a template list from preprint_arguments{} table
+	unique_arguments = unique_arguments,
+	unique_param_template_list = template_list_get (unique_arguments),			-- make a template list from unique_arguments{} table
+	};
