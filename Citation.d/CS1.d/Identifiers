@@ -1,7 +1,4 @@
 
-local identifiers = {};
-
-
 --[[--------------------------< F O R W A R D   D E C L A R A T I O N S >--------------------------------------
 ]]
 
@@ -14,6 +11,36 @@ local cfg;																		-- table of configuration tables that are defined in
 
 --============================<< H E L P E R   F U N C T I O N S >>============================================
 
+--[[--------------------------< W I K I D A T A _ A R T I C L E _ N A M E _ G E T >----------------------------
+
+as an aid to internationalizing identifier-label wikilinks, gets identifier article names from wikidata.
+
+returns :<lang code>:<article title> when <q> has an <article title> for <lang code>; nil else
+
+for identifiers that do not have q, returns nil
+
+for wikis that do not have mw.wikibase installed, returns nil
+
+]]
+
+local function wikidata_article_name_get (q)
+	if not is_set (q) or (q and not mw.wikibase) then							-- when no q number or when a q number but mw.wikibase not installed on this wiki
+		return nil;																-- abandon
+	end
+
+	local wd_article;
+	local this_wiki_code = cfg.this_wiki_code;									-- wikipedia subdomain; 'en' for en.wikipedia.org
+
+	wd_article = mw.wikibase.getSitelink (q, this_wiki_code .. 'wiki');			-- fetch article title from wd; nil when no title available at this wiki
+
+	if wd_article then
+		wd_article = table.concat ({':', this_wiki_code, ':', wd_article});		-- interwiki-style link without brackets if taken from wd; leading colon required
+	end
+
+	return wd_article;															-- article title from wd; nil else
+end
+
+
 --[[--------------------------< E X T E R N A L _ L I N K _ I D >----------------------------------------------
 
 Formats a wiki style external link
@@ -23,18 +50,26 @@ Formats a wiki style external link
 local function external_link_id(options)
 	local url_string = options.id;
 	local ext_link;
+	local this_wiki_code = cfg.this_wiki_code;									-- wikipedia subdomain; 'en' for en.wikipedia.org
+	local wd_article;															-- article title from wikidata
 	
 	if options.encode == true or options.encode == nil then
 		url_string = mw.uri.encode( url_string );
 	end
-	
+
 	ext_link = mw.ustring.format ('[%s%s%s %s]', options.prefix, url_string, options.suffix or "", mw.text.nowiki(options.id));
 	if is_set(options.access) then
-		ext_link = substitute (cfg.presentation['access-signal'], {ext_link, cfg.presentation[options.access]});	-- add the free-to-read / paywall lock
+		ext_link = substitute (cfg.presentation['ext-link-access-signal'], {cfg.presentation[options.access].class, cfg.presentation[options.access].title, ext_link});	-- add the free-to-read / paywall lock
+	end
+
+	if not (cfg.use_identifier_redirects and is_set (options.redirect)) then	-- redirect has priority so if enabled and available don't fetch from wikidata because expensive
+		wd_article = wikidata_article_name_get (options.q);						-- if wikidata has an article title for this wiki, get it;
 	end
 	
+	local label_link = (cfg.use_identifier_redirects and is_set (options.redirect) and options.redirect) or wd_article or options.link;
+
 	return table.concat	({
-		make_wikilink (options.link, options.label),
+		make_wikilink (label_link, options.label),								-- redirect, wikidata link, or locally specified link (in that order)
 		options.separator or '&nbsp;',
 		ext_link
 		});
@@ -48,20 +83,27 @@ Formats a wiki style internal link
 ]]
 
 local function internal_link_id(options)
+	local id = mw.ustring.gsub (options.id, '%d', cfg.date_names.local_digits);	-- translate 'local' digits to Western 0-9
+
+	if not (cfg.use_identifier_redirects and is_set (options.redirect)) then	-- redirect has priority so if enabled and available don't fetch from wikidata because expensive
+		wd_article = wikidata_article_name_get (options.q);						-- if wikidata has an article title for this wiki, get it;
+	end
+
+	local label_link = (cfg.use_identifier_redirects and is_set (options.redirect) and options.redirect) or wd_article or options.link;
 
 	return table.concat (
 		{
-		make_wikilink (options.link, options.label),
-		options.separator or '&nbsp;',
+		make_wikilink (label_link, options.label),								-- wiki link the identifier label
+		options.separator or '&nbsp;',											-- add the separator
 		make_wikilink (
 			table.concat (
 				{
 				options.prefix,
-				options.id,
+				id,																-- translated to western digits
 				options.suffix or ''
 				}),
-			mw.text.nowiki (options.id)
-			);
+			substitute (cfg.presentation['bdi'], {'', mw.text.nowiki (options.id)})	-- bdi tags to prevent Latn script identifiers from being reversed at rtl language wikis
+			);																	-- nowiki because MediaWiki still has magic links for ISBN and the like; TODO: is it really required?
 		});
 end
 
@@ -94,6 +136,45 @@ local function is_embargoed (embargo)
 end
 
 
+--[=[-------------------------< I S _ V A L I D _ B I O R X I V _ D A T E >------------------------------------
+
+returns true if:
+	2019-12-11T00:00Z <= biorxiv_date < today + 2 days
+	
+The dated form of biorxiv identifier has a start date of 2019-12-11.  The unix timestamp for that date is {{#time:U|2019-12-11}} = 1576022400
+
+biorxiv_date is the date provided in those |biorxiv= parameter values that are dated at time 00:00:00 UTC
+today is the current date at time 00:00:00 UTC plus 48 hours
+	if today is 2015-01-01T00:00:00 then
+		adding 24 hours gives 2015-01-02T00:00:00 – one second more than today
+		adding 24 hours gives 2015-01-03T00:00:00 – one second more than tomorrow
+
+This function does not work if it is fed month names for languages other than English.  Wikimedia #time: parser
+apparently doesn't understand non-Engish date month names. This function will always return false when the date
+contains a non-English month name because good1 is false after the call to lang.formatDate().  To get around that
+call this function with YYYY-MM-DD format dates.
+
+]=]
+
+local function is_valid_biorxiv_date (biorxiv_date)
+	local good1, good2;
+	local biorxiv_ts, tomorrow_ts;												-- to hold unix time stamps representing the dates
+	local lang_object = mw.getContentLanguage();
+
+	good1, biorxiv_ts = pcall (lang_object.formatDate, lang_object, 'U', biorxiv_date );		-- convert biorxiv_date value to unix timesatmp 
+	good2, tomorrow_ts = pcall (lang_object.formatDate, lang_object, 'U', 'today + 2 days' );	-- today midnight + 2 days is one second more than all day tomorrow
+	
+	if good1 and good2 then														-- lang.formatDate() returns a timestamp in the local script which which tonumber() may not understand
+		biorxiv_ts = tonumber (biorxiv_ts) or lang_object:parseFormattedNumber (biorxiv_ts);	-- convert to numbers for the comparison;
+		tomorrow_ts = tonumber (tomorrow_ts) or lang_object:parseFormattedNumber (tomorrow_ts);
+	else
+		return false;															-- one or both failed to convert to unix time stamp
+	end
+
+	return ((1576022400 <= biorxiv_ts) and (biorxiv_ts < tomorrow_ts))			-- 2012-12-11T00:00Z <= biorxiv_date < tomorrow's date
+end
+
+
 --[[--------------------------< IS _ V A L I D _ I S X N >-----------------------------------------------------
 
 ISBN-10 and ISSN validator code calculates checksum across all isbn/issn digits including the check digit.
@@ -106,16 +187,16 @@ and stripped of dashes, spaces and other non-isxn characters.
 
 local function is_valid_isxn (isxn_str, len)
 	local temp = 0;
-	isxn_str = { isxn_str:byte(1, len) };	-- make a table of byte values '0' → 0x30 .. '9' → 0x39, 'X' → 0x58
-	len = len+1;							-- adjust to be a loop counter
-	for i, v in ipairs( isxn_str ) do		-- loop through all of the bytes and calculate the checksum
-		if v == string.byte( "X" ) then		-- if checkdigit is X (compares the byte value of 'X' which is 0x58)
-			temp = temp + 10*( len - i );	-- it represents 10 decimal
+	isxn_str = { isxn_str:byte(1, len) };										-- make a table of byte values '0' → 0x30 .. '9' → 0x39, 'X' → 0x58
+	len = len+1;																-- adjust to be a loop counter
+	for i, v in ipairs( isxn_str ) do											-- loop through all of the bytes and calculate the checksum
+		if v == string.byte( "X" ) then											-- if checkdigit is X (compares the byte value of 'X' which is 0x58)
+			temp = temp + 10*( len - i );										-- it represents 10 decimal
 		else
 			temp = temp + tonumber( string.char(v) )*(len-i);
 		end
 	end
-	return temp % 11 == 0;					-- returns true if calculation result is zero
+	return temp % 11 == 0;														-- returns true if calculation result is zero
 end
 
 
@@ -182,7 +263,7 @@ the first form, valid only between date codes 9108 and 0703 is:
 	arXiv:<archive>.<class>/<date code><number><version>
 where:
 	<archive> is a string of alpha characters - may be hyphenated; no other punctuation
-	<class> is a string of alpha characters - may be hyphenated; no other punctuation
+	<class> is a string of alpha characters - may be hyphenated; no other punctuation; not the same as |class= parameter which is not supported in this form
 	<date code> is four digits in the form YYMM where YY is the last two digits of the four-digit year and MM is the month number January = 01
 		first digit of YY for this form can only 9 and 0
 	<number> is a three-digit number
@@ -205,8 +286,8 @@ where:
 local function arxiv (id, class)
 	local handler = cfg.id_handlers['ARXIV'];
 	local year, month, version;
-	local err_cat = '';
-	local text;
+	local err_cat = false;														-- assume no error message
+	local text;																	-- output text
 	
 	if id:match("^%a[%a%.%-]+/[90]%d[01]%d%d%d%d$") or id:match("^%a[%a%.%-]+/[90]%d[01]%d%d%d%dv%d+$") then	-- test for the 9108-0703 format w/ & w/o version
 		year, month = id:match("^%a[%a%.%-]+/([90]%d)([01]%d)%d%d%d[v%d]*$");
@@ -214,37 +295,44 @@ local function arxiv (id, class)
 		month = tonumber(month);
 		if ((not (90 < year or 8 > year)) or (1 > month or 12 < month)) or		-- if invalid year or invalid month
 			((91 == year and 7 > month) or (7 == year and 3 < month)) then		-- if years ok, are starting and ending months ok?
-				err_cat = ' ' .. set_error( 'bad_arxiv' );						-- set error message
+				err_cat = true;													-- flag for error message
 		end
+
 	elseif id:match("^%d%d[01]%d%.%d%d%d%d$") or id:match("^%d%d[01]%d%.%d%d%d%dv%d+$") then	-- test for the 0704-1412 w/ & w/o version
 		year, month = id:match("^(%d%d)([01]%d)%.%d%d%d%d[v%d]*$");
 		year = tonumber(year);
 		month = tonumber(month);
 		if ((7 > year) or (14 < year) or (1 > month or 12 < month)) or			-- is year invalid or is month invalid? (doesn't test for future years)
 			((7 == year) and (4 > month)) then --or									-- when year is 07, is month invalid (before April)?
-				err_cat = ' ' .. set_error( 'bad_arxiv' );						-- set error message
+				err_cat = true;													-- flag for error message
 		end
+
 	elseif id:match("^%d%d[01]%d%.%d%d%d%d%d$") or id:match("^%d%d[01]%d%.%d%d%d%d%dv%d+$") then	-- test for the 1501- format w/ & w/o version
 		year, month = id:match("^(%d%d)([01]%d)%.%d%d%d%d%d[v%d]*$");
 		year = tonumber(year);
 		month = tonumber(month);
 		if ((15 > year) or (1 > month or 12 < month)) then						-- is year invalid or is month invalid? (doesn't test for future years)
-			err_cat = ' ' .. set_error( 'bad_arxiv' );							-- set error message
+				err_cat = true;													-- flag for error message
 		end
+
 	else
-		err_cat = ' ' .. set_error( 'bad_arxiv' );								-- arXiv id doesn't match any format
+		err_cat = true;															-- not a recognized format; flag for error message
 	end
 
-	text = external_link_id({link = handler.link, label = handler.label,
+	err_cat = err_cat and table.concat ({' ', set_error ('bad_arxiv')}) or '';	-- set error message if flag is true
+	
+	text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode, access=handler.access}) .. err_cat;
 
 	if is_set (class) then
-		class = ' [[' .. '//arxiv.org/archive/' .. class .. ' ' .. class .. ']]';	-- external link within square brackets, not wikilink
-	else
-		class = '';																-- empty string for concatenation
+		if id:match ('^%d+') then
+			text = table.concat ({text, ' [[//arxiv.org/archive/', class, ' ', class, ']]'});	-- external link within square brackets, not wikilink
+		else
+			text = table.concat ({text, ' ', set_error ('class_ignored')});		
+		end
 	end
-	
-	return text .. class;
+
+	return text;	
 end
 
 
@@ -260,8 +348,7 @@ and first four digits must be a year.  This function makes these tests:
 	characters in position
 		1–4 must be digits and must represent a year in the range of 1000 – next year
 		5 must be a letter
-		6 must be letter, ampersand, or dot (ampersand cannot directly precede a dot; &. )
-		7–8 must be letter, digit, ampersand, or dot (ampersand cannot directly precede a dot; &. )
+		6–8 must be letter, digit, ampersand, or dot (ampersand cannot directly precede a dot; &. )
 		9–18 must be letter, digit, or dot
 		19 must be a letter or dot
 
@@ -272,24 +359,24 @@ local function bibcode (id, access)
 	local err_type;
 	local year;
 
-	local text = external_link_id({link=handler.link, label=handler.label,
+	local text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix, id=id, separator=handler.separator, encode=handler.encode,
 		access=access});
 	
 	if 19 ~= id:len() then
-		err_type = 'length';
+		err_type = cfg.err_msg_supl.length;
 	else
-		year = id:match ("^(%d%d%d%d)[%a][%a&%.][%a&%.%d][%a&%.%d][%a%d%.]+[%a%.]$")	-- 
+		year = id:match ("^(%d%d%d%d)[%a][%w&%.][%w&%.][%w&%.][%w.]+[%a%.]$")	-- 
 		if not year then														-- if nil then no pattern match
-			err_type = 'value';													-- so value error
+			err_type = cfg.err_msg_supl.value;													-- so value error
 		else
 			local next_year = tonumber(os.date ('%Y'))+1;						-- get the current year as a number and add one for next year
 			year = tonumber (year);												-- convert year portion of bibcode to a number
 			if (1000 > year) or (year > next_year) then
-				err_type = 'year';												-- year out of bounds
+				err_type = cfg.err_msg_supl.year;												-- year out of bounds
 			end
 			if id:find('&%.') then
-				err_type = 'journal';											-- journal abbreviation must not have '&.' (if it does its missing a letter)
+				err_type = cfg.err_msg_supl.journal;											-- journal abbreviation must not have '&.' (if it does its missing a letter)
 			end
 		end
 	end
@@ -303,23 +390,46 @@ end
 
 --[[--------------------------< B I O R X I V >-----------------------------------------------------------------
 
-Format bioRxiv id and do simple error checking.  BiorXiv ids are exactly 6 digits.
-The bioRxiv id is the number following the last slash in the bioRxiv-issued DOI:
-https://doi.org/10.1101/078733 -> 078733
+Format bioRxiv id and do simple error checking.  Before 2019-12-11, biorXiv ids were 10.1101/ followed by exactly
+6 digits.  After 2019-12-11, biorXiv ids retained the six-digit identifier but prefixed that with a yyyy.mm.dd. 
+date and suffixed with an optional version identifier.
+
+The bioRxiv id is the string of characters:
+	https://doi.org/10.1101/078733 -> 10.1101/078733
+or a date followed by a six-digit number followed by an optional version indicator 'v' and one or more digits:
+	https://www.biorxiv.org/content/10.1101/2019.12.11.123456v2 -> 10.1101/2019.12.11.123456v2
+	
+see https://www.biorxiv.org/about-biorxiv
 
 ]]
 
 local function biorxiv(id)
 	local handler = cfg.id_handlers['BIORXIV'];
-	local err_cat = '';															-- presume that bioRxiv id is valid
+	local err_cat = true;														-- flag; assume that there will be an error
 	
-	if nil == id:match("^%d%d%d%d%d%d$") then									-- if bioRxiv id has anything but six digits
-		err_cat = ' ' .. set_error( 'bad_biorxiv');	-- set an error message
-	end
+	local patterns = {
+		'^10.1101/%d%d%d%d%d%d$',												-- simple 6-digit identifier (before 2019-12-11)
+		'^10.1101/(20[1-9]%d)%.([01]%d)%.([0-3]%d)%.%d%d%d%d%d%dv%d+$',			-- y.m.d. date + 6-digit identifier + version (after 2019-12-11)
+		'^10.1101/(20[1-9]%d)%.([01]%d)%.([0-3]%d)%.%d%d%d%d%d%d$',				-- y.m.d. date + 6-digit identifier (after 2019-12-11)
+	}
 	
-	return external_link_id({link = handler.link, label = handler.label,
+	for _, pattern in ipairs (patterns) do										-- spin through the patterns looking for a match
+		if id:match (pattern) then
+			local y, m, d = id:match (pattern);									-- found a match, attempt to get year, month and date from the identifier
+
+			if m then															-- m is nil when id is the six-digit form
+				if not is_valid_biorxiv_date (y .. '-' .. m .. '-' .. d) then	-- validate the encoded date; TODO: don't ignore leapyear and actual month lengths ({{#time:}} is a poor date validator)
+					break;														-- date fail; break out early so we don't unset the error message
+				end
+			end
+			err_cat = nil;														-- we found a match so unset the error message
+			break;																-- and done
+		end
+	end																			-- err_cat remains set here when no match
+
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator,
-			encode=handler.encode, access=handler.access}) .. err_cat;
+			encode=handler.encode, access=handler.access}) .. (err_cat and (' ' .. set_error( 'bad_biorxiv')) or '');
 end
 
 
@@ -334,7 +444,7 @@ local function citeseerx (id)
 	local handler = cfg.id_handlers['CITESEERX'];
 	local matched;
 	
-	local text = external_link_id({link=handler.link, label=handler.label,
+	local text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix, id=id, separator=handler.separator, encode=handler.encode,
 		access=handler.access});
 	
@@ -370,18 +480,55 @@ local function doi(id, inactive, access)
 	local text;
 	if is_set(inactive) then
 		local inactive_year = inactive:match("%d%d%d%d") or '';					-- try to get the year portion from the inactive date
-		if is_set(inactive_year) then
-			table.insert( z.error_categories, "Pages with DOIs inactive since " .. inactive_year );
+		local inactive_month, good;
+
+		if is_set (inactive_year) then
+			if 4 < inactive:len() then											-- inactive date has more than just a year (could be anything)
+				local lang_obj = mw.getContentLanguage();						-- get a language object for this wiki
+				good, inactive_month = pcall (lang_obj.formatDate, lang_obj, 'F', inactive);	-- try to get the month name from the inactive date
+				if not good then
+					inactive_month = nil;										-- something went wrong so make sure this is unset
+				end
+			end
 		else
-			table.insert( z.error_categories, "Pages with inactive DOIs" );		-- when inactive doesn't contain a recognizable year
+			inactive_year = nil;												-- |doi-broken= has something but it isn't a date
 		end
-		inactive = " (" .. cfg.messages['inactive'] .. " " .. inactive .. ")" 
+		
+		if is_set(inactive_year) and is_set (inactive_month) then
+			table.insert( z.error_categories, 'Pages with DOIs inactive as of ' .. inactive_year .. ' ' .. inactive_month);	-- use inactive month in category name
+		elseif is_set(inactive_year) then
+			table.insert( z.error_categories, 'Pages with DOIs inactive as of ' .. inactive_year);
+		else
+			table.insert( z.error_categories, 'Pages with inactive DOIs');		-- when inactive doesn't contain a recognizable date
+		end
+		inactive = " (" .. cfg.messages['inactive'] .. ' ' .. inactive .. ')';
 	end
-	text = external_link_id({link = handler.link, label = handler.label,
+
+	text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode, access=access}) .. (inactive or '')
 
-	if nil == id:match("^10%.[^%s–]-/[^%s–]-[^%.,]$") then						-- doi must begin with '10.', must contain a fwd slash, must not contain spaces or endashes, and must not end with period or comma
-		cat = ' ' .. set_error( 'bad_doi' );
+	local registrant = id:match ('^10%.([^/]+)/[^%s–]-[^%.,]$');				-- registrant set when doi has the proper basic form
+	
+	registrant_err_patterns = {													-- these patterns are for code ranges that are not supported 
+		'^[^1-3]%d%d%d%d%.%d%d*$',												-- 5 digits with subcode (0xxxx, 40000+); accecpts: 10000–39999
+		'^[^1-4]%d%d%d%d$',														-- 5 digits without subcode (0xxxx, 40000+); accecpts: 10000–49999
+		'^[^1-9]%d%d%d%.%d%d*$',												-- 4 digits with subcode (0xxx); accecpts: 1000–9999
+		'^[^1-9]%d%d%d$',														-- 4 digits without subcode (0xxx); accecpts: 1000–9999
+		'^%d%d%d%d%d%d+',														-- 6 or more digits
+		'^%d%d?%d?$',															-- less than 4 digits without subcode (with subcode is legitimate)
+		'^5555$',																-- test registrant will never resolve
+		'%s',																	-- any space character in registrant
+		}
+	
+	if registrant then															-- when doi has proper form
+		for i, pattern in ipairs (registrant_err_patterns) do					-- spin through error patterns
+			if registrant:match (pattern) then									-- to validate registrant codes
+				cat = ' ' .. set_error ('bad_doi');								-- when found, mark this doi as bad
+				break;															-- and done
+			end
+		end
+	else
+		cat = ' ' .. set_error ('bad_doi');										-- invalid directory or malformed
 	end
 
 	return text .. cat 
@@ -403,13 +550,46 @@ HDL names are case-insensitive and can incorporate any printable Unicode charact
 terminal punctuation may not be technically correct but it appears, that in practice these characters are rarely
 if ever used in HDLs.
 
+Query string parameters are named here: http://www.handle.net/proxy_servlet.html.  query strings are not displayed
+but since '?' is anallowed character in an hdl, '?' followed by one of the query parameters is the only way we
+have to detect the query string so that it isn't url encoded with the rest of the identifier.
+
 ]]
 
 local function hdl(id, access)
 	local handler = cfg.id_handlers['HDL'];
+	local query_params = {														-- list of known query parameters from http://www.handle.net/proxy_servlet.html
+		'noredirect',
+		'ignore_aliases',
+		'auth',
+		'cert',
+		'index',
+		'type',
+		'urlappend',
+		'locatt',
+		'action',
+		}
 	
-	local text = external_link_id({link = handler.link, label = handler.label,
-			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode, access=access})
+	local hdl, suffix, param = id:match ('(.-)(%?(%a+).+)$');					-- look for query string
+	local found;
+
+	if hdl then																	-- when there are query strings, this is the handle identifier portion
+		for _, q in ipairs (query_params) do									-- spin through the list of query parameters
+			if param:match ('^' .. q) then										-- if the query string begins with one of the parameters
+				found = true;													-- announce a find
+				break;															-- and stop looking
+			end
+		end
+	end
+
+	if found then
+		id = hdl;																-- found so replace id with the handle portion; this will be url encoded, suffix will not
+	else
+		suffix = '';															-- make sure suffix is empty string for concatenation else
+	end
+
+	local text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
+			prefix=handler.prefix, id=id, suffix=suffix, separator=handler.separator, encode=handler.encode, access=access})
 
 	if nil == id:match("^[^%s–]-/[^%s–]-[^%.,]$") then							-- hdl must contain a fwd slash, must not contain spaces, endashes, and must not end with period or comma
 		text = text .. ' ' .. set_error( 'bad_hdl' );
@@ -426,28 +606,31 @@ Determines whether an ISBN string is valid
 
 local function isbn( isbn_str )
 	if nil ~= isbn_str:match("[^%s-0-9X]") then
-		return false, 'invalid character';										-- fail if isbn_str contains anything but digits, hyphens, or the uppercase X
+		return false, cfg.err_msg_supl.char;									-- fail if isbn_str contains anything but digits, hyphens, or the uppercase X
 	end
 	isbn_str = isbn_str:gsub( "-", "" ):gsub( " ", "" );						-- remove hyphens and spaces
 	local len = isbn_str:len();
  
 	if len ~= 10 and len ~= 13 then
-		return false, 'length';													-- fail if incorrect length
+		return false, cfg.err_msg_supl.length;									-- fail if incorrect length
 	end
 
 	if len == 10 then
 		if isbn_str:match( "^%d*X?$" ) == nil then								-- fail if isbn_str has 'X' anywhere but last position
-			return false, 'invalid form';									
+			return false, cfg.err_msg_supl.form;									
 		end
-		return is_valid_isxn(isbn_str, 10), 'checksum';
+		return is_valid_isxn(isbn_str, 10), cfg.err_msg_supl.check;
 	else
 		if isbn_str:match( "^%d+$" ) == nil then
-			return false, 'invalid character';									-- fail if isbn13 is not all digits
+			return false, cfg.err_msg_supl.char;								-- fail if isbn13 is not all digits
 		end
 		if isbn_str:match( "^97[89]%d*$" ) == nil then
-			return false, 'invalid prefix';										-- fail when isbn13 does not begin with 978 or 979
+			return false, cfg.err_msg_supl.prefix;								-- fail when isbn13 does not begin with 978 or 979
 		end
-		return is_valid_isxn_13 (isbn_str), 'checksum';
+		if isbn_str:match ('^9790') then
+			return false, cfg.err_msg_supl.group;								-- group identifier '0' is reserved to ismn
+		end
+		return is_valid_isxn_13 (isbn_str), cfg.err_msg_supl.check;
 	end
 end
 
@@ -487,8 +670,8 @@ local function asin(id, domain)
 		domain = "com." .. domain;
 	end
 	local handler = cfg.id_handlers['ASIN'];
-	return external_link_id({link=handler.link,
-		label=handler.label, prefix=handler.prefix .. domain .. "/dp/",
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
+		prefix=handler.prefix .. domain .. "/dp/",
 		id=id, encode=handler.encode, separator = handler.separator}) .. err_cat;
 end
 
@@ -516,15 +699,17 @@ local function ismn (id)
 		valid_ismn=is_valid_isxn_13 (id);										-- validate ismn
 	end
 
---	text = internal_link_id({link = handler.link, label = handler.label,		-- use this (or external version) when there is some place to link to
---		prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode})
+--	text = internal_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,		-- use this (or external version) when there is some place to link to
+--		prefix=handler.prefix, id=id_copy, separator=handler.separator, encode=handler.encode})
  
-	text = table.concat (
+ 	local label_link = (cfg.use_identifier_redirects and is_set (handler.redirect) and handler.redirect) or wd_article or handler.link;	-- because no place to link to yet
+
+	text = table.concat (														-- because no place to link to yet
 		{
-		make_wikilink (handler.link, handler.label),
+		make_wikilink (label_link, handler.label),
 		handler.separator,
 		id_copy
-		});		-- because no place to link to yet
+		});
 
 	if false == valid_ismn then
 		text = text .. ' ' .. set_error( 'bad_ismn' )							-- add an error message if the ismn is invalid
@@ -575,9 +760,9 @@ local function issn(id, e)
 		id = issn_copy;															-- if not valid, use the show the invalid issn with error message
 	end
 	
-	text = external_link_id({link = handler.link, label = handler.label,
+	text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode})
- 
+
 	if false == valid_issn then
 		text = text .. ' ' .. set_error( 'bad_issn', e and 'e' or '' )			-- add an error message if the issn is invalid
 	end 
@@ -611,7 +796,7 @@ local function jfm (id)
 		err_cat = ' ' .. set_error( 'bad_jfm' );								-- set an error message
 	end
 	
-	return external_link_id({link = handler.link, label = handler.label,
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode}) .. err_cat;
 end
 
@@ -668,7 +853,7 @@ local function lccn(lccn)
 		err_cat = ' ' .. set_error( 'bad_lccn' );								-- lccn contains a space, set an error message
 	end
 
-	return external_link_id({link = handler.link, label = handler.label,
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=lccn,separator=handler.separator, encode=handler.encode}) .. err_cat;
 end
 
@@ -700,14 +885,15 @@ local function mr (id)
 		err_cat = ' ' .. set_error( 'bad_mr' );									-- set an error message
 	end
 	
-	return external_link_id({link = handler.link, label = handler.label,
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode}) .. err_cat;
 end
 
 
 --[[--------------------------< O C L C >----------------------------------------------------------------------
 
-Validate and format an oclc id.  https://www.oclc.org/batchload/controlnumber.en.html
+Validate and format an oclc id.  https://www.oclc.org/batchload/controlnumber.en.html {{dead link}}
+archived at: https://web.archive.org/web/20161228233804/https://www.oclc.org/batchload/controlnumber.en.html
 
 ]]
 
@@ -740,7 +926,7 @@ local function oclc (id)
 		err_msg = ' ' .. set_error( 'bad_oclc' )								-- add an error message if the id is malformed
 	end
 	
-	local text = external_link_id({link=handler.link, label=handler.label,
+	local text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix, id=id, separator=handler.separator, encode=handler.encode}) .. err_msg;
 
 	return text;
@@ -761,7 +947,7 @@ local function openlibrary(id, access)
 	ident, code = id:gsub('^OL', ''):match("^(%d+([AMW]))$");					-- optional OL prefix followed immediately by digits followed by 'A', 'M', or 'W'; remove OL prefix
 
 	if not is_set (ident) then													-- if malformed return an error
-		return external_link_id({link=handler.link, label=handler.label,
+		return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix .. 'OL',
 			id=id, separator=handler.separator,	encode = handler.encode,
 			access = access}) .. ' ' .. set_error( 'bad_ol' );
@@ -770,21 +956,21 @@ local function openlibrary(id, access)
 	id = ident;																	-- use ident without the optional OL prefix (it has been removed)
 	
 	if ( code == "A" ) then
-		return external_link_id({link=handler.link, label=handler.label,
+		return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix .. 'authors/OL',
 			id=id, separator=handler.separator,	encode = handler.encode,
 			access = access})
 	end
 	
 	if ( code == "M" ) then
-		return external_link_id({link=handler.link, label=handler.label,
+		return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix .. 'books/OL',
 			id=id, separator=handler.separator,	encode = handler.encode,
 			access = access})
 	end
 
 	if ( code == "W" ) then
-		return external_link_id({link=handler.link, label=handler.label,
+		return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix .. 'works/OL',
 			id=id, separator=handler.separator,	encode = handler.encode,
 			access = access})
@@ -810,7 +996,6 @@ than test_limit; the value in local variable test_limit will need to be updated 
 ]]
 
 local function pmc(id, embargo)
-	local test_limit = 6000000;													-- update this value as PMCs approach
 	local handler = cfg.id_handlers['PMC'];
 	local err_cat = '';															-- presume that PMC is valid
 	local id_num;
@@ -826,7 +1011,7 @@ local function pmc(id, embargo)
 
 	if is_set (id_num) then														-- id_num has a value so test it
 		id_num = tonumber(id_num);												-- convert id_num to a number for range testing
-		if 1 > id_num or test_limit < id_num then								-- if PMC is outside test limit boundaries
+		if 1 > id_num or handler.id_limit < id_num then							-- if PMC is outside test limit boundaries
 			err_cat = ' ' .. set_error( 'bad_pmc' );							-- set an error message
 		else
 			id = tostring (id_num);												-- make sure id is a string
@@ -844,7 +1029,7 @@ local function pmc(id, embargo)
 			err_cat
 			});
 	else
-		text = external_link_id({link = handler.link, label = handler.label,	-- no embargo date or embargo has expired, ok to link to article
+		text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,	-- no embargo date or embargo has expired, ok to link to article
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode, access=handler.access}) .. err_cat;
 	end
 	return text;
@@ -860,7 +1045,6 @@ test_limit will need to be updated periodically as more PMIDs are issued.
 ]]
 
 local function pmid(id)
-	local test_limit = 32000000;												-- update this value as PMIDs approach
 	local handler = cfg.id_handlers['PMID'];
 	local err_cat = '';															-- presume that PMID is valid
 	
@@ -868,13 +1052,76 @@ local function pmid(id)
 		err_cat = ' ' .. set_error( 'bad_pmid' );								-- set an error message
 	else																		-- PMID is only digits
 		local id_num = tonumber(id);											-- convert id to a number for range testing
-		if 1 > id_num or test_limit < id_num then								-- if PMID is outside test limit boundaries
+		if 1 > id_num or handler.id_limit < id_num then							-- if PMID is outside test limit boundaries
 			err_cat = ' ' .. set_error( 'bad_pmid' );							-- set an error message
 		end
 	end
 	
-	return external_link_id({link = handler.link, label = handler.label,
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode}) .. err_cat;
+end
+
+
+--[[--------------------------< S 2 C I D >--------------------------------------------------------------------
+
+Format an s2cid, do simple error checking
+
+S2CIDs are sequential numbers beginning at 1 and counting up.  This code checks the s2cid to see that it is only
+digits and is less than test_limit; the value in local variable test_limit will need to be updated periodically
+as more S2CIDs are issued.
+
+]]
+
+local function s2cid (id, access)
+	local handler = cfg.id_handlers['S2CID'];
+	local err_cat = '';															-- presume that S2CID is valid
+	local id_num;
+	local text;
+	
+	id_num = id:match ('^[1-9]%d*$');											-- id must be all digits; must not begin with 0; no open access flag
+
+ 	if is_set (id_num) then														-- id_num has a value so test it
+		id_num = tonumber(id_num);												-- convert id_num to a number for range testing
+		if handler.id_limit < id_num then										-- if S2CID is outside test limit boundaries
+			err_cat = ' ' .. set_error( 'bad_s2cid' );							-- set an error message
+		end
+
+	else																		-- when id format incorrect
+		err_cat = ' ' .. set_error( 'bad_s2cid' );								-- set an error message
+	end
+
+	text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
+		prefix=handler.prefix, id=id:gsub ('%.%a%a', ''), separator=handler.separator, encode=handler.encode, access=access}) .. err_cat;
+
+	return text;
+end
+
+
+--[[--------------------------< S B N >------------------------------------------------------------------------
+
+9-digit form of isbn10; uses same check-digit validation when sbn is prefixed with an additional '0' to make 10 digits
+
+]]
+
+local function sbn (id)
+	local check;
+	local err_type = '';
+
+	if nil ~= id:match("[^%s-0-9X]") then
+		return false, cfg.err_msg_supl.char;									-- fail if sbn contains anything but digits, hyphens, or the uppercase X
+	end
+
+	id=id:gsub( "[%s-]", "" );													-- strip spaces and hyphens from the sbn
+
+	if  9 ~= id:len() then
+		return false, cfg.err_msg_supl.length;									-- fail if incorrect length
+	end
+
+	if id:match( "^%d*X?$" ) == nil then										-- fail if sbn has 'X' anywhere but last position
+		return false, cfg.err_msg_supl.form;									
+	end
+
+	return is_valid_isxn('0' .. id, 10), cfg.err_msg_supl.check;				-- prefix sbn with '0' and validate as isbn10
 end
 
 
@@ -889,7 +1136,6 @@ to be updated periodically as more SSRNs are issued.
 ]]
 
 local function ssrn (id)
-	local test_limit = 3500000;													-- update this value as SSRNs approach
 	local handler = cfg.id_handlers['SSRN'];
 	local err_cat = '';															-- presume that SSRN is valid
 	local id_num;
@@ -899,14 +1145,14 @@ local function ssrn (id)
 
 	if is_set (id_num) then														-- id_num has a value so test it
 		id_num = tonumber(id_num);												-- convert id_num to a number for range testing
-		if 100 > id_num or test_limit < id_num then								-- if SSRN is outside test limit boundaries
+		if 100 > id_num or handler.id_limit < id_num then						-- if SSRN is outside test limit boundaries
 			err_cat = ' ' .. set_error( 'bad_ssrn' );							-- set an error message
 		end
 	else																		-- when id format incorrect
 		err_cat = ' ' .. set_error( 'bad_ssrn' );								-- set an error message
 	end
 	
-	text = external_link_id({link = handler.link, label = handler.label,
+	text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode, access=handler.access}) .. err_cat;
 
 	return text;
@@ -923,7 +1169,7 @@ Validate and format a usenet message id.  Simple error checking, looks for 'id-l
 local function usenet_id (id)
 	local handler = cfg.id_handlers['USENETID'];
 
-	local text = external_link_id({link = handler.link, label = handler.label,
+	local text = external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 		prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode})
  
 	if not id:match('^.+@.+$') or not id:match('^[^<].*[^>]$')then				-- doesn't have '@' or has one or first or last character is '< or '>'
@@ -938,28 +1184,23 @@ end
 
 A numerical identifier in the form nnnn.nnnnn - leading zeros in the first quartet optional
 
+format described here: http://emis.mi.sanu.ac.rs/ZMATH/zmath/en/help/search/
+
+temporary format is apparently eight digits.  Anything else is an error
+
 ]]
 
 local function zbl (id)
 	local handler = cfg.id_handlers['ZBL'];
-	local id_num;
 	local err_cat = '';
 	
-	id_num = id:match ('^[Zz][Bb][Ll](.*)$');									-- identifier with zbl prefix; extract identifier
-
-	if is_set (id_num) then
-		add_maint_cat ('zbl_format');
-	else																		-- plain number without zbl prefix
-		id_num = id;															-- if here id does not have prefix
-	end
-
-	if id_num:match('^%d?%d?%d?%d%.%d%d%d%d%d$') then
-		id = id_num;															-- id matches pattern
-	else
-		err_cat = ' ' .. set_error( 'bad_zbl' );								-- set an error message
+	if id:match('^%d%d%d%d%d%d%d%d$') then										-- is this identifier using temporary format?
+		add_maint_cat ('zbl');													-- yes, add maint cat
+	elseif not id:match('^%d?%d?%d?%d%.%d%d%d%d%d$') then						-- not temporary, is it normal format?
+		err_cat = ' ' .. set_error( 'bad_zbl' );								-- no, set an error message
 	end
 	
-	return external_link_id({link = handler.link, label = handler.label,
+	return external_link_id ({link=handler.link, label=handler.label, q=handler.q, redirect=handler.redirect,
 			prefix=handler.prefix,id=id,separator=handler.separator, encode=handler.encode}) .. err_cat;
 end
 
@@ -1040,6 +1281,17 @@ local function build_id_list( id_list, options )
 			table.insert( new_list, {handler.label, pmc( v, options.Embargo ) } );
 		elseif k == 'PMID' then
 			table.insert( new_list, {handler.label, pmid( v ) } );
+		elseif k == 'S2CID' then
+			table.insert( new_list, {handler.label, s2cid( v, handler.access ) } );
+		elseif k == 'SBN' then
+			local SBN = internal_link_id (handler);
+			local check;														-- boolean validation result
+			local err_type = '';
+			check, err_type = sbn (v);
+			if not check then
+				SBN = SBN .. set_error( 'bad_sbn', {err_type}, false, " ", "" );	-- display an error message
+			end
+			table.insert( new_list, {handler.label, SBN } );				
 		elseif k == 'SSRN' then
 			table.insert( new_list, {handler.label, ssrn( v ) } );
 		elseif k == 'USENETID' then
@@ -1088,27 +1340,25 @@ Fetches custom id access levels from arguments using configuration settings.
 Parameters which have a predefined access level (e.g. arxiv) do not use this
 function as they are directly rendered as free without using an additional parameter.
 
+access-level values must match the case used in cfg.keywords_lists['id-access'] (lowercase unless there is some special reason for something else)
+
 ]]
 
 local function extract_id_access_levels( args, id_list )
 	local id_accesses_list = {};
 	for k, v in pairs( cfg.id_handlers ) do
-		local access_param = v.custom_access;
-		local k_lower = string.lower(k);
+		local access_param = v.custom_access;									-- name of identifier's access-level parameter
 		if is_set(access_param) then
-			local access_level = args[access_param];
-			if is_set(access_level) then
-				if not in_array (access_level:lower(), cfg.keywords['id-access']) then
+			local access_level = args[access_param];							-- get the assigned value if there is one
+			if is_set (access_level) then
+				if not in_array (access_level, cfg.keywords_lists['id-access']) then	-- exact match required
 					table.insert( z.message_tail, { set_error( 'invalid_param_val', {access_param, access_level}, true ) } );	
-					access_level = nil;
+					access_level = nil;											-- invalid so unset
 				end
-				if not is_set(id_list[k]) then
-					table.insert( z.message_tail, { set_error( 'param_access_requires_param', {k_lower}, true ) } );
+				if not is_set(id_list[k]) then									-- identifer access-level must have a matching identifier
+					table.insert( z.message_tail, { set_error( 'param_access_requires_param', {k:lower()}, true ) } );	-- param name is uppercase in cfg.id_handlers (k); lowercase for error message
 				end
-				if is_set(access_level) then
-					access_level = access_level:lower();
-				end
-				id_accesses_list[k] = access_level;
+				id_accesses_list[k] = cfg.keywords_xlate[access_level];			-- get translated keyword
 			end
 		end
 	end
@@ -1136,6 +1386,9 @@ local function set_selected_modules (cfg_table_ptr, utilities_page_ptr)
 	z = utilities_page_ptr.z;													-- table of tables in Module:Citation/CS1/Utilities
 end
 
+
+--[[--------------------------< E X P O R T E D   F U N C T I O N S >------------------------------------------
+]]
 
 return {
 	build_id_list = build_id_list,
