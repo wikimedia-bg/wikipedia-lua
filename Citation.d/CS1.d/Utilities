@@ -1,4 +1,3 @@
-local u = {}
 
 local z = {
 	error_categories = {};														-- for categorizing citations that contain errors
@@ -124,12 +123,6 @@ local function set_error( error_id, arguments, raw, prefix, suffix )
 		')'
 		});
 
---	message = table.concat ({message, ' (', substitute (cfg.presentation['wikilink'], 
---		{cfg.messages['help page link'] .. '#' .. error_state.anchor, cfg.messages['help page label']}), ')'});
---	message = message .. " ([[" .. cfg.messages['help page link'] .. 
---		"#" .. error_state.anchor .. "|" ..
---		cfg.messages['help page label'] .. "]])";
-	
 	z.error_ids[ error_id ] = true;
 	if in_array( error_id, { 'bare_url_missing_title', 'trans_missing_title' } )
 			and z.error_ids['citation_missing_title'] then
@@ -340,22 +333,60 @@ local function is_wikilink (str)
 	local D, L
 	local wl_type = 2;															-- assume that str is a complex wikilink [[L|D]]
 
-	L, D = str:match ('%[%[([^|]+)|([^%]]+)%]%]');								-- get L and D from [[L|D]] 
+	if not str:match ('^%[%[[^%]]+%]%]$') then									-- is str some sort of a wikilink (must have some sort of content)
+		return 0, str, '';														-- not a wililink; return wl_type as 0, str as D, and empty string as L
+	end
+	
+	L, D = str:match ('^%[%[([^|]+)|([^%]]+)%]%]$');							-- get L and D from [[L|D]] 
 
-	if not is_set (D) then														-- if no separate link
-		D = str:match ('%[%[([^%]]*)|*%]%]');									-- get D from [[D]]
+	if not is_set (D) then														-- if no separate display
+		D = str:match ('^%[%[([^%]]*)|*%]%]$');									-- get D from [[D]] or [[D|]]
 		wl_type = 1; 
 	end
 	
-	if not is_set (D) then														-- no wikilink markup
-		D = str;																-- return the string as D
-		wl_type = 0;															-- but say that it is not a wikilink
-	end
-	
 	D = mw.text.trim (D, '%s|');												-- trim white space and pipe characters 
-	L = L and mw.text.trim (L, '%s|');
-	
+--	L = L and mw.text.trim (L, '%s|');
 	return wl_type, D, L or '';
+end
+
+
+--[[--------------------------< S T R I P _ A P O S T R O P H E _ M A R K U P >--------------------------------
+
+Strip wiki italic and bold markup from argument so that it doesn't contaminate COinS metadata.
+This function strips common patterns of apostrophe markup.  We presume that editors who have taken the time to
+markup a title have, as a result, provided valid markup. When they don't, some single apostrophes are left behind.
+
+Returns the argument without wiki markup and a number; the number is more-or-less meaningless except as a flag
+to indicate that markup was replaced; do not rely on it as an indicator of how many of any kind of markup was
+removed; returns the argument and nil when no markup removed
+
+]]
+
+local function strip_apostrophe_markup (argument)
+	if not is_set (argument) then
+		return argument, nil;													-- no argument, nothing to do
+	end
+
+	if nil == argument:find ( "''", 1, true ) then								-- Is there at least one double apostrophe?  If not, exit.
+		return argument, nil;
+	end
+
+	local flag;
+	while true do
+		if argument:find ( "'''''", 1, true ) then								-- bold italic (5)
+			argument, flag=argument:gsub("%'%'%'%'%'", "");						-- remove all instances of it
+		elseif argument:find ( "''''", 1, true ) then							-- italic start and end without content (4)
+			argument, flag=argument:gsub("%'%'%'%'", "");
+		elseif argument:find ( "'''", 1, true ) then							-- bold (3)
+			argument, flag=argument:gsub("%'%'%'", "");
+		elseif argument:find ( "''", 1, true ) then								-- italic (2)
+			argument, flag=argument:gsub("%'%'", "");
+		else
+			break;
+		end
+	end
+
+	return argument, flag;														-- done
 end
 
 
@@ -371,9 +402,11 @@ local function set_selected_modules (cfg_table_ptr)
 end
 
 
+--[[--------------------------< E X P O R T S >----------------------------------------------------------------
+]]
 
-return {																		-- return exported functions and tables
-	is_set = is_set,
+return {
+	is_set = is_set,															-- exported functions
 	in_array = in_array,
 	substitute = substitute,
 	error_comment = error_comment,
@@ -386,5 +419,6 @@ return {																		-- return exported functions and tables
 	is_wikilink = is_wikilink,
 	make_wikilink = make_wikilink,
 	set_selected_modules = set_selected_modules,
-	z = z,
+	strip_apostrophe_markup = strip_apostrophe_markup,
+	z = z,																		-- exported table
 	}
