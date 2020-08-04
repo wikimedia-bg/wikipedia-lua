@@ -1,6 +1,4 @@
 
-local cs1 ={};
-
 --[[--------------------------< F O R W A R D   D E C L A R A T I O N S >--------------------------------------
 ]]
 
@@ -8,7 +6,8 @@ local dates, year_date_check, reformat_dates, date_hyphen_to_dash,				-- functio
 	date_name_xlate
 
 local is_set, in_array, substitute, error_comment, set_error, select_one,		-- functions in Module:Citation/CS1/Utilities
-	add_maint_cat, wrap_style, safe_for_italics, is_wikilink, make_wikilink;
+	add_maint_cat, wrap_style, safe_for_italics, is_wikilink, make_wikilink,
+	strip_apostrophe_markup;
 
 local z ={};																	-- tables in Module:Citation/CS1/Utilities
 
@@ -22,8 +21,7 @@ local whitelist = {};															-- table of tables listing valid template pa
 
 --[[--------------------------< P A G E   S C O P E   V A R I A B L E S >--------------------------------------
 
-delare variables here that have page-wide scope that are not brought in from other modules; thatare created here
-and used here
+declare variables here that have page-wide scope that are not brought in from other modules; that are created here and used here
 
 ]]
 
@@ -70,8 +68,8 @@ added_prop_cats is a table declared in page scope variables above
 local function add_prop_cat (key, arguments)
 	if not added_prop_cats [key] then
 		added_prop_cats [key] = true;											-- note that we've added this category
-		key = key:gsub ('(foreign_lang_source_?2?)%a%a%a?', '%1');				-- strip lang code from keyname
-		table.insert( z.properties_cats, substitute (cfg.prop_cats [key], arguments));		-- make name then add to table
+		key = key:gsub ('(foreign_lang_source_?2?)%a%a%a?[%a%-]*', '%1');		-- strip lang code from keyname
+		table.insert( z.properties_cats, substitute (cfg.prop_cats [key], arguments));	-- make name then add to table
 	end
 end
 
@@ -132,7 +130,7 @@ here.  Perhaps not necessary but retained incase it is necessary for IPv4 dot de
 There are several tests:
 	the first character of the whole domain name including subdomains must be a letter or a digit
 	internationalized domain name (ascii characters with .xn-- ASCII Compatible Encoding (ACE) prefix xn-- in the tld) see https://tools.ietf.org/html/rfc3490
-	single-letter/digit second-level domains in the .org and .cash TLDs
+	single-letter/digit second-level domains in the .org, .cash, and .today TLDs
 	q, x, and z SL domains in the .com TLD
 	i and q SL domains in the .net TLD
 	single-letter SL domains in the ccTLDs (where the ccTLD is two letters)
@@ -151,31 +149,36 @@ local function is_domain_name (domain)
 	
 	domain = domain:gsub ('^//', '');											-- strip '//' from domain name if present; done here so we only have to do it once
 	
-	if not domain:match ('^[%a%d]') then										-- first character must be letter or digit
+	if not domain:match ('^[%w]') then											-- first character must be letter or digit
 		return false;
 	end
-																				-- Do most common case first
-	if domain:match ('%f[%a%d][%a%d][%a%d%-]+[%a%d]%.%a%a+$') then				-- three or more character hostname.hostname or hostname.tld
-		return true;
-	elseif domain:match ('%f[%a%d][%a%d][%a%d%-]+[%a%d]%.xn%-%-[%a%d]+$') then	-- internationalized domain name with ACE prefix
-		return true;
-	elseif domain:match ('%f[%a%d][%a%d]%.cash$') then							-- one character/digit .cash hostname
-		return true;
-	elseif domain:match ('%f[%a%d][%a%d]%.org$') then							-- one character/digit .org hostname
-		return true;
-	elseif domain:match ('%f[%a][qxz]%.com$') then								-- assigned one character .com hostname (x.com times out 2015-12-10)
-		return true;
-	elseif domain:match ('%f[%a][iq]%.net$') then								-- assigned one character .net hostname (q.net registered but not active 2015-12-10)
-		return true;
-	elseif domain:match ('%f[%a%d][%a%d]%.%a%a$') then							-- one character hostname and cctld (2 chars)
-		return true;
-	elseif domain:match ('%f[%a%d][%a%d][%a%d]%.%a%a+$') then					-- two character hostname and tld
-		return true;
-	elseif domain:match ('^%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?') then		-- IPv4 address
-		return true;
-	else
+
+	if domain:match ('^%a+:') then												-- hack to detect things that look like s:Page:Title where Page: is namespace at wikisource
 		return false;
 	end
+
+	local patterns = {															-- patterns that look like urls
+		'%f[%w][%w][%w%-]+[%w]%.%a%a+$',										-- three or more character hostname.hostname or hostname.tld
+		'%f[%w][%w][%w%-]+[%w]%.xn%-%-[%w]+$',									-- internationalized domain name with ACE prefix
+		'%f[%a][qxz]%.com$',													-- assigned one character .com hostname (x.com times out 2015-12-10)
+		'%f[%a][iq]%.net$',														-- assigned one character .net hostname (q.net registered but not active 2015-12-10)
+		'%f[%w][%w]%.%a%a$',													-- one character hostname and cctld (2 chars)
+		'%f[%w][%w][%w]%.%a%a+$',												-- two character hostname and tld
+		'^%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?',								-- IPv4 address
+		}
+
+	for _, pattern in ipairs (patterns) do										-- loop through the patterns list
+		if domain:match (pattern) then
+			return true;														-- if a match then we think that this thing that purports to be a url is a url
+		end
+	end
+
+	for _, d in ipairs ({'cash', 'company', 'today', 'org'}) do					-- look for single letter second level domain names for these top level domains
+		if domain:match ('%f[%w][%w]%.' .. d) then
+			return true
+		end
+	end
+	return false;																-- no matches, we don't know what this thing is
 end
 
 
@@ -398,7 +401,7 @@ local function external_link( URL, label, source, access)
 	local domain;
 	local path;
 	local base_url;
-	
+
 	if not is_set( label ) then
 		label = URL;
 		if is_set( source ) then
@@ -414,28 +417,16 @@ local function external_link( URL, label, source, access)
 	domain, path = URL:match ('^([/%.%-%+:%a%d]+)([/%?#].*)$');					-- split the url into scheme plus domain and path
 	if path then																-- if there is a path portion
 		path = path:gsub ('[%[%]]', {['[']='%5b',[']']='%5d'});					-- replace '[' and ']' with their percent encoded values
-		URL=domain..path;														-- and reassemble
+		URL = table.concat ({domain, path});									-- and reassemble
 	end
-	
-	if is_set (access) then														-- access level (subscription, registration, limited)
-		label = safe_for_url (label);											-- replace square brackets and newlines
 
-		base_url = table.concat (												-- assemble external link with access signal
-			{
-			'<span class="plainlinks">[',										-- opening css and url markup
-			URL,																-- the url
-			' ',																-- the required space
-			label,
-			'<span style="padding-left:0.15em">',								-- signal spacing css
-			cfg.presentation[access],											-- the appropriate icon
-			'</span>',															-- close signal spacing span
-			']</span>'															-- close url markup and plain links span
-			});
-	else
-		base_url = table.concat({ "[", URL, " ", safe_for_url( label ), "]" });	-- no signal markup
+	base_url = table.concat({ "[", URL, " ", safe_for_url (label), "]" });		-- assemble a wikimarkup url
+
+	if is_set (access) then														-- access level (subscription, registration, limited)
+		base_url = substitute (cfg.presentation['ext-link-access-signal'], {cfg.presentation[access].class, cfg.presentation[access].title, base_url});	-- add the appropriate icon
 	end
 	
-	return table.concat({ base_url, error_str });
+	return table.concat ({base_url, error_str});
 end
 
 
@@ -452,7 +443,7 @@ added_deprecated_cat is a boolean declared in page scope variables above
 local function deprecated_parameter(name)
 	if not added_deprecated_cat then
 		added_deprecated_cat = true;											-- note that we've added this category
-		table.insert( z.message_tail, { set_error( 'deprecated_params', {name}, true ) } );		-- add error message
+		table.insert( z.message_tail, { set_error( 'deprecated_params', {name}, true ) } );	-- add error message
 	end
 end
 
@@ -534,33 +525,36 @@ The prefix is checked for validity.  If it is a valid ISO639-1 language code, th
 know the language the tag contains.  This may help the browser render the script more correctly.  If the prefix is invalid, the lang attribute
 is not added.  At this time there is no error message for this condition.
 
-Supports |script-title= and |script-chapter=
+Supports |script-title=, |script-chapter=, |script-<periodical>=
 
-TODO: error messages when prefix is invalid ISO639-1 code; when script_value has prefix but no script;
 ]]
 
-local function format_script_value (script_value)
+local function format_script_value (script_value, script_param)
 	local lang='';																-- initialize to empty string
 	local name;
-	if script_value:match('^%l%l%s*:') then										-- if first 3 non-space characters are script language prefix
-		lang = script_value:match('^(%l%l)%s*:%s*%S.*');						-- get the language prefix or nil if there is no script
+	if script_value:match('^%l%l%l?%s*:') then									-- if first 3 or 4 non-space characters are script language prefix
+		lang = script_value:match('^(%l%l%l?)%s*:%s*%S.*');						-- get the language prefix or nil if there is no script
 		if not is_set (lang) then
+			table.insert( z.message_tail, { set_error( 'script_parameter', {script_param, 'missing title part'}, true ) } );		-- prefix without 'title'; add error message
 			return '';															-- script_value was just the prefix so return empty string
 		end
 																				-- if we get this far we have prefix and script
-		name = mw.language.fetchLanguageName( lang, "en" );						-- get language name so that we can use it to categorize
+		name = cfg.lang_code_remap[lang] or mw.language.fetchLanguageName( lang, cfg.this_wiki_code );	-- get language name so that we can use it to categorize
 		if is_set (name) then													-- is prefix a proper ISO 639-1 language code?
-			script_value = script_value:gsub ('^%l%l%s*:%s*', '');				-- strip prefix from script
+			script_value = script_value:gsub ('^%l+%s*:%s*', '');				-- strip prefix from script
 																				-- is prefix one of these language codes?
 			if in_array (lang, cfg.script_lang_codes) then
 				add_prop_cat ('script_with_name', {name, lang})
 			else
-				add_prop_cat ('script')
+				table.insert( z.message_tail, { set_error( 'script_parameter', {script_param, 'unknown language code'}, true ) } );	-- unknown script-language; add error message
 			end
 			lang = ' lang="' .. lang .. '" ';									-- convert prefix into a lang attribute
 		else
+			table.insert( z.message_tail, { set_error( 'script_parameter', {script_param, 'invalid language code'}, true ) } );		-- invalid language code; add error message
 			lang = '';															-- invalid so set lang to empty string
 		end
+	else
+		table.insert( z.message_tail, { set_error( 'script_parameter', {script_param, 'missing prefix'}, true ) } );				-- no language code prefix; add error message
 	end
 	script_value = substitute (cfg.presentation['bdi'], {lang, script_value});	-- isolate in case script is rtl
 
@@ -574,9 +568,9 @@ Initially for |title= and |script-title=, this function concatenates those two p
 wrapped in <bdi> tags.
 ]]
 
-local function script_concatenate (title, script)
+local function script_concatenate (title, script, script_param)
 	if is_set (script) then
-		script = format_script_value (script);									-- <bdi> tags, lang atribute, categorization, etc; returns empty string on error
+		script = format_script_value (script, script_param);					-- <bdi> tags, lang atribute, categorization, etc; returns empty string on error
 		if is_set (script) then
 			title = title .. ' ' .. script;										-- concatenate title and script title
 		end
@@ -600,10 +594,95 @@ local function wrap_msg (key, str, lower)
 	if true == lower then
 		local msg;
 		msg = cfg.messages[key]:lower();										-- set the message to lower case before 
-		return substitute( msg, str );										-- including template text
+		return substitute( msg, str );											-- including template text
 	else
 		return substitute( cfg.messages[key], str );
 	end		
+end
+
+
+--[[--------------------------< W I K I S O U R C E _ U R L _ M A K E >----------------------------------------
+
+makes a wikisource url from wikisource interwiki link.  returns the url and appropriate label; nil else.
+
+str is the value assigned to |chapter= (or aliases) or |title= or |title-link=
+
+]]
+
+local function wikisource_url_make (str)
+	local wl_type, D, L;
+	local ws_url, ws_label;
+	local wikisource_prefix = table.concat ({'https://', cfg.this_wiki_code, '.wikisource.org/wiki/'});
+
+	wl_type, D, L = is_wikilink (str);											-- wl_type is 0 (not a wikilink), 1 (simple wikilink), 2 (complex wikilink)
+
+	if 0 == wl_type then														-- not a wikilink; might be from |title-link=
+		str = D:match ('^[Ww]ikisource:(.+)') or D:match ('^[Ss]:(.+)');		-- article title from interwiki link with long-form or short-form namespace
+		if is_set (str) then
+			ws_url = table.concat ({											-- build a wikisource url
+				wikisource_prefix,												-- prefix
+				str,															-- article title
+				});
+			ws_label = str;														-- label for the url
+		end
+	elseif 1 == wl_type then													-- simple wikilink: [[Wikisource:ws article]]
+		str = D:match ('^[Ww]ikisource:(.+)') or D:match ('^[Ss]:(.+)');		-- article title from interwiki link with long-form or short-form namespace
+		if is_set (str) then
+			ws_url = table.concat ({											-- build a wikisource url
+				wikisource_prefix,												-- prefix
+				str,															-- article title
+				});
+			ws_label = str;														-- label for the url
+		end
+	elseif 2 == wl_type then													-- non-so-simple wikilink: [[Wikisource:ws article|displayed text]] ([[L|D]])
+		str = L:match ('^[Ww]ikisource:(.+)') or L:match ('^[Ss]:(.+)');		-- article title from interwiki link with long-form or short-form namespace
+		if is_set (str) then
+			ws_label = D;														-- get ws article name from display portion of interwiki link
+			ws_url = table.concat ({											-- build a wikisource url
+				wikisource_prefix,												-- prefix
+				str,															-- article title without namespace from link portion of wikilink
+				});
+		end
+	end
+	
+	if ws_url then
+		ws_url = mw.uri.encode (ws_url, 'WIKI');								-- make a usable url
+		ws_url = ws_url:gsub ('%%23', '#');										-- undo percent encoding of fragment marker
+	end
+
+	return ws_url, ws_label, L or D;											-- return proper url or nil and a label or nil
+end
+
+
+--[[--------------------------< F O R M A T _ P E R I O D I C A L >--------------------------------------------
+
+Format the three periodical parameters: |script-<periodical>=, |<periodical>=, and |trans-<periodical>= into a single Periodical meta-
+parameter.
+
+]]
+
+local function format_periodical (script_periodical, script_periodical_source, periodical, trans_periodical)
+	local periodical_error = '';
+
+	if not is_set (periodical) then
+		periodical = '';														-- to be safe for concatenation
+	else
+		periodical = wrap_style ('italic-title', periodical);					-- style 
+	end
+
+	periodical = script_concatenate (periodical, script_periodical, script_periodical_source);	-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
+
+	if is_set (trans_periodical) then
+		trans_periodical = wrap_style ('trans-italic-title', trans_periodical);
+		if is_set (periodical) then
+			periodical = periodical ..  ' ' .. trans_periodical;
+		else																	-- here when trans-periodical without periodical or script-periodical
+			periodical = trans_periodical;
+			periodical_error = ' ' .. set_error ('trans_missing_title', {'periodical'});
+		end
+	end
+
+	return periodical .. periodical_error;
 end
 
 
@@ -614,9 +693,15 @@ parameter (chapter_url_source used for error messages).
 
 ]]
 
-local function format_chapter_title (scriptchapter, chapter, transchapter, chapterurl, chapter_url_source, no_quotes, access)
+local function format_chapter_title (script_chapter, script_chapter_source, chapter, chapter_source, trans_chapter, trans_chapter_source, chapter_url, chapter_url_source, no_quotes, access)
 	local chapter_error = '';
-	
+
+	local ws_url, ws_label, L = wikisource_url_make (chapter);					-- make a wikisource url and label from a wikisource interwiki link
+	if ws_url then
+		ws_label = ws_label:gsub ('_', '');										-- replace underscore separaters with space characters
+		chapter = ws_label;
+	end
+
 	if not is_set (chapter) then
 		chapter = '';															-- to be safe for concatenation
 	else
@@ -626,20 +711,24 @@ local function format_chapter_title (scriptchapter, chapter, transchapter, chapt
 		end
 	end
 
-	chapter = script_concatenate (chapter, scriptchapter)						-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
+	chapter = script_concatenate (chapter, script_chapter, script_chapter_source);	-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
 
-	if is_set (transchapter) then
-		transchapter = wrap_style ('trans-quoted-title', transchapter);
-		if is_set (chapter) then
-			chapter = chapter ..  ' ' .. transchapter;
-		else																	-- here when transchapter without chapter or script-chapter
-			chapter = transchapter;												-- 
-			chapter_error = ' ' .. set_error ('trans_missing_title', {'chapter'});
-		end
+	if is_set (chapter_url) then
+		chapter = external_link (chapter_url, chapter, chapter_url_source, access);	-- adds bare_url_missing_title error if appropriate
+	elseif ws_url then
+		chapter = external_link (ws_url, chapter .. '&nbsp;', 'ws link in chapter');	-- adds bare_url_missing_title error if appropriate; space char to move icon away from chap text; TODO: better way to do this?
+		chapter = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], L, chapter});				
 	end
 
-	if is_set (chapterurl) then
-		chapter = external_link (chapterurl, chapter, chapter_url_source, access);		-- adds bare_url_missing_title error if appropriate
+	if is_set (trans_chapter) then
+		trans_chapter = wrap_style ('trans-quoted-title', trans_chapter);
+		if is_set (chapter) then
+			chapter = chapter ..  ' ' .. trans_chapter;
+		else																	-- here when trans_chapter without chapter or script-chapter
+			chapter = trans_chapter;
+			chapter_source = trans_chapter_source:match ('trans%-?(.+)');		-- when no chapter, get matching name from trans-<param>
+			chapter_error = ' ' .. set_error ('trans_missing_title', {chapter_source});
+		end
 	end
 
 	return chapter .. chapter_error;
@@ -655,8 +744,6 @@ This function will detect the visible replacement character when it is part of t
 
 Detects but ignores nowiki and math stripmarkers.  Also detects other named stripmarkers (gallery, math, pre, ref)
 and identifies them with a slightly different error message.  See also coins_cleanup().
-
-Detects but ignores the character pattern that results from the transclusion of {{'}} templates.
 
 Output of this function is an error message that identifies the character or the Unicode group, or the stripmarker
 that was detected along with its position (or, for multi-byte characters, the position of its first byte) in the
@@ -688,8 +775,9 @@ local function has_invisible_chars (param, v)
 		end
 		
 		if position then
-			if 'nowiki' == capture or 'math' == capture then 					-- nowiki, math stripmarker (not an error condition)
-				stripmarker = true;												-- set a flag
+			if 'nowiki' == capture or 'math' == capture or						-- nowiki and math stripmarkers (not an error condition)
+				('templatestyles' == capture and in_array (param, {'id', 'quote'})) then	-- templatestyles stripmarker allowed in these parameters
+					stripmarker = true;											-- set a flag
 			elseif true == stripmarker and 'delete' == char then				-- because stripmakers begin and end with the delete char, assume that we've found one end of a stripmarker
 				position = nil;													-- unset
 			else
@@ -743,12 +831,13 @@ local function argument_wrapper( args )
 			else
 				-- maybe let through instead of raising an error?
 				-- v, origin[k] = args[k], k;
-				error( cfg.messages['unknown_argument_map'] );
+				error( cfg.messages['unknown_argument_map'] .. ': ' .. k);
 			end
 			
 			-- Empty strings, not nil;
 			if v == nil then
-				v = cfg.defaults[k] or '';
+--				v = cfg.defaults[k] or '';
+				v = '';
 				origin[k] = '';
 			end
 			
@@ -756,77 +845,6 @@ local function argument_wrapper( args )
 			return v;
 		end,
 	});
-end
-
-
---[[--------------------------< V A L I D A T E >--------------------------------------------------------------
-
-Looks for a parameter's name in one of several whitelists.
-
-Parameters in the whitelist can have three values:
-	true - active, supported parameters
-	false - deprecated, supported parameters
-	nil - unsupported parameters
-	
-]]
-
-local function validate( name, cite_class )
-	local name = tostring( name );
-	local state;
-	
-	if in_array (cite_class, {'arxiv', 'biorxiv', 'citeseerx'}) then			-- limited parameter sets allowed for these templates
-		state = whitelist.limited_basic_arguments[ name ];
-		if true == state then return true; end									-- valid actively supported parameter
-		if false == state then
-			deprecated_parameter (name);										-- parameter is deprecated but still supported
-			return true;
-		end
-
-		if 'arxiv' == cite_class then											-- basic parameters unique to these templates
-			state = whitelist.arxiv_basic_arguments[name];
-		end
-		if 'biorxiv' == cite_class then
-			state = whitelist.biorxiv_basic_arguments[name];
-		end
-		if 'citeseerx' == cite_class then
-			state = whitelist.citeseerx_basic_arguments[name];
-		end
-
-		if true == state then return true; end									-- valid actively supported parameter
-		if false == state then
-			deprecated_parameter (name);										-- parameter is deprecated but still supported
-			return true;
-		end
-																				-- limited enumerated parameters list
-		name = name:gsub( "%d+", "#" );											-- replace digit(s) with # (last25 becomes last#)
-		state = whitelist.limited_numbered_arguments[ name ];
-		if true == state then return true; end									-- valid actively supported parameter
-		if false == state then
-			deprecated_parameter (name);										-- parameter is deprecated but still supported
-			return true;
-		end
-
-		return false;															-- not supported because not found or name is set to nil
-	end																			-- end limited parameter-set templates
-		
-	state = whitelist.basic_arguments[ name ];									-- all other templates; all normal parameters allowed
-											
-	if true == state then return true; end										-- valid actively supported parameter
-	if false == state then
-		deprecated_parameter (name);											-- parameter is deprecated but still supported
-		return true;
-	end
-																				-- all enumerated parameters allowed
-	name = name:gsub( "%d+", "#" );												-- replace digit(s) with # (last25 becomes last#
-	state = whitelist.numbered_arguments[ name ];
-
-	if true == state then return true; end										-- valid actively supported parameter
-	if false == state then
-		deprecated_parameter (name);											-- parameter is deprecated but still supported
-		return true;
-	end
-	
-	return false;																-- not supported because not found or name is set to nil
 end
 
 
@@ -863,9 +881,9 @@ Also handles the special case where it is desirable to omit the title type from 
 ]]
 
 local function set_titletype (cite_class, title_type)
-	if is_set(title_type) then
-		if "none" == title_type then
-			title_type = "";													-- if |type=none then type parameter not displayed
+	if is_set (title_type) then
+		if 'none' == cfg.keywords_xlate[title_type] then
+			title_type = '';													-- if |type=none then type parameter not displayed
 		end
 		return title_type;														-- if |type= has been set to any other value use that value
 	end
@@ -876,15 +894,54 @@ end
 
 --[[--------------------------< H Y P H E N _ T O _ D A S H >--------------------------------------------------
 
-Converts a hyphen to a dash
+Converts a hyphen to a dash under certain conditions.  The hyphen must separate like items; unlike items are
+returned unmodified.  These forms are modified:
+	letter - letter (A - B)
+	digit - digit (4-5)
+	digit separator digit - digit separator digit (4.1-4.5 or 4-1-4-5)
+	letterdigit - letterdigit (A1-A5) (an optional separator between letter and digit is supported – a.1-a.5 or a-1-a-5)
+	digitletter - digitletter (5a - 5d) (an optional separator between letter and digit is supported – 5.a-5.d or 5-a-5-d)
+
+any other forms are returned unmodified.
+
+str may be a comma- or semicolon-separated list
 
 ]]
 
 local function hyphen_to_dash( str )
-	if not is_set(str) or str:match( "[%[%]{}<>]" ) ~= nil then
+	if not is_set (str) then
 		return str;
-	end	
-	return str:gsub( '-', '–' );
+	end
+	
+	str, count = str:gsub ('^%(%((.+)%)%)$', '%1');								-- remove accept-this-as-written markup when it wraps all of str
+	if 0 ~= count then															-- non-zero when markup removed; zero else
+		return str;																-- nothing to do, we're done
+	end
+	
+	str = str:gsub ('&[nm]dash;', {['&ndash;'] = '–', ['&mdash;'] = '—'});		-- replace &mdash; and &ndash; entities  with their characters; semicolon mucks up the text.split
+	str = str:gsub ('&#45;', '-');												-- replace html numeric entity with hyphen character
+	str = str:gsub ('&nbsp;', ' ');												-- replace &nbsp; entity with generic keyboard space character
+	
+	local out = {};
+	local list = mw.text.split (str, '%s*[,;]%s*');								-- split str at comma or semicolon separators if there are any
+
+	for _, item in ipairs (list) do												-- for each item in the list
+		if mw.ustring.match (item, '^%w*[%.%-]?%w+%s*[%-–—]%s*%w*[%.%-]?%w+$') then	-- if a hyphenated range or has endash or emdash separators
+			if item:match ('^%a+[%.%-]?%d+%s*%-%s*%a+[%.%-]?%d+$') or			-- letterdigit hyphen letterdigit (optional separator between letter and digit)
+				item:match ('^%d+[%.%-]?%a+%s*%-%s*%d+[%.%-]?%a+$') or			-- digitletter hyphen digitletter (optional separator between digit and letter)
+				item:match ('^%d+[%.%-]%d+%s*%-%s*%d+[%.%-]%d+$') or			-- digit separator digit hyphen digit separator digit
+				item:match ('^%d+%s*%-%s*%d+$') or								-- digit hyphen digit
+				item:match ('^%a+%s*%-%s*%a+$') then							-- letter hyphen letter
+					item = item:gsub ('(%w*[%.%-]?%w+)%s*%-%s*(%w*[%.%-]?%w+)', '%1–%2');	-- replace hyphen, remove extraneous space characters
+			else
+				item = mw.ustring.gsub (item, '%s*[–—]%s*', '–');				-- for endash or emdash separated ranges, replace em with en, remove extraneous white space
+			end
+		end
+		item = item:gsub ('^%(%((.+)%)%)$', '%1');								-- remove the accept-this-as-written markup
+		table.insert (out, item);												-- add the (possibly modified) item to the output table
+	end
+
+	return table.concat (out, ', ');											-- concatenate the output table into a comma separated string
 end
 
 
@@ -895,14 +952,17 @@ Joins a sequence of strings together while checking for duplicate separation cha
 ]]
 
 local function safe_join( tbl, duplicate_char )
-	--[[
-	Note: we use string functions here, rather than ustring functions.
-	
-	This has considerably faster performance and should work correctly as 
-	long as the duplicate_char is strict ASCII.  The strings
-	in tbl may be ASCII or UTF8.
-	]]
-	
+	local f = {};																-- create a function table appropriate to type of 'dupicate character'
+		if 1 == #duplicate_char then											-- for single byte ascii characters use the string library functions
+			f.gsub=string.gsub
+			f.match=string.match
+			f.sub=string.sub
+		else																	-- for multi-byte characters use the ustring library functions
+			f.gsub=mw.ustring.gsub
+			f.match=mw.ustring.match
+			f.sub=mw.ustring.sub
+		end
+
 	local str = '';																-- the output string
 	local comp = '';															-- what does 'comp' mean?
 	local end_chr = '';
@@ -919,46 +979,46 @@ local function safe_join( tbl, duplicate_char )
 				comp = value;
 			end
 																				-- typically duplicate_char is sepc
-			if comp:sub(1,1) == duplicate_char then								-- is first charactier same as duplicate_char? why test first character?
-																				--   Because individual string segments often (always?) begin with terminal punct for th
+			if f.sub(comp, 1,1) == duplicate_char then							-- is first character same as duplicate_char? why test first character?
+																				--   Because individual string segments often (always?) begin with terminal punct for the
 																				--   preceding segment: 'First element' .. 'sepc next element' .. etc?
 				trim = false;
-				end_chr = str:sub(-1,-1);										-- get the last character of the output string
+				end_chr = f.sub(str, -1,-1);									-- get the last character of the output string
 				-- str = str .. "<HERE(enchr=" .. end_chr.. ")"					-- debug stuff?
 				if end_chr == duplicate_char then								-- if same as separator
-					str = str:sub(1,-2);										-- remove it
+					str = f.sub(str, 1,-2);										-- remove it
 				elseif end_chr == "'" then										-- if it might be wikimarkup
-					if str:sub(-3,-1) == duplicate_char .. "''" then			-- if last three chars of str are sepc'' 
-						str = str:sub(1, -4) .. "''";							-- remove them and add back ''
-					elseif str:sub(-5,-1) == duplicate_char .. "]]''" then		-- if last five chars of str are sepc]]'' 
+					if f.sub(str, -3,-1) == duplicate_char .. "''" then			-- if last three chars of str are sepc'' 
+						str = f.sub(str, 1, -4) .. "''";						-- remove them and add back ''
+					elseif  f.sub(str, -5,-1) == duplicate_char .. "]]''" then	-- if last five chars of str are sepc]]'' 
 						trim = true;											-- why? why do this and next differently from previous?
-					elseif str:sub(-4,-1) == duplicate_char .. "]''" then		-- if last four chars of str are sepc]'' 
+					elseif f.sub(str, -4,-1) == duplicate_char .. "]''" then	-- if last four chars of str are sepc]'' 
 						trim = true;											-- same question
 					end
 				elseif end_chr == "]" then										-- if it might be wikimarkup
-					if str:sub(-3,-1) == duplicate_char .. "]]" then			-- if last three chars of str are sepc]] wikilink 
+					if f.sub(str, -3,-1) == duplicate_char .. "]]" then			-- if last three chars of str are sepc]] wikilink 
 						trim = true;
-					elseif str:sub(-3,-1) == duplicate_char .. '"]' then		-- if last three chars of str are sepc"] quoted external link 
+					elseif f.sub(str, -3,-1) == duplicate_char .. '"]' then		-- if last three chars of str are sepc"] quoted external link 
 						trim = true;
-					elseif str:sub(-2,-1) == duplicate_char .. "]" then			-- if last two chars of str are sepc] external link
+					elseif  f.sub(str, -2,-1) == duplicate_char .. "]" then		-- if last two chars of str are sepc] external link
 						trim = true;
-					elseif str:sub(-4,-1) == duplicate_char .. "'']" then		-- normal case when |url=something & |title=Title.
+					elseif f.sub(str, -4,-1) == duplicate_char .. "'']" then	-- normal case when |url=something & |title=Title.
 						trim = true;
 					end
 				elseif end_chr == " " then										-- if last char of output string is a space
-					if str:sub(-2,-1) == duplicate_char .. " " then				-- if last two chars of str are <sepc><space>
-						str = str:sub(1,-3);									-- remove them both
+					if f.sub(str, -2,-1) == duplicate_char .. " " then			-- if last two chars of str are <sepc><space>
+						str = f.sub(str, 1,-3);									-- remove them both
 					end
 				end
 
 				if trim then
 					if value ~= comp then 										-- value does not equal comp when value contains html markup
 						local dup2 = duplicate_char;
-						if dup2:match( "%A" ) then dup2 = "%" .. dup2; end		-- if duplicate_char not a letter then escape it
+						if f.match(dup2, "%A" ) then dup2 = "%" .. dup2; end	-- if duplicate_char not a letter then escape it
 						
-						value = value:gsub( "(%b<>)" .. dup2, "%1", 1 )			-- remove duplicate_char if it follows html markup
+						value = f.gsub(value, "(%b<>)" .. dup2, "%1", 1 )		-- remove duplicate_char if it follows html markup
 					else
-						value = value:sub( 2, -1 );								-- remove duplicate_char when it is first character
+						value = f.sub(value, 2, -1 );							-- remove duplicate_char when it is first character
 					end
 				end
 			end
@@ -966,7 +1026,7 @@ local function safe_join( tbl, duplicate_char )
 		end
 	end
 	return str;
-end  
+end
 
 
 --[[--------------------------< I S _ S U F F I X >------------------------------------------------------------
@@ -1012,18 +1072,22 @@ to use an external editor to maintain this code.
 
 ]]
 
-local function is_good_vanc_name (last, first)
-	local first, suffix = first:match ('(.-),?%s*([%dJS][%drndth]+)%.?$') or first;		-- if first has something that looks like a generational suffix, get it
-
+local function is_good_vanc_name (last, first, suffix)
+	if not suffix then
+		if first:find ('[,%s]') then											-- when there is a space or comma, might be first name/initials + generational suffix
+			first = first:match ('(.-)[,%s]+');									-- get name/initials
+			suffix = first:match ('[,%s]+(.+)$');								-- get generational suffix
+		end
+	end
 	if is_set (suffix) then
 		if not is_suffix (suffix) then
-			add_vanc_error ('suffix');
+			add_vanc_error (cfg.err_msg_supl.suffix);
 			return false;														-- not a name with an appropriate suffix
 		end
 	end
 	if nil == mw.ustring.find (last, "^[A-Za-z\195\128-\195\150\195\152-\195\182\195\184-\198\191\199\132-\201\143%-%s%']*$") or
 		nil == mw.ustring.find (first, "^[A-Za-z\195\128-\195\150\195\152-\195\182\195\184-\198\191\199\132-\201\143%-%s%'%.]*$") then
-			add_vanc_error ('non-Latin character');
+			add_vanc_error (cfg.err_msg_supl['non-Latin char']);
 			return false;														-- not a string of latin characters; Vancouver requires Romanization
 	end;
 	return true;
@@ -1056,7 +1120,7 @@ local function reduce_to_initials(first)
 				if is_suffix (suffix) then										-- is it legitimate?
 					return first;												-- one or two initials and a valid suffix so nothing to do
 				else
-					add_vanc_error ('suffix');									-- one or two initials with invalid suffix so error message
+					add_vanc_error (cfg.err_msg_supl.suffix);					-- one or two initials with invalid suffix so error message
 					return first;												-- and return first unmolested
 				end
 			else
@@ -1064,7 +1128,6 @@ local function reduce_to_initials(first)
 			end
 		end
 	end																			-- if here then name has 3 or more uppercase letters so treat them as a word
-
 
 	local initials, names = {}, {};												-- tables to hold name parts and initials
 	local i = 1;																-- counter for number of initials
@@ -1104,11 +1167,12 @@ local function list_people(control, people, etal)
 	local text = {}
 
 	if 'vanc' == format then													-- Vancouver-like author/editor name styling?
-		sep = ',';																-- name-list separator between authors is a comma
-		namesep = ' ';															-- last/first separator is a space
+		sep = cfg.presentation['sep_nl_vanc'];									-- name-list separator between authors is a comma
+		namesep = cfg.presentation['sep_name_vanc'];							-- last/first separator is a space
+		lastauthoramp = nil;													-- unset because isn't used by Vancouver style
 	else
-		sep = ';'																-- name-list separator between authors is a semicolon
-		namesep = ', '															-- last/first separator is <comma><space>
+		sep = cfg.presentation['sep_nl'];										-- name-list separator between authors is a semicolon
+		namesep = cfg.presentation['sep_name'];									-- last/first separator is <comma><space>
 	end
 	
 	if sep:sub(-1,-1) ~= " " then sep = sep .. " " end
@@ -1142,12 +1206,12 @@ local function list_people(control, people, etal)
 					end
 					one = one .. namesep .. first;
 				end
-				if is_set(person.link) and person.link ~= control.page_name then
-					one = make_wikilink (person.link, one);						-- link author/editor if this page is not the author's/editor's page
-				end
 			end
-			table.insert( text, one )
-			table.insert( text, sep_one )
+			if is_set (person.link) then
+				one = make_wikilink (person.link, one);							-- link author/editor
+			end
+			table.insert (text, one)
+			table.insert (text, sep_one)
 		end
 	end
 
@@ -1175,6 +1239,7 @@ Generates a CITEREF anchor ID if we have at least one name or a date.  Otherwise
 namelist is one of the contributor-, author-, or editor-name lists chosen in that order.  year is Year or anchor_year.
 
 ]]
+
 local function anchor_id (namelist, year)
 	local names={};																-- a table for the one to four names and year
 	for i,v in ipairs (namelist) do												-- loop through the list and take up to the first four last names
@@ -1193,35 +1258,49 @@ end
 
 --[[--------------------------< N A M E _ H A S _ E T A L >----------------------------------------------------
 
-Evaluates the content of author and editor name parameters for variations on the theme of et al.  If found,
+Evaluates the content of name parameters (author, editor, etc) for variations on the theme of et al.  If found,
 the et al. is removed, a flag is set to true and the function returns the modified name and the flag.
 
 This function never sets the flag to false but returns it's previous state because it may have been set by
-previous passes through this function or by the parameters |display-authors=etal or |display-editors=etal
+previous passes through this function or by the associated |display-<names>=etal parameter
 
 ]]
 
-local function name_has_etal (name, etal, nocat)
+local function name_has_etal (name, etal, nocat, param)
 
 	if is_set (name) then														-- name can be nil in which case just return
-		local etal_pattern = "[;,]? *[\"']*%f[%a][Ee][Tt] *[Aa][Ll][%.\"']*$"	-- variations on the 'et al' theme
-		local others_pattern = "[;,]? *%f[%a]and [Oo]thers";					-- and alternate to et al.
+		local patterns = cfg.et_al_patterns;									--get patterns from configuration
 		
-		if name:match (etal_pattern) then										-- variants on et al.
-			name = name:gsub (etal_pattern, '');								-- if found, remove
-			etal = true;														-- set flag (may have been set previously here or by |display-authors=etal)
-			if not nocat then													-- no categorization for |vauthors=
-				add_maint_cat ('etal');											-- and add a category if not already added
-			end
-		elseif name:match (others_pattern) then									-- if not 'et al.', then 'and others'?
-			name = name:gsub (others_pattern, '');								-- if found, remove
-			etal = true;														-- set flag (may have been set previously here or by |display-authors=etal)
-			if not nocat then													-- no categorization for |vauthors=
-				add_maint_cat ('etal');											-- and add a category if not already added
+		for _, pattern in ipairs (patterns) do									-- loop through all of the patterns
+			if name:match (pattern) then										-- if this 'et al' pattern is found in name
+				name = name:gsub (pattern, '');									-- remove the offending text
+				etal = true;													-- set flag (may have been set previously here or by |display-<names>=etal)
+				if not nocat then												-- no categorization for |vauthors=
+					table.insert( z.message_tail, {set_error ('etal', {param})});	-- and set an error if not added
+				end
 			end
 		end
 	end
+
 	return name, etal;															-- 
+end
+
+
+--[[--------------------------< N A M E _ I S _ N U M E R I C >------------------------------------------------
+
+Add maint cat when name parameter value does not contain letters.  Does not catch mixed alphanumeric names so
+|last=A. Green (1922-1987) does not get caught in the current version of this test but |first=(1888) is caught.
+
+returns nothing
+
+]]
+
+local function name_is_numeric (name, list_name)
+	if is_set (name) then
+		if mw.ustring.match (name, '^[%A]+$') then								-- when name does not contain any letters
+			add_maint_cat ('numeric_names', cfg.special_case_translation [list_name]);	-- add a maint cat for this template
+		end
+	end
 end
 
 
@@ -1231,22 +1310,12 @@ Evaluates the content of author and editor parameters for extranious editor anno
 These annotation do not belong in author parameters and are redundant in editor parameters.  If found, the function
 adds the editor markup maintenance category.
 
+returns nothing
+
 ]]
 
 local function name_has_ed_markup (name, list_name)
-	local _, pattern;
-	local patterns = {															-- these patterns match annotations at end of name
-		'%f[%(%[][%(%[]%s*[Ee][Dd][Ss]?%.?%s*[%)%]]?$',							-- (ed) or (eds): leading '(', case insensitive 'ed', optional 's', '.' and/or ')'
-		'[,%.%s]%f[e]eds?%.?$',													-- ed or eds: without '('or ')'; case sensitive (ED could be initials Ed could be name)
-		'%f[%(%[][%(%[]%s*[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%.?%s*[%)%]]?$',			-- (editor) or (editors): leading '(', case insensitive, optional '.' and/or ')'
-		'[,%.%s]%f[Ee][Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%.?$',						-- editor or editors: without '('or ')'; case insensitive
-		
-																				-- these patterns match annotations at beginning of name
-		'^eds?[%.,;]',															-- ed. or eds.: lower case only, optional 's', requires '.'
-		'^[%(%[]%s*[Ee][Dd][Ss]?%.?%s*[%)%]]',									-- (ed) or (eds): also sqare brackets, case insensitive, optional 's', '.'
-		'^[%(%[]?%s*[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%A',							-- (editor or (editors: also sq brackets, case insensitive, optional brackets, 's'
-		'^[%(%[]?%s*[Ee][Dd][Ii][Tt][Ee][Dd]%A',								-- (edited: also sq brackets, case insensitive, optional brackets
-		}
+	local patterns = cfg.editor_markup_patterns;								-- get patterns from configuration
 
 	if is_set (name) then
 		for _, pattern in ipairs (patterns) do									-- spin through patterns table and
@@ -1256,7 +1325,6 @@ local function name_has_ed_markup (name, list_name)
 			end
 		end
 	end
-	return name;																-- and done
 end
 
 
@@ -1266,10 +1334,12 @@ Evaluates the content of author and editor (surnames only) parameters for multip
 indicated if there is more than one comma and or semicolon.  If found, the function adds the multiple name
 (author or editor) maintenance category.
 
+returns nothing
+
 ]]
 
 local function name_has_mult_names (name, list_name)
-local count, _;
+	local _, count;
 	if is_set (name) then
 		_, count = name:gsub ('[;,]', '');										-- count the number of separator-like characters
 		
@@ -1277,11 +1347,11 @@ local count, _;
 			add_maint_cat ('mult_names', cfg.special_case_translation [list_name]);	-- more than one separator indicates multiple names so add a maint cat for this template
 		end
 	end
-	return name;																-- and done
 end
 
 
 --[[--------------------------< N A M E _ C H E C K S >--------------------------------------------------------
+
 This function calls various name checking functions used to validate the content of the various name-holding
 parameters.
 
@@ -1292,15 +1362,17 @@ local function name_checks (last, first, list_name)
 		if last:match ('^%(%(.*%)%)$') then										-- if wrapped in doubled parentheses, accept as written 
 			last = last:match ('^%(%((.*)%)%)$');								-- strip parens
 		else
-			last = name_has_mult_names (last, list_name);						-- check for multiple names in the parameter (last only)
-			last = name_has_ed_markup (last, list_name);						-- check for extraneous 'editor' annotation
+			name_has_mult_names (last, list_name);								-- check for multiple names in the parameter (last only)
+			name_has_ed_markup (last, list_name);								-- check for extraneous 'editor' annotation
+			name_is_numeric (last, list_name);									-- check for names that are compsed of digits and punctuation
 		end
 	end
 	if is_set (first) then
 		if first:match ('^%(%(.*%)%)$') then									-- if wrapped in doubled parentheses, accept as written 
 			first = first:match ('^%(%((.*)%)%)$');								-- strip parens
 		else
-			first = name_has_ed_markup (first, list_name);						-- check for extraneous 'editor' annotation
+			name_has_ed_markup (first, list_name);								-- check for extraneous 'editor' annotation
+			name_is_numeric (first, list_name);									-- check for names that are compsed of digits and punctuation
 		end
 	end
 	return last, first;															-- done
@@ -1334,31 +1406,34 @@ local function extract_names(args, list_name)
 	local count = 0;			-- used to count the number of times we haven't found a |last= (or alias for authors, |editor-last or alias for editors)
 	local etal=false;			-- return value set to true when we find some form of et al. in an author parameter
 
-	local err_msg_list_name = list_name:match ("(%w+)List") .. 's list';		-- modify AuthorList or EditorList for use in error messages if necessary
+	local last_alias, first_alias, link_alias;									-- selected parameter aliases used in error messaging
 	while true do
-		last = select_one( args, cfg.aliases[list_name .. '-Last'], 'redundant_parameters', i );		-- search through args for name components beginning at 1
-		first = select_one( args, cfg.aliases[list_name .. '-First'], 'redundant_parameters', i );
-		link = select_one( args, cfg.aliases[list_name .. '-Link'], 'redundant_parameters', i );
+		last, last_alias = select_one( args, cfg.aliases[list_name .. '-Last'], 'redundant_parameters', i );		-- search through args for name components beginning at 1
+		first, first_alias = select_one( args, cfg.aliases[list_name .. '-First'], 'redundant_parameters', i );
+		link, link_alias = select_one( args, cfg.aliases[list_name .. '-Link'], 'redundant_parameters', i );
 		mask = select_one( args, cfg.aliases[list_name .. '-Mask'], 'redundant_parameters', i );
 
-		last, etal = name_has_etal (last, etal, false);							-- find and remove variations on et al.
-		first, etal = name_has_etal (first, etal, false);						-- find and remove variations on et al.
+		last, etal = name_has_etal (last, etal, false, last_alias);				-- find and remove variations on et al.
+		first, etal = name_has_etal (first, etal, false, first_alias);			-- find and remove variations on et al.
 		last, first= name_checks (last, first, list_name);						-- multiple names, extraneous annotation, etc checks
 		
 		if first and not last then												-- if there is a firstn without a matching lastn
-			table.insert( z.message_tail, { set_error( 'first_missing_last', {err_msg_list_name, i}, true ) } );	-- add this error message
+			table.insert( z.message_tail, { set_error( 'first_missing_last', {first_alias, first_alias:gsub('first', 'last')}, true ) } );	-- add this error message
 		elseif not first and not last then										-- if both firstn and lastn aren't found, are we done?
 			count = count + 1;													-- number of times we haven't found last and first
 			if 2 <= count then													-- two missing names and we give up
 				break;															-- normal exit or there is a two-name hole in the list; can't tell which
 			end
 		else																	-- we have last with or without a first
-			link_title_ok (link, list_name:match ("(%w+)List"):lower() .. '-link' .. i, last, list_name:match ("(%w+)List"):lower() .. '-last' .. i);	-- check for improper wikimarkup
+			link_title_ok (link, link_alias, last, last_alias);					-- check for improper wikimarkup
+			if first then
+				link_title_ok (link, link_alias, first, first_alias);			-- check for improper wikimarkup
+			end
 
 			names[n] = {last = last, first = first, link = link, mask = mask, corporate=false};	-- add this name to our names list (corporate for |vauthors= only)
 			n = n + 1;															-- point to next location in the names table
 			if 1 == count then													-- if the previous name was missing
-				table.insert( z.message_tail, { set_error( 'missing_name', {err_msg_list_name, i-1}, true ) } );		-- add this error message
+				table.insert( z.message_tail, { set_error( 'missing_name', {list_name:match ("(%w+)List"):lower(), i-1}, true ) } );	-- add this error message
 			end
 			count = 0;															-- reset the counter, we're looking for two consecutive missing names
 		end
@@ -1381,42 +1456,44 @@ return the original language name string.
 mw.language.fetchLanguageNames(<local wiki language>, 'all') returns a list of languages that in some cases may include
 extensions. For example, code 'cbk-zam' and its associated name 'Chavacano de Zamboanga' (MediaWiki does not support
 code 'cbk' or name 'Chavacano'.  Most (all?) of these languages are not used a 'language' codes per se, rather they
-are used as sub-domain names: cbk-zam.wikipedia.org.  These names can be found (for the time being) at
-https://phabricator.wikimedia.org/diffusion/ECLD/browse/master/LocalNames/LocalNamesEn.php
+are used as sub-domain names: cbk-zam.wikipedia.org.  A list of language names and codes supported by fetchLanguageNames()
+can be found at Template:Citation Style documentation/language/doc
 
-Names but that are included in the list will be found if that name is provided in the |language= parameter.  For example,
+Names that are included in the list will be found if that name is provided in the |language= parameter.  For example,
 if |language=Chavacano de Zamboanga, that name will be found with the associated code 'cbk-zam'.  When names are found
-and the associated code is not two or three characters, this function returns only the Wikimedia language name.
+and the associated code is not two or three characters, this function returns only the WikiMedia language name.
+
+Some language names have multiple entries under different codes:
+	Aromanian has code rup and code roa-rup
+When this occurs, this function returns the language name and the 2- or 3-character code
 
 Adapted from code taken from Module:Check ISO 639-1.
 
 ]]
 
 local function get_iso639_code (lang, this_wiki_code)
-	local remap = {
-		['bangla'] = {'Bengali', 'bn'},											-- MediaWiki returns Bangla (the endonym) but we want Bengali (the exonym); here we remap
-		['bengali'] = {'Bengali', 'bn'},										-- MediaWiki doesn't use exonym so here we provide correct language name and 639-1 code
-		['bihari'] = {'Bihari', 'bh'},											-- MediaWiki replace 'Bihari' with 'Bhojpuri' so 'Bihari' cannot be found
-		['bhojpuri'] = {'Bhojpuri', 'bho'},										-- MediaWiki uses 'bh' as a subdomain name for Bhojpuri wWikipedia: bh.wikipedia.org
-	}
-	
-	if remap[lang:lower()] then
-		return remap[lang:lower()][1], remap[lang:lower()][2];					-- for this language 'name', return a possibly new name and appropriate code
+	if cfg.lang_name_remap[lang:lower()] then									-- if there is a remapped name (because MediaWiki uses something that we don't think is correct)
+		return cfg.lang_name_remap[lang:lower()][1], cfg.lang_name_remap[lang:lower()][2];	-- for this language 'name', return a possibly new name and appropriate code
 	end
 
+	local ietf_code;															-- because some languages have both ietf-like codes and iso 639-like codes
+	local ietf_name;
+	
 	local languages = mw.language.fetchLanguageNames(this_wiki_code, 'all')		-- get a list of language names known to Wikimedia
 																				-- ('all' is required for North Ndebele, South Ndebele, and Ojibwa)
 	local langlc = mw.ustring.lower(lang);										-- lower case version for comparisons
-	
+
 	for code, name in pairs(languages) do										-- scan the list to see if we can find our language
 		if langlc == mw.ustring.lower(name) then
-			if 2 ~= code:len() and 3 ~= code:len() then							-- two- or three-character codes only; extensions not supported
-				return name;													-- so return the name but not the code
+			if 2 == code:len() or 3 == code:len() then							-- two- or three-character codes only; extensions not supported
+				return name, code;												-- so return the name and the code
 			end
-			return name, code;													-- found it, return name to ensure proper capitalization and the the code
+			ietf_code = code;													-- remember that we found an ietf-like code and save its name
+			ietf_name = name;													-- but keep looking for a 2- or 3-char code
 		end
 	end
-	return lang;																-- not valid language; return language in original case and nil for the code
+																				-- didn't find name with 2- or 3-char code; if ietf-like code found return
+	return ietf_code and ietf_name or lang;										-- associated name; return original language text else
 end
 
 
@@ -1430,10 +1507,10 @@ that code: Category:Norwegian-language sources (no).  For valid three-character 
 to the single category for '639-2' codes: Category:CS1 ISO 639-2 language sources.
 
 Languages that are the same as the local wiki are not categorized.  MediaWiki does not recognize three-character
-equivalents of two-character codes: code 'ar' is recognized bit code 'ara' is not.
+equivalents of two-character codes: code 'ar' is recognized but code 'ara' is not.
 
 This function supports multiple languages in the form |language=nb, French, th where the language names or codes are
-separated from each other by commas.
+separated from each other by commas with optional space characters.
 
 ]]
 
@@ -1443,41 +1520,41 @@ local function language_parameter (lang)
 	local language_list = {};													-- table of language names to be rendered
 	local names_table = {};														-- table made from the value assigned to |language=
 
-	local this_wiki = mw.getContentLanguage();									-- get a language object for this wiki
-	local this_wiki_code = this_wiki:getCode()									-- get this wiki's language code
-	local this_wiki_name = mw.language.fetchLanguageName(this_wiki_code, this_wiki_code);	-- get this wiki's language name
-
-	local remap = {
-		['bh'] = 'Bihari',														-- MediaWiki uses 'bh' as a subdomain name for Bhojpuri wWikipedia: bh.wikipedia.org
-		['bn'] = 'Bengali',														-- MediaWiki returns Bangla
-	}
+	local this_wiki_name = mw.language.fetchLanguageName(cfg.this_wiki_code, cfg.this_wiki_code);	-- get this wiki's language name
 
 	names_table = mw.text.split (lang, '%s*,%s*');								-- names should be a comma separated list
 
 	for _, lang in ipairs (names_table) do										-- reuse lang
+		name = cfg.lang_code_remap[lang:lower()];								-- first see if this is a code that is not supported by MediaWiki but is in remap
 
-		if lang:match ('^%a%a%-') then											-- strip ietf language tags from code; TODO: is there a need to support 3-char with tag?
-			lang = lang:match ('(%a%a)%-')										-- keep only 639-1 code portion to lang; TODO: do something with 3166 alpha 2 country code?
+		if name then															-- there was a remapped code so
+			if not lang:match ('^%a%a%a?%-x%-%a+$') then						-- if not a private ietf tag
+				lang = lang:gsub ('^(%a%a%a?)%-.*', '%1');						-- strip ietf tags from code
+			end
+		else
+			lang = lang:gsub ('^(%a%a%a?)%-.*', '%1');							-- strip any ietf-like tags from code
+			if 2 == lang:len() or 3 == lang:len() then							-- if two-or three-character code
+				name = mw.language.fetchLanguageName (lang:lower(), cfg.this_wiki_code);	-- get language name if |language= is a proper code
+			end
 		end
-		if 2 == lang:len() or 3 == lang:len() then								-- if two-or three-character code
-			name = mw.language.fetchLanguageName( lang:lower(), this_wiki_code);	-- get language name if |language= is a proper code
-		end
-	
+
 		if is_set (name) then													-- if |language= specified a valid code
 			code = lang:lower();												-- save it
 		else
-			name, code = get_iso639_code (lang, this_wiki_code);				-- attempt to get code from name (assign name here so that we are sure of proper capitalization)
+			name, code = get_iso639_code (lang, cfg.this_wiki_code);				-- attempt to get code from name (assign name here so that we are sure of proper capitalization)
 		end
 	
 		if is_set (code) then													-- only 2- or 3-character codes
-			name = remap[code] or name;											-- override wikimedia when they misuse language codes/names
+			name = cfg.lang_code_remap[code] or name;							-- override wikimedia when they misuse language codes/names
 
-			if this_wiki_code ~= code then										-- when the language is not the same as this wiki's language
+			if cfg.this_wiki_code ~= code then									-- when the language is not the same as this wiki's language
 				if 2 == code:len() then											-- and is a two-character code
-					add_prop_cat ('foreign_lang_source' .. code, {name, code})			-- categorize it
+					add_prop_cat ('foreign_lang_source' .. code, {name, code});	-- categorize it; code appended to allow for multiple language categorization
 				else															-- or is a recognized language (but has a three-character code)
-					add_prop_cat ('foreign_lang_source_2' .. code, {code})				-- categorize it differently TODO: support mutliple three-character code categories per cs1|2 template
+					add_prop_cat ('foreign_lang_source_2' .. code, {code});		-- categorize it differently TODO: support multiple three-character code categories per cs1|2 template
 				end
+			elseif cfg.local_lang_cat_enable then								-- when the language and this wiki's language are the same and categorization is enabled
+				add_prop_cat ('local_lang_source', {name, code});				-- categorize it
 			end
 		else
 			add_maint_cat ('unknown_lang');										-- add maint category if not already added
@@ -1489,10 +1566,10 @@ local function language_parameter (lang)
 	
 	code = #language_list														-- reuse code as number of languages in the list
 	if 2 >= code then
-		name = table.concat (language_list, ' and ')							-- insert '<space>and<space>' between two language names
+		name = table.concat (language_list, cfg.messages['parameter-pair-separator'])		-- insert '<space>and<space>' between two language names
 	elseif 2 < code then
-		language_list[code] = 'and ' .. language_list[code];					-- prepend last name with 'and<space>'
-		name = table.concat (language_list, ', ')								-- and concatenate with '<comma><space>' separators
+		name = table.concat (language_list, cfg.messages['parameter-separator'], 1, code-1);			-- concatenate all but last
+		name = table.concat ({name, language_list[code]}, cfg.messages['parameter-final-separator']);	-- concatenate last with final separator
 	end
 	if this_wiki_name == name then
 		return '';																-- if one language and that language is this wiki's return an empty string (no annotation)
@@ -1507,31 +1584,37 @@ end
 --[[--------------------------< S E T _ C S 1 _ S T Y L E >----------------------------------------------------
 
 Set style settings for CS1 citation templates. Returns separator and postscript settings
+At en.wiki, for cs1:
+	ps gets:	'.'
+	sep gets:	'.'
 
 ]]
 
 local function set_cs1_style (ps)
-	if not is_set (ps) then														-- unless explicitely set to something
-		ps = '.';																-- terminate the rendered citation with a period
+	if not is_set (ps) then														-- unless explicitly set to something
+		ps = cfg.presentation['ps_cs1'];										-- terminate the rendered citation
 	end
-	return '.', ps;																-- separator is a full stop
+	return cfg.presentation['sep_cs1'], ps;										-- element separator
 end
 
 
 --[[--------------------------< S E T _ C S 2 _ S T Y L E >----------------------------------------------------
 
 Set style settings for CS2 citation templates. Returns separator, postscript, ref settings
+At en.wiki, for cs2:
+	ps gets:	'' (empty string - no terminal punctuation)
+	sep gets:	','
 
 ]]
 
 local function set_cs2_style (ps, ref)
 	if not is_set (ps) then														-- if |postscript= has not been set, set cs2 default
-		ps = '';																-- make sure it isn't nil
+		ps = cfg.presentation['ps_cs2'];										-- terminate the rendered citation
 	end
 	if not is_set (ref) then													-- if |ref= is not set
 		ref = "harv";															-- set default |ref=harv
 	end
-	return ',', ps, ref;														-- separator is a comma
+	return cfg.presentation['sep_cs2'], ps, ref;								-- element separator
 end
 
 
@@ -1570,7 +1653,8 @@ local function set_style (mode, ps, ref, cite_class)
 	else																		-- anything but cs1 or cs2
 		sep, ps, ref = get_settings_from_cite_class (ps, ref, cite_class);		-- get settings based on the template's CitationClass
 	end
-	if 'none' == ps:lower() then												-- if assigned value is 'none' then
+
+	if cfg.keywords_xlate[ps:lower()] == 'none' then							-- if assigned value is 'none' then
 		ps = '';																-- set to empty string
 	end
 	
@@ -1588,7 +1672,9 @@ returns true if file extension is one of the recognized extensions, else false
 ]=]
 
 local function is_pdf (url)
-	return url:match ('%.pdf$') or url:match ('%.PDF$') or url:match ('%.pdf[%?#]') or url:match ('%.PDF[%?#]');
+	return url:match ('%.pdf$') or url:match ('%.PDF$') or
+		url:match ('%.pdf[%?#]') or url:match ('%.PDF[%?#]') or
+		url:match ('%.PDF&#035') or url:match ('%.pdf&#035');
 end
 
 
@@ -1616,7 +1702,7 @@ local function style_format (format, url, fmt_param, url_param)
 end
 
 
---[[--------------------------< G E T _ D I S P L A Y _ A U T H O R S _ E D I T O R S >------------------------
+--[[--------------------------< G E T _ D I S P L A Y _ N A M E S >--------------------------------------------
 
 Returns a number that defines the number of names displayed for author and editor name lists and a boolean flag
 to indicate when et al. should be appended to the name list.
@@ -1639,7 +1725,7 @@ inputs:
 
 ]]
 
-local function get_display_authors_editors (max, count, list_name, etal)
+local function get_display_names (max, count, list_name, etal)
 	if is_set (max) then
 		if 'etal' == max:lower():gsub("[ '%.]", '') then						-- the :gsub() portion makes 'etal' from a variety of 'et al.' spellings and stylings
 			max = count + 1;													-- number of authors + 1 so display all author name plus et al.
@@ -1647,7 +1733,7 @@ local function get_display_authors_editors (max, count, list_name, etal)
 		elseif max:match ('^%d+$') then											-- if is a string of numbers
 			max = tonumber (max);												-- make it a number
 			if max >= count then												-- if |display-xxxxors= value greater than or equal to number of authors/editors
-				add_maint_cat ('disp_auth_ed', cfg.special_case_translation [list_name]);
+				add_maint_cat ('disp_name', cfg.special_case_translation [list_name]);
 			end
 		else																	-- not a valid keyword or number
 			table.insert( z.message_tail, { set_error( 'invalid_param_val', {'display-' .. list_name, max}, true ) } );		-- add error message
@@ -1748,41 +1834,46 @@ local function parse_vauthors_veditors (args, vparam, list_name)
 	local corporate = false;
 
 	vparam, etal = name_has_etal (vparam, etal, true);							-- find and remove variations on et al. do not categorize (do it here because et al. might have a period)
-	v_name_table = get_v_name_table (vparam, v_name_table, v_link_table);						-- names are separated by commas
+	v_name_table = get_v_name_table (vparam, v_name_table, v_link_table);		-- names are separated by commas
 
 	for i, v_name in ipairs(v_name_table) do
+		first = '';																-- set to empty string for concatenation and because it may have been set for previous author/editor
 		if v_name:match ('^%(%(.+%)%)$') then									-- corporate authors are wrapped in doubled parentheses to supress vanc formatting and error detection
-			first = '';															-- set to empty string for concatenation and because it may have been set for previous author/editor
 			last = v_name:match ('^%(%((.+)%)%)$')								-- remove doubled parntheses
 			corporate = true;													-- flag used in list_people()
 		elseif string.find(v_name, "%s") then
 			if v_name:find('[;%.]') then										-- look for commonly occurring punctuation characters; 
-				add_vanc_error ('punctuation');
+				add_vanc_error (cfg.err_msg_supl.punctuation);
 			end
 			local lastfirstTable = {}
-			lastfirstTable = mw.text.split(v_name, "%s")
-			first = table.remove(lastfirstTable);								-- removes and returns value of last element in table which should be author intials
-			if is_suffix (first) then											-- if a valid suffix
-				suffix = first													-- save it as a suffix and
+			lastfirstTable = mw.text.split(v_name, "%s+")
+			first = table.remove(lastfirstTable);								-- removes and returns value of last element in table which should be intials or generational suffix
+
+			if not mw.ustring.match (first, '^%u+$') then						-- mw.ustring here so that later we will catch non-latin characters
+				suffix = first;													-- not initials so assume that whatever we got is a generational suffix
 				first = table.remove(lastfirstTable);							-- get what should be the initials from the table
-			end																	-- no suffix error message here because letter combination may be result of Romanization; check for digits?
-			last = table.concat(lastfirstTable, " ")							-- returns a string that is the concatenation of all other names that are not initials
+			end
+			last = table.concat(lastfirstTable, ' ')							-- returns a string that is the concatenation of all other names that are not initials and generational suffix
+			if not is_set (last) then
+				first = '';														-- unset
+				last = v_name;													-- last empty because something wrong with first
+				add_vanc_error (cfg.err_msg_supl.name);
+			end
 			if mw.ustring.match (last, '%a+%s+%u+%s+%a+') then
-				add_vanc_error ('missing comma');								-- matches last II last; the case when a comma is missing
+				add_vanc_error (cfg.err_msg_supl['missing comma']);				-- matches last II last; the case when a comma is missing
 			end
 			if mw.ustring.match (v_name, ' %u %u$') then						-- this test is in the wrong place TODO: move or replace with a more appropriate test
-				add_vanc_error ('name');										-- matches a space between two intiials
+				add_vanc_error (cfg.err_msg_supl.name);							-- matches a space between two intiials
 			end
 		else
-			first = '';															-- set to empty string for concatenation and because it may have been set for previous author/editor
 			last = v_name;														-- last name or single corporate name?  Doesn't support multiword corporate names? do we need this?
 		end
 																
 		if is_set (first) then
 			if not mw.ustring.match (first, "^%u?%u$") then						-- first shall contain one or two upper-case letters, nothing else
-				add_vanc_error ('initials');									-- too many initials; mixed case initials (which may be ok Romanization); hyphenated initials
+				add_vanc_error (cfg.err_msg_supl.initials);						-- too many initials; mixed case initials (which may be ok Romanization); hyphenated initials
 			end
-			is_good_vanc_name (last, first);									-- check first and last before restoring the suffix which may have a non-Latin digit
+			is_good_vanc_name (last, first, suffix);							-- check first and last before restoring the suffix which may have a non-Latin digit
 			if is_set (suffix) then
 				first = first .. ' ' .. suffix;									-- if there was a suffix concatenate with the initials
 				suffix = '';													-- unset so we don't add this suffix to all subsequent names
@@ -1820,7 +1911,7 @@ In this function, vxxxxors = vauthors or veditors; xxxxors = authors or editors 
 ]]
 
 local function select_author_editor_source (vxxxxors, xxxxors, args, list_name)
-local lastfirst = false;
+	local lastfirst = false;
 	if select_one( args, cfg.aliases[list_name .. '-Last'], 'none', 1 ) or		-- do this twice incase we have a |first1= without a |last1=; this ...
 		select_one( args, cfg.aliases[list_name .. '-First'], 'none', 1 ) or	-- ... also catches the case where |first= is used with |vauthors=
 		select_one( args, cfg.aliases[list_name .. '-Last'], 'none', 2 ) or
@@ -1851,20 +1942,21 @@ end
 --[[--------------------------< I S _ V A L I D _ P A R A M E T E R _ V A L U E >------------------------------
 
 This function is used to validate a parameter's assigned value for those parameters that have only a limited number
-of allowable values (yes, y, true, no, etc).  When the parameter value has not been assigned a value (missing or empty
-in the source template) the function returns true.  If the parameter value is one of the list of allowed values returns
-true; else, emits an error message and returns false.
+of allowable values (yes, y, true, live, dead, etc).  When the parameter value has not been assigned a value (missing
+or empty in the source template) the function returns the value specified by ret_val.  If the parameter value is one
+of the list of allowed values returns the translated value; else, emits an error message and returns the value
+specified by ret_val.
 
 ]]
 
-local function is_valid_parameter_value (value, name, possible)
+local function is_valid_parameter_value (value, name, possible, ret_val)
 	if not is_set (value) then
-		return true;															-- an empty parameter is ok
-	elseif in_array(value:lower(), possible) then
-		return true;
+		return ret_val;															-- an empty parameter is ok
+	elseif in_array (value, possible) then
+		return cfg.keywords_xlate[value];										-- return translation of parameter keyword
 	else
 		table.insert( z.message_tail, { set_error( 'invalid_param_val', {name, value}, true ) } );	-- not an allowed value so add error message
-		return false
+		return ret_val;
 	end
 end
 
@@ -1911,13 +2003,20 @@ local function format_volume_issue (volume, issue, cite_class, origin, sepc, low
 		end
 	end
 
-	local vol = '';
+	if 'podcast' == cite_class and is_set (issue) then
+		return wrap_msg ('issue', {sepc, issue}, lower);
+	end
+
+	local vol = '';																-- here for all cites except magazine
 		
 	if is_set (volume) then
-		if (4 < mw.ustring.len(volume)) then
-			vol = substitute (cfg.messages['j-vol'], {sepc, volume});
-		else
-			vol = substitute (cfg.presentation['vol-bold'], {sepc, hyphen_to_dash(volume)});
+		if volume:match ('^[MDCLXVI]+$') or volume:match ('^%d+$')then			-- volume value is all digits or all uppercase roman numerals
+			vol = substitute (cfg.presentation['vol-bold'], {sepc, hyphen_to_dash(volume)});	-- render in bold face
+		elseif (4 < mw.ustring.len(volume)) then								-- not all digits or roman numerals and longer than 4 characters
+			vol = substitute (cfg.messages['j-vol'], {sepc, volume});			-- not bold
+			add_prop_cat ('long_vol');
+		else																	-- four or less characters
+			vol = substitute (cfg.presentation['vol-bold'], {sepc, hyphen_to_dash(volume)});	-- bold
 		end
 	end
 	if is_set (issue) then
@@ -1954,7 +2053,7 @@ local function format_pages_sheets (page, pages, sheet, sheets, cite_class, orig
 		end
 	end
 
-	local is_journal = 'journal' == cite_class or (in_array (cite_class, {'citation', 'map'}) and 'journal' == origin);
+	local is_journal = 'journal' == cite_class or (in_array (cite_class, {'citation', 'map', 'interview'}) and 'journal' == origin);
 	
 	if is_set (page) then
 		if is_journal then
@@ -1967,7 +2066,7 @@ local function format_pages_sheets (page, pages, sheet, sheets, cite_class, orig
 	elseif is_set(pages) then
 		if is_journal then
 			return substitute (cfg.messages['j-page(s)'], pages), '', '', '';
-		elseif tonumber(pages) ~= nil and not nopp then										-- if pages is only digits, assume a single page number
+		elseif tonumber(pages) ~= nil and not nopp then							-- if pages is only digits, assume a single page number
 			return '', substitute (cfg.messages['p-prefix'], {sepc, pages}), '', '';
 		elseif not nopp then
 			return '', substitute (cfg.messages['pp-prefix'], {sepc, pages}), '', '';
@@ -1977,6 +2076,62 @@ local function format_pages_sheets (page, pages, sheet, sheets, cite_class, orig
 	end
 	
 	return '', '', '', '';														-- return empty strings
+end
+
+
+--[[--------------------------< I N S O U R C E _ L O C _ G E T >----------------------------------------------
+
+returns one of the in-source locators: page, pages, or at. 
+
+If any of these are interwiki links to wikisource, returns the label portion of the interwikilink as plain text
+for use in COinS.  This COinS thing is done because here we convert an interwiki link to and external link and
+add an icon span around that; get_coins_pages() doesn't know about the span.  TODO: should it?  
+
+TODO: add support for sheet and sheets?; streamline;
+
+TODO: make it so that this function returns only one of the three as the single in-source (the return value assigned
+to a new name)?
+
+]]
+
+local function insource_loc_get (page, pages, at)
+	local ws_url, ws_label, coins_pages, L;										-- for wikisource interwikilinks; TODO: this corrupts page metadata (span remains in place after cleanup; fix there?)
+
+	if is_set (page) then
+		if is_set (pages) or is_set(at) then
+			pages = '';															-- unset the others
+			at = '';
+		end
+		extra_text_in_page_check (page);										-- add this page to maint cat if |page= value begins with what looks like p. or pp.
+
+		ws_url, ws_label, L = wikisource_url_make (page);						-- make ws url from |page= interwiki link; link portion L becomes tool tip label
+		if ws_url then
+			page = external_link (ws_url, ws_label .. '&nbsp;', 'ws link in page');	-- space char after label to move icon away from in-source text; TODO: a better way to do this?
+			page = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], L, page});
+			coins_pages = ws_label;
+		end
+	elseif is_set (pages) then
+		if is_set (at) then
+			at = '';															-- unset
+		end
+		extra_text_in_page_check (pages);										-- add this page to maint cat if |pages= value begins with what looks like p. or pp.
+
+		ws_url, ws_label, L = wikisource_url_make (pages);						-- make ws url from |pages= interwiki link; link portion L becomes tool tip label
+		if ws_url then
+			pages = external_link (ws_url, ws_label .. '&nbsp;', 'ws link in pages');	-- space char after label to move icon away from in-source text; TODO: a better way to do this?
+			pages = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], L, pages});
+			coins_pages = ws_label;
+		end
+	elseif is_set (at) then
+		ws_url, ws_label, L = wikisource_url_make (at);							-- make ws url from |at= interwiki link; link portion L becomes tool tip label
+		if ws_url then
+			at = external_link (ws_url, ws_label .. '&nbsp;', 'ws link in at');	-- space char after label to move icon away from in-source text; TODO: a better way to do this?
+			at = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], L, at});
+			coins_pages = ws_label;
+		end
+	end
+	
+	return page, pages, at, coins_pages;
 end
 
 
@@ -2022,60 +2177,57 @@ local function archive_url_check (url, date)
 	end
 
 	if url:match('//web%.archive%.org/save/') then								-- if a save command url, we don't want to allow saving of the target page 
-		err_msg = 'save command';
+		err_msg = cfg.err_msg_supl.save;
 		url = url:gsub ('(//web%.archive%.org)/save/', '%1/*/', 1);				-- for preview mode: modify ArchiveURL
 	elseif url:match('//liveweb%.archive%.org/') then
-		err_msg = 'liveweb';
+		err_msg = cfg.err_msg_supl.liveweb;
 	else
-		path, timestamp, flag = url:match('//web%.archive%.org/([^%d]*)(%d+)([^/]*)/');		-- split out some of the url parts for evaluation
+		path, timestamp, flag = url:match('//web%.archive%.org/([^%d]*)(%d+)([^/]*)/');	-- split out some of the url parts for evaluation
 		
 		if not is_set(timestamp) or 14 ~= timestamp:len() then					-- path and flag optional, must have 14-digit timestamp here
-			err_msg = 'timestamp';
+			err_msg = cfg.err_msg_supl.timestamp;
 			if '*' ~= flag then
 				url=url:gsub ('(//web%.archive%.org/[^%d]*%d?%d?%d?%d?%d?%d?)[^/]*', '%1*', 1)	-- for preview, modify ts to be yearmo* max (0-6 digits plus splat)
 			end
 		elseif is_set(path) and 'web/' ~= path then								-- older archive urls do not have the extra 'web/' path element
-			err_msg = 'path';
+			err_msg = cfg.err_msg_supl.path;
 		elseif is_set (flag) and not is_set (path) then							-- flag not allowed with the old form url (without the 'web/' path element)
-			err_msg = 'flag';
+			err_msg = cfg.err_msg_supl.flag;
 		elseif is_set (flag) and not flag:match ('%a%a_') then					-- flag if present must be two alpha characters and underscore (requires 'web/' path element)
-			err_msg = 'flag';
+			err_msg = cfg.err_msg_supl.flag;
 		else
-			return url, date;													-- return archiveURL and ArchiveDate
+			return url, date;													-- return ArchiveURL and ArchiveDate
 		end
 	end
 																				-- if here, something not right so
 	table.insert( z.message_tail, { set_error( 'archive_url', {err_msg}, true ) } );	-- add error message and
 	if is_set (Frame:preprocess('{{REVISIONID}}')) then
-		return '', '';															-- return empty strings for archiveURL and ArchiveDate
+		return '', '';															-- return empty strings for ArchiveURL and ArchiveDate
 	else
-		return url, date;														-- preview mode so return archiveURL and ArchiveDate
+		return url, date;														-- preview mode so return ArchiveURL and ArchiveDate
 	end
 end
 
 
---[[--------------------------< M I S S I N G _ P I P E _ C H E C K >------------------------------------------
+--[[--------------------------< P L A C E _ C H E C K >--------------------------------------------------------
 
-Look at the contents of a parameter. If the content has a string of characters and digits followed by an equal
-sign, compare the alphanumeric string to the list of cs1|2 parameters.  If found, then the string is possibly a
-parameter that is missing its pipe:
-	{{cite ... |title=Title access-date=2016-03-17}}
+check |place=, |publication-place=, |location= to see if these params include digits.  This function added because
+many editors mis-use location to specify the in-source location (|page(s)= and |at= are supposed to do that)
 
-cs1|2 shares some parameter names with xml/html atributes: class=, title=, etc.  To prevent false positives xml/html
-tags are removed before the search.
-
-If a missing pipe is detected, this function adds the missing pipe maintenance category.
+returns the original parameter value without modification; added maint cat when parameter value contains digits
 
 ]]
 
-local function missing_pipe_check (value)
-	local capture;
-	value = value:gsub ('%b<>', '');											-- remove xml/html tags because attributes: class=, title=, etc 
-
-	capture = value:match ('%s+(%a[%a%d]+)%s*=') or value:match ('^(%a[%a%d]+)%s*=');	-- find and categorize parameters with possible missing pipes
-	if capture and validate (capture) then								-- if the capture is a valid parameter name
-		add_maint_cat ('missing_pipe');
+local function place_check (param_val)
+	if not is_set (param_val) then												-- parameter empty or omitted
+		return param_val;														-- return that empty state
 	end
+	
+	if mw.ustring.find (param_val, '%d') then									-- not empty, are there digits in the parameter value
+		add_maint_cat ('location');												-- yep, add maint cat
+	end
+	
+	return param_val;															-- and done
 end
 
 
@@ -2096,16 +2248,13 @@ local function citation0( config, args)
 	-- Pick out the relevant fields from the arguments.  Different citation templates
 	-- define different field names for the same underlying things.	
 
--- set default parameter values defined by |mode= parameter.
-	local Mode = A['Mode'];
-	if not is_valid_parameter_value (Mode, 'mode', cfg.keywords['mode']) then
-		Mode = '';
-	end
+	local Mode = is_valid_parameter_value (A['Mode'], A:ORIGIN('Mode'), cfg.keywords_lists['mode'], '');
 
 	local author_etal;
 	local a	= {};																-- authors list from |lastn= / |firstn= pairs or |vauthors=
 	local Authors;
-	local NameListFormat = A['NameListFormat'];
+
+	local NameListFormat = is_valid_parameter_value (A['NameListFormat'], A:ORIGIN('NameListFormat'), cfg.keywords_lists['name-list-format'], '');
 	local Collaboration = A['Collaboration'];
 
 	do																			-- to limit scope of selected
@@ -2145,21 +2294,27 @@ local function citation0( config, args)
 		end
 	end
 
+	local translator_etal;
 	local t = {};																-- translators list from |translator-lastn= / translator-firstn= pairs
 	local Translators;															-- assembled translators name list
 	t = extract_names (args, 'TranslatorList');									-- fetch translator list from |translatorn= / |translator-lastn=, -firstn=, -linkn=, -maskn=
 
-	local interviewers_list = {};
-	local Interviewers = A['Interviewers']
-	if is_set (Interviewers) then												-- add a maint cat if the |interviewers= is used
-		add_maint_cat ('interviewers');											-- because use of this parameter is discouraged
-	else
-		interviewers_list = extract_names (args, 'InterviewerList');			-- else, process preferred interviewers parameters
-	end
+	local interviewer_etal;
+	local interviewers_list = {};												
+	local Interviewers;															-- used later
+	interviewers_list = extract_names (args, 'InterviewerList');				-- process preferred interviewers parameters
 
+	local contributor_etal;
 	local c = {};																-- contributors list from |contributor-lastn= / contributor-firstn= pairs
 	local Contributors;															-- assembled contributors name list
-	local Contribution = A['Contribution'];
+
+	local Chapter = A['Chapter'];												-- done here so that we have access to |contribution= from |chapter= aliases
+	local Chapter_origin = A:ORIGIN ('Chapter');
+	local Contribution;															-- because contribution is required for contributor(s)
+		if 'contribution' == A:ORIGIN ('Chapter') then
+			Contribution = A['Chapter'];										-- get the name of the contribution
+		end
+
 	if in_array(config.CitationClass, {"book","citation"}) and not is_set(A['Periodical']) then	-- |contributor= and |contribution= only supported in book cites
 		c = extract_names (args, 'ContributorList');							-- fetch contributor list from |contributorn= / |contributor-lastn=, -firstn=, -linkn=, -maskn=
 		
@@ -2180,8 +2335,10 @@ local function citation0( config, args)
 		Contribution = nil;														-- unset
 	end
 
-	if not is_valid_parameter_value (NameListFormat, 'name-list-format', cfg.keywords['name-list-format']) then			-- only accepted value for this parameter is 'vanc'
-		NameListFormat = '';													-- anything else, set to empty string
+	if is_set (Others) then
+		if 0 == #a and 0 == #e then												-- add maint cat when |others= has value and used without |author=, |editor=
+			add_maint_cat ('others');
+		end
 	end
 
 	local Year = A['Year'];
@@ -2195,14 +2352,22 @@ local function citation0( config, args)
 	local BookTitle = A['BookTitle'];
 	local Conference = A['Conference'];
 	local TransTitle = A['TransTitle'];
+	local TransTitle_origin = A:ORIGIN ('TransTitle');
 	local TitleNote = A['TitleNote'];
 	local TitleLink = A['TitleLink'];
 			link_title_ok (TitleLink, A:ORIGIN ('TitleLink'), Title, 'title');	-- check for wikimarkup in |title-link= or wikimarkup in |title= when |title-link= is set
 
-	local Chapter = A['Chapter'];
+	local Section = '';															-- {{cite map}} only; preset to empty string for concatnation if not used
+		if 'map' == config.CitationClass and 'section' == A:ORIGIN ('Chapter') then
+			Section = A['Chapter'];												-- get |section= from |chapter= alias list; |chapter= and the other aliases not supported in {{cite map}}
+			Chapter = '';														-- unset for now; will be reset later from |map= if present
+		end
+
 	local ScriptChapter = A['ScriptChapter'];
+	local ScriptChapter_origin = A:ORIGIN ('ScriptChapter');
 	local ChapterLink	-- = A['ChapterLink'];									-- deprecated as a parameter but still used internally by cite episode
 	local TransChapter = A['TransChapter'];
+	local TransChapter_origin = A:ORIGIN ('TransChapter');
 	local TitleType = A['TitleType'];
 	local Degree = A['Degree'];
 	local Docket = A['Docket'];
@@ -2213,20 +2378,54 @@ local function citation0( config, args)
 
 	ArchiveURL, ArchiveDate = archive_url_check (A['ArchiveURL'], A['ArchiveDate'])
 	
-	local DeadURL = A['DeadURL']
-		if not is_valid_parameter_value (DeadURL, 'dead-url', cfg.keywords ['deadurl']) then	-- set in config.defaults to 'yes'
-			DeadURL = '';														-- anything else, set to empty string
-		end
+	local UrlStatus = is_valid_parameter_value (A['UrlStatus'], A:ORIGIN('UrlStatus'), cfg.keywords_lists['url-status'], '');
+
 
 	local URL = A['URL']
-	local URLorigin = A:ORIGIN('URL');											-- get name of parameter that holds URL
+	local URL_origin = A:ORIGIN('URL');											-- get name of parameter that holds URL
 	local ChapterURL = A['ChapterURL'];
-	local ChapterURLorigin = A:ORIGIN('ChapterURL');							-- get name of parameter that holds ChapterURL
+	local ChapterURL_origin = A:ORIGIN('ChapterURL');							-- get name of parameter that holds ChapterURL
 	local ConferenceFormat = A['ConferenceFormat'];
 	local ConferenceURL = A['ConferenceURL'];
-	local ConferenceURLorigin = A:ORIGIN('ConferenceURL');						-- get name of parameter that holds ConferenceURL
+	local ConferenceURL_origin = A:ORIGIN('ConferenceURL');						-- get name of parameter that holds ConferenceURL
+
 	local Periodical = A['Periodical'];
-	local Periodical_origin = A:ORIGIN('Periodical');							-- get the name of the periodical parameter
+	local Periodical_origin = '';
+		if is_set (Periodical) then
+			Periodical_origin = A:ORIGIN('Periodical');							-- get the name of the periodical parameter
+			local i;
+			Periodical, i = strip_apostrophe_markup (Periodical);				-- strip appostrophe markup so that metadata isn't contaminated 
+			if i then															-- non-zero when markup was stripped so emit an error message
+				table.insert( z.message_tail, {set_error ('apostrophe_markup', {Periodical_origin}, true)});
+			end
+		end
+
+	if 'mailinglist' == config.CitationClass then								-- special case for {{cite mailing list}}
+		if is_set (Periodical) and is_set (A ['MailingList']) then						-- both set emit an error
+			table.insert( z.message_tail, { set_error('redundant_parameters', {wrap_style ('parameter', Periodical_origin) .. ' and ' .. wrap_style ('parameter', 'mailinglist')}, true )});
+		end
+
+		Periodical = A ['MailingList'];											-- error or no, set Periodical to |mailinglist= value because this template is {{cite mailing list}}
+		Periodical_origin = A:ORIGIN('MailingList');
+	end
+
+
+
+																				
+	local ScriptPeriodical = A['ScriptPeriodical'];
+	local ScriptPeriodical_origin = A:ORIGIN('ScriptPeriodical');
+																				-- web and news not tested for now because of 
+																				-- Wikipedia:Administrators%27_noticeboard#Is_there_a_semi-automated_tool_that_could_fix_these_annoying_"Cite_Web"_errors?
+		if not (is_set (Periodical) or is_set (ScriptPeriodical)) then			-- 'periodical' templates require periodical parameter
+	--		local p = {['journal'] = 'journal', ['magazine'] = 'magazine', ['news'] = 'newspaper', ['web'] = 'website'};	-- for error message
+			local p = {['journal'] = 'journal', ['magazine'] = 'magazine'};		-- for error message
+			if p[config.CitationClass]  then
+				table.insert( z.message_tail, {set_error ('missing_periodical', {config.CitationClass, p[config.CitationClass]}, true)});
+			end
+		end
+
+	local TransPeriodical =  A['TransPeriodical'];
+	local TransPeriodical_origin =  A:ORIGIN ('TransPeriodical');
 
 	local Series = A['Series'];
 	
@@ -2236,60 +2435,85 @@ local function citation0( config, args)
 	local Pages;
 	local At;
 
-	if in_array (config.CitationClass, cfg.templates_using_volume) then
+	if 'citation' == config.CitationClass then
+		if is_set (Periodical) then
+			if not in_array (Periodical_origin, {'website', 'mailinglist'}) then	-- {{citation}} does not render volume for these 'periodicals'
+				Volume = A['Volume'];											-- but does for all other 'periodicals'
+			end
+		elseif is_set (ScriptPeriodical) then
+			if 'script-website' ~= ScriptPeriodical_origin then					-- {{citation}} does not render volume for |script-website=
+				Volume = A['Volume'];											-- but does for all other 'periodicals'
+			end
+		else
+			Volume = A['Volume'];												-- and does for non-'periodical' cites
+		end
+	elseif in_array (config.CitationClass, cfg.templates_using_volume) then		-- render |volume= for cs1 according to the configuration settings
 		Volume = A['Volume'];
+	end	
+
+	if 'citation' == config.CitationClass then
+		if is_set (Periodical) and in_array (Periodical_origin, {'journal', 'magazine', 'newspaper', 'periodical', 'work'}) or	-- {{citation}} renders issue for these 'periodicals'
+			is_set (ScriptPeriodical) and in_array (ScriptPeriodical_origin, {'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-work'}) then -- and these 'script-periodicals'
+				Issue = hyphen_to_dash (A['Issue']);
+		end
+	elseif in_array (config.CitationClass, cfg.templates_using_issue) then		-- conference & map books do not support issue; {{citation}} listed here because included in settings table
+		if not (in_array (config.CitationClass, {'conference', 'map', 'citation'}) and not (is_set (Periodical) or is_set (ScriptPeriodical))) then
+			Issue = hyphen_to_dash (A['Issue']);
+		end
 	end
-																				-- conference & map books do not support issue
-	if in_array (config.CitationClass, cfg.templates_using_issue) and not (in_array (config.CitationClass, {'conference', 'map'}) and not is_set (Periodical))then
-		Issue = A['Issue'];
-	end
+
 	local Position = '';
 	if not in_array (config.CitationClass, cfg.templates_not_using_page) then
 		Page = A['Page'];
-		Pages = hyphen_to_dash( A['Pages'] );	
+		Pages = hyphen_to_dash (A['Pages']);	
 		At = A['At'];
 	end
 
 	local Edition = A['Edition'];
-	local PublicationPlace = A['PublicationPlace']
-	local Place = A['Place'];
+	local PublicationPlace = place_check (A['PublicationPlace'], A:ORIGIN('PublicationPlace'));
+	local Place = place_check (A['Place'], A:ORIGIN('Place'));
 	
 	local PublisherName = A['PublisherName'];
-	local RegistrationRequired = A['RegistrationRequired'];
-		if not is_valid_parameter_value (RegistrationRequired, 'registration', cfg.keywords ['yes_true_y']) then
-			RegistrationRequired=nil;
+	local PublisherName_origin = A:ORIGIN('PublisherName');
+		if is_set (PublisherName) then
+			local i=0;
+			PublisherName, i = strip_apostrophe_markup (PublisherName);			-- strip appostrophe markup so that metadata isn't contaminated; publisher is never italicized
+
+			if i then															-- non-zero when markup was stripped so emit an error message
+				table.insert( z.message_tail, {set_error ('apostrophe_markup', {PublisherName_origin}, true)});
+			end
 		end
 
-	local SubscriptionRequired = A['SubscriptionRequired'];
-		if not is_valid_parameter_value (SubscriptionRequired, 'subscription', cfg.keywords ['yes_true_y']) then
-			SubscriptionRequired=nil;
+	local Newsgroup = A['Newsgroup'];											-- TODO: strip apostrophe markup?
+	local Newsgroup_origin = A:ORIGIN('Newsgroup');	
+
+	if 'newsgroup' == config.CitationClass then
+		if is_set (PublisherName) then											-- general use parmeter |publisher= not allowed in cite newsgroup
+			local error_text = set_error ('parameter_ignored', {PublisherName_origin}, true);
+			if is_set (error_text) then
+				table.insert( z.message_tail, {error_text, error_state} );
+			end				
 		end
 
-	local UrlAccess = A['UrlAccess'];
-		if not is_valid_parameter_value (UrlAccess, 'url-access', cfg.keywords ['url-access']) then
-			UrlAccess = nil;
-		end
+		PublisherName = nil;													-- ensure that this parameter is unset for the time being; will be used again after COinS
+	end
+
+	local UrlAccess = is_valid_parameter_value (A['UrlAccess'], A:ORIGIN('UrlAccess'), cfg.keywords_lists['url-access'], nil);
 		if not is_set(URL) and is_set(UrlAccess) then
 			UrlAccess = nil;
 			table.insert( z.message_tail, { set_error( 'param_access_requires_param', {'url'}, true ) } );
 		end
-
-		if is_set (UrlAccess) and is_set (SubscriptionRequired) then			-- while not aliases, these are much the same so if both are set
-			table.insert( z.message_tail, { set_error( 'redundant_parameters', {wrap_style ('parameter', 'url-access') .. ' and ' .. wrap_style ('parameter', 'subscription')}, true ) } );		-- add error message
-			SubscriptionRequired = nil;											-- unset; prefer |access= over |subscription=
-		end
-		if is_set (UrlAccess) and is_set (RegistrationRequired) then			-- these are not the same but contradictory so if both are set
-			table.insert( z.message_tail, { set_error( 'redundant_parameters', {wrap_style ('parameter', 'url-access') .. ' and ' .. wrap_style ('parameter', 'registration')}, true ) } );		-- add error message
-			RegistrationRequired = nil;											-- unset; prefer |access= over |registration=
-		end
-
-	local ChapterUrlAccess = A['ChapterUrlAccess'];
-		if not is_valid_parameter_value (ChapterUrlAccess, 'chapter-url-access', cfg.keywords ['url-access']) then	-- same as url-access
-			ChapterUrlAccess = nil;
-		end
+		
+	local ChapterUrlAccess = is_valid_parameter_value (A['ChapterUrlAccess'], A:ORIGIN('ChapterUrlAccess'), cfg.keywords_lists['url-access'], nil);
 		if not is_set(ChapterURL) and is_set(ChapterUrlAccess) then
 			ChapterUrlAccess = nil;
-			table.insert( z.message_tail, { set_error( 'param_access_requires_param', {'chapter-url'}, true ) } );
+			table.insert( z.message_tail, { set_error( 'param_access_requires_param', {A:ORIGIN('ChapterUrlAccess'):gsub ('%-access', '')}, true ) } );
+		end
+
+	local MapUrlAccess = is_valid_parameter_value (A['MapUrlAccess'], A:ORIGIN('MapUrlAccess'), cfg.keywords_lists['url-access'], nil);
+		if not is_set(A['MapURL']) and is_set(MapUrlAccess) then
+			MapUrlAccess = nil;
+			table.insert( z.message_tail, { set_error( 'param_access_requires_param', {'map-url'}, true ) } );
 		end
 
 	local Via = A['Via'];
@@ -2302,14 +2526,14 @@ local function citation0( config, args)
 	local DoiBroken = A['DoiBroken'];
 	local ID = A['ID'];
 	local ASINTLD = A['ASINTLD'];
-	local IgnoreISBN = A['IgnoreISBN'];
-		if not is_valid_parameter_value (IgnoreISBN, 'ignore-isbn-error', cfg.keywords ['yes_true_y']) then
-			IgnoreISBN = nil;													-- anything else, set to empty string
-		end
+	local IgnoreISBN = is_valid_parameter_value (A['IgnoreISBN'], A:ORIGIN('IgnoreISBN'), cfg.keywords_lists['yes_true_y'], nil);
 	local Embargo = A['Embargo'];
 	local Class = A['Class'];													-- arxiv class identifier
 
 	local ID_list = extract_ids( args );
+		if is_set (DoiBroken) and not ID_list['DOI'] then
+			table.insert( z.message_tail, { set_error( 'doibroken_missing_doi', A:ORIGIN('DoiBroken'))});
+		end
 	local ID_access_levels = extract_id_access_levels( args, ID_list );
 
 	local Quote = A['Quote'];
@@ -2320,17 +2544,11 @@ local function citation0( config, args)
 	local Transcript = A['Transcript'];
 	local TranscriptFormat = A['TranscriptFormat'];
 	local TranscriptURL = A['TranscriptURL'] 
-	local TranscriptURLorigin = A:ORIGIN('TranscriptURL');						-- get name of parameter that holds TranscriptURL
+	local TranscriptURL_origin = A:ORIGIN('TranscriptURL');						-- get name of parameter that holds TranscriptURL
 
-	local LastAuthorAmp = A['LastAuthorAmp'];
-		if not is_valid_parameter_value (LastAuthorAmp, 'last-author-amp', cfg.keywords ['yes_true_y']) then
-			LastAuthorAmp = nil;												-- set to empty string
-		end
+	local LastAuthorAmp = is_valid_parameter_value (A['LastAuthorAmp'], A:ORIGIN('LastAuthorAmp'), cfg.keywords_lists['yes_true_y'], nil);
 
-	local no_tracking_cats = A['NoTracking'];
-		if not is_valid_parameter_value (no_tracking_cats, 'no-tracking', cfg.keywords ['yes_true_y']) then
-			no_tracking_cats = nil;												-- set to empty string
-		end
+	local no_tracking_cats = is_valid_parameter_value (A['NoTracking'], A:ORIGIN('NoTracking'), cfg.keywords_lists['yes_true_y'], nil);
 
 	--local variables that are not cs1 parameters
 	local use_lowercase;														-- controls capitalization of certain static text
@@ -2338,16 +2556,22 @@ local function citation0( config, args)
 	local anchor_year;															-- used in the CITEREF identifier
 	local COinS_date = {};														-- holds date info extracted from |date= for the COinS metadata by Module:Date verification
 
-	local DF = A['DF'];															-- date format set in cs1|2 template
-	if not is_valid_parameter_value (DF, 'df', cfg.keywords['date-format']) then	-- validate reformatting keyword
-		DF = '';																-- not valid, set to empty string
+	local DF = is_valid_parameter_value (A['DF'], A:ORIGIN('DF'), cfg.keywords_lists['df'], '');
+	if not is_set (DF) then
+		DF = cfg.global_df;														-- local df if present overrides global df set by {{use xxx date}} template
 	end
 
-	local sepc;											-- separator between citation elements for CS1 a period, for CS2, a comma
+	local sepc;																	-- separator between citation elements for CS1 a period, for CS2, a comma
 	local PostScript;
-	local Ref;
-	sepc, PostScript, Ref = set_style (Mode:lower(), A['PostScript'], A['Ref'], config.CitationClass);
-	use_lowercase = ( sepc == ',' );					-- used to control capitalization for certain static text
+	local Ref = A['Ref'];
+	if 'harv' == Ref then
+		add_maint_cat ('ref_harv');												-- add maint cat to identify templates that have this now-extraneous param value
+	elseif not is_set (Ref) then
+		Ref = 'harv';															-- set as default when not set externally
+	end
+	
+	sepc, PostScript, Ref = set_style (Mode:lower(), A['PostScript'], Ref, config.CitationClass);
+	use_lowercase = ( sepc == ',' );											-- used to control capitalization for certain static text
 
 	--check this page to see if it is in one of the namespaces that cs1 is not supposed to add to the error categories
 	if not is_set (no_tracking_cats) then										-- ignore if we are already not going to categorize this page
@@ -2361,44 +2585,32 @@ local function citation0( config, args)
 			end
 		end
 	end
+																				-- check for extra |page=, |pages= or |at= parameters. (also sheet and sheets while we're at it)
+	select_one (args, {'page', 'p', 'pp', 'pages', 'at', 'sheet', 'sheets'}, 'redundant_parameters');	-- this is a dummy call simply to get the error message and category
 
-	-- check for extra |page=, |pages= or |at= parameters. (also sheet and sheets while we're at it)
-	select_one( args, {'page', 'p', 'pp', 'pages', 'at', 'sheet', 'sheets'}, 'redundant_parameters' );		-- this is a dummy call simply to get the error message and category
-
-	local NoPP = A['NoPP'] 
-	if is_set (NoPP) and is_valid_parameter_value (NoPP, 'nopp', cfg.keywords ['yes_true_y']) then
-		NoPP = true;
-	else
-		NoPP = nil;																-- unset, used as a flag later
-	end
-
-	if is_set(Page) then
-		if is_set(Pages) or is_set(At) then
-			Pages = '';															-- unset the others
-			At = '';
-		end
-		extra_text_in_page_check (Page);										-- add this page to maint cat if |page= value begins with what looks like p. or pp.
-	elseif is_set(Pages) then
-		if is_set(At) then
-			At = '';															-- unset
-		end
-		extra_text_in_page_check (Pages);										-- add this page to maint cat if |pages= value begins with what looks like p. or pp.
-	end	
-
-	-- both |publication-place= and |place= (|location=) allowed if different
-	if not is_set(PublicationPlace) and is_set(Place) then
-		PublicationPlace = Place;							-- promote |place= (|location=) to |publication-place
-	end
+	local coins_pages;
 	
-	if PublicationPlace == Place then Place = ''; end		-- don't need both if they are the same
+	Page, Pages, At, coins_pages = insource_loc_get (Page, Pages, At);
+
+	local NoPP = is_valid_parameter_value (A['NoPP'], A:ORIGIN('NoPP'), cfg.keywords_lists['yes_true_y'], nil);
+
+	if is_set (PublicationPlace) and is_set (Place) then						-- both |publication-place= and |place= (|location=) allowed if different
+		add_prop_cat ('location test');											-- add property cat to evaluate how often PublicationPlace and Place are used together
+		if PublicationPlace == Place then
+			Place = '';															-- unset; don't need both if they are the same
+		end
+	elseif not is_set (PublicationPlace) and is_set (Place) then				-- when only |place= (|location=) is set ...
+		PublicationPlace = Place;												-- promote |place= (|location=) to |publication-place
+	end
+
+	if PublicationPlace == Place then Place = ''; end							-- don't need both if they are the same
 	
 	--[[
 	Parameter remapping for cite encyclopedia:
 	When the citation has these parameters:
 		|encyclopedia and |title then map |title to |article and |encyclopedia to |title
 		|encyclopedia and |article then map |encyclopedia to |title
-		|encyclopedia then map |encyclopedia to |title
-	
+
 		|trans-title maps to |trans-chapter when |title is re-mapped
 		|url maps to |chapterurl when |title is remapped
 	
@@ -2406,16 +2618,35 @@ local function citation0( config, args)
 	
 	]]
 
-local Encyclopedia = A['Encyclopedia'];
+	local Encyclopedia = A['Encyclopedia'];										-- used as a flag by this module and by ~/COinS
 
-	if ( config.CitationClass == "encyclopaedia" ) or ( config.CitationClass == "citation" and is_set (Encyclopedia)) then	-- test code for citation
-		if is_set(Periodical) then												-- Periodical is set when |encyclopedia is set
+	if is_set (Encyclopedia) then												-- emit error message when Encyclopedia set but template is other than {{cite encyclopedia}} or {{citation}}
+		if 'encyclopaedia' ~= config.CitationClass and 'citation' ~= config.CitationClass then
+			table.insert (z.message_tail, {set_error ('parameter_ignored', {A:ORIGIN ('Encyclopedia')}, true)});
+			Encyclopedia = nil;													-- unset because not supported by this template
+		end
+	end
+
+	if ('encyclopaedia' == config.CitationClass) or ('citation' == config.CitationClass and is_set (Encyclopedia)) then
+		if is_set (Periodical) and is_set (Encyclopedia) then					-- when both set emit an error
+			table.insert (z.message_tail, {set_error('redundant_parameters', {wrap_style ('parameter', A:ORIGIN ('Encyclopedia')) .. ' and ' .. wrap_style ('parameter', Periodical_origin)}, true )});
+		end
+
+		if is_set (Encyclopedia) then
+			Periodical = Encyclopedia;											-- error or no, set Periodical to Encyclopedia; allow periodical without encyclopedia
+			Periodical_origin = A:ORIGIN ('Encyclopedia');
+		end
+
+		if is_set (Periodical) then												-- Periodical is set when |encyclopedia is set
 			if is_set(Title) or is_set (ScriptTitle) then
 				if not is_set(Chapter) then
 					Chapter = Title;											-- |encyclopedia and |title are set so map |title to |article and |encyclopedia to |title
 					ScriptChapter = ScriptTitle;
+					ScriptChapter_origin = A:ORIGIN('ScriptTitle')
 					TransChapter = TransTitle;
 					ChapterURL = URL;
+					ChapterURL_origin = A:ORIGIN('URL')
+
 					ChapterUrlAccess = UrlAccess;
 
 					if not is_set (ChapterURL) and is_set (TitleLink) then
@@ -2430,8 +2661,8 @@ local Encyclopedia = A['Encyclopedia'];
 					TitleLink = '';
 					ScriptTitle = '';
 				end
-			else																-- |title not set
-				Title = Periodical;												-- |encyclopedia set and |article set or not set so map |encyclopedia to |title
+			elseif is_set (Chapter) then										-- |title not set
+				Title = Periodical;												-- |encyclopedia set and |article set so map |encyclopedia to |title
 				Periodical = '';												-- redundant so unset
 			end
 		end
@@ -2448,27 +2679,22 @@ local Encyclopedia = A['Encyclopedia'];
 		end	
 	end
 
-	-- special case for cite mailing list
-	if (config.CitationClass == "mailinglist") then
-		Periodical = A ['MailingList'];
-	elseif 'mailinglist' == A:ORIGIN('Periodical') then
-		Periodical = '';														-- unset because mailing list is only used for cite mailing list
-	end
-
 	-- Account for the oddity that is {{cite conference}}, before generation of COinS data.
 	if 'conference' == config.CitationClass then
 		if is_set(BookTitle) then
 			Chapter = Title;
---			ChapterLink = TitleLink;											-- |chapterlink= is deprecated
+			Chapter_origin = 'title';
+	--		ChapterLink = TitleLink;											-- |chapterlink= is deprecated
 			ChapterURL = URL;
 			ChapterUrlAccess = UrlAccess;
-			ChapterURLorigin = URLorigin;
-			URLorigin = '';
+			ChapterURL_origin = URL_origin;
+			URL_origin = '';
 			ChapterFormat = Format;
 			TransChapter = TransTitle;
+			TransChapter_origin = TransTitle_origin;
 			Title = BookTitle;
 			Format = '';
---			TitleLink = '';
+	--		TitleLink = '';
 			TransTitle = '';
 			URL = '';
 		end
@@ -2482,13 +2708,20 @@ local Encyclopedia = A['Encyclopedia'];
 	local Sheet = A['Sheet'] or '';
 	local Sheets = A['Sheets'] or '';
 	if config.CitationClass == "map" then
+		if is_set (Chapter) then
+			table.insert( z.message_tail, { set_error( 'redundant_parameters', {wrap_style ('parameter', 'map') .. ' and ' .. wrap_style ('parameter', Chapter_origin)}, true ) } );	-- add error message
+		end
 		Chapter = A['Map'];
+		Chapter_origin = A:ORIGIN('Map');
 		ChapterURL = A['MapURL'];
-		ChapterUrlAccess = UrlAccess;
+		ChapterURL_origin = A:ORIGIN('MapURL');
 		TransChapter = A['TransMap'];
-		ChapterURLorigin = A:ORIGIN('MapURL');
+		ScriptChapter = A['ScriptMap']
+		ScriptChapter_origin = A:ORIGIN('ScriptMap')
+
+		ChapterUrlAccess = MapUrlAccess;
 		ChapterFormat = A['MapFormat'];
-		
+
 		Cartography = A['Cartography'];
 		if is_set( Cartography ) then
 			Cartography = sepc .. " " .. wrap_msg ('cartography', Cartography, use_lowercase);
@@ -2501,7 +2734,6 @@ local Encyclopedia = A['Encyclopedia'];
 
 	-- Account for the oddities that are {{cite episode}} and {{cite serial}}, before generation of COinS data.
 	if 'episode' == config.CitationClass or 'serial' == config.CitationClass then
-		local AirDate = A['AirDate'];
 		local SeriesLink = A['SeriesLink'];
 
 		link_title_ok (SeriesLink, A:ORIGIN ('SeriesLink'), Series, 'series');	-- check for wikimarkup in |series-link= or wikimarkup in |series= when |series-link= is set
@@ -2514,10 +2746,6 @@ local Encyclopedia = A['Encyclopedia'];
 		if is_set(Station) then table.insert(n, Station); end
 		ID = table.concat(n, sepc .. ' ');
 		
-		if not is_set (Date) and is_set (AirDate) then							-- promote airdate to date
-			Date = AirDate;
-		end
-
 		if 'episode' == config.CitationClass then								-- handle the oddities that are strictly {{cite episode}}
 			local Season = A['Season'];
 			local SeriesNumber = A['SeriesNumber'];
@@ -2528,17 +2756,18 @@ local Encyclopedia = A['Encyclopedia'];
 			end
 																				-- assemble a table of parts concatenated later into Series
 			if is_set(Season) then table.insert(s, wrap_msg ('season', Season, use_lowercase)); end
-			if is_set(SeriesNumber) then table.insert(s, wrap_msg ('series', SeriesNumber, use_lowercase)); end
+			if is_set(SeriesNumber) then table.insert(s, wrap_msg ('seriesnum', SeriesNumber, use_lowercase)); end
 			if is_set(Issue) then table.insert(s, wrap_msg ('episode', Issue, use_lowercase)); end
 			Issue = '';															-- unset because this is not a unique parameter
 	
 			Chapter = Title;													-- promote title parameters to chapter
 			ScriptChapter = ScriptTitle;
+			ScriptChapter_origin = A:ORIGIN('ScriptTitle');
 			ChapterLink = TitleLink;											-- alias episodelink
 			TransChapter = TransTitle;
 			ChapterURL = URL;
 			ChapterUrlAccess = UrlAccess;
-			ChapterURLorigin = A:ORIGIN('URL');
+			ChapterURL_origin = A:ORIGIN('URL');
 			
 			Title = Series;														-- promote series to title
 			TitleLink = SeriesLink;
@@ -2564,24 +2793,14 @@ local Encyclopedia = A['Encyclopedia'];
 	end
 	-- end of {{cite episode}} stuff
 
-	-- Account for the oddities that are {{cite arxiv}}, {{cite biorxiv}}, {{cite citeseerx}}, before generation of COinS data.
+	-- Account for the oddities that are {{cite arxiv}}, {{cite biorxiv}}, {{cite citeseerx}}, {{cite ssrn}}, before generation of COinS data.
 	do
-		if in_array (config.CitationClass, {'arxiv', 'biorxiv', 'citeseerx'}) then
+		if in_array (config.CitationClass, whitelist.preprint_template_list) then
 			if not is_set (ID_list[config.CitationClass:upper()]) then			-- |arxiv= or |eprint= required for cite arxiv; |biorxiv= & |citeseerx= required for their templates
-				table.insert( z.message_tail, { set_error( config.CitationClass .. '_missing', {}, true ) } );		-- add error message
-			end
-			
-			if 'arxiv' == config.CitationClass then
-				Periodical = 'arXiv';											-- set to arXiv for COinS; after that, must be set to empty string
+				table.insert( z.message_tail, { set_error( config.CitationClass .. '_missing', {}, true ) } );	-- add error message
 			end
 
-			if 'biorxiv' == config.CitationClass then
-				Periodical = 'bioRxiv';											-- set to bioRxiv for COinS; after that, must be set to empty string
-			end
-
-			if 'citeseerx' == config.CitationClass then
-				Periodical = 'CiteSeerX';										-- set to CiteSeerX for COinS; after that, must be set to empty string
-			end
+			Periodical = ({['arxiv'] = 'arXiv', ['biorxiv'] = 'bioRxiv', ['citeseerx'] = 'CiteSeerX', ['ssrn'] = 'Social Science Research Network'})[config.CitationClass];
 		end
 	end
 
@@ -2599,13 +2818,20 @@ local Encyclopedia = A['Encyclopedia'];
 	end
 
 	-- legacy: promote PublicationDate to Date if neither Date nor Year are set.
+ 	local Date_origin;															-- to hold the name of parameter promoted to Date; required for date error messaging
+
 	if not is_set (Date) then
 		Date = Year;															-- promote Year to Date
 		Year = nil;																-- make nil so Year as empty string isn't used for CITEREF
 		if not is_set (Date) and is_set(PublicationDate) then					-- use PublicationDate when |date= and |year= are not set
 			Date = PublicationDate;												-- promote PublicationDate to Date
 			PublicationDate = '';												-- unset, no longer needed
+			Date_origin = A:ORIGIN('PublicationDate');							-- save the name of the promoted parameter
+		else
+			Date_origin = A:ORIGIN('Year');										-- save the name of the promoted parameter
 		end
+	else
+		Date_origin = A:ORIGIN('Date');											-- not a promotion; name required for error messaging
 	end
 
 	if PublicationDate == Date then PublicationDate = ''; end					-- if PublicationDate is same as Date, don't display in rendered citation
@@ -2619,10 +2845,18 @@ local Encyclopedia = A['Encyclopedia'];
 	do	-- create defined block to contain local variables error_message, date_parameters_list, mismatch
 		local error_message = '';
 																				-- AirDate has been promoted to Date so not necessary to check it
-		local date_parameters_list = {['access-date']=AccessDate, ['archive-date']=ArchiveDate, ['date']=Date, ['doi-broken-date']=DoiBroken,
-				['embargo']=Embargo, ['lay-date']=LayDate, ['publication-date']=PublicationDate, ['year']=Year};
-
+		local date_parameters_list = {
+			['access-date'] = {val=AccessDate, name=A:ORIGIN ('AccessDate')},
+			['archive-date'] = {val=ArchiveDate, name=A:ORIGIN ('ArchiveDate')},
+			['date'] = {val=Date, name=Date_origin},
+			['doi-broken-date'] = {val=DoiBroken, name=A:ORIGIN ('DoiBroken')},
+			['embargo'] = {val=Embargo, name=A:ORIGIN ('Embargo')},
+			['lay-date'] = {val=LayDate, name=A:ORIGIN ('LayDate')},
+			['publication-date'] ={val=PublicationDate, name=A:ORIGIN ('PublicationDate')},
+			['year'] = {val=Year, name=A:ORIGIN ('Year')},
+			};
 		anchor_year, Embargo, error_message = dates(date_parameters_list, COinS_date);
+
 -- start temporary Julian / Gregorian calendar uncertainty categorization
 		if COinS_date.inter_cal_cat then
 			add_prop_cat ('jul_greg_uncertainty');
@@ -2655,61 +2889,61 @@ local Encyclopedia = A['Encyclopedia'];
 			
 	-- for those wikis that can and want to have English date names translated to the local language,
 	-- uncomment these three lines.  Not supported by en.wiki (for obvious reasons)
---			if date_name_xlate (date_parameters_list) then
---				modified = true;
---			end
+	-- set date_name_xlate() second argument to true to translate English digits to local digits (will translate ymd dates)
+	--		if date_name_xlate (date_parameters_list, false) then
+	--			modified = true;
+	--		end
 
 			if modified then													-- if the date_parameters_list values were modified
-				AccessDate = date_parameters_list['access-date'];				-- overwrite date holding parameters with modified values
-				ArchiveDate = date_parameters_list['archive-date'];
-				Date = date_parameters_list['date'];
-				DoiBroken = date_parameters_list['doi-broken-date'];
-				LayDate = date_parameters_list['lay-date'];
-				PublicationDate = date_parameters_list['publication-date'];
+				AccessDate = date_parameters_list['access-date'].val;			-- overwrite date holding parameters with modified values
+				ArchiveDate = date_parameters_list['archive-date'].val;
+				Date = date_parameters_list['date'].val;
+				DoiBroken = date_parameters_list['doi-broken-date'].val;
+				LayDate = date_parameters_list['lay-date'].val;
+				PublicationDate = date_parameters_list['publication-date'].val;
 			end
 		else
 			table.insert( z.message_tail, { set_error( 'bad_date', {error_message}, true ) } );	-- add this error message
 		end
 	end	-- end of do
 
-	-- Account for the oddity that is {{cite journal}} with |pmc= set and |url= not set.  Do this after date check but before COInS.
+	-- Link the title of the work if no |url= was provided, but we have a |pmc= or a |doi= with |doi-access=free
 	-- Here we unset Embargo if PMC not embargoed (|embargo= not set in the citation) or if the embargo time has expired. Otherwise, holds embargo date
 	Embargo = is_embargoed (Embargo);
-
-	if config.CitationClass == "journal" and not is_set(URL) and is_set(ID_list['PMC']) then
-		if not is_set (Embargo) then											-- if not embargoed or embargo has expired
+	
+	if config.CitationClass == "journal" and not is_set(URL) and not is_set(TitleLink) then
+		if is_set(ID_list['PMC']) and not is_set (Embargo) then											-- if not embargoed or embargo has expired
 			URL=cfg.id_handlers['PMC'].prefix .. ID_list['PMC'];				-- set url to be the same as the PMC external link if not embargoed
-			URLorigin = cfg.id_handlers['PMC'].parameters[1];					-- set URLorigin to parameter name for use in error message if citation is missing a |title=
-			if is_set(AccessDate) then											-- access date requires |url=; pmc created url is not |url=
-				table.insert( z.message_tail, { set_error( 'accessdate_missing_url', {}, true ) } );
-				AccessDate = '';												-- unset
-			end
-
+			URL_origin = cfg.id_handlers['PMC'].parameters[1];					-- set URL_origin to parameter name for use in error message if citation is missing a |title=
+		elseif is_set(ID_list['DOI']) and ID_access_levels['DOI'] == "free" then
+			URL=cfg.id_handlers['DOI'].prefix .. ID_list['DOI'];
+			URL_origin = cfg.id_handlers['DOI'].parameters[1];
+		end
+		if is_set(URL) and is_set(AccessDate) then								-- access date requires |url=; pmc or doi created url is not |url=
+			table.insert( z.message_tail, { set_error( 'accessdate_missing_url', {}, true ) } );
+			AccessDate = '';												-- unset
 		end
 	end
 
 	-- At this point fields may be nil if they weren't specified in the template use.  We can use that fact.
 	-- Test if citation has no title
-	if	not is_set(Title) and
-		not is_set(TransTitle) and
-		not is_set(ScriptTitle) then
-			if 'episode' == config.CitationClass then							-- special case for cite episode; TODO: is there a better way to do this?
-				table.insert( z.message_tail, { set_error( 'citation_missing_title', {'series'}, true ) } );
-			else
-				table.insert( z.message_tail, { set_error( 'citation_missing_title', {'title'}, true ) } );
-			end
-	end
-	
-	if 'none' == Title and in_array (config.CitationClass, {'journal', 'citation'}) and is_set (Periodical) and 'journal' == A:ORIGIN('Periodical') then	-- special case for journal cites
-		Title = '';																-- set title to empty string
-		add_maint_cat ('untitled');
+	if	not is_set(Title) and not is_set(TransTitle) and not is_set(ScriptTitle) then	-- has special case for cite episode
+		table.insert( z.message_tail, { set_error( 'citation_missing_title', {'episode' == config.CitationClass and 'series' or 'title'}, true ) } );
 	end
 
-	check_for_url ({															-- add error message when any of these parameters contains a URL
+	if cfg.keywords_xlate[Title] == 'none' and
+			in_array (config.CitationClass, {'journal', 'citation'}) and
+			(is_set (Periodical) or is_set (ScriptPeriodical)) and
+			('journal' == Periodical_origin or 'script-journal' == ScriptPeriodical_origin) then	-- special case for journal cites
+				Title = '';														-- set title to empty string
+				add_maint_cat ('untitled');
+	end
+
+	check_for_url ({															-- add error message when any of these parameters hold a URL
 		['title']=Title,
 		[A:ORIGIN('Chapter')]=Chapter,
-		[A:ORIGIN('Periodical')]=Periodical,
-		[A:ORIGIN('PublisherName')] = PublisherName
+		[Periodical_origin] = Periodical,
+		[PublisherName_origin] = PublisherName
 		});
 
 	-- COinS metadata (see <http://ocoins.info/>) for automated parsing of citation information.
@@ -2729,43 +2963,40 @@ local Encyclopedia = A['Encyclopedia'];
 	if 0 < #c then																-- but if contributor list
 		coins_author = c;														-- use that instead
 	end
-
+	
 	-- this is the function call to COinS()
 	local OCinSoutput = COinS({
-		['Periodical'] = Periodical,
-		['Encyclopedia'] = Encyclopedia,
+		['Periodical'] = strip_apostrophe_markup (Periodical),					-- no markup in the metadata
+		['Encyclopedia'] = Encyclopedia,										-- just a flag; content ignored by ~/COinS
 		['Chapter'] = make_coins_title (coins_chapter, ScriptChapter),			-- Chapter and ScriptChapter stripped of bold / italic wikimarkup
 		['Degree'] = Degree;													-- cite thesis only
 		['Title'] = make_coins_title (coins_title, ScriptTitle),				-- Title and ScriptTitle stripped of bold / italic wikimarkup
 		['PublicationPlace'] = PublicationPlace,
 		['Date'] = COinS_date.rftdate,											-- COinS_date has correctly formatted date if Date is valid;
 		['Season'] = COinS_date.rftssn,
+		['Quarter'] = COinS_date.rftquarter,
 		['Chron'] =  COinS_date.rftchron or (not COinS_date.rftdate and Date) or '',	-- chron but if not set and invalid date format use Date; keep this last bit?
 		['Series'] = Series,
 		['Volume'] = Volume,
 		['Issue'] = Issue,
-		['Pages'] = get_coins_pages (first_set ({Sheet, Sheets, Page, Pages, At}, 5)),				-- pages stripped of external links
+		['Pages'] = coins_pages or get_coins_pages (first_set ({Sheet, Sheets, Page, Pages, At}, 5)),	-- pages stripped of external links
 		['Edition'] = Edition,
-		['PublisherName'] = PublisherName,
+		['PublisherName'] = PublisherName or Newsgroup,							-- any apostrophe markup already removed from PublisherName
 		['URL'] = first_set ({ChapterURL, URL}, 2),
 		['Authors'] = coins_author,
 		['ID_list'] = ID_list,
 		['RawPage'] = this_page.prefixedText,
 	}, config.CitationClass);
 
-	-- Account for the oddities that are {{cite arxiv}}, {{cite biorxiv}}, and {{cite citeseerx}} AFTER generation of COinS data.
-	if in_array (config.CitationClass, {'arxiv', 'biorxiv', 'citeseerx'}) then	-- we have set rft.jtitle in COinS to arXiv, bioRxiv, or CiteSeerX now unset so it isn't displayed
+	-- Account for the oddities that are {{cite arxiv}}, {{cite biorxiv}}, {{cite citeseerx}}, and {{cite ssrn}} AFTER generation of COinS data.
+	if in_array (config.CitationClass, whitelist.preprint_template_list) then	-- we have set rft.jtitle in COinS to arXiv, bioRxiv, CiteSeerX, or ssrn now unset so it isn't displayed
 		Periodical = '';														-- periodical not allowed in these templates; if article has been published, use cite journal
 	end
 
 	-- special case for cite newsgroup.  Do this after COinS because we are modifying Publishername to include some static text
-	if 'newsgroup' == config.CitationClass then
-		if is_set (PublisherName) then
-			PublisherName = substitute (cfg.messages['newsgroup'], external_link( 'news:' .. PublisherName, PublisherName, A:ORIGIN('PublisherName'), nil ));
-		end
+	if 'newsgroup' == config.CitationClass and is_set (Newsgroup) then
+		PublisherName = substitute (cfg.messages['newsgroup'], external_link( 'news:' .. Newsgroup, Newsgroup, Newsgroup_origin, nil ));
 	end
-
-
 
 	-- Now perform various field substitutions.
 	-- We also add leading spaces and surrounding markup and punctuation to the
@@ -2777,21 +3008,19 @@ local Encyclopedia = A['Encyclopedia'];
 			format = NameListFormat,											-- empty string or 'vanc'
 			maximum = nil,														-- as if display-authors or display-editors not set
 			lastauthoramp = LastAuthorAmp,
-			page_name = this_page.text,											-- get current page name so that we don't wikilink to it via editorlinkn
 			mode = Mode
 		};
 
 		do																		-- do editor name list first because the now unsupported coauthors used to modify control table
-			control.maximum , editor_etal = get_display_authors_editors (A['DisplayEditors'], #e, 'editors', editor_etal);
+			control.maximum , editor_etal = get_display_names (A['DisplayEditors'], #e, 'editors', editor_etal);
 			last_first_list, EditorCount = list_people(control, e, editor_etal);
 
 			if is_set (Editors) then
+				Editors, editor_etal = name_has_etal (Editors, editor_etal, false, 'editors');	-- find and remove variations on et al.
 				if editor_etal then
 					Editors = Editors .. ' ' .. cfg.messages['et al'];			-- add et al. to editors parameter beause |display-editors=etal
-					EditorCount = 2;											-- with et al., |editors= is multiple names; spoof to display (eds.) annotation
-				else
-					EditorCount = 2;											-- we don't know but assume |editors= is multiple names; spoof to display (eds.) annotation
 				end
+				EditorCount = 2;												-- we don't know but assume |editors= is multiple names; spoof to display (eds.) annotation
 			else
 				Editors = last_first_list;										-- either an author name list or an empty string
 			end
@@ -2801,24 +3030,24 @@ local Encyclopedia = A['Encyclopedia'];
 			end
 		end
 		do																		-- now do interviewers
-			control.maximum = #interviewers_list;							-- number of interviewerss
-			Interviewers = list_people(control, interviewers_list, false);	-- et al not currently supported
+			control.maximum , interviewer_etal = get_display_names (A['DisplayInterviewers'], #interviewers_list, 'interviewers', interviewer_etal);
+			Interviewers = list_people (control, interviewers_list, interviewer_etal);
 		end
 		do																		-- now do translators
-			control.maximum = #t;												-- number of translators
-			Translators = list_people(control, t, false);						-- et al not currently supported
+			control.maximum , translator_etal = get_display_names (A['DisplayTranslators'], #t, 'translators', translator_etal);
+			Translators = list_people (control, t, translator_etal);
 		end
 		do																		-- now do contributors
-			control.maximum = #c;												-- number of contributors
-			Contributors = list_people(control, c, false);						-- et al not currently supported
+			control.maximum , contributor_etal = get_display_names (A['DisplayContributors'], #c, 'contributors', contributor_etal);
+			Contributors = list_people (control, c, contributor_etal);
 		end
 		do																		-- now do authors
-			control.maximum , author_etal = get_display_authors_editors (A['DisplayAuthors'], #a, 'authors', author_etal);
+			control.maximum , author_etal = get_display_names (A['DisplayAuthors'], #a, 'authors', author_etal);
 
 			last_first_list = list_people(control, a, author_etal);
 
 			if is_set (Authors) then
-				Authors, author_etal = name_has_etal (Authors, author_etal, false);	-- find and remove variations on et al.
+				Authors, author_etal = name_has_etal (Authors, author_etal, false, 'authors');	-- find and remove variations on et al.
 				if author_etal then
 					Authors = Authors .. ' ' .. cfg.messages['et al'];			-- add et al. to authors parameter
 				end
@@ -2842,14 +3071,15 @@ local Encyclopedia = A['Encyclopedia'];
 	TranscriptFormat = style_format (TranscriptFormat, TranscriptURL, 'transcript-format', 'transcripturl');
 
 	-- special case for chapter format so no error message or cat when chapter not supported
-	if not (in_array(config.CitationClass, {'web', 'news', 'journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'arxiv', 'biorxiv', 'citeseerx'}) or
-		('citation' == config.CitationClass and is_set (Periodical) and not is_set (Encyclopedia))) then
+	if not (in_array(config.CitationClass, {'web', 'news', 'journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'arxiv', 'biorxiv', 'citeseerx', 'ssrn'}) or
+		('citation' == config.CitationClass and (is_set (Periodical) or is_set (ScriptPeriodical)) and not is_set (Encyclopedia))) then
 			ChapterFormat = style_format (ChapterFormat, ChapterURL, 'chapter-format', 'chapter-url');
 	end
 
 	if not is_set(URL) then
-		if in_array(config.CitationClass, {"web","podcast", "mailinglist"}) then	-- |url= required for cite web, cite podcast, and cite mailinglist
-			table.insert( z.message_tail, { set_error( 'cite_web_url', {}, true ) } );
+		if in_array(config.CitationClass, {"web","podcast", "mailinglist"}) or		-- |url= required for cite web, cite podcast, and cite mailinglist
+			('citation' == config.CitationClass and ('website' == Periodical_origin or 'script-website' == ScriptPeriodical_origin)) then	-- and required for {{citation}} with |website= or |script-website=
+				table.insert( z.message_tail, { set_error( 'cite_web_url', {}, true ) } );
 		end
 		
 		-- do we have |accessdate= without either |url= or |chapter-url=?
@@ -2859,34 +3089,37 @@ local Encyclopedia = A['Encyclopedia'];
 		end
 	end
 
-	local OriginalURL, OriginalURLorigin, OriginalFormat, OriginalAccess;
-	DeadURL = DeadURL:lower();													-- used later when assembling archived text
+	local OriginalURL, OriginalURL_origin, OriginalFormat, OriginalAccess;
+	UrlStatus = UrlStatus:lower();												-- used later when assembling archived text
 	if is_set( ArchiveURL ) then
-		if is_set (ChapterURL) then 											-- URL not set so if chapter-url is set apply archive url to it
+		if is_set (ChapterURL) then 											-- if chapter-url is set apply archive url to it
 			OriginalURL = ChapterURL;											-- save copy of source chapter's url for archive text
-			OriginalURLorigin = ChapterURLorigin;								-- name of chapter-url parameter for error messages
-			OriginalFormat = ChapterFormat;										-- and original |format=
-			if 'no' ~= DeadURL then
+			OriginalURL_origin = ChapterURL_origin;								-- name of chapter-url parameter for error messages
+			OriginalFormat = ChapterFormat;										-- and original |chapter-format=
+
+			if 'live' ~= UrlStatus then
 				ChapterURL = ArchiveURL											-- swap-in the archive's url
-				ChapterURLorigin = A:ORIGIN('ArchiveURL')						-- name of archive-url parameter for error messages
+				ChapterURL_origin = A:ORIGIN('ArchiveURL')						-- name of archive-url parameter for error messages
 				ChapterFormat = ArchiveFormat or '';							-- swap in archive's format
+				ChapterUrlAccess = nil;											-- restricted access levels do not make sense for archived urls
 			end
 		elseif is_set (URL) then
 			OriginalURL = URL;													-- save copy of original source URL
-			OriginalURLorigin = URLorigin;										-- name of url parameter for error messages
+			OriginalURL_origin = URL_origin;										-- name of url parameter for error messages
 			OriginalFormat = Format; 											-- and original |format=
 			OriginalAccess = UrlAccess;
-			if 'no' ~= DeadURL then												-- if URL set then archive-url applies to it
+
+			if 'live' ~= UrlStatus then											-- if URL set then archive-url applies to it
 				URL = ArchiveURL												-- swap-in the archive's url
-				URLorigin = A:ORIGIN('ArchiveURL')								-- name of archive url parameter for error messages
+				URL_origin = A:ORIGIN('ArchiveURL')								-- name of archive url parameter for error messages
 				Format = ArchiveFormat or '';									-- swap in archive's format
 				UrlAccess = nil;												-- restricted access levels do not make sense for archived urls
 			end
  		end
 	end
 
-	if in_array(config.CitationClass, {'web','news','journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'arxiv', 'biorxiv', 'citeseerx'}) or	-- if any of the 'periodical' cites except encyclopedia
-		('citation' == config.CitationClass and is_set (Periodical) and not is_set (Encyclopedia)) then
+	if in_array(config.CitationClass, {'web','news','journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'arxiv', 'biorxiv', 'citeseerx', 'ssrn'}) or	-- if any of the 'periodical' cites except encyclopedia
+		('citation' == config.CitationClass and (is_set (Periodical) or is_set (ScriptPeriodical)) and not is_set (Encyclopedia)) then
 			local chap_param;
 			if is_set (Chapter) then											-- get a parameter name from one of these chapter related meta-parameters
 				chap_param = A:ORIGIN ('Chapter')
@@ -2895,7 +3128,7 @@ local Encyclopedia = A['Encyclopedia'];
 			elseif is_set (ChapterURL) then
 				chap_param = A:ORIGIN ('ChapterURL')
 			elseif is_set (ScriptChapter) then
-				chap_param = A:ORIGIN ('ScriptChapter')
+				chap_param = ScriptChapter_origin;
 			else is_set (ChapterFormat)
 				chap_param = A:ORIGIN ('ChapterFormat')
 			end
@@ -2911,12 +3144,12 @@ local Encyclopedia = A['Encyclopedia'];
 	else																		-- otherwise, format chapter / article title
 		local no_quotes = false;												-- default assume that we will be quoting the chapter parameter value
 		if is_set (Contribution) and 0 < #c then								-- if this is a contribution with contributor(s)
-			if in_array (Contribution:lower(), cfg.keywords.contribution) then	-- and a generic contribution title
+			if in_array (Contribution:lower(), cfg.keywords_lists.contribution) then	-- and a generic contribution title
 				no_quotes = true;												-- then render it unquoted
 			end
 		end
 
-		Chapter = format_chapter_title (ScriptChapter, Chapter, TransChapter, ChapterURL, ChapterURLorigin, no_quotes, ChapterUrlAccess);		-- Contribution is also in Chapter
+		Chapter = format_chapter_title (ScriptChapter, ScriptChapter_origin, Chapter, Chapter_origin, TransChapter, TransChapter_origin, ChapterURL, ChapterURL_origin, no_quotes, ChapterUrlAccess);		-- Contribution is also in Chapter
 		if is_set (Chapter) then
 			Chapter = Chapter .. ChapterFormat ;
 			if 'map' == config.CitationClass and is_set (TitleType) then
@@ -2928,29 +3161,37 @@ local Encyclopedia = A['Encyclopedia'];
 		end
 	end
 
-	-- Format main title.
-	if '...' == Title:sub (-3) then												-- if elipsis is the last three characters of |title=
-		Title = mw.ustring.gsub (Title, '(%.%.%.)%.+$', '%1');					-- limit the number of dots to three
-	elseif not mw.ustring.find (Title, '%.%s*%a%.') then						-- end of title is not a 'dot-(optional space-)letter-dot' initialism
-		Title = mw.ustring.gsub(Title, '%'..sepc..'$', '');						-- remove any trailing separator character
-	end
-	if is_set(TitleLink) and is_set(Title) then
-		Title = make_wikilink (TitleLink, Title);
+	-- Format main title
+	if is_set (ArchiveURL) and 
+		(mw.ustring.match (mw.ustring.lower(Title), cfg.special_case_translation.archived_copy.en) or	-- if title is 'Archived copy' (place holder added by bots that can't find proper title)
+		mw.ustring.match (mw.ustring.lower(Title), cfg.special_case_translation.archived_copy['local'])) then	-- local-wiki's form
+			add_maint_cat ('archived_copy');									-- add maintenance category before we modify the content of Title
 	end
 
-	if in_array(config.CitationClass, {'web', 'news', 'journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'mailinglist', 'interview', 'arxiv', 'biorxiv', 'citeseerx'}) or
-		('citation' == config.CitationClass and is_set (Periodical) and not is_set (Encyclopedia)) or
-		('map' == config.CitationClass and is_set (Periodical)) then			-- special case for cite map when the map is in a periodical treat as an article
+	if Title:match ('^%(%(.*%)%)$') then										-- if keep as written markup:
+		Title= Title:gsub ('^%(%((.*)%)%)$', '%1')								-- remove the markup
+	else
+		if '...' == Title:sub (-3) then											-- if elipsis is the last three characters of |title=
+			Title = Title:gsub ('(%.%.%.)%.+$', '%1');							-- limit the number of dots to three
+		elseif not mw.ustring.find (Title, '%.%s*%a%.$') and					-- end of title is not a 'dot-(optional space-)letter-dot' initialism ...
+			not mw.ustring.find (Title, '%s+%a%.$') then						-- ...and not a 'space-letter-dot' initial (''Allium canadense'' L.)
+				Title = mw.ustring.gsub(Title, '%'..sepc..'$', '');				-- remove any trailing separator character; sepc and ms.ustring() here for languages that use multibyte separator characters
+		end
+	end
+
+	if in_array(config.CitationClass, {'web', 'news', 'journal', 'magazine', 'pressrelease', 'podcast', 'newsgroup', 'mailinglist', 'interview', 'arxiv', 'biorxiv', 'citeseerx', 'ssrn'}) or
+		('citation' == config.CitationClass and (is_set (Periodical) or is_set (ScriptPeriodical)) and not is_set (Encyclopedia)) or
+		('map' == config.CitationClass and (is_set (Periodical) or is_set (ScriptPeriodical))) then		-- special case for cite map when the map is in a periodical treat as an article
 			Title = kern_quotes (Title);										-- if necessary, separate title's leading and trailing quote marks from Module provided quote marks
 			Title = wrap_style ('quoted-title', Title);
-			Title = script_concatenate (Title, ScriptTitle);					-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
+			Title = script_concatenate (Title, ScriptTitle, 'script-title');	-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
 			TransTitle= wrap_style ('trans-quoted-title', TransTitle );
 	elseif 'report' == config.CitationClass then								-- no styling for cite report
-		Title = script_concatenate (Title, ScriptTitle);						-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
+		Title = script_concatenate (Title, ScriptTitle, 'script-title');		-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
 		TransTitle= wrap_style ('trans-quoted-title', TransTitle );				-- for cite report, use this form for trans-title
 	else
 		Title = wrap_style ('italic-title', Title);
-		Title = script_concatenate (Title, ScriptTitle);						-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
+		Title = script_concatenate (Title, ScriptTitle, 'script-title');		-- <bdi> tags, lang atribute, categorization, etc; must be done after title is wrapped
 		TransTitle = wrap_style ('trans-italic-title', TransTitle);
 	end
 
@@ -2962,15 +3203,38 @@ local Encyclopedia = A['Encyclopedia'];
 			TransError = " " .. set_error( 'trans_missing_title', {'title'} );
 		end
 	end
-	
-	if is_set(Title) then
-		if not is_set(TitleLink) and is_set(URL) then
-			
-			Title = external_link( URL, Title, URLorigin, UrlAccess ) .. TransTitle .. TransError .. Format;
+
+	if is_set (Title) then														-- TODO: is this the right place to be making wikisource urls?
+		if is_set (TitleLink) and is_set (URL) then
+			table.insert( z.message_tail, { set_error( 'wikilink_in_url', {}, true ) } );	-- set an error message because we can't have both
+			TitleLink = '';														-- unset
+		end
+		
+		if not is_set (TitleLink) and is_set (URL) then
+			Title = external_link (URL, Title, URL_origin, UrlAccess) .. TransTitle .. TransError .. Format;
 			URL = '';															-- unset these because no longer needed
 			Format = "";
+		elseif is_set (TitleLink) and not is_set (URL) then
+			local ws_url;
+			ws_url = wikisource_url_make (TitleLink);							-- ignore ws_label return; not used here
+			if ws_url then
+				Title = external_link (ws_url, Title .. '&nbsp;', 'ws link in title-link');	-- space char after Title to move icon away from italic text; TODO: a better way to do this?
+				Title = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], TitleLink, Title});				
+				Title = Title .. TransTitle .. TransError;
+			else
+				Title = make_wikilink (TitleLink, Title) .. TransTitle .. TransError;
+			end
 		else
-			Title = Title .. TransTitle .. TransError;
+			local ws_url, ws_label;												-- Title has italic or quote markup by the time we get here which causes is_wikilink() to return 0 (not a wikilink)
+			ws_url, ws_label, L = wikisource_url_make (Title:gsub('[\'"](.-)[\'"]', '%1'));	-- make ws url from |title= interwiki link (strip italic or quote markup); link portion L becomes tool tip label
+			if ws_url then
+				Title = Title:gsub ('%b[]', ws_label);							-- replace interwiki link with ws_label to retain markup
+				Title = external_link (ws_url, Title .. '&nbsp;', 'ws link in title');	-- space char after Title to move icon away from italic text; TODO: a better way to do this?
+				Title = substitute (cfg.presentation['interwiki-icon'], {cfg.presentation['class-wikisource'], L, Title});				
+				Title = Title .. TransTitle .. TransError;
+			else
+				Title = Title .. TransTitle .. TransError;
+			end
 		end
 	else
 		Title = TransTitle .. TransError;
@@ -2982,11 +3246,11 @@ local Encyclopedia = A['Encyclopedia'];
 
 	if is_set (Conference) then
 		if is_set (ConferenceURL) then
-			Conference = external_link( ConferenceURL, Conference, ConferenceURLorigin, nil );
+			Conference = external_link( ConferenceURL, Conference, ConferenceURL_origin, nil );
 		end
 		Conference = sepc .. " " .. Conference .. ConferenceFormat;
 	elseif is_set(ConferenceURL) then
-		Conference = sepc .. " " .. external_link( ConferenceURL, nil, ConferenceURLorigin, nil );
+		Conference = sepc .. " " .. external_link( ConferenceURL, nil, ConferenceURL_origin, nil );
 	end
 
 	if not is_set(Position) then
@@ -3020,8 +3284,7 @@ local Encyclopedia = A['Encyclopedia'];
 	At = is_set(At) and (sepc .. " " .. At) or "";
 	Position = is_set(Position) and (sepc .. " " .. Position) or "";
 	if config.CitationClass == 'map' then
-		local Section = A['Section'];
-		local Sections = A['Sections'];
+		local Sections = A['Sections'];											-- Section (singular) is an alias of Chapter so set earlier
 		local Inset = A['Inset'];
 		
 		if is_set( Inset ) then
@@ -3048,10 +3311,10 @@ local Encyclopedia = A['Encyclopedia'];
 	Others = is_set(Others) and (sepc .. " " .. Others) or "";
 	
 	if is_set (Translators) then
-		Others = sepc .. ' ' .. wrap_msg ('translated', Translators, use_lowercase) .. Others;
+		Others = safe_join ({sepc .. ' ', wrap_msg ('translated', Translators, use_lowercase), Others}, sepc);
 	end
 	if is_set (Interviewers) then
-		Others = sepc .. ' ' .. wrap_msg ('interview', Interviewers, use_lowercase) .. Others;
+		Others = safe_join ({sepc .. ' ', wrap_msg ('interview', Interviewers, use_lowercase), Others}, sepc);
 	end
 	
 	TitleNote = is_set(TitleNote) and (sepc .. " " .. TitleNote) or "";
@@ -3064,30 +3327,13 @@ local Encyclopedia = A['Encyclopedia'];
 		Edition = '';
 	end
 
-	Series = is_set(Series) and (sepc .. " " .. Series) or "";
-		OrigYear = is_set(OrigYear) and (" [" .. OrigYear .. "]") or "";		-- TODO: presentation
-
-	Agency = is_set(Agency) and (sepc .. " " .. Agency) or "";
-
+	Series = is_set (Series) and wrap_msg ('series', {sepc, Series}) or "";		-- not the same as SeriesNum
+	OrigYear = is_set (OrigYear) and wrap_msg ('origyear', OrigYear) or '';
+	Agency = is_set (Agency) and wrap_msg ('agency', {sepc, Agency}) or "";
 	Volume = format_volume_issue (Volume, Issue, config.CitationClass, Periodical_origin, sepc, use_lowercase);
 
 	------------------------------------ totally unrelated data
-	if is_set(Via) then
-		Via = " " .. wrap_msg ('via', Via);
-	end
-
-	--[[
-	Subscription implies paywall; Registration does not.  If both are used in a citation, the subscription required link
-	note is displayed. There are no error messages for this condition.
-	
-	]]
-	if is_set (SubscriptionRequired) then
-		SubscriptionRequired = sepc .. " " .. cfg.messages['subscription'];		-- subscription required message
-	elseif is_set (RegistrationRequired) then
-		SubscriptionRequired = sepc .. " " .. cfg.messages['registration'];		-- registration required message
-	else
-		SubscriptionRequired = '';												-- either or both might be set to something other than yes true y
-	end
+	Via = is_set (Via) and  wrap_msg ('via', Via) or '';
 
 	if is_set(AccessDate) then
 		local retrv_text = " " .. cfg.messages['retrieved']
@@ -3110,7 +3356,7 @@ local Encyclopedia = A['Encyclopedia'];
 	ID_list = build_id_list( ID_list, {IdAccessLevels=ID_access_levels, DoiBroken = DoiBroken, ASINTLD = ASINTLD, IgnoreISBN = IgnoreISBN, Embargo=Embargo, Class = Class} );
 
 	if is_set(URL) then
-		URL = " " .. external_link( URL, nil, URLorigin, UrlAccess );
+		URL = " " .. external_link( URL, nil, URL_origin, UrlAccess );
 	end
 
 	if is_set(Quote) then
@@ -3123,33 +3369,36 @@ local Encyclopedia = A['Encyclopedia'];
 	
 	local Archived
 	if is_set(ArchiveURL) then
+		local arch_text;
 		if not is_set(ArchiveDate) then
 			ArchiveDate = set_error('archive_missing_date');
 		end
-		if "no" == DeadURL then
-			local arch_text = cfg.messages['archived'];
+		if "live" == UrlStatus then
+			arch_text = cfg.messages['archived'];
 			if sepc ~= "." then arch_text = arch_text:lower() end
-			Archived = sepc .. " " .. substitute( cfg.messages['archived-not-dead'],
+			Archived = sepc .. " " .. substitute( cfg.messages['archived-live'],
 				{ external_link( ArchiveURL, arch_text, A:ORIGIN('ArchiveURL'), nil ) .. ArchiveFormat, ArchiveDate } );
-			if not is_set(OriginalURL) then
+			if not is_set (OriginalURL) then
 				Archived = Archived .. " " .. set_error('archive_missing_url');							   
 			end
-		elseif is_set(OriginalURL) then											-- DeadURL is empty, 'yes', 'true', 'y', 'unfit', 'usurped'
-			local arch_text = cfg.messages['archived-dead'];
-			if sepc ~= "." then arch_text = arch_text:lower() end
-			if in_array (DeadURL, {'unfit', 'usurped', 'bot: unknown'}) then
-				Archived = sepc .. " " .. 'Archived from the original on ' .. ArchiveDate;	-- format already styled
-				if 'bot: unknown' == DeadURL then
+		elseif is_set(OriginalURL) then											-- UrlStatus is empty, 'dead', 'unfit', 'usurped', 'bot: unknown'
+			if in_array (UrlStatus, {'unfit', 'usurped', 'bot: unknown'}) then
+				arch_text = cfg.messages['archived-unfit'];
+				if sepc ~= "." then arch_text = arch_text:lower() end
+				Archived = sepc .. " " .. arch_text .. ArchiveDate;				-- format already styled
+				if 'bot: unknown' == UrlStatus then
 					add_maint_cat ('bot:_unknown');								-- and add a category if not already added
 				else
 					add_maint_cat ('unfit');									-- and add a category if not already added
 				end
-			else																-- DeadURL is empty, 'yes', 'true', or 'y'
+			else																-- UrlStatus is empty, 'dead'
+				arch_text = cfg.messages['archived-dead'];
+				if sepc ~= "." then arch_text = arch_text:lower() end
 				Archived = sepc .. " " .. substitute( arch_text,
-					{ external_link( OriginalURL, cfg.messages['original'], OriginalURLorigin, OriginalAccess ) .. OriginalFormat, ArchiveDate } );	-- format already styled
+					{ external_link( OriginalURL, cfg.messages['original'], OriginalURL_origin, OriginalAccess ) .. OriginalFormat, ArchiveDate } );	-- format already styled
 			end	
-		else
-			local arch_text = cfg.messages['archived-missing'];
+		else																	-- OriginalUrl not set
+			arch_text = cfg.messages['archived-missing'];
 			if sepc ~= "." then arch_text = arch_text:lower() end
 			Archived = sepc .. " " .. substitute( arch_text, 
 				{ set_error('archive_missing_url'), ArchiveDate } );
@@ -3179,11 +3428,11 @@ local Encyclopedia = A['Encyclopedia'];
 
 	if is_set(Transcript) then
 		if is_set(TranscriptURL) then
-			Transcript = external_link( TranscriptURL, Transcript, TranscriptURLorigin, nil );
+			Transcript = external_link( TranscriptURL, Transcript, TranscriptURL_origin, nil );
 		end
 		Transcript = sepc .. ' ' .. Transcript .. TranscriptFormat;
 	elseif is_set(TranscriptURL) then
-		Transcript = external_link( TranscriptURL, nil, TranscriptURLorigin, nil );
+		Transcript = external_link( TranscriptURL, nil, TranscriptURL_origin, nil );
 	end
 
 	local Publisher;
@@ -3203,11 +3452,11 @@ local Encyclopedia = A['Encyclopedia'];
 	end
 	
 	-- Several of the above rely upon detecting this as nil, so do it last.
-	if is_set(Periodical) then
+	if (is_set (Periodical) or is_set (ScriptPeriodical) or is_set (TransPeriodical)) then
 		if is_set(Title) or is_set(TitleNote) then 
-			Periodical = sepc .. " " .. wrap_style ('italic-title', Periodical) 
+			Periodical = sepc .. " " .. format_periodical (ScriptPeriodical, ScriptPeriodical_origin, Periodical, TransPeriodical, TransPeriodical_origin);
 		else 
-			Periodical = wrap_style ('italic-title', Periodical)
+			Periodical = format_periodical (ScriptPeriodical, ScriptPeriodical_origin, Periodical, TransPeriodical, TransPeriodical_origin);
 		end
 	end
 
@@ -3215,11 +3464,11 @@ local Encyclopedia = A['Encyclopedia'];
 	Handle the oddity that is cite speech.  This code overrides whatever may be the value assigned to TitleNote (through |department=) and forces it to be " (Speech)" so that
 	the annotation directly follows the |title= parameter value in the citation rather than the |event= parameter value (if provided).
 	]]
-	if "speech" == config.CitationClass then				-- cite speech only
-		TitleNote = " (Speech)";							-- annotate the citation
-		if is_set (Periodical) then							-- if Periodical, perhaps because of an included |website= or |journal= parameter 
-			if is_set (Conference) then						-- and if |event= is set
-				Conference = Conference .. sepc .. " ";		-- then add appropriate punctuation to the end of the Conference variable before rendering
+	if "speech" == config.CitationClass then									-- cite speech only
+		TitleNote = " (Speech)";												-- annotate the citation
+		if is_set (Periodical) then												-- if Periodical, perhaps because of an included |website= or |journal= parameter 
+			if is_set (Conference) then											-- and if |event= is set
+				Conference = Conference .. sepc .. " ";							-- then add appropriate punctuation to the end of the Conference variable before rendering
 			end
 		end
 	end
@@ -3232,7 +3481,7 @@ local Encyclopedia = A['Encyclopedia'];
 	local tcommon2;																-- used for book cite when |contributor= is set
 	
 	if in_array(config.CitationClass, {"journal","citation"}) and is_set(Periodical) then
-		if is_set(Others) then Others = Others .. sepc .. " " end
+		if is_set(Others) then Others = safe_join ({Others, sepc .. " "}, sepc) end		-- add terminal punctuation & space; check for dup sepc; TODO why do we need to do this here?
 		tcommon = safe_join( {Others, Title, TitleNote, Conference, Periodical, Format, TitleType, Series, Language, Edition, Publisher, Agency, Volume}, sepc );
 	elseif in_array(config.CitationClass, {"book","citation"}) and not is_set(Periodical) then		-- special cases for book cites
 		if is_set (Contributors) then											-- when we are citing foreword, preface, introduction, etc
@@ -3252,7 +3501,7 @@ local Encyclopedia = A['Encyclopedia'];
 		end
 		
 	elseif 'episode' == config.CitationClass then								-- special case for cite episode
-		tcommon = safe_join( {Title, TitleNote, TitleType, Series, Transcript, Language, Edition, Publisher}, sepc );
+		tcommon = safe_join( {Title, TitleNote, TitleType, Series, Language, Edition, Publisher}, sepc );
 
 	else																		-- all other CS1 templates
 		tcommon = safe_join( {Title, TitleNote, Conference, Periodical, Format, TitleType, Series, Language, 
@@ -3265,7 +3514,13 @@ local Encyclopedia = A['Encyclopedia'];
 		ID_list = ID;
 	end
 	
-	local idcommon = safe_join( { ID_list, URL, Archived, AccessDate, Via, SubscriptionRequired, Lay, Quote }, sepc );
+	local idcommon;
+	if 'audio-visual' == config.CitationClass or 'episode' == config.CitationClass then	-- special case for cite AV media & cite episode position transcript
+		idcommon = safe_join( { ID_list, URL, Archived, Transcript, AccessDate, Via, Lay, Quote }, sepc );
+	else
+		idcommon = safe_join( { ID_list, URL, Archived, AccessDate, Via, Lay, Quote }, sepc );
+	end
+	
 	local text;
 	local pgtext = Position .. Sheet .. Sheets .. Page .. Pages .. At;
 
@@ -3291,14 +3546,13 @@ local Encyclopedia = A['Encyclopedia'];
 				in_text = in_text .. cfg.messages['in'] .. " "
 				if (sepc ~= '.') then
 					in_text = in_text:lower()									-- lowercase for cs2
-				 end
-			else
-				if EditorCount <= 1 then
-					post_text = ", " .. cfg.messages['editor'];
-				else
-					post_text = ", " .. cfg.messages['editors'];
 				end
-			end 
+			end
+			if EditorCount <= 1 then
+				post_text = " (" .. cfg.messages['editor'] .. ")";				-- be consistent with no-author, no-date case
+			else
+				post_text = " (" .. cfg.messages['editors'] .. ")";
+			end
 			Editors = terminate_name_list (in_text .. Editors .. post_text, sepc);	-- terminate with 0 or 1 sepc and a space
 		end
 		if is_set (Contributors) then											-- book cite and we're citing the intro, preface, etc
@@ -3339,7 +3593,7 @@ local Encyclopedia = A['Encyclopedia'];
 	end
 	
 	if is_set(PostScript) and PostScript ~= sepc then
-		text = safe_join( {text, sepc}, sepc );  --Deals with italics, spaces, etc.
+		text = safe_join( {text, sepc}, sepc ); 								--Deals with italics, spaces, etc.
 		text = text:sub(1,-sepc:len()-1);
 	end	
 	
@@ -3349,13 +3603,12 @@ local Encyclopedia = A['Encyclopedia'];
 	local options = {};
 	
 	if is_set(config.CitationClass) and config.CitationClass ~= "citation" then
-		options.class = config.CitationClass;
-		options.class = "citation " .. config.CitationClass;					-- class=citation required for blue highlight when used with |ref=
+		options.class = string.format ('%s %s %s', 'citation', config.CitationClass, is_set (Mode) and Mode or 'cs1');	-- class=citation required for blue highlight when used with |ref=
 	else
-		options.class = "citation";
+		options.class = string.format ('%s %s', 'citation', is_set (Mode) and Mode or 'cs2');
 	end
 	
-	if is_set(Ref) and Ref:lower() ~= "none" then								-- set reference anchor if appropriate
+	if is_set(Ref) and 'none' ~= cfg.keywords_xlate[Ref:lower()] then
 		local id = Ref
 		if ('harv' == Ref ) then
 			local namelist = {};												-- holds selected contributor, author, editor name list
@@ -3391,9 +3644,9 @@ local Encyclopedia = A['Encyclopedia'];
 		table.insert (render, substitute (cfg.presentation['cite'], {mw.text.nowiki(options.class), text}));	-- all other cases
 	end		
 
-	table.insert (render, substitute (cfg.presentation['ocins'], {OCinSoutput}));		-- append metadata to the citation
+	table.insert (render, substitute (cfg.presentation['ocins'], {OCinSoutput}));	-- append metadata to the citation
 
-	if #z.message_tail ~= 0 then
+	if 0 ~= #z.message_tail then
 		table.insert (render, ' ');
 		for i,v in ipairs( z.message_tail ) do
 			if is_set(v[1]) then
@@ -3406,19 +3659,20 @@ local Encyclopedia = A['Encyclopedia'];
 		end
 	end
 
-	if #z.maintenance_cats ~= 0 then
-		table.insert (render, '<span class="citation-comment" style="display:none; color:#33aa33; margin-left:0.3em">');
+	if 0 ~= #z.maintenance_cats then
+		local maint_msgs = {};													-- here we collect all of the maint messages
 		for _, v in ipairs( z.maintenance_cats ) do								-- append maintenance categories
-			table.insert (render, v);
-			table.insert (render, ' (');
-			table.insert (render, make_wikilink (':Category:' .. v, 'link'));
-			table.insert (render, ') ');
+			local maint = {};													-- here we assemble a maintenence message
+			table.insert (maint, v);											-- maint msg is the category name
+			table.insert (maint, ' (');											-- open the link text
+			table.insert (maint, make_wikilink (':Category:' .. v, 'link'));	-- add the link
+			table.insert (maint, ')');											-- and close it
+			table.insert (maint_msgs, table.concat (maint));					-- assemble new maint message and add it to the maint_msgs table
 		end
-		table.insert (render, '</span>');
+		table.insert (render, substitute (cfg.presentation['hidden-maint'], table.concat (maint_msgs, ' ')));	-- wrap the group of maint message with proper presentation and save
 	end
 	
-	no_tracking_cats = no_tracking_cats:lower();
-	if in_array(no_tracking_cats, {"", "no", "false", "n"}) then
+	if not no_tracking_cats then
 		for _, v in ipairs( z.error_categories ) do
 			table.insert (render, make_wikilink ('Category:' .. v));
 		end
@@ -3434,16 +3688,122 @@ local Encyclopedia = A['Encyclopedia'];
 end
 
 
---[[--------------------------< C S 1 . C I T A T I O N >------------------------------------------------------
+--[[--------------------------< V A L I D A T E >--------------------------------------------------------------
+
+Looks for a parameter's name in one of several whitelists.
+
+Parameters in the whitelist can have three values:
+	true - active, supported parameters
+	false - deprecated, supported parameters
+	nil - unsupported parameters
+	
+]]
+
+local function validate (name, cite_class)
+	local name = tostring (name);
+	local state;
+	local function state_test (state, name)										-- local function to do testing of state values
+		if true == state then return true; end									-- valid actively supported parameter
+		if false == state then
+			deprecated_parameter (name);										-- parameter is deprecated but still supported
+			return true;
+		end
+		return nil;
+	end		
+
+	if name:find ('#') then														-- # is a cs1|2 reserved character so parameters with # not permitted
+		return nil;
+	end
+
+	if in_array (cite_class, whitelist.preprint_template_list ) then			-- limited parameter sets allowed for these templates
+		state = whitelist.limited_basic_arguments[name];
+		if true == state_test (state, name) then return true; end
+
+		state = whitelist.preprint_arguments[cite_class][name];					-- look in the parameter-list for the template identified by cite_class
+		if true == state_test (state, name) then return true; end
+
+																				-- limited enumerated parameters list
+		name = name:gsub("%d+", "#" );											-- replace digit(s) with # (last25 becomes last#) (mw.ustring because non-Western 'local' digits)
+		state = whitelist.limited_numbered_arguments[name];
+		if true == state_test (state, name) then return true; end
+
+		return false;															-- not supported because not found or name is set to nil
+	end																			-- end limited parameter-set templates
+
+	if in_array (cite_class, whitelist.unique_param_template_list) then			-- experiment for template-specific parameters for templates that accept parameters from the basic argument list
+		state = whitelist.unique_arguments[cite_class][name];					-- look in the template-specific parameter-lists for the template identified by cite_class
+		if true == state_test (state, name) then return true; end
+	end																			-- if here, fall into general validation
+		
+	state = whitelist.basic_arguments[name];									-- all other templates; all normal parameters allowed
+	if true == state_test (state, name) then return true; end
+
+																				-- all enumerated parameters allowed
+	name = name:gsub("%d+", "#" );												-- replace digit(s) with # (last25 becomes last#) (mw.ustring because non-Western 'local' digits)
+	state = whitelist.numbered_arguments[name];
+	if true == state_test (state, name) then return true; end
+
+	return false;																-- not supported because not found or name is set to nil
+end
+
+
+--[[--------------------------< M I S S I N G _ P I P E _ C H E C K >------------------------------------------
+
+Look at the contents of a parameter. If the content has a string of characters and digits followed by an equal
+sign, compare the alphanumeric string to the list of cs1|2 parameters.  If found, then the string is possibly a
+parameter that is missing its pipe.  There are two tests made:
+	{{cite ... |title=Title access-date=2016-03-17}}	-- the first parameter has a value and whitespace separates that value from the missing pipe parameter name
+	{{cite ... |title=access-date=2016-03-17}}			-- the first parameter has no value (whitespace after the first = is trimmed by mediawiki)
+cs1|2 shares some parameter names with xml/html atributes: class=, title=, etc.  To prevent false positives xml/html
+tags are removed before the search.
+
+If a missing pipe is detected, this function adds the missing pipe maintenance category.
+
+]]
+
+local function missing_pipe_check (parameter, value)
+	local capture;
+	value = value:gsub ('%b<>', '');											-- remove xml/html tags because attributes: class=, title=, etc 
+
+	capture = value:match ('%s+(%a[%w%-]+)%s*=') or value:match ('^(%a[%w%-]+)%s*=');	-- find and categorize parameters with possible missing pipes
+	if capture and validate (capture) then										-- if the capture is a valid parameter name
+		table.insert( z.message_tail, {set_error ('missing_pipe', parameter)});
+	end
+end
+
+
+--[[--------------------------< H A S _ E X T R A N E O U S _ P U N C T >--------------------------------------
+
+look for extraneous terminal punctuation in most parameter values; parameters listed in skip table are not checked
+
+]]
+
+local function has_extraneous_punc (param, value)
+	if 'number' == type (param) then
+		return;
+	end
+	
+	param = param:gsub ('%d+', '#');											-- enumerated name-list mask params allow terminal punct; normalize 
+	if cfg.punct_skip[param] then
+		return;																	-- parameter name found in the skip table so done
+	end
+	
+	if value:match ('[,;:]$') then
+		add_maint_cat ('extra_punct');											-- has extraneous punctuation; add maint cat
+	end
+end
+
+
+--[[--------------------------< C I T A T I O N >--------------------------------------------------------------
 
 This is used by templates such as {{cite book}} to create the actual citation text.
 
 ]]
 
-function cs1.citation(frame)
+local function citation(frame)
 	Frame = frame;																-- save a copy incase we need to display an error message in preview mode
 	local pframe = frame:getParent()
-	local validation, utilities, identifiers, metadata;
+	local validation, utilities, identifiers, metadata, styles;
 	
 	if nil ~= string.find (frame:getTitle(), 'sandbox', 1, true) then			-- did the {{#invoke:}} use sandbox version?
 		cfg = mw.loadData ('Module:Citation/CS1/Configuration/sandbox');		-- load sandbox versions of support modules
@@ -3452,6 +3812,7 @@ function cs1.citation(frame)
 		validation = require ('Module:Citation/CS1/Date_validation/sandbox');
 		identifiers = require ('Module:Citation/CS1/Identifiers/sandbox');
 		metadata = require ('Module:Citation/CS1/COinS/sandbox');
+		styles = 'Module:Citation/CS1/sandbox/styles.css';
 		
 	else																		-- otherwise
 		cfg = mw.loadData ('Module:Citation/CS1/Configuration');				-- load live versions of support modules
@@ -3460,6 +3821,8 @@ function cs1.citation(frame)
 		validation = require ('Module:Citation/CS1/Date_validation');
 		identifiers = require ('Module:Citation/CS1/Identifiers');
 		metadata = require ('Module:Citation/CS1/COinS');
+		styles = 'Module:Citation/CS1/styles.css';
+
 	end
 
 	utilities.set_selected_modules (cfg);										-- so that functions in Utilities can see the cfg tables
@@ -3484,6 +3847,7 @@ function cs1.citation(frame)
 	safe_for_italics = utilities.safe_for_italics;
 	is_wikilink = utilities.is_wikilink;
 	make_wikilink = utilities.make_wikilink;
+	strip_apostrophe_markup = utilities.strip_apostrophe_markup;
 
 	z = utilities.z;															-- table of error and category tables in Module:Citation/CS1/Utilities
 
@@ -3501,14 +3865,17 @@ function cs1.citation(frame)
 	local error_text, error_state;
 
 	local config = {};															-- table to store parameters from the module {{#invoke:}}
-	for k, v in pairs( frame.args ) do
+	for k, v in pairs( frame.args ) do											-- get parameters from the {{#invoke}} frame
 		config[k] = v;
---		args[k] = v;															-- debug tool that allows us to render a citation from module {{#invoke:}}
+	--	args[k] = v;															-- crude debug support that allows us to render a citation from module {{#invoke:}}; skips parameter validation; TODO: keep?
 	end	
 
 	local capture;																-- the single supported capture when matching unknown parameters using patterns
-	for k, v in pairs( pframe.args ) do
+	for k, v in pairs( pframe.args ) do											-- get parameters from the parent (template) frame
 		if v ~= '' then
+			if ('string' == type (k)) then
+				k = mw.ustring.gsub (k, '%d', cfg.date_names.local_digits);		-- for enumerated parameters, translate 'local' digits to Western 0-9
+			end
 			if not validate( k, config.CitationClass ) then			
 				error_text = "";
 				if type( k ) ~= 'string' then
@@ -3517,7 +3884,7 @@ function cs1.citation(frame)
 						error_text, error_state = set_error( 'text_ignored', {v}, true );
 					end
 				elseif validate( k:lower(), config.CitationClass ) then 
-					error_text, error_state = set_error( 'parameter_ignored_suggest', {k, k:lower()}, true );
+					error_text, error_state = set_error( 'parameter_ignored_suggest', {k, k:lower()}, true );	-- suggest the lowercase version of the parameter
 				else
 					if nil == suggestions.suggestions then						-- if this table is nil then we need to load it
 						if nil ~= string.find (frame:getTitle(), 'sandbox', 1, true) then			-- did the {{#invoke:}} use sandbox version?
@@ -3529,8 +3896,13 @@ function cs1.citation(frame)
 					for pattern, param in pairs (suggestions.patterns) do		-- loop through the patterns to see if we can suggest a proper parameter
 						capture = k:match (pattern);							-- the whole match if no caputre in pattern else the capture if a match
 						if capture then											-- if the pattern matches 
-							param = substitute( param, capture );				-- add the capture to the suggested parameter (typically the enumerator)
-							error_text, error_state = set_error( 'parameter_ignored_suggest', {k, param}, true );	-- set the error message
+							param = substitute (param, capture);				-- add the capture to the suggested parameter (typically the enumerator)
+							if validate (param, config.CitationClass) then		-- validate the suggestion to make sure that the suggestion is supported by this template (necessary for limited parameter lists)
+								error_text, error_state = set_error ('parameter_ignored_suggest', {k, param}, true);	-- set the suggestion error message
+							else
+								error_text, error_state = set_error( 'parameter_ignored', {param}, true );	-- suggested param not supported by this template
+								v = '';											-- unset
+							end
 						end
 					end
 					if not is_set (error_text) then								-- couldn't match with a pattern, is there an expicit suggestion?
@@ -3546,20 +3918,27 @@ function cs1.citation(frame)
 					table.insert( z.message_tail, {error_text, error_state} );
 				end				
 			end
-			missing_pipe_check (v);												-- do we think that there is a parameter that is missing a pipe?
-			
-			args[k] = v;
-		elseif args[k] ~= nil or (k == 'postscript') then
-			args[k] = v;
-		end		
+
+			args[k] = v;														-- save this parameter and its value
+
+																				-- crude debug support that allows us to render a citation from module {{#invoke:}} TODO: keep?
+	--	elseif args[k] ~= nil or (k == 'postscript') then						-- when args[k] has a value from {{#invoke}} frame (we don't normally do that)
+	--		args[k] = v;														-- overwrite args[k] with empty string from pframe.args[k] (template frame); v is empty string here
+		end																		-- not sure about the postscript bit; that gets handled in parameter validation; historical artifact?
 	end	
 
 	for k, v in pairs( args ) do
 		if 'string' == type (k) then											-- don't evaluate positional parameters
-			has_invisible_chars (k, v);
+			has_invisible_chars (k, v);											-- look for invisible characters
 		end
+		has_extraneous_punc (k, v);												-- look for extraneous terminal punctuation in parameter values
+		missing_pipe_check (k, v);												-- do we think that there is a parameter that is missing a pipe?
 	end
-	return citation0( config, args)
+
+	return table.concat ({citation0( config, args), frame:extensionTag ('templatestyles', '', {src=styles})});
 end
 
-return cs1;
+--[[--------------------------< E X P O R T E D   F U N C T I O N S >------------------------------------------
+]]
+
+return {citation = citation};
