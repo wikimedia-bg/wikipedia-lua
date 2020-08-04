@@ -38,7 +38,10 @@ the .id-lock-... selectors are for use by non-citation templates like {{Catalog 
 
 .id-lock-free a,
 .citation .cs1-lock-free a {
-	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png) no-repeat;
+	background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lock-green.svg/9px-Lock-green.svg.png);
+	background-image: linear-gradient(transparent, transparent), url(//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg);
+	background-repeat: no-repeat;
+	background-size: 9px;
 	background-position: right .1em center;
 }
 
@@ -46,14 +49,20 @@ the .id-lock-... selectors are for use by non-citation templates like {{Catalog 
 .id-lock-registration a,
 .citation .cs1-lock-limited a,
 .citation .cs1-lock-registration a {
-	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Lock-gray-alt-2.svg/9px-Lock-gray-alt-2.svg.png) no-repeat;
+	background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Lock-gray-alt-2.svg/9px-Lock-gray-alt-2.svg.png);
+	background-image: linear-gradient(transparent, transparent), url(//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg);
+	background-repeat: no-repeat;
+	background-size: 9px;
 	background-position: right .1em center;
 }
 
 .id-lock-subscription a,
 .citation .cs1-lock-subscription a {
-	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Lock-red-alt-2.svg/9px-Lock-red-alt-2.svg.png) no-repeat;
-	background-position: right .1em center;
+	background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Lock-red-alt-2.svg/9px-Lock-red-alt-2.svg.png);
+	background-image: linear-gradient(transparent, transparent), url(//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg);
+	background-repeat: no-repeat;
+	background-size: 9px;
+	background-position: right .1em center; 
 }
 
 .cs1-subscription,
@@ -72,7 +81,10 @@ Experiment to see if it is possible/practical to add support for a wikisource
 icon when |chapter= or |title= is wikilinked to a source in wikisource ala cite wikisource
 */
 .cs1-ws-icon a {
-	background: url(//upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Wikisource-logo.svg/12px-Wikisource-logo.svg.png) no-repeat;
+	background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Wikisource-logo.svg/12px-Wikisource-logo.svg.png);
+	background-image: linear-gradient(transparent, transparent), url(//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg);
+	background-repeat: no-repeat;
+	background-size: 12px;
 	background-position: right .1em center;
 }
 
@@ -127,4 +139,9 @@ references/reflist, only then does it multiply by 0.95; else multiply by 0.85 */
 .cs1-kern-right,
 .cs1-kern-wl-right {
 	padding-right: 0.2em;
+}
+
+/* selflinks – avoid bold font style when cs1|2 template links to the current page */
+.citation .mw-selflink {
+	font-weight: inherit;
 }
