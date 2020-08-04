@@ -1,44 +1,10 @@
 
-local coins = {};
-
-
 --[[--------------------------< F O R W A R D   D E C L A R A T I O N S >--------------------------------------
 ]]
-local is_set, in_array, remove_wiki_link;										-- functions in Module:Citation/CS1/Utilities
+
+local is_set, in_array, remove_wiki_link, strip_apostrophe_markup;				-- functions in Module:Citation/CS1/Utilities
 
 local cfg;																		-- table of configuration tables that are defined in Module:Citation/CS1/Configuration
-
-
---[[--------------------------< S T R I P _ A P O S T R O P H E _ M A R K U P >--------------------------------
-
-Strip wiki italic and bold markup from argument so that it doesn't contaminate COinS metadata.
-This function strips common patterns of apostrophe markup.  We presume that editors who have taken the time to
-markup a title have, as a result, provided valid markup. When they don't, some single apostrophes are left behind.
-
-]]
-
-local function strip_apostrophe_markup (argument)
-	if not is_set (argument) then return argument; end
-
-	if argument:find ( "''", 1, true ) == nil then								-- Is there at least one double apostrophe?  If not, exit.
-		return argument;
-	end
-
-	while true do
-		if argument:find ( "'''''", 1, true ) then								-- bold italic (5)
-			argument=argument:gsub("%'%'%'%'%'", "");							-- remove all instances of it
-		elseif argument:find ( "''''", 1, true ) then							-- italic start and end without content (4)
-			argument=argument:gsub("%'%'%'%'", "");
-		elseif argument:find ( "'''", 1, true ) then							-- bold (3)
-			argument=argument:gsub("%'%'%'", "");
-		elseif argument:find ( "''", 1, true ) then								-- italic (2)
-			argument=argument:gsub("%'%'", "");
-		else
-			break;
-		end
-	end
-	return argument;															-- done
-end
 
 
 --[[--------------------------< M A K E _ C O I N S _ T I T L E >----------------------------------------------
@@ -213,11 +179,11 @@ local function COinS(data, class)
 		end
 	});
 	
-	if in_array (class, {'arxiv', 'biorxiv', 'citeseerx', 'journal', 'news'}) or (in_array (class, {'conference', 'interview', 'map', 'press release', 'web'}) and is_set(data.Periodical)) or 
+	if in_array (class, {'arxiv', 'biorxiv', 'citeseerx', 'ssrn', 'journal', 'news', 'magazine'}) or (in_array (class, {'conference', 'interview', 'map', 'press release', 'web'}) and is_set(data.Periodical)) or 
 		('citation' == class and is_set(data.Periodical) and not is_set (data.Encyclopedia)) then
 			OCinSoutput.rft_val_fmt = "info:ofi/fmt:kev:mtx:journal";			-- journal metadata identifier
-			if in_array (class, {'arxiv', 'biorxiv', 'citeseerx'}) then			-- set genre according to the type of citation template we are rendering
-				OCinSoutput["rft.genre"] = "preprint";							-- cite arxiv, cite biorxiv, cite citeseerx
+			if in_array (class, {'arxiv', 'biorxiv', 'citeseerx', 'ssrn'}) then	-- set genre according to the type of citation template we are rendering
+				OCinSoutput["rft.genre"] = "preprint";							-- cite arxiv, cite biorxiv, cite citeseerx, cite ssrn
 			elseif 'conference' == class then
 				OCinSoutput["rft.genre"] = "conference";						-- cite conference (when Periodical set)
 			elseif 'web' == class then
@@ -273,7 +239,6 @@ local function COinS(data, class)
 	OCinSoutput["rft.date"] = data.Date;										-- book, journal, dissertation
 	
 	for k, v in pairs( data.ID_list ) do										-- what to do about these? For now assume that they are common to all?
---		if k == 'ISBN' then v = clean_isbn( v ) end
 		if k == 'ISBN' then v = v:gsub( "[^-0-9X]", "" ); end
 		local id = cfg.id_handlers[k].COinS;
 		if string.sub( id or "", 1, 4 ) == 'info' then							-- for ids that are in the info:registry
@@ -285,17 +250,6 @@ local function COinS(data, class)
 		end
 	end
 
---[[	
-	for k, v in pairs( data.ID_list ) do										-- what to do about these? For now assume that they are common to all?
-		local id, value = cfg.id_handlers[k].COinS;
-		if k == 'ISBN' then value = clean_isbn( v ); else value = v; end
-		if string.sub( id or "", 1, 4 ) == 'info' then
-			OCinSoutput["rft_id"] = table.concat{ id, "/", v };
-		else
-			OCinSoutput[ id ] = value;
-		end
-	end
-]]
 	local last, first;
 	for k, v in ipairs( data.Authors ) do
 		last, first = coins_cleanup (v.last), coins_cleanup (v.first or '');	-- replace any nowiki strip markers, non-printing or invisible characers
@@ -335,12 +289,15 @@ Sets local cfg table and imported functions table to same (live or sandbox) as t
 local function set_selected_modules (cfg_table_ptr, utilities_page_ptr)
 	cfg = cfg_table_ptr;
 
-	is_set = utilities_page_ptr.is_set;											-- import functions from select Module:Citation/CS1/Utilities module
+	is_set = utilities_page_ptr.is_set;											-- import functions from selected Module:Citation/CS1/Utilities module
 	in_array = utilities_page_ptr.in_array;
 	remove_wiki_link = utilities_page_ptr.remove_wiki_link;
+	strip_apostrophe_markup = utilities_page_ptr.strip_apostrophe_markup;
 end
 
 
+--[[--------------------------< E X P O R T E D   F U N C T I O N S >------------------------------------------
+]]
 
 return {
 	make_coins_title = make_coins_title,
