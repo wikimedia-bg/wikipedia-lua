@@ -146,6 +146,7 @@ local THEMES = {
 	{ 'Литва', 'Flag of Lithuania.svg' },
 	{ 'Лихтенщайн', 'Flag of Liechtenstein.svg' },
 	{ 'Лондон', 'Coat_of_Arms_of_The_City_of_London.svg' },
+	{ 'Луизиана', 'Flag of Louisiana.svg' },
 	{ 'Люксембург', 'Flag of Luxembourg.svg' },
 	{ 'Мавритания', '1959-2017 Flag of Mauritania.svg' },
 	{ 'Мавриций', 'Flag of Mauritius.svg' },
