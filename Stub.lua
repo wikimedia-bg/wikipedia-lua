@@ -20,6 +20,7 @@ local THEMES = {
 	{ 'Ангола', 'Flag of Angola.svg' },
 	{ 'Андора', 'Flag of Andorra.svg' },
 	{ 'Антарктика', 'Proposed flag of Antarctica (Graham Bartram).svg' },
+	{ 'Антигуа и Барбуда|Антигуа|Барбуда', 'Flag of Antigua and Barbuda.svg' },
 	{ 'Аржентина', 'Flag of Argentina.svg|border' },
 	{ 'Аризона', 'Flag of Arizona.svg' },
 	{ 'Арканзас', 'Flag of Arkansas.svg' },
