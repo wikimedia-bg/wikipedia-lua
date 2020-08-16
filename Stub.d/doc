@@ -20,6 +20,11 @@
 <br><code><nowiki>{{#invoke:Stub|get|поРтуГАЛия}}</nowiki></code><br>
 {{#invoke:Stub|get|поРтуГАЛия}}
 
+=== категория ===
+Категорията се взима от третия параметър в <code>THEMES</code>, а ако липсва - от първото тематично име:
+<br><code><nowiki>{{#invoke:Stub|get|космонавт}}</nowiki></code>
+{{#invoke:Stub|get|космонавт}} → <code>[[:Категория:Мъничета за космонавти]]</code>
+
 === липсващи теми ===
 В случай, че темата е неразпозната модула връща грешка:
 <br><code><nowiki>{{#invoke:Stub|get|xxx}}</nowiki></code>
