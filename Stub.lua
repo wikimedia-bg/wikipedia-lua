@@ -61,6 +61,7 @@ local THEMES = {
 	{ 'Габон', 'Flag of Gabon.svg' },
 	{ 'Гамбия', 'Flag of The Gambia.svg' },
 	{ 'Гана', 'Flag of Ghana.svg' },
+	{ 'Гваделупа', 'Coat of arms of Guadeloupe.svg' },
 	{ 'Гватемала', 'Flag of Guatemala.svg' },
 	{ 'Гвиана', 'Flag of Guyana.svg' },
 	{ 'Гвинея', 'Flag of Guinea.svg' },
