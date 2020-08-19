@@ -16,7 +16,7 @@ local THEMES = {
 	{ 'Алжир', 'Flag of Algeria.svg|border' },
 	{ 'Алтайски край', 'Altai-kr-geo-stub.png' },
 	{ 'Аляска', 'Flag of Alaska.svg' },
-	{ 'Американски Вирджински острови', 'Flag of the United States Virgin Islands.svg|border' },
+	{ 'Американските Вирджински острови|Американски Вирджински острови', 'Flag of the United States Virgin Islands.svg|border' },
 	{ 'Ангила', 'Flag of Anguilla.svg' },
 	{ 'Англия', 'Flag of England.svg|border' },
 	{ 'Ангола', 'Flag of Angola.svg' },
