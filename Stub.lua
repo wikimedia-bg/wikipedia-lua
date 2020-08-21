@@ -571,7 +571,7 @@ local THEMES = {
 	{ 'растение|растения', 'Dahlia redoute.JPG', 'растения' },
 
 	-- ДРУГИ
-	{ 'Cartoon Network', 'Cartoon_Network_box_device.svg' },
+	{ 'Картун Нетуърк|Cartoon Network', 'Cartoon_Network_box_device.svg', 'Картун Нетуърк' },
 	{ 'ГНУ|линукс', 'Heckert GNU white.png' },
 	{ 'ЛГБТ', 'Gay flag.svg' },
 	{ 'НЛО', 'Nuvola apps konquest.png' },
