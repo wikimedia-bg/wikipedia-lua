@@ -239,6 +239,7 @@ local THEMES = {
 	{ 'Северна Корея|КНДР', 'Flag of North Korea.svg' },
 	{ 'Северна Македония|Република Македония|Македония', 'Flag map of North Macedonia.svg' },
 	{ 'Сейнт Китс и Невис', 'Flag of Saint Kitts and Nevis.svg' },
+	{ 'Сейнт Лусия', 'Flag of Saint Lucia.svg' },
 	{ 'Сейшелските острови|Сейшелски острови', 'Flag of the Seychelles.svg' },
 	{ 'Сенегал', 'Flag of Senegal.svg' },
 	{ 'Сиера Леоне', 'Flag of Sierra Leone.svg' },
