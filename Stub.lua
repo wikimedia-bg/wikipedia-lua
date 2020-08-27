@@ -156,6 +156,7 @@ local THEMES = {
 	{ 'Мавриций', 'Flag of Mauritius.svg' },
 	{ 'Мадагаскар', 'Flag of Madagascar.svg|border' },
 	{ 'Мадрид', 'Flag of the Community of Madrid.svg' },
+	{ 'Майот', 'Flag of Mayotte (local).svg' },
 	{ 'Малави', 'Flag of Malawi.svg' },
 	{ 'Малайзия', 'Flag of Malaysia.svg|border' },
 	{ 'Малдивите|Малдиви', 'Flag of Maldives.svg|border' },
