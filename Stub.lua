@@ -651,6 +651,7 @@ local THEMES = {
 	{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
 	{ 'партия', 'Political_template.gif', 'партии' },
 	{ 'песен', 'Musical notes.svg', 'песни' },
+	{ 'пиеса', 'Comedy and tragedy masks.svg', 'пиеси' },
 	{ 'планина', 'Refuge icone.svg', 'планини' },
 	{ 'подводница', 'Orzel.svg', 'подводници' },
 	{ 'покер', '11g poker chips.jpg' },
