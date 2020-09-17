@@ -526,7 +526,7 @@ local THEMES = {
 	{ 'индианец', 'NSRW Sitting Bull.jpg', 'индианци' },
 	{ 'инженер', 'Engineering.png', 'инженери' },
 	{ 'канадец', 'Flag of Canada.svg', 'канадци' },
-	{ 'китарист', 'Guitar (23727) - The Noun Project.svg', 'китаристи' },
+	{ 'китарист', 'Crystal Clear app kguitar gray.svg', 'китаристи' },
 	{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
 	{ 'медик|лекар', 'Stethoscope-2.png', 'медици' },
 	{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
