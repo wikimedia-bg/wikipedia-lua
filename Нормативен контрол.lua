@@ -10,7 +10,7 @@ local p = {}
 -- See also https://bg.wikipedia.org/w/index.php?oldid=10493105
 -- @param article The name of the article to be linked to in the label
 -- @param text[opt=article] The text for the label (defaults to article name)
--- @return A string representing an external link in MediaWiki markup.
+-- @return A string representing an external link in MediaWiki markup
 local function linkedLabel( article, text )
 	-- If 'text' is not provided, show the article name as text of the link.
 	text = text or article
