@@ -36,7 +36,7 @@ local function match_range(page_num)
 end
 
 function p.get_link(frame)
-	local page_num = frame.args[1]
+	local page_num = tonumber(frame.args[1])
 	local web_page = match_range(page_num)
 	if web_page then
 		return link_prefix .. web_page .. link_suffix
