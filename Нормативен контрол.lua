@@ -1,6 +1,24 @@
 local p = {}
 
 --[[==========================================================================]]
+--[[                              Local functions                             ]]
+--[[==========================================================================]]
+
+--- Creates a label that links to an article in the main namespace.
+-- The link is external ([...], not [[...]]), so the 'What links here' results
+-- don't get polluted from the widely transcluded authority control template.
+-- See also https://bg.wikipedia.org/w/index.php?oldid=10493105
+-- @param article The name of the article to be linked to in the label
+-- @param text[opt=article] The text for the label (defaults to article name)
+-- @return A string representing an external link in MediaWiki markup.
+local function linkedLabel( article, text )
+	-- If 'text' is not provided, show the article name as text of the link.
+	text = text or article
+	local page = mw.title.makeTitle( 0, article )
+	return '[' .. page:fullUrl() .. ' ' .. text .. ']'
+end
+
+--[[==========================================================================]]
 --[[                            Category functions                            ]]
 --[[==========================================================================]]
 
@@ -750,16 +768,19 @@ end
 local reqs = {}
 
 -- Parameter format: { name of the parameter, label, propertyId in Wikidata, formatting function, category (used in p.docConfTable for tracking) }
+-- IMPORTANT: Create links to articles in the label parameter _only_ with the
+-- linkedLabel() function. In particular, do not use internal links ([[...]]).
+-- See the discussion in https://bg.wikipedia.org/w/index.php?oldid=10493105
 p.conf = {
 	{ 'AAT', 'Art & Architecture Thesaurus', 1014, p.aatLink },
 	{ 'ACM-DL', 'ACM DL', 864, p.acmLink },
 	{ 'autores.uy', 'autores.uy', 2558, p.autoresuyLink },
 	{ 'BALaT', 'BALaT', 3293, p.balatLink },
-	{ 'BIBSYS', '[[BIBSYS]]', 1015, p.bibsysLink },
+	{ 'BIBSYS', linkedLabel('BIBSYS'), 1015, p.bibsysLink },
 	{ 'Bildindex', 'Bildindex', 2092, p.bildLink },
-	{ 'BNE', '[[Национална библиотека на Испания|BNE]]', 950, p.bneLink },
+	{ 'BNE', linkedLabel('Национална библиотека на Испания', 'BNE'), 950, p.bneLink },
 	{ 'BNed', 'BNed', 2187, p.BNeditionLink, category = 'BiblioNet book' },
-	{ 'BNF', '[[Национална библиотека на Франция|BNF]]', 268, p.bnfLink },
+	{ 'BNF', linkedLabel('Национална библиотека на Франция', 'BNF'), 268, p.bnfLink },
 	{ 'BNper', 'BNper', 2188, p.BNpersonLink, category = 'BiblioNet author' },
 	{ 'BNpub', 'BNpub', 2189, p.BNpublisherLink, category = 'BiblioNet' },
 	{ 'Botanist', 'Botanist', 428, p.botanistLink },
@@ -767,58 +788,58 @@ p.conf = {
 	{ 'CINII', 'CiNii', 271, p.ciniiLink },
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
 	{ 'DSI', 'DSI', 2349, p.dsiLink },
-	{ 'EBE', '[[Национална библиотека на Гърция|ΕΒΕ]]', 3348, p.EBEIDLink },
-	{ 'Europeana', '[[Europeana]]', 7704, p.europeanaLink },
+	{ 'EBE', linkedLabel('Национална библиотека на Гърция', 'ΕΒΕ'), 3348, p.EBEIDLink },
+	{ 'Europeana', linkedLabel('Europeana'), 7704, p.europeanaLink },
 	{ 'FAST', 'FAST', 2163, p.fastLink },
-	{ 'GND', '[[Колективен нормативен архив|GND]]', 227, p.gndLink },
-	{ 'HDS', '[[Швейцарски исторически лексикон|HDS]]', 902, p.hdsLink },
-	{ 'IAAF', '[[Международна асоциация на лекоатлетическите федерации|IAAF]]', 1146, p.iaafLink },
+	{ 'GND', linkedLabel('Колективен нормативен архив', 'GND'), 227, p.gndLink },
+	{ 'HDS', linkedLabel('Швейцарски исторически лексикон', 'HDS'), 902, p.hdsLink },
+	{ 'IAAF', linkedLabel('Международна асоциация на лекоатлетическите федерации', 'IAAF'), 1146, p.iaafLink },
 	{ 'ICIA', 'ICIA', 1736, p.iciaLink },
-	{ 'ISNI', '[[Международен стандартен идентификатор на имена|ISNI]]', 213, p.isniLink },
+	{ 'ISNI', linkedLabel('Международен стандартен идентификатор на имена', 'ISNI'), 213, p.isniLink },
 	{ 'Joconde', 'Joconde' , 347, p.jocondeLink },
-	{ 'JSTOR', '[[JSTOR]]', 3827, p.jstorLink },
-	{ 'Koninklijke', '[[Национална библиотека на Нидерландия|Koninklijke]]', 1006, p.koninklijkeLink },
+	{ 'JSTOR', linkedLabel('JSTOR'), 3827, p.jstorLink },
+	{ 'Koninklijke', linkedLabel('Кралска библиотека (Нидерландия)', 'Koninklijke'), 1006, p.koninklijkeLink },
 	{ 'KULTURNAV', 'KulturNav', 1248, p.kulturnavLink },
-	{ 'LCCN', '[[Контролен номер на Библиотеката на Конгреса|LCCN]]', 244, p.lccnLink },
-	{ 'LIR', '[[Швейцарски исторически лексикон|LIR]]', 886, p.lirLink },
+	{ 'LCCN', linkedLabel('Контролен номер на Библиотеката на Конгреса', 'LCCN'), 244, p.lccnLink },
+	{ 'LIR', linkedLabel('Швейцарски исторически лексикон', 'LIR'), 886, p.lirLink },
 	{ 'LNB', 'LNB', 1368, p.lnbLink },
 	{ 'Léonore', 'Léonore', 640, p.leonoreLink },
-	{ 'MBA', '[[MusicBrainz|MBa]]', 434, p.mbaLink, category = 'MusicBrainz' },
-	{ 'MBAREA', '[[MusicBrainz|MBarea]]', 982, p.mbareaLink, category = 'MusicBrainz area' },
-	{ 'MBI', '[[MusicBrainz|MBi]]', 1330, p.mbiLink, category = 'MusicBrainz instrument' },
-	{ 'MBL', '[[MusicBrainz|MBl]]', 966, p.mblLink, category = 'MusicBrainz label' },
-	{ 'MBP', '[[MusicBrainz|MBp]]', 1004, p.mbpLink, category = 'MusicBrainz place' },
-	{ 'MBRG', '[[MusicBrainz|MBrg]]', 436, p.mbrgLink, category = 'MusicBrainz release group' },
-	{ 'MBS', '[[MusicBrainz|MBs]]', 1407, p.mbsLink, category = 'MusicBrainz series' },
-	{ 'MBW', '[[MusicBrainz|MBw]]', 435, p.mbwLink, category = 'MusicBrainz work' },
+	{ 'MBA', linkedLabel('MusicBrainz', 'MBa'), 434, p.mbaLink, category = 'MusicBrainz' },
+	{ 'MBAREA', linkedLabel('MusicBrainz', 'MBarea'), 982, p.mbareaLink, category = 'MusicBrainz area' },
+	{ 'MBI', linkedLabel('MusicBrainz', 'MBi'), 1330, p.mbiLink, category = 'MusicBrainz instrument' },
+	{ 'MBL', linkedLabel('MusicBrainz', 'MBl'), 966, p.mblLink, category = 'MusicBrainz label' },
+	{ 'MBP', linkedLabel('MusicBrainz', 'MBp'), 1004, p.mbpLink, category = 'MusicBrainz place' },
+	{ 'MBRG', linkedLabel('MusicBrainz', 'MBrg'), 436, p.mbrgLink, category = 'MusicBrainz release group' },
+	{ 'MBS', linkedLabel('MusicBrainz', 'MBs'), 1407, p.mbsLink, category = 'MusicBrainz series' },
+	{ 'MBW', linkedLabel('MusicBrainz', 'MBw'), 435, p.mbwLink, category = 'MusicBrainz work' },
 	{ 'MGP', 'MGP', 549, p.mgpLink },
 	{ 'NARA', 'NARA', 1225, p.naraLink },
 	{ 'NCL', 'NCL', 1048, p.nclLink },
-	{ 'NDL', '[[Национална парламентарна библиотека (Япония)|NDL]]', 349, p.ndlLink },
+	{ 'NDL', linkedLabel('Национална парламентарна библиотека (Япония)', 'NDL'), 349, p.ndlLink },
 	{ 'NEWW', 'NEWW Women Writers', 2533, p.newwLink },
-	{ 'NKC', '[[Национална библиотека на Чехия|NKC]]', 691, p.nkcLink },
-	{ 'NLA', '[[Национална библиотека на Австралия|NLA]]', 409, p.nlaLink },
+	{ 'NKC', linkedLabel('Национална библиотека на Чехия', 'NKC'), 691, p.nkcLink },
+	{ 'NLA', linkedLabel('Национална библиотека на Австралия', 'NLA'), 409, p.nlaLink },
 	{ 'NSK', 'NSK', 1375, p.nskLink },
-	{ 'OCLC', '[[Онлайн компютърен библиотечен център|OCLC]]', 243, p.oclcLink },
+	{ 'OCLC', linkedLabel('Онлайн компютърен библиотечен център', 'OCLC'), 243, p.oclcLink },
 	{ 'OpenLibrary', 'Open Library', 648, p.openLibraryLink },
 	{ 'ORCID', 'ORCID', 496, p.orcidLink },
 	{ 'PIC', 'PIC', 2750, p.picLink },
 	{ 'RID', 'ResearcherID', 1053, p.ridLink },
-	{ 'RKDartists', '[[Нидерландски институт за история на изкуството|RKD]]', 650, p.rkdartistsLink },
+	{ 'RKDartists', linkedLabel('Нидерландски институт за история на изкуството', 'RKD'), 650, p.rkdartistsLink },
 	{ 'RKDID', 'RKDimages ID', 350, p.rkdidLink },
-	{ 'RSL', '[[Руска държавна библиотека|RSL]]', 947, p.rslLink },
+	{ 'RSL', linkedLabel('Руска държавна библиотека', 'RSL'), 947, p.rslLink },
 	{ 'SBN', 'ICCU', 396, p.sbnLink },
-	{ 'SELIBR', '[[LIBRIS|SELIBR]]', 906, p.selibrLink },
+	{ 'SELIBR', linkedLabel('LIBRIS', 'SELIBR'), 906, p.selibrLink },
 	{ 'SIKART', 'SIKART', 781, p.sikartLink },
 	{ 'SNAC-ID', 'SNAC', 3430, p.snacLink },
-	{ 'SUDOC', '[[Система за университетска документация на Франция|SUDOC]]', 269, p.sudocLink },
+	{ 'SUDOC', linkedLabel('Система за университетска документация на Франция', 'SUDOC'), 269, p.sudocLink },
 	{ 'TA98', 'TA98', 1323, p.ta98Link },
 	{ 'TE', 'TE', 1693, p.teLink },
 	{ 'TH', 'TH', 1694, p.thLink },
 	{ 'TLS', 'TLS', 1362, p.tlsLink },
 	{ 'ULAN', 'ULAN', 245, p.ulanLink },
 	{ 'USCongress', 'US Congress', 1157, p.uscongressLink },
-	{ 'VIAF', '[[Виртуален международен нормативен архив|VIAF]]', 214, p.viafLink },
+	{ 'VIAF', linkedLabel('Виртуален международен нормативен архив', 'VIAF'), 214, p.viafLink },
 	{ 'WORLDCATID', 'WorldCat', 7859, p.worldcatidLink, category = 'WorldCat' },
 }
 
