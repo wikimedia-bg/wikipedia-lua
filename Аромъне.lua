@@ -4,7 +4,8 @@ local link_prefix = 'http://promacedonia.org/gva/gva_'
 local link_suffix = '.htm'
 
 local ranges = {
-	[0] = 'pred',
+	[2] = false,
+	[5] = 'pred',
 	[6] = false,
 	[39] = '1',
 	[120] = '2',
@@ -36,13 +37,12 @@ local function match_range(page_num)
 end
 
 function p.get_link(frame)
-	local page_num = tonumber(frame.args[1])
+	local page_ref = frame.args[1]
+	local page_num = tonumber((page_ref:gsub('^(%d+)%D.*', '%1')))
+	if not page_num then return '' end
 	local web_page = match_range(page_num)
-	if web_page then
-		return link_prefix .. web_page .. link_suffix
-	else
-		return ''
-	end
+	if not web_page then return '' end
+	return link_prefix .. web_page .. link_suffix
 end
 
 return p
