@@ -597,6 +597,7 @@ local THEMES = {
 	{ 'вино', 'Red_Wine_Glass.jpg' },
 	{ 'Властелинът на пръстените', 'Unico Anello.png' },
 	{ 'военно дело|военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
+	{ 'военно отличие|орден', 'Орден „За Храброст“ I ст. звезда 1880.jpg' },
 	{ 'вулкан', 'Noto Project Volcano Emoji.svg', 'вулкани' },
 	{ 'галактика', 'Artist’s impression of the Milky Way.jpg', 'галактики' },
 	{ 'генетика', 'DNA Overview.png' },
