@@ -233,6 +233,7 @@ local THEMES = {
 	{ 'Сан Марино', 'Flag of San Marino.svg' },
 	{ 'Сао Томе и Принсипи', 'Flag of Sao Tome and Principe.svg' },
 	{ 'Саудитска Арабия', 'Flag_of_Saudi_Arabia.svg' },
+	{ 'Света Елена, Възнесение и Тристан да Куня|Света Елена|Възнесение|Тристан да Куня', 'Flag of Saint Helena.svg' },
 	{ 'Северна Америка', 'TinyNorthAmerica.png' },
 	{ 'Северна Африка', 'Africa-countries-northern.svg' },
 	{ 'Северна Дакота', 'Flag of North Dakota.svg' },
