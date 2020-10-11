@@ -221,6 +221,7 @@ local THEMES = {
 	{ 'РЮА|ЮАР', 'Flag of South Africa.svg' },
 	{ 'Република Конго', 'Flag of the Republic of the Congo.svg' },
 	{ 'Република Сръбска|Сръбска', 'Flag of the Republika Srpska.svg|border' },
+	{ 'Реюнион', 'Armoiries Réunion.svg' },
 	{ 'Род Айлънд', 'Flag of Rhode Island.svg' },
 	{ 'Руанда', 'Flag of Rwanda.svg' },
 	{ 'Румъния', 'Flag of Romania.svg' },
