@@ -194,8 +194,9 @@ function chessboard(board_name, board_width, board_height, args, size, rev, lett
 	if ( numbers_rt ) then width = width + 18 end
 
 	local root = mw.html.create('div')
-		:addClass('thumb')
-		:addClass(align)
+		:addClass(align:match('^t?center$') and 'center thumb' or 'thumb')
+		:addClass(((align:match('^t?none$') or align:match('^t?center$')) and 'tnone') or (align:match('^t?left$') and 'tleft') or 'tright')
+		:css('margin-top', (align:match('^t?none$') or align:match('^t?center$')) and '0.5em' or nil)
 		:css('clear', clear)
 		:css('text-align', 'center')
 		:wikitext(header)
@@ -321,23 +322,23 @@ function p.board(frame)
 	local args = frame.args
 	local pargs = frame:getParent().args
 	local size = args.size or pargs.size or '26'
-	local reverse = ( args.reverse or pargs.reverse or '' ):lower() == "true"
-	local letters = ( args.letters or pargs.letters or 'both' ):lower() 
-	local numbers = ( args.numbers or pargs.numbers or 'both' ):lower() 
-	local header = args.header or pargs.header or args[2] or pargs[2] or ''
+	local reverse = (args.reverse or pargs.reverse or ''):lower() == "true"
+	local letters = (args.letters or pargs.letters or 'both'):lower() 
+	local numbers = (args.numbers or pargs.numbers or 'both'):lower() 
+	local header = args.header or pargs.header or mw.text.trim(args[2] or pargs[2])
 	local board_width = args.width or pargs.width or 8
 	local board_height = args.height or pargs.height or 8
 	local footer = args.footer or pargs.footer or args[board_width * board_height + 3] or pargs[board_width * board_height + 3] or ''
 	local footer_align = args.footer_align or pargs.footer_align or args.falign or pargs.falign or 'left'
-	local align = (args.align or pargs.align or args[1] or pargs[1] or 'tright' ):lower()
-	local clear = args.clear or pargs.clear or ( align:match('tright') and 'right' ) or 'none'
+	local align = (args.align or pargs.align or mw.text.trim(args[1] or pargs[1])):lower()
+	local clear = args.clear or pargs.clear or (align:match('^t?right$') and 'right') or 'none'
 	local fen = args.fen or pargs.fen
 	local board_name = nil
 	if (board_width == 8) and (board_height == 8) then
 		board_name = 'Chessboard480.svg'
 	end
 
-	size = mw.ustring.match( size, '[%d]+' ) or '26' -- remove px from size
+	size = mw.ustring.match(size, '[%d]+') or '26' -- remove px from size
 	if (fen) then
 		return chessboard(board_name, board_width, board_height, convertFenToArgs(fen), size, reverse, letters, numbers, header, footer, footer_align, align, clear)
 	end
@@ -350,7 +351,7 @@ end
 
 function p.fen2ascii(frame)
 	-- {{#invoke:Chessboard|fen2ascii|fen=...}}
-	local b = convertFenToArgs( frame.args.fen )
+	local b = convertFenToArgs(frame.args.fen)
 	local res = ''
 	local offset = 2
 	for row = 1,8 do
@@ -363,9 +364,9 @@ function p.fen2ascii(frame)
 	return res
 end
 
-function p.ascii2fen( frame )
+function p.ascii2fen(frame)
 	-- {{#invoke:Chessboard|ascii2fen|kl| | |....}}
-	return convertArgsToFen( frame.args, frame.args.offset or 1 )
+	return convertArgsToFen(frame.args, frame.args.offset or 1)
 end
 
 return p
