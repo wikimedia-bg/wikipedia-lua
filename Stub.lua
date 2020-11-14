@@ -532,7 +532,7 @@ local THEMES = {
 	{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
 	{ 'медик|лекар', 'Stethoscope-2.png', 'медици' },
 	{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
-	{ 'музикант', 'Musical notes.svg', 'музиканти' },
+	{ 'музикант|певец|певица|композитор', 'Musical notes.svg', 'музиканти' },
 	{ 'оператор', 'Filmreel-icon.svg', 'оператори' },
 	{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 	{ 'пират', 'Pirate Flag of Rack Rackham.svg', 'пирати' },
