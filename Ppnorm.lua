@@ -1,11 +1,11 @@
 local p = {}
 
 local function norm_seq(str)
-	return str:gsub('(%d+)%s*[,;]%s*(%d+)', '%1, %2')
+	return mw.ustring.gsub(str, '(%d+)%s*[,;]+%s*(%d+)', '%1, %2')
 end
 
 local function norm_range(str)
-	return str:gsub('(%d+)%s*[-–—]+%s*(%d+)', '%1 – %2')
+	return mw.ustring.gsub(str, '(%d+)%s*[-–—]+%s*(%d+)', '%1 – %2')
 end
 
 function p.normalize(frame)
