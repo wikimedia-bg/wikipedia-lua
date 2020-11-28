@@ -1,0 +1,16 @@
+Този модул се използва в {{ш|ppnorm}}.
+
+Self-test:
+<pre>
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+</pre>
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+{{hrf|Огнянов|2008|{{#invoke:ppnorm|normalize|24, 68 – 69}}}}
+
+<includeonly>
+<!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
+[[Категория:Модули в Уикипедия]]
+</includeonly>
