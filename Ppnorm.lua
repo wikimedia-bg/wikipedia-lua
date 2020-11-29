@@ -1,7 +1,7 @@
 local p = {}
 
 local function norm_seq(str)
-	return mw.ustring.gsub(str, '(%D+)', function(substr) return substr:gsub('^%s*[,;]+%s*$', ', ') end)
+	return mw.ustring.gsub(str, '(%D+)', function(substr) return mw.ustring.gsub(substr, '^%s*[,;]+%s*$', ', ') end)
 end
 
 local function norm_range(str)
