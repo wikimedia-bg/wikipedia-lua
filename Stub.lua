@@ -248,6 +248,7 @@ local THEMES = {
 	{ 'Сиера Леоне', 'Flag of Sierra Leone.svg' },
 	{ 'Сингапур', 'Flag of Singapore.svg' },
 	{ 'Сирия', 'Flag of the United Arab Republic.svg' },
+	{ 'Сливен', 'Updated coat of arms of Sliven.png' },
 	{ 'Словакия', 'Flag of Slovakia.svg|border' },
 	{ 'Словения', 'Flag of Slovenia.svg' },
 	{ 'Соломоновите острови|Соломонови острови', 'Flag of the Solomon Islands.svg' },
