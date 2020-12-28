@@ -664,194 +664,194 @@ local rawData = {
 		},
 		-- Approximants
 		{
-			name = "Voiceless bilabial approximant",
+			name = "Беззвучна двубърнена приблизителна съгласна",
 			symbols = { "β̞̊", "β̥˕" },
 		},
 		{
-			name = "Voiced bilabial approximant",
+			name = "Звучна двубърнена приблизителна съгласна",
 			symbols = { "β̞" },
 			audio = "Bilabial approximant.ogg"
 		},
 		{
-			name = "Voiceless labiodental approximant",
+			name = "Беззвучна устнено-зъбна приблизителна съгласна",
 			symbols = { "ʋ̥", "f̞" },
 		},
 		{
-			name = "Voiced labiodental approximant",
+			name = "Звучна устнено-зъбна приблизителна съгласна",
 			symbols = { "ʋ" },
 			audio = "Labiodental approximant.ogg"
 		},
 		{
-			name = "Voiceless dental approximant",
+			name = "Беззвучна зъбна приблизителна съгласна",
 			symbols = { "θ̞" },
 		},
 		{
-			name = "Voiced dental approximant",
+			name = "Звучна зъбна приблизителна съгласна",
 			symbols = { "ð̞" },
 			audio = "Voiced dental approximant.ogg"
 		},
 		{
-			name = "Voiceless alveolar approximant",
+			name = "Беззвучна венечна приблизителна съгласна",
 			symbols = { "ɹ̥" },
 		},
 		{
-			name = "Voiced alveolar approximant",
+			name = "Звучна венечна приблизителна съгласна",
 			symbols = { "ɹ" },
 			audio = "Alveolar approximant.ogg"
 		},
 		{
-			name = "Voiced postalveolar approximant",
+			name = "Звучна задвенечна приблизителна съгласна",
 			symbols = { "ɹ̠" },
 			audio = "Postalveolar approximant.ogg"
 		},
 		{
-			name = "Voiceless retroflex approximant",
+			name = "Беззвучна ретрофлексна приблизителна съгласна",
 			symbols = { "ɻ̊" },
 		},
 		{
-			name = "Voiced retroflex approximant",
+			name = "Звучна ретрофлексна приблизителна съгласна",
 			symbols = { "ɻ" },
 			audio = "Retroflex approximant.ogg"
 		},
 		{
-			name = "Voiceless palatal approximant",
+			name = "Беззвучна небна приблизителна съгласна",
 			symbols = { "j̊" },
 		},
 		{
-			name = "Voiced palatal approximant",
+			name = "Звучна небна приблизителна съгласна",
 			symbols = { "j", "ʝ˕", "ʝ̞" },
 			audio = "Palatal approximant.ogg"
 		},
 		{
-			name = "Voiced post-palatal approximant",
+			name = "Звучна заднебна приблизителна съгласна",
 			symbols = { "j˗", "j̠", "ɰ̟", "ɰ˖", "ʝ˕˗", "ʝ˗˕", "ʝ̞˗", "ɣ˕˖", "ɣ˖˕", "ɣ̞˖" },
 			audio = "Post-palatal approximant.ogg"
 		},
 		{
-			name = "Voiceless velar approximant",
+			name = "Беззвучна заднонебна приблизителна съгласна",
 			symbols = { "ɰ̊", "x̞", "ɣ̊˕", "ɣ̞̊" },
 		},
 		{
-			name = "Voiced velar approximant",
+			name = "Звучна заднонебна приблизителна съгласна",
 			symbols = { "ɰ", "ɣ˕", "ɣ̞" },
 			audio = "Voiced velar approximant.ogg"
 		},
 		{
-			name = "Voiced uvular approximant",
+			name = "Звучна мъжечна приблизителна съгласна",
 			symbols = { "ʁ̞" },
 			audio = "Voiced Uvular Approximant.ogg"
 		},
 		{
-			name = "Voiced pharyngeal approximant",
+			name = "Звучна глътъчна приблизителна съгласна",
 			symbols = { "ʕ̞" },
 		},
 		{
-			name = "Voiced epiglottal approximant",
+			name = "Звучна надгръклянникова приблизителна съгласна",
 			symbols = { "ʢ̞" },
 		},
 		{
-			name = "Creaky-voiced glottal approximant",
+			name = "Звучна гласилкова приблизителна съгласна",
 			symbols = { "ʔ̞", "ʔ̰" },
 		},
 		-- Taps/flaps
 		{
-			name = "Voiced bilabial flap",
+			name = "Звучна двубърнена едноударна съгласна",
 			symbols = { "ⱱ̟", "b̆" },
 		},
 		{
-			name = "Voiced labiodental flap",
+			name = "Звучна устнено-зъбна едноударна съгласна",
 			symbols = { "ⱱ" },
 			audio = "Labiodental flap.ogg"
 		},
 		{
-			name = "Voiced linguolabial tap",
+			name = "Звучна езично-устнена едноударна съгласна",
 			symbols = { "ɾ̼" },
 		},
 		{
-			name = "Voiced dental tap or flap",
+			name = "Звучна зъбна едноударна съгласна",
 			symbols = { "ɾ̪" },
 			article = "Dental tap",
 		},
 		{
-			name = "Voiceless alveolar tap or flap",
+			name = "Беззвучна венечна едноударна съгласна",
 			symbols = { "ɾ̥" },
 			article = "Voiceless alveolar tap",
 		},
 		{
-			name = "Voiced alveolar tap or flap",
+			name = "Звучна венечна едноударна съгласна",
 			symbols = { "ɾ" },
 			article = "Alveolar tap",
 			audio = "Alveolar tap.ogg"
 		},
 		{
-			name = "Voiced postalveolar flap",
+			name = "Звучна задвенечна едноударна съгласна",
 			symbols = { "ɾ̠" },
 		},
 		{
-			name = "Voiced alveolar nasal tap or flap",
+			name = "Звучна задвенечна носова едноударна съгласна",
 			symbols = { "ɾ̃", "n̆" },
 			article = "Alveolar nasal tap",
 		},
 		{
-			name = "Voiceless retroflex flap",
+			name = "Беззвучна ретрофлексна едноударна съгласна",
 			symbols = { "ɽ̊" },
 		},
 		{
-			name = "Voiced retroflex flap",
+			name = "Звучна ретрофлексна едноударна съгласна",
 			symbols = { "ɽ" },
 			audio = "Retroflex flap.ogg"
 		},
 		{
-			name = "Voiced uvular tap or flap",
+			name = "Звучна небна едноударна съгласна",
 			symbols = { "ɢ̆", "ʀ̆" },
 			article = "Uvular tap and flap",
 		},
 		{
-			name = "Voiced epiglottal tap",
+			name = "Звучна надгръклянникова едноударна съгласна",
 			symbols = { "ʡ̆", "ʢ̆" },
 			audio = "Epiglottal flap.oga"
 		},
 		-- Trills
 		{
-			name = "Voiceless bilabial trill",
+			name = "Беззвучна двубърнена трептяща съгласна",
 			symbols = { "ʙ̥" },
 			audio = "Voiceless bilabial trill with aspiration.ogg"
 		},
 		{
-			name = "Voiced bilabial trill",
+			name = "Звучна двубърнена трептяща съгласна",
 			symbols = { "ʙ" },
 			audio = "Bilabial trill.ogg"
 		},
 		{
-			name = "Voiced linguolabial trill",
+			name = "Звучна езично-устнена трептяща съгласна",
 			symbols = { "r̼" },
 			audio = "Linguolabial trill.ogg"
 		},
 		{
-			name = "Voiced dental trill",
+			name = "Звучна зъбна трептяща съгласна",
 			symbols = { "r̪" },
 		},
 		{
-			name = "Voiceless alveolar trill",
+			name = "Беззвучна венечна трептяща съгласна",
 			symbols = { "r̥" },
 			audio = "Voiceless alveolar trill.ogg"
 		},
 		{
-			name = "Voiced alveolar trill",
+			name = "Звучна венечна трептяща съгласна",
 			symbols = { "r" },
 			audio = "Alveolar trill.ogg"
 		},
 		{
-			name = "Voiceless alveolar fricative trill",
+			name = "Беззвучна венечна проходна трептяща съгласна",
 			symbols = { "r̝̊" },
 		},
 		{
-			name = "Voiced alveolar fricative trill",
+			name = "Звучна венечна проходна трептяща съгласна",
 			symbols = { "r̝" },
 			audio = "Raised alveolar non-sonorant trill.ogg"
 		},
 		{
-			name = "Voiced postalveolar trill",
+			name = "Беззвучна задвенечна трептяща съгласна",
 			symbols = { "r̠" },
 		},
 		{
@@ -859,209 +859,209 @@ local rawData = {
 			symbols = { "ɽ̊r̥", "ɽr̥" },
 		},
 		{
-			name = "Voiced retroflex trill",
+			name = "Звучна ретрофлексна трептяща съгласна",
 			symbols = { "ɽr" },
 			audio = "Voiced retroflex trill.ogg"
 		},
 		{
-			name = "Voiceless pre-uvular fricative trill",
+			name = "Беззвучна преднебна проходна трептяща съгласна",
 			symbols = { "ʀ̝̊˖", "ʀ̟̊˔" },
 		},
 		{
-			name = "Voiced pre-uvular fricative trill",
+			name = "Звучна преднебна проходна трептяща съгласна",
 			symbols = { "ʀ̝˖", "ʀ̟˔" },
 		},
 		{
-			name = "Voiceless uvular trill",
+			name = "Беззвучна мъжечна трептяща съгласна",
 			symbols = { "ʀ̥" },
 			audio = "Voiceless uvular trill.ogg"
 		},
 		{
-			name = "Voiced uvular trill",
+			name = "Звучна мъжечна трептяща съгласна",
 			symbols = { "ʀ" },
 			audio = "Uvular trill.ogg"
 		},
 		{
-			name = "Voiceless uvular fricative trill",
+			name = "Беззвучна немъжечнабна проходна трептяща съгласна",
 			symbols = { "ʀ̝̊" },
 		},
 		{
-			name = "Voiced uvular fricative trill",
+			name = "Звучна небна мъжечна трептяща съгласна",
 			symbols = { "ʀ̝" },
 		},
 		{
-			name = "Voiceless epiglottal trill",
+			name = "Беззвучна надгръклянникова трептяща съгласна",
 			symbols = { "ʜ" },
 			audio = "Voiceless epiglottal trill.ogg"
 		},
 		{
-			name = "Voiced epiglottal trill",
+			name = "Звучна надгръклянникова трептяща съгласна",
 			symbols = { "ʢ" },
 			audio = "Voiced epiglottal trill 2.ogg"
 		},
 		-- Lateral affricates
 		{
-			name = "Voiceless alveolar lateral affricate",
+			name = "Беззвучна венечна странична преградно-проходна съгласна",
 			symbols = { "tɬ", "ƛ" },
 			audio = "Voiceless alveolar lateral affricate.ogg"
 		},
 		{
-			name = "Voiced alveolar lateral affricate",
+			name = "Звучна венечна странична преградно-проходна съгласна",
 			symbols = { "dɮ" },
 			audio = "Voiced alveolar lateral affricate.ogg"
 		},
 		{
-			name = "Voiceless retroflex lateral affricate",
+			name = "Беззвучна ретрофлексна странична преградно-проходна съгласна",
 			symbols = { "ʈɭ̊˔","ʈɭ̊" },
 		},
 		{
-			name = "Voiceless palatal lateral affricate",
+			name = "Беззвучна небна странична преградно-проходна съгласна",
 			symbols = { "cʎ̝̊", "cʎ̥" },
 			audio = "Voiceless palatal lateral affricate.ogg"
 		},
 		{
-			name = "Voiced palatal lateral affricate",
+			name = "Звучна небна странична преградно-проходна съгласна",
 			symbols = { "ɟʎ̝", "ɟʎ" },
 		},
 		{
-			name = "Voiceless velar lateral affricate",
+			name = "Беззвучна заднонебна странична преградно-проходна съгласна",
 			symbols = { "kʟ̝̊", "kʟ̥" },
 			audio = "Voiceless velar lateral affricate.ogg"
 		},
 		{
-			name = "Voiced velar lateral affricate",
+			name = "Звучна заднонебна странична преградно-проходна съгласна",
 			symbols = { "ɡʟ̝", "ɡʟ" },
 			audio = "Voiced velar lateral affricate.ogg"
 		},
 		-- Lateral fricatives
 		{
-			name = "Voiceless dental lateral fricative",
+			name = "Беззвучна зъбна странична проходна съгласна",
 			symbols = { "ɬ̪" },
 		},
 		{
-			name = "Voiced dental lateral fricative",
+			name = "Звучна зъбна странична проходна съгласна",
 			symbols = { "ɮ̪", "ɮ͆" },
 		},
 		{
-			name = "Voiceless alveolar lateral fricative",
+			name = "Беззвучна венечна странична проходна съгласна",
 			symbols = { "ɬ" },
 			audio = "Voiceless alveolar lateral fricative.ogg"
 		},
 		{
-			name = "Voiced alveolar lateral fricative",
+			name = "Звучна венечна странична проходна съгласна",
 			symbols = { "ɮ" },
 			audio = "Voiced alveolar lateral fricative.ogg"
 		},
 		{
-			name = "Voiceless retroflex lateral fricative",
+			name = "Беззвучна ретрофлексна странична проходна съгласна",
 			symbols = { "ɭ̊˔", "ꞎ" },
 			audio = "Voiceless retroflex lateral fricative.ogg"
 		},
 		{
-			name = "Voiced retroflex lateral fricative",
+			name = "Звучна ретрофлексна странична проходна съгласна",
 			symbols = { "ɭ˔" },
 		},
 		{
-			name = "Voiceless alveolo-palatal lateral fricative",
+			name = "Беззвучна венечно-небна странична проходна съгласна",
 			symbols = { "ɬ̠ʲ", "ʎ̝̊˖", "ȴ̊˔" },
 		},
 		{
-			name = "Voiceless palatal lateral fricative",
+			name = "Беззвучна небна странична проходна съгласна",
 			symbols = { "ʎ̝̊" },
 			audio = "Voiceless palatal lateral fricative.ogg"
 		},
 		{
-			name = "Voiced palatal lateral fricative",
+			name = "Звучна небна странична проходна съгласна",
 			symbols = { "ʎ̝" },
 		},
 		{
-			name = "Voiceless velar lateral fricative",
+			name = "Беззвучна заднонебна странична проходна съгласна",
 			symbols = { "ʟ̝̊" },
 			audio = "Voiceless velar lateral fricative.ogg"
 		},
 		{
-			name = "Voiced velar lateral fricative",
+			name = "Звучна заднонебна странична проходна съгласна",
 			symbols = { "ʟ̝" },
 			audio = "Voiced velar lateral fricative.ogg"
 		},
 		-- Lateral approximants
 		{
-			name = "Voiced dental lateral approximant",
+			name = "Звучна зъбна странична приблизителна съгласна",
 			symbols = { "l̪" },
 		},
 		{
-			name = "Voiceless alveolar lateral approximant",
+			name = "Беззвучна венечна странична приблизителна съгласна",
 			symbols = { "l̥" },
 		},
 		{
-			name = "Voiced alveolar lateral approximant",
+			name = "Звучна венечна странична приблизителна съгласна",
 			symbols = { "l" },
 			audio = "Alveolar lateral approximant.ogg"
 		},
 		{
-			name = "Voiced postalveolar lateral approximant",
+			name = "Звучна задвенечна странична приблизителна съгласна",
 			symbols = { "l̠" },
 		},
 		{
-			name = "Voiceless retroflex lateral approximant",
+			name = "Беззвучна ретрофлексна странична приблизителна съгласна",
 			symbols = { "ɭ̊" },
 		},
 		{
-			name = "Voiced retroflex lateral approximant",
+			name = "Звучна ретрофлексна странична приблизителна съгласна",
 			symbols = { "ɭ" },
 			audio = "Retroflex lateral approximant.ogg"
 		},
 		{
-			name = "Voiceless alveolo-palatal lateral approximant",
+			name = "Беззвучна венечно-небна странична приблизителна съгласна",
 			symbols = { "l̠̊ʲ", "ʎ̟̊", "ȴ̊" },
 		},
 		{
-			name = "Voiced alveolo-palatal lateral approximant",
+			name = "Звучна венечно-небна странична приблизителна съгласна",
 			symbols = { "l̠ʲ", "ʎ̟", "ȴ" },
 		},
 		{
-			name = "Voiceless palatal lateral approximant",
+			name = "Беззвучна небна странична приблизителна съгласна",
 			symbols = { "ʎ̥" },
 		},
 		{
-			name = "Voiced palatal lateral approximant",
+			name = "Звучна небна странична приблизителна съгласна",
 			symbols = { "ʎ" },
 			audio = "Palatal lateral approximant.ogg"
 		},
 		{
-			name = "Voiceless velar lateral approximant",
+			name = "Беззвучна заднонебна странична приблизителна съгласна",
 			symbols = { "ʟ̥" },
 		},
 		{
-			name = "Voiced velar lateral approximant",
+			name = "Звучна заднонебна странична приблизителна съгласна",
 			symbols = { "ʟ" },
 			audio = "Velar lateral approximant.ogg"
 		},
 		{
-			name = "Voiced uvular lateral approximant",
+			name = "Звучна мъжечна странична приблизителна съгласна",
 			symbols = { "ʟ̠" },
 			audio = "Uvular lateral approximant.ogg"
 		},
 		-- Lateral taps/flaps
 		{
-			name = "Voiceless alveolar lateral flap",
+			name = "Беззвучна венечна странична едноударна съгласна",
 			symbols = { "ɺ̥" },
 		},
 		{
-			name = "Voiced alveolar lateral flap",
+			name = "Звучна венечна странична едноударна съгласна",
 			symbols = { "ɺ" },
 			audio = "Alveolar lateral flap.ogg"
 		},
 		{
-			name = "Voiced retroflex lateral flap",
+			name = "Звучна ретрофлексна странична едноударна съгласна",
 			symbols = { "ɭ̆" },
 		},
 		{
-			name = "Voiced palatal lateral flap",
+			name = "Звучна небна странична едноударна съгласна",
 			symbols = { "ʎ̆" },
 		},
 		{
-			name = "Voiced velar lateral tap",
+			name = "Звучна заднонебна странична едноударна съгласна",
 			symbols = { "ʟ̆" },
 		},
 		-- NON-PULMONIC CONSONANTS
