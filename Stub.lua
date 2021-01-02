@@ -1,5 +1,6 @@
 local p = {}
 
+local CATEGORY = ''
 local STUBCAT = 'Категория:Мъничета'
 
 local THEMES = {
@@ -739,9 +740,55 @@ local function printStub(theme, image, plural)
 	return tostring(stub)
 end
 
+local function checkStubSize()
+	local content = mw.title.getCurrentTitle():getContent()
+	if content then
+		-- без имена на раздели
+		content = mw.ustring.gsub(content, '\n=+[^=]+=+\n', '')
+		
+		-- без категории
+		content = mw.ustring.gsub(content, '%[%[[Кк]атегория:[^%[%]]+%]%]', '')
+		
+		-- без коментари
+		content = mw.ustring.gsub(content, '<!%-%-.-%-%->', '')
+		
+		-- без източници
+		content = mw.ustring.gsub(content, '<ref%s*.->.-</ref>', '')
+		
+		-- без галерии
+		content = mw.ustring.gsub(content, '<gallery%s*.->.-</gallery>', '')
+		
+		-- без таблици
+		content = mw.ustring.gsub(content, '<table%s*.->.-</table>', '')
+		content = mw.ustring.gsub(content, '%{%|.-%|%}', '')
+		
+		-- [A] => A
+		content = mw.ustring.gsub(content, '%[%[([^%|%[%]]+)%]%]', '%1')
+
+		-- [Картинка:F|A] и [B|A] => A
+		repeat temp = content
+			content = mw.ustring.gsub(content, '%[%[[^%[%]]+%|([^%[%]]+)%]%]', '%1')
+		until content == temp
+
+		-- без шаблони
+		repeat temp = content
+			content = mw.ustring.gsub(content, '%{%{[^%{%}]+%}%}', '')
+		until content == temp
+
+		-- поне 4 букви в дума на кирилица
+		local _, words = mw.ustring.gsub(content, '[А-я][А-я][А-я][А-я]+', '')
+		if words >= 500 then
+			-- мъниче с над 500 думи
+			CATEGORY = CATEGORY .. '[[Категория:Мъничета с над 500 думи]]'
+		elseif content:len() >= 10000 then
+			-- мъниче с размер над 10kb
+			CATEGORY = CATEGORY .. '[[Категория:Мъничета над 10kb]]'
+		end
+	end
+end
+
 function p.get(frame)
 	local stub = ''
-	local category = ''
 	if frame.args[1] and frame.args[1] ~= '' then
 		for i, theme in pairs(frame.args) do
 			if theme ~= '' then
@@ -752,7 +799,7 @@ function p.get(frame)
 						if toLower(theme) == toLower(themes[j]) then
 							local plural = THEMES[i][3]
 							stub = stub .. printStub(themes[1], THEMES[i][2], plural)
-							category = string.format('%s[[%s за %s]]', category, STUBCAT, plural and plural or themes[1])
+							CATEGORY = string.format('%s[[%s за %s]]', CATEGORY, STUBCAT, plural and plural or themes[1])
 							found = true
 							break
 						end
@@ -761,32 +808,18 @@ function p.get(frame)
 				
 				if not found then
 					stub = stub .. '<div><strong class="error">Грешка в записа: Неразпозната тема "' .. frame.args[i] .. '"</strong></div>'
-					category = category .. '[[Категория:Страници с грешки]]'
+					CATEGORY = CATEGORY .. '[[Категория:Страници с грешки]]'
 				end
 			end
 		end
 	else
 		stub = printStub(nil, 'M Puzzle.png')
-		category = string.format('[[%s]]', STUBCAT)
+		CATEGORY = string.format('[[%s]]', STUBCAT)
 	end
-	
-	-- мъничета с размер над 10kb
-	local content = mw.title.getCurrentTitle():getContent()
-	if content:len() >= 10000 then
-		category = category .. '[[Категория:Мъничета над 10kb]]'
-	-- elseif content:len() >= 5000 then
-	--	category = category .. '[[Категория:Мъничета над 5kb]]'
-	end
-	
-	-- TODO: мъничета с над 500 думи (на кирилица, поне 4 букви)
-	-- без имена на раздели, картинки, категории и източници
-	-- без съдържание на шаблони и таблици)
-	-- if content then
-	--	category = category .. '[[Категория:Мъничета с над 500 думи]]'
-	-- end
 	
 	if mw.title.getCurrentTitle().namespace == 0 then
-		stub = stub .. category
+		checkStubSize()
+		stub = stub .. CATEGORY
 	end
 	
 	return stub
