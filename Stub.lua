@@ -769,7 +769,22 @@ function p.get(frame)
 		stub = printStub(nil, 'M Puzzle.png')
 		category = string.format('[[%s]]', STUBCAT)
 	end
-		
+	
+	-- мъничета с размер над 10kb
+	local content = mw.title.getCurrentTitle():getContent()
+	if content:len() >= 10000 then
+		category = category .. '[[Категория:Мъничета над 10kb]]'
+	-- elseif content:len() >= 5000 then
+	--	category = category .. '[[Категория:Мъничета над 5kb]]'
+	end
+	
+	-- TODO: мъничета с над 500 думи (на кирилица, поне 4 букви)
+	-- без имена на раздели, картинки, категории и източници
+	-- без съдържание на шаблони и таблици)
+	-- if content then
+	--	category = category .. '[[Категория:Мъничета с над 500 думи]]'
+	-- end
+	
 	if mw.title.getCurrentTitle().namespace == 0 then
 		stub = stub .. category
 	end
