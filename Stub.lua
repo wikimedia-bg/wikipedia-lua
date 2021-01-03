@@ -476,6 +476,7 @@ local THEMES = {
 	{ 'техника|технология', 'Spur Gear 12mm, 18t.svg' },
 	{ 'титла|пост|длъжност', 'Crown of Italy.svg', 'титли' },
 	{ 'търговия', 'CashRegister.svg' },
+	{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
 	{ 'фармакология', 'Emoji u1f48a.svg' },
 	{ 'физика|ядрена физика', 'Science.jpg' },
 	{ 'физикохимия', 'Anode effect steel.jpg' },
