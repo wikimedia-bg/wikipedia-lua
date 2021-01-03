@@ -743,6 +743,8 @@ end
 local function checkStubSize()
 	local content = mw.title.getCurrentTitle():getContent()
 	if content then
+		local size = content:len()
+		
 		-- без имена на раздели
 		content = mw.ustring.gsub(content, '\n=+[^=]+=+\n', '')
 		
@@ -780,7 +782,7 @@ local function checkStubSize()
 		if words >= 500 then
 			-- мъниче с над 500 думи
 			CATEGORY = CATEGORY .. '[[Категория:Мъничета с над 500 думи]]'
-		elseif content:len() >= 10000 then
+		elseif size >= 10000 then
 			-- мъниче с размер над 10kb
 			CATEGORY = CATEGORY .. '[[Категория:Мъничета над 10kb]]'
 		end
