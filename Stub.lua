@@ -318,7 +318,6 @@ local THEMES = {
 	{ 'Южна Осетия', 'South-Osseia-contur.png' },
 	{ 'Юта', 'Flag of Utah.svg' },
 	{ 'Ямайка', 'Flag of Jamaica.svg' },
-	{ 'Ямало-Ненецки автономен окръг', 'Flag-map of Yamalo-Nenets Autonomous Okrug.svg' },
 	{ 'Япония', 'Flag of Japan.svg|border' },
 
 	-- област
@@ -365,7 +364,21 @@ local THEMES = {
 	{ 'Уляновска област', 'Ulyan-obl-geo-stub.png' },
 	{ 'Челябинска област', 'Chelyab-obl-geo-stub.svg' },
 	{ 'Ярославска област', 'Flag-map of Yaroslavl Oblast.svg' },
-	
+
+	-- окръг
+	{ 'окръг Аламида', 'California map showing Alameda County.png' },
+	{ 'окръг Контра Коста', 'California map showing Contra Costa County.png' },
+	{ 'окръг Марин', 'California map showing Marin County.png' },
+	{ 'окръг Напа', 'California map showing Napa County.png' },
+	{ 'окръг Сан Матео', 'California map showing San Mateo County.png' },
+	{ 'окръг Сан Франциско', 'California map showing San Francisco County.png' },
+	{ 'окръг Санта Клара', 'California map showing Santa Clara County.png' },
+	{ 'окръг Санта Круз', 'California map showing Santa Cruz County.png' },
+	{ 'окръг Солано', 'California map showing Solano County.png' },
+	{ 'окръг Сонома', 'California map showing Sonoma County.png' },
+	{ 'Ханти-Мансийски автономен окръг', 'Khanty-mansi-geo-stub.svg' },
+	{ 'Ямало-Ненецки автономен окръг', 'Flag-map of Yamalo-Nenets Autonomous Okrug.svg' },
+
 	-- гео
 	{ 'място', 'Geographylogo.svg' },
 	{ 'вид място', 'Geographylogo.svg', 'видове места' },
@@ -379,18 +392,6 @@ local THEMES = {
 	{ 'място в Турция|Турция-гео', 'Flag-map of Turkey.svg' },
 	{ 'място в Чад|Чад-гео', 'Flag-map of Chad.svg' },
 	{ 'място в Швеция|Швеция-гео', 'Sverige FlaggKarta.svg' },
-
-	-- окръг
-	{ 'окръг Аламида', 'California map showing Alameda County.png' },
-	{ 'окръг Контра Коста', 'California map showing Contra Costa County.png' },
-	{ 'окръг Марин', 'California map showing Marin County.png' },
-	{ 'окръг Напа', 'California map showing Napa County.png' },
-	{ 'окръг Сан Матео', 'California map showing San Mateo County.png' },
-	{ 'окръг Сан Франциско', 'California map showing San Francisco County.png' },
-	{ 'окръг Санта Клара', 'California map showing Santa Clara County.png' },
-	{ 'окръг Санта Круз', 'California map showing Santa Cruz County.png' },
-	{ 'окръг Солано', 'California map showing Solano County.png' },
-	{ 'окръг Сонома', 'California map showing Sonoma County.png' },
 	
 	-- селище
 	{ 'селище|населено място|град|село', 'Pictograma Poblado.PNG', 'селища' },
@@ -584,7 +585,6 @@ local THEMES = {
 	{ 'НЛО', 'Nuvola apps konquest.png' },
 	{ 'Нацистка Германия', 'Reichsadler.svg' },
 	{ 'ПФК Светкавица', 'Svetkavitza.png' },
-	{ 'Ханти-Мансийски автономен окръг', 'Khanty-mansi-geo-stub.svg' },
 	{ 'Хари Потър', 'HP1 template.gif' },
 	{ 'ЦСКА (София)|ЦСКА', 'CSKA Sofia logo.svg', 'ЦСКА' },
 	{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
