@@ -399,13 +399,18 @@ local THEMES = {
 		{ 'биология', 'Butterfly_template.png' },
 			{ 'анатомия', 'Gray188.png' },
 			{ 'биохимия', 'AlphaHelixSection (yellow).svg' },
+			{ 'вирус|вируси', 'Polio.jpg', 'вируси' },
 			{ 'генетика', 'DNA Overview.png' },
+			{ 'гъба|гъби', 'Karl_Johanssvamp,_Iduns_kokbok.jpg', 'гъби' },
+			{ 'еукариот|еукариоти', 'Cronoflagelado2.svg', 'еукариоти' },
 			{ 'животно|животни', 'Crystal Clear app babelfish vector.svg', 'животни' },
 				{ 'влечуги|влечуго', 'Tortoise (PSF).png'},
 				{ 'етология', 'Chicken on a skateboard.JPG' },
 				{ 'куче|кинология', 'Dog.svg', 'кучета' },
 				{ 'птици', 'Ruddy-turnstone-icon.png' },
 			{ 'микробиология', 'Ecoli colonies.png' },
+			{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
+			{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
 			{ 'растение|растения', 'Dahlia redoute.JPG', 'растения' },
 				{ 'ботаника', 'Leaf.png' },
 					{ 'алгология', 'Algae Graphic.svg' },
@@ -599,13 +604,6 @@ local THEMES = {
 		{ 'християнски духовник|епископ|игумен', 'Gold cross.png ', 'християнски духовници' },		
 			{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 	
-	-- ОРГАНИЗМИ
-	{ 'вирус|вируси', 'Polio.jpg', 'вируси' },
-	{ 'гъба|гъби', 'Karl_Johanssvamp,_Iduns_kokbok.jpg', 'гъби' },
-	{ 'еукариот|еукариоти', 'Cronoflagelado2.svg', 'еукариоти' },
-	{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
-	{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
-
 	-- ДРУГИ
 	{ 'Картун Нетуърк|Cartoon Network', 'Cartoon_Network_box_device.svg' },
 	{ 'ГНУ|линукс', 'Heckert GNU white.png' },
