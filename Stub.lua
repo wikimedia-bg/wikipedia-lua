@@ -380,7 +380,7 @@ local THEMES = {
 	{ 'Ямало-Ненецки автономен окръг', 'Flag-map of Yamalo-Nenets Autonomous Okrug.svg' },
 
 	-- гео
-	{ 'места|място', 'Geographylogo.svg' },
+	{ 'място', 'Geographylogo.svg', 'места' },
 	{ 'вид място', 'Geographylogo.svg', 'видове места' },
 	{ 'географски обект', 'Geographylogo.svg' },
 	{ 'измислено място', 'Crystal Clear app wp.png', 'измислени места' },
