@@ -626,7 +626,7 @@ local THEMES = {
 	{ 'даоизъм', 'Yin and Yang symbol.svg' },
 	{ 'десерт', 'Cassata.jpg', 'десерти' },
 	{ 'дзен', 'Enso2.png' },
-	{ 'документ|договор', 'Crystal Clear mimetype document2.png', 'документи' },
+	{ 'документ|договор|стандарт', 'Crystal Clear mimetype document2.png', 'документи' },
 	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
 	{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
 	{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
