@@ -844,7 +844,7 @@ local function getClassification(itemId, isHighlighted, taxons)
 		
 		-- bugfix: color for Viruses when rank is not defined 
 		if latinName == 'Virus' then
-			COLOR = COLORMAP['VIRUS']
+			COLOR = COLORMAP.VIRUS
 		end
 		
 		local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
