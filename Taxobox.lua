@@ -5,9 +5,9 @@ local KINGDOM
 local LATINNAME
 local AUTHORITY
 local HYBRID
-local COLOR
 
 local CATEGORIES = {}
+local COLOR = '#FFF'
 local MALE = 'мъжки|♂'
 local FEMALE = 'женски|♀'
 local MONTHS = { 'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември' }
@@ -842,9 +842,8 @@ local function getClassification(itemId, isHighlighted, taxons)
 			KINGDOM = latinName
 		end
 		
-		-- bugfix: color for Viruses when rank is not defined 
-		if latinName == 'Virus' then
-			COLOR = COLORMAP.VIRUS
+		if COLOR == '#FFF' and COLORMAP[latinName:upper()] then
+			COLOR = COLORMAP[latinName:upper()]
 		end
 		
 		local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
@@ -1256,15 +1255,7 @@ local function getTaxobox(itemId)
 	end
 	
 	-- GET COLOR
-	if taxobox.commonname then
-		taxobox.color = '#DDD'
-	elseif KINGDOM then
-		taxobox.color = COLORMAP[KINGDOM:upper()] or '#FFF'
-	elseif COLOR then
-		taxobox.color = COLOR
-	else
-		taxobox.color = '#FFF'
-	end
+	taxobox.color = taxobox.commonname and '#DDD' or COLOR
 
 	return taxobox
 end
