@@ -5,6 +5,7 @@ local KINGDOM
 local LATINNAME
 local AUTHORITY
 local HYBRID
+local COLOR
 
 local CATEGORIES = {}
 local MALE = 'мъжки|♂'
@@ -841,6 +842,11 @@ local function getClassification(itemId, isHighlighted, taxons)
 			KINGDOM = latinName
 		end
 		
+		-- bugfix: color for Viruses when rank is not defined 
+		if latinName == 'Virus' then
+			COLOR = COLORMAP['VIRUS']
+		end
+		
 		local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 		local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 		isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
@@ -1254,6 +1260,8 @@ local function getTaxobox(itemId)
 		taxobox.color = '#DDD'
 	elseif KINGDOM then
 		taxobox.color = COLORMAP[KINGDOM:upper()] or '#FFF'
+	elseif COLOR then
+		taxobox.color = COLOR
 	else
 		taxobox.color = '#FFF'
 	end
