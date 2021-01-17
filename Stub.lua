@@ -601,7 +601,7 @@ local THEMES = {
 		{ 'светец', 'Saint-stub-icon.jpg', 'светци' },
 		{ 'тамплиери', 'Cross templars.svg' },
 		{ 'тевтонци', 'CHE Köniz COA.svg' },
-		{ 'християнски духовник|епископ|игумен', 'Gold cross.png ', 'християнски духовници' },		
+		{ 'християнски духовник|епископ|игумен', 'Coa Illustration Cross Greek.svg ', 'християнски духовници' },		
 			{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 	
 	-- ДРУГИ
@@ -696,7 +696,7 @@ local THEMES = {
 	{ 'хардуер', 'Nuvola apps kcmprocessor.png' },
 	{ 'храм', 'Religion 07.svg', 'храмове' },
 	{ 'храна', 'Foodlogo2.svg', 'храна и напитки' },
-	{ 'християнство', 'Gold cross.png ' },
+	{ 'християнство', 'Coa Illustration Cross Greek.svg ' },
 	{ 'шинтоизъм', 'Black Shintoist symbol.PNG' },
 	{ 'юдаизъм', 'Star of David2.svg' },
 	{ 'явление', 'Noun Big Bang Icon 58857.svg', 'явления' },
