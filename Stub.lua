@@ -639,7 +639,7 @@ local THEMES = {
 	{ 'книга', 'Books-aj.svg aj ashton 01.svg', 'книги' },
 	{ 'комикси|комикс', 'Speech balloon.svg' },
 	{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
-	{ 'корабоплаване', 'ShipClipart.png' },
+	{ 'корабоплаване|кораб', 'ShipClipart.png' },
 	{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
 	{ 'литература', 'Book template.svg' },
 	{ 'обзавеждане|мебел', 'Furniture template.svg' },
