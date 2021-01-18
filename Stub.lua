@@ -474,7 +474,7 @@ local THEMES = {
 			{ 'органична химия', 'Cyclooctatetraene-3D-vdW.png' },
 
 		-- други
-		{ 'авиация', 'Aero-stub img.svg' },
+		{ 'авиация|самолет|хеликоптер', 'Aero-stub img.svg' },
 		{ 'анимация', 'Animhorse.gif' },
 		{ 'археология', 'Farm-Fresh vase.png' },
 		{ 'архитектура|архитект', 'Corinthian_capital.png' },
