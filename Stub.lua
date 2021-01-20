@@ -220,7 +220,7 @@ local THEMES = {
 		{ 'Дания', 'Flag of Denmark.svg' },
 		{ 'Древна Гърция', 'ParthenonRekonstruktion.jpg' },
 		{ 'Древен Рим', 'She-wolf suckles Romulus and Remus.jpg' },
-		{ 'Европейския съюз|ЕС', 'Flag of Europe.svg' },
+		{ 'Европейския съюз|Европейски съюз|ЕС', 'Flag of Europe.svg' },
 		{ 'Естония', 'Flag of Estonia.svg|border' },
 		{ 'Ирландия|Република Ирландия|Ейре', 'Flag of Ireland.svg|border' },
 		{ 'Исландия', 'Flag of Iceland.svg' },
