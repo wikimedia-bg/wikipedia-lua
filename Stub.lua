@@ -441,6 +441,7 @@ local THEMES = {
 		{ 'науки за Земята', 'Terrestrial globe.svg' },
 			{ 'география|географ', 'Geographylogo.svg' },
 				{ 'географски обект', 'Geographylogo.svg' },
+					{ 'административна единица|окръг|община|провинция|щат|департамент|област', 'Rajasthan-stub.svg', 'административни единици' },
 					{ 'вид място', 'Geographylogo.svg', 'видове места' },
 					{ 'водоем|море|язовир|езеро|река', 'Roundtanglelake.JPG', 'водоеми' },
 						{ 'язовир', 'Presa de contraforts.svg', 'язовири' },
