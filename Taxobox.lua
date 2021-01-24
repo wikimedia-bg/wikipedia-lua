@@ -970,9 +970,11 @@ local function getTaxobox(itemId)
 										sex = to.link(FEMALE) .. ' ' .. taxobox.title
 									end
 									if sexImage1 then
-										sexImage2 = { name = image.mainsnak.datavalue.value, description = sex }
+										if sexImage1.id ~= sexItemId then
+											sexImage2 = { name = image.mainsnak.datavalue.value, description = sex }
+										end
 									else
-										sexImage1 = { name = image.mainsnak.datavalue.value, description = sex }
+										sexImage1 = { name = image.mainsnak.datavalue.value, description = sex, id = sexItemId }
 									end
 								end
 							end
