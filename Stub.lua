@@ -462,7 +462,7 @@ local THEMES = {
 				{ 'палеонтология', 'Anning plesiosaur.jpg' },
 				{ 'сеизмология|земетресение', 'Seismographs.jpg' },
 			{ 'екология', 'Forestry Leśnictwo (Beentree).svg' },
-				{ 'защитена територия', 'Rayskoto-pruskalo-waterfall-2.jpg', 'защитени територии' },
+				{ 'защитена територия|резерват|национален парк', 'Rayskoto-pruskalo-waterfall-2.jpg', 'защитени територии' },
 			{ 'метеорология', 'Cyclone Catarina from the ISS on March 26 2004.JPG' },
 		{ 'философия', 'Philosophy_template.gif' },
 			{ 'конфуцианство', 'Black Confucian symbol.PNG' },
