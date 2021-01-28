@@ -503,7 +503,6 @@ local THEMES = {
 		{ 'митология', 'Draig.svg' },
 		{ 'мода|манекен', 'Signorina in viola.svg' },
 		{ 'музика', 'Eighth notes and rest.png' },
-		{ 'нанотехнология', 'Graphane.png' },
 		{ 'общество', 'Society.png' },
 		{ 'политика', 'Society.png' },
 		{ 'политология', 'Society.png' },
