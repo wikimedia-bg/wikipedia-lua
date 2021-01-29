@@ -746,7 +746,7 @@ local function checkStubSize()
 
 		-- без шаблони и уикитаблици
 		content = mw.ustring.gsub(content, '%b{}', function(cap)
-			if mw.ustring.match(cap, '^{[{|}]') and mw.ustring.match(cap, '[}|]}$') then
+			if mw.ustring.match(cap, '^{[{|]') and mw.ustring.match(cap, '[|}]}$') then
 				cap = ''
 			end
 			return cap
