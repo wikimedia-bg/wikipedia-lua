@@ -513,7 +513,7 @@ local THEMES = {
 		{ 'техника|технология|инженерство', 'Spur Gear 12mm, 18t.svg' },
 		{ 'търговия', 'CashRegister.svg' },
 		{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
-		{ 'фотография|фотограф', 'Crystal Clear device camera.png' },
+		{ 'фотография', 'Crystal Clear device camera.png' },
 		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
 		{ 'ядрена енергетика', 'Nuclear power plant.svg' },
 	
@@ -576,7 +576,7 @@ local THEMES = {
 			{ 'физик', 'Albert_Einstein_Head.jpg', 'физици' },
 			{ 'философ', 'Head Platon Glyptothek Munich 548.jpg', 'философи' },
 			{ 'химик', 'AlfredNobel adjusted.jpg', 'химици' },
-		{ 'художник', 'Vincent Willem van Gogh 107.jpg', 'художници' },
+		{ 'художник|фотограф', 'Vincent Willem van Gogh 107.jpg', 'художници' },
 			{ 'скулптор', 'Auguste Rodin - Penseur.png', 'скулптори' },
 		{ 'юрист', 'Scale of justice.svg', 'юристи' },
 		
