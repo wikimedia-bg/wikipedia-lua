@@ -433,7 +433,7 @@ local THEMES = {
 		{ 'лингвистика|езикознание|фонетика', 'Linguistics stub.svg' },
 			{ 'име', 'IPA Unicode 0x026E.svg', 'имена' },
 				{ 'титла|пост|длъжност', 'Crown of Italy.svg', 'титли' },
-			{ 'език|диалект|езикова група|езиково семейство|говор', 'Noun project 1822.svg', 'езици' },
+			{ 'език|диалект|езикова група|езиково семейство|говор', 'Noun project 1822.svg', 'езици', link = 'език (лингвистика)' },
 		{ 'математика', 'e-to-the-i-pi.svg' },
 			{ 'статистика', 'Bellcurve.svg' },
 		{ 'етика', 'Sanzio_01_Plato_Aristotle.jpg' },
@@ -705,11 +705,12 @@ local function toLower(str)
 	return mw.language.getContentLanguage():lc(str)
 end
 
-local function printStub(theme, image, plural)
+local function printStub(theme, image, plural, pagelink)
 	local editLink = tostring(mw.uri.canonicalUrl(mw.title.getCurrentTitle().fullText, 'action=edit'))
 	
 	local themeText = ''
 	if theme then
+		if pagelink then theme = pagelink .. '|' .. theme end
 		if plural then
 			themeText = ' за [[' .. theme .. ']]'
 		else
@@ -823,7 +824,7 @@ function p.get(frame)
 					for j=1, #themes do
 						if toLower(theme) == toLower(themes[j]) then
 							local plural = THEMES[i][3]
-							stub = stub .. printStub(themes[1], THEMES[i][2], plural)
+							stub = stub .. printStub(themes[1], THEMES[i][2], plural, THEMES[i]['link'])
 							CATEGORY = string.format('%s[[%s за %s]]', CATEGORY, STUBCAT, plural and plural or themes[1])
 							found = true
 							break
