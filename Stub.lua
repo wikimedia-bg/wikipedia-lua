@@ -509,6 +509,7 @@ local THEMES = {
 		{ 'право', 'Scale of justice 2.svg' },
 		{ 'псевдонаука', 'Outline-body-Aura.png' },
 		{ 'род|династия|семейство|фамилия', 'OOjs UI-like kinship-progressive-black.svg', 'родове' },
+		{ 'свойство', 'Hoejde.png', 'свойства' },
 		{ 'социална група|общност', 'Society.png', 'социални групи' },
 		{ 'техника|технология|инженерство', 'Spur Gear 12mm, 18t.svg' },
 		{ 'търговия', 'CashRegister.svg' },
