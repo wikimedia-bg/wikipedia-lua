@@ -90,7 +90,7 @@ function p._link(s, displayText, prefix, suffix, audio, addSpan, errorText)
 			if audio ~= '' then
 				audio = mw.getCurrentFrame():expandTemplate{
 					title = 'Template:Audio',
-					args = { audio, 'listen', help = 'no' }
+					args = { audio, 'звук', help = 'no' }
 				}
 				audio = ' <span class="nowrap" style="font-size:85%">(' .. audio
 					.. ')</span>'
