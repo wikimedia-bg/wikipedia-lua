@@ -491,7 +491,7 @@ local THEMES = {
 		{ 'електротехника', 'Transformer-hightolow-ironcore.png' },
 		{ 'енергетика', 'Rostock Steinkohlekraftwerk 2.jpg' },
 		{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
-		{ 'изкуство', 'David face.png' },
+		{ 'изкуство|фотография', 'David face.png' },
 		{ 'икономика', 'TwoCoins.svg' },
 		{ 'индуизъм', 'AUM symbol, the primary (highest) name of the God as per the Vedas.svg' },
 		{ 'исторически период|епоха|ера', 'P writing icon.svg', 'исторически периоди' },
@@ -514,7 +514,6 @@ local THEMES = {
 		{ 'техника|технология|инженерство', 'Spur Gear 12mm, 18t.svg' },
 		{ 'търговия', 'CashRegister.svg' },
 		{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
-		{ 'фотография', 'Crystal Clear device camera.png' },
 		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
 		{ 'ядрена енергетика', 'Nuclear power plant.svg' },
 	
