@@ -641,7 +641,7 @@ local THEMES = {
 	{ 'корабоплаване|кораб', 'ShipClipart.png' },
 	{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
 	{ 'литература', 'Book template.svg' },
-	{ 'обзавеждане|мебел', 'Furniture template.svg' },
+	{ 'мебел|обзавеждане', 'Furniture template.svg', 'мебели' },
 	{ 'маркетинг', 'Human-emblem-marketing.svg' },
 	{ 'Междузвездни войни', 'Star_wars2.svg' },
 	{ 'международни отношения', 'Society.png' },
