@@ -697,38 +697,48 @@ local function getFileDescription(claim)
 	end
 end
 
-local function getDate(value, getBCE)
+local function getDate(value, rawNum)
 	-- '+2020-01-22T11:06:23Z'
 	local datetime = value.time
 	if datetime then
 		-- { 2020, 1, 22, 11, 6, 23 }
 		local datetimeTable = {}
-		for m in string.gmatch(datetime, '[^%d]*0?(%d+)[^%d]*') do
-			table.insert(datetimeTable, m)
+		for m in mw.ustring.gmatch(datetime, '%d+') do
+			table.insert(datetimeTable, tonumber(m))
 		end
 		local year = datetimeTable[1]
 		if year then
-			if getBCE then
-				-- million years BCE
-				if datetime:sub(1, 1) == '-' then
-					if mw.ustring.match(year, '^%d+$') then
-						return tonumber(year) / 1000000
+			if rawNum then
+				if value.precision > 3 then -- value smaller than million/billion years
+					local present = 1950
+					if datetime:sub(1, 1) == '-' then -- is BC
+						year = present + year
+					else -- is AD
+						if year < present then
+							year = present - year
+						else
+							year = 0
+						end
 					end
 				end
+				-- convert to Ma; truncate to 4 digits after the decimal point; strip the trailing zero(s)
+				year = mw.ustring.gsub(mw.ustring.format('%.4f', (year / 1000000)), '0+$', '')
+				return tonumber(year)
 			else
+				local appr = '<abbr title="около">ок.</abbr> '
 				if value.precision == 7 then
-					-- 16 век
-					return (year / 100) .. ' век'
+					-- ок. 16. век
+					return appr .. (year / 100) .. '. век'
 				elseif value.precision == 8 then
-					-- 1700-те г.
-					return year .. '-те г.'
+					-- ок. 1700 г.
+					return appr .. year .. ' г.'
 				elseif value.precision == 9 then
 					-- 2020 г.
 					return year .. '&nbsp;г.'
 				elseif value.precision == 11 then
 					-- 22 януари 2020 г.
 					if datetimeTable[3] and datetimeTable[2] then
-						return string.format('%s %s %s&nbsp;г.', datetimeTable[3], MONTHS[tonumber(datetimeTable[2])], year)
+						return string.format('%s %s %s&nbsp;г.', datetimeTable[3], MONTHS[datetimeTable[2]], year)
 					end
 				end
 			end
@@ -1239,8 +1249,8 @@ local function getTaxobox(itemId)
 		
 		local startTimeStage = getFossilStageName(startTime)
 		local endTimeStage = getFossilStageName(endTime)
-		local timeStage = startTimeStage .. (startTimeStage ~= endTimeStage and ' – ' .. endTimeStage or '')
-		local time = startTime .. (startTime ~= endTime and '–' .. endTime or '')
+		local timeStage = startTimeStage .. (startTimeStage ~= endTimeStage and ' – ' .. endTimeStage or '')
+		local time = mw.ustring.gsub(startTime .. (startTime > endTime and ' – ' .. endTime or ''), '%.', ',')
 		local text = string.format('%s, %s Ma', timeStage, time)
 		
 		taxobox.fossilRange = createFossilScaleNode(text, startTime, endTime, earliestTime, latestTime)
