@@ -1,7 +1,8 @@
 local p = {}
 
 local pref = '[[File:Cyrillic '
-local suff = ' Lazov.svg|x20px|sub]]'
+local suff1 = ' Lazov.svg|x'
+local suff2 = 'px|sub]]'
 
 local lookup = {
 	['а'] = 'a',
@@ -14,6 +15,7 @@ local lookup = {
 function p.render(frame)
 	local istr = frame.args[1]
 	local ostr = ''
+	local fsiz = frame.args[2]
 	for l in mw.ustring.gmatch( istr, '.' ) do
 		if l == ' ' then
 			ostr = ostr .. ' '
@@ -24,7 +26,7 @@ function p.render(frame)
 				case = 'capital '
 				l = mw.ustring.lower(l)
 			end
-			ostr = ostr .. pref .. case .. lookup[l] .. suff
+			ostr = ostr .. pref .. case .. lookup[l] .. suff1 .. fsiz .. suff2
 		end
 	end
 	return ostr
