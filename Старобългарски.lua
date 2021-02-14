@@ -38,7 +38,9 @@ local lookup = {
 	['ц'] = 'tse',
 	['ч'] = 'che',
 	['ш'] = 'sha',
-	['щ'] = 'shcha',	
+	['щ'] = 'shcha',
+	['ъ'] = 'hardsign',
+	['ы'] = 'yeru',
 	
 }
 
