@@ -37,7 +37,8 @@ local lookup = {
 	['Ѻ'] = 'roundomega',
 	['ц'] = 'tse',
 	['ч'] = 'che',
-	
+	['ш'] = 'sha',
+	['щ'] = 'shcha',	
 	
 }
 
