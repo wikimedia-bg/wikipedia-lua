@@ -10,6 +10,10 @@ local lookup = {
 	['в'] = 've',
 	['г'] = 'ghe',
 	['д'] = 'de',
+	['е'] = 'ie',
+	['ж'] = 'zhe',
+	['ѕ'] = 'dze',
+	['з'] = 'ze',
 }
 
 function p.render(frame)
