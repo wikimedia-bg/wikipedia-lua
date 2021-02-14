@@ -16,7 +16,7 @@ function p.render(frame)
 	local istr = frame.args[1]
 	local ostr = ''
 	local fsiz = frame.args[2]
-	if fsiz == nil then fsiz = '20' end
+	if ( fsiz == nil or fsiz == '' ) then fsiz = '20' end
 	for l in mw.ustring.gmatch( istr, '.' ) do
 		if l == ' ' then
 			ostr = ostr .. ' '
