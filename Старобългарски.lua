@@ -1,7 +1,7 @@
 local p = {}
 
 local pref = '[[File:Cyrillic '
-local suff = ' Lazov.svg|x20px|baseline]]'
+local suff = ' Lazov.svg|x20px|sub]]'
 
 local lookup = {
 	['а'] = 'a',
