@@ -44,7 +44,13 @@ local lookup = {
 	['ь'] = 'softsign',
 	['э'] = 'e',
 	['ѣ'] = 'yat',
-	
+	['ю'] = 'yu',
+	['я'] = 'ya',
+	['ѥ'] = 'iotifiede',
+	['ѧ'] = 'littleyus',
+	['ѩ'] = 'iotifiedlittleyus',
+	['ѫ'] = 'bigyus',
+	['ѭ'] = 'iotifiedbigyus',
 }
 
 function p.render(frame)
