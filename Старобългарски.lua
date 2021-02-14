@@ -14,6 +14,14 @@ local lookup = {
 	['ж'] = 'zhe',
 	['ѕ'] = 'dze',
 	['з'] = 'ze',
+	['и'] = 'i',
+	['ї'] = 'yi',
+	['й'] = 'shorti',
+	['к'] = 'ka',
+	['л'] = 'el',
+	['м'] = 'em',
+	['н'] = 'en',
+	
 }
 
 function p.render(frame)
