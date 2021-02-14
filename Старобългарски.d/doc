@@ -2,6 +2,7 @@
 
 Self-test:
 * <code><nowiki>{{#invoke:Старобългарски|render|аб Вгд|35}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд|35}}
+* <code><nowiki>{{#invoke:Старобългарски|render|аб Вгд|}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд|}}
 * <code><nowiki>{{#invoke:Старобългарски|render|аб Вгд}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд}}
 
 <includeonly>
