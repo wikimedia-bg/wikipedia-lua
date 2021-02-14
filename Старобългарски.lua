@@ -3,6 +3,7 @@ local p = {}
 local pref = '[[File:Cyrillic' .. ' '
 local suff1 = ' ' .. 'Lazov.svg|x'
 local suff2 = 'px|sub]]'
+local spc = '<span style="display: inline-block; width: .5em;"> </span>'
 
 local lookup = {
 	['а'] = 'a',
@@ -67,6 +68,8 @@ function p.render(frame)
 		end
 		if lookup[l] ~= nil then
 			ostr = ostr .. pref .. case .. lookup[l] .. suff1 .. fsiz .. suff2
+		elseif l == ' ' then
+			ostr = ostr .. spc
 		else
 			ostr = ostr .. l
 		end
