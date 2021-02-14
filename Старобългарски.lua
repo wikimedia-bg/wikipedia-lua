@@ -31,6 +31,10 @@ local lookup = {
 	['ꙋ'] = 'uk',
 	['ф'] = 'ef',
 	['х'] = 'ha',
+	['w'] = 'omega',
+	['ω'] = 'omega',
+	['Ѡ'] = 'omega',
+	['Ѻ'] = 'roundomega',
 	
 	
 }
