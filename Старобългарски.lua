@@ -43,6 +43,7 @@ local lookup = {
 	['ы'] = 'yeru',
 	['ь'] = 'softsign',
 	['э'] = 'e',
+	['ѣ'] = 'yat',
 	
 }
 
