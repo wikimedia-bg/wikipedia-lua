@@ -2,7 +2,7 @@ local p = {}
 
 local pref = '[[File:Cyrillic' .. ' '
 local suff1 = ' ' .. 'Lazov.svg|x'
-local suff2 = 'px|sub]]'
+local suff2 = 'px|sub|link=]]'
 local spc = '<span style="display: inline-block; width: .5em;"> </span>'
 
 local lookup = {
