@@ -1,6 +1,8 @@
 Този модул се използва в {{ш|Старобългарски}}.
 
-<code><nowiki>{{#invoke:Старобългарски|render|аб Вгд|20}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд|20}}
+Self-test:
+* <code><nowiki>{{#invoke:Старобългарски|render|аб Вгд|35}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд|35}}
+* <code><nowiki>{{#invoke:Старобългарски|render|аб Вгд}}</nowiki></code> --> {{#invoke:Старобългарски|render|аб Вгд}}
 
 <includeonly>
 <!-- ПОСТАВЯЙТЕ КАТЕГОРИИТЕ ТУК, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
