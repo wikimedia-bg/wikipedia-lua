@@ -41,6 +41,7 @@ local lookup = {
 	['ш'] = 'sha',
 	['щ'] = 'shcha',
 	['ъ'] = 'hardsign',
+	['ꙑ'] = 'yeru',
 	['ы'] = 'yeru',
 	['ь'] = 'softsign',
 	['э'] = 'e',
