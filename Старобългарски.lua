@@ -9,7 +9,7 @@ local pref = '[[File:Cyrillic' .. ' '
 local suff1 = ' ' .. 'Lazov.svg|x'
 local suff2 = 'px|sub|link=]]'
 
--- Default vertical size of the SVG letters, in pixels (xNpx).
+-- Default vertical size of the SVG letters, in pixels ([[File:...|xNpx|...]]).
 local vsize_def = '20'
 
 -- The spaces in the input text are replaced with this for better legibility.
