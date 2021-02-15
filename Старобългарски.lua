@@ -55,6 +55,13 @@ local lookup = {
 	['ѩ'] = 'iotifiedlittleyus',
 	['ѫ'] = 'bigyus',
 	['ѭ'] = 'iotifiedbigyus',
+	['ѯ'] = 'ksi',
+	['ѱ'] = 'psi',
+	['ѳ'] = 'fita',
+	['ѵ'] = 'izhitsa',
+	['ѷ'] = 'doublegraveaccentizhitsa',
+	['ҁ'] = 'koppa',
+	['ѿ'] = 'ot',
 }
 
 function p.render(frame)
