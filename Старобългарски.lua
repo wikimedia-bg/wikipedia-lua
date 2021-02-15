@@ -48,6 +48,7 @@ local lookup = {
 	['ѣ'] = 'yat',
 	['ю'] = 'yu',
 	['я'] = 'ya',
+	['ꙗ'] = 'ya',
 	['ѥ'] = 'iotifiede',
 	['ѧ'] = 'littleyus',
 	['ѩ'] = 'iotifiedlittleyus',
