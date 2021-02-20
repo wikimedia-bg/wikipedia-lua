@@ -475,7 +475,7 @@ local THEMES = {
 			{ 'органична химия', 'Cyclooctatetraene-3D-vdW.png' },
 
 		-- други
-		{ 'авиация|самолет|хеликоптер', 'Aero-stub img.svg' },
+		{ 'авиация', 'Aero-stub img.svg' },
 		{ 'анимация', 'Animhorse.gif' },
 		{ 'археология', 'Farm-Fresh vase.png' },
 		{ 'архитектура|архитект|градоустройство', 'Corinthian_capital.png' },
@@ -615,7 +615,6 @@ local THEMES = {
 	{ 'артилерия', 'P military green.png' },
 	{ 'Библията|библия', 'Decalogue parchment by Jekuthiel Sofer 1768.jpg' },
 	{ 'бойна ракета', 'Agm119_penguin.png', 'бойни ракети' },
-	{ 'бомбардировач', 'B-2 icon.svg', 'бомбардировачи' },
 	{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
 	{ 'вестник', 'newspaper.svg', 'вестници' },
 	{ 'вино', 'Red_Wine_Glass.jpg' },
@@ -639,6 +638,7 @@ local THEMES = {
 	{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 	{ 'корабоплаване|кораб', 'ShipClipart.png' },
 	{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
+	{ 'летателен апарат|самолет|хеликоптер|бомбардировач', 'Aero-stub img.svg', 'летателни апарати' },
 	{ 'литература', 'Book template.svg' },
 	{ 'мебел|обзавеждане', 'Furniture template.svg', 'мебели' },
 	{ 'маркетинг', 'Human-emblem-marketing.svg' },
