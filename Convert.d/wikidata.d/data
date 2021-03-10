@@ -1,0 +1,932 @@
+--[[ Cache of Wikidata information with units for Module:Convert.
+The codes should rarely change, and using a cache means that changing a
+unit at Wikidata will not cause lots of converts in articles to break.
+
+For a unit known to convert, the unit here must have:
+	label = Wikidata label for unit (used only when listing units)
+	ucode = unit code for input to convert
+	(there are no optional fields because convert handles everything)
+
+For a unit not known to convert, the unit here must have:
+	label = Wikidata label for unit (used only when listing units)
+	(no ucode field)
+	_ucode = unit code for input to convert, and the
+	         symbol used to display the unit when abbr=on
+	(convert will use the specified fields to display the unit,
+	and will not attempt to do a conversion)
+
+For a unit not known to convert, the unit here may have:
+	name1 = singular name used to display the unit when abbr=off
+	name2 = plural name used to display the unit when abbr=off
+	link = name of article that unit will be linked to when lk=on
+	si = key for the SI base unit, if any
+
+The base unit for each SI unit here must have:
+	symbol = symbol used to display the base unit when abbr=on
+	name1 = singular name of base unit used to display the unit when abbr=off
+	(if name1 is not given, symbol will be used, but an SI unit should have a name)
+
+The base unit for each SI unit here may have:
+	name2 = plural name of base unit used to display the unit when abbr=off
+	link = name of article that unit will be linked to when lk=on
+	       (applies for all SI units using this base, where the
+		   SI unit does not define its own link field)
+
+If name1 is not specified, the symbol is used for the name.
+If name2 is not specified, a plural name is formed by appending 's' to name1.
+If link is not specified, name1 is used for the link.
+
+SI units are assumed to be simple items like V (volt) where 'mV' would
+cause convert to insert:
+	'm' before the base symbol 'V' to make 'mV', if abbr=on
+	'milli' before the base name 'volt' to make 'millivolt', if abbr=off
+A unit like "square meter" would not work because it needs an SI prefix
+inserted before "meter" rather than at the beginning of the name.
+
+Items that should not be used with convert as no precise unit is implied:
+Q11247037  ton          generic (cannot use)
+Q178413    gallon       generic
+Q130964    calorie      dubious (ambiguous, should not use)
+Q216658    bushel       dubious
+Q420266    fluid ounce  dubious
+]]
+
+local wikidata_units = {
+	-- Following are SI base units.
+	A = {
+		symbol = 'A',
+		name1 = 'ampere',
+	},
+	F = {
+		symbol = 'F',
+		name1 = 'faraday',
+	},
+	H = {
+		symbol = 'H',
+		name1 = 'henry',
+	},
+	V = {
+		symbol = 'V',
+		name1 = 'volt',
+	},
+	-- Following are aliases to convert unit codes, used with "input=<value><space><unit>".
+	kilograms = {
+		ucode = 'kg',
+	},
+	-- Following are SI units not known to convert, used with "input=<value><space><unit>".
+	kV = {
+		ucode = 'kV',
+		si = 'V',
+	},
+	mV = {
+		ucode = 'mV',
+		si = 'V',
+	},
+	-- Following are Wikidata units.
+	Q131255 = {
+		label = 'farad',
+		_ucode = 'F',
+		si = 'F',
+	},
+	Q163354 = {
+		label = 'henry',
+		_ucode = 'H',
+		si = 'H',
+	},
+	Q1916026 = {
+		label = 'microvolt',
+		_ucode = 'uV',
+		si = 'V',
+	},
+	Q193933 = {
+		label = 'dioptre',
+		name1 = 'dioptre',
+		_ucode = 'dpt',
+	},
+	Q212120 = {
+		label = 'ampere-hour',
+		name1 = 'ampere-hour',
+		_ucode = 'A⋅h',
+	},
+	Q2448803 = {
+		label = 'millivolt',
+		_ucode = 'mV',
+		si = 'V',
+	},
+	Q2451296 = {
+		label = 'microfarad',
+		_ucode = 'uF',
+		si = 'F',
+	},
+	Q2490574 = {
+		label = 'milliampere',
+		_ucode = 'mA',
+		si = 'A',
+	},
+	Q25250 = {
+		label = 'volt',
+		_ucode = 'V',
+		si = 'V',
+	},
+	Q25272 = {
+		label = 'ampere',
+		_ucode = 'A',
+		si = 'A',
+	},
+	Q2553708 = {
+		label = 'megavolt',
+		_ucode = 'MV',
+		si = 'V',
+	},
+	Q2554092 = {
+		label = 'kilovolt',
+		_ucode = 'kV',
+		si = 'V',
+	},
+	Q2636421 = {
+		label = 'nanohenry',
+		_ucode = 'nH',
+		si = 'H',
+	},
+	Q2679083 = {
+		label = 'microhenry',
+		_ucode = 'uH',
+		si = 'H',
+	},
+	Q2682463 = {
+		label = 'nanofarad',
+		_ucode = 'nF',
+		si = 'F',
+	},
+	Q2756030 = {
+		label = 'picofarad',
+		_ucode = 'pF',
+		si = 'F',
+	},
+	Q2793566 = {
+		label = 'gigavolt',
+		_ucode = 'GV',
+		si = 'V',
+	},
+	Q2924137 = {
+		label = 'millihenry',
+		_ucode = 'mH',
+		si = 'H',
+	},
+	Q3117809 = {
+		label = 'microampere',
+		_ucode = 'uA',
+		si = 'A',
+	},
+	Q33680 = {
+		label = 'radian',
+		name1 = 'radian',
+		_ucode = 'rad',
+	},
+	Q4456994 = {
+		label = 'millifarad',
+		_ucode = 'mF',
+		si = 'F',
+	},
+	Q47083 = {
+		label = 'ohm',
+		name1 = 'ohm',
+		_ucode = 'Ω',
+	},
+	Q483261 = {
+		label = 'atomic mass unit',
+		name1 = 'atomic mass unit',
+		_ucode = 'u',
+	},
+	Q550341 = {
+		label = 'volt-ampere',
+		name1 = 'volt-ampere',
+		_ucode = 'VA',
+	},
+	Q100995 = {
+		label = 'pound',
+		ucode = 'lb',
+	},
+	Q1022113 = {
+		label = 'cubic centimetre',
+		ucode = 'cc',
+	},
+	Q102573 = {
+		label = 'becquerel',
+		ucode = 'Bq',
+	},
+	Q103246 = {
+		label = 'sievert',
+		ucode = 'Sv',
+	},
+	Q1050958 = {
+		label = 'inch of mercury',
+		ucode = 'inHg',
+	},
+	Q1051665 = {
+		label = 'metre per second squared',
+		ucode = 'm/s2',
+	},
+	Q1052397 = {
+		label = 'rad',
+		ucode = 'rad',
+	},
+	Q1054140 = {
+		label = 'megametre',
+		ucode = 'Mm',
+	},
+	Q1057069 = {
+		label = 'hectogram',
+		ucode = 'hg',
+	},
+	Q1063786 = {
+		label = 'square inch',
+		ucode = 'sqin',
+	},
+	Q1092296 = {
+		label = 'annum',
+		ucode = 'year',
+	},
+	Q11570 = {
+		label = 'kilogram',
+		ucode = 'kg',
+	},
+	Q11573 = {
+		label = 'metre',
+		ucode = 'm',
+	},
+	Q11574 = {
+		label = 'second',
+		ucode = 's',
+	},
+	Q11579 = {
+		label = 'kelvin',
+		ucode = 'K',
+	},
+	Q11582 = {
+		label = 'liter',
+		ucode = 'liter',
+	},
+	Q1165588 = {
+		label = 'rod',
+		ucode = 'rod',
+	},
+	Q1165799 = {
+		label = 'thou',
+		ucode = 'thou',
+	},
+	Q11776930 = {
+		label = 'megagram',
+		ucode = 'Mg',
+	},
+	Q11929860 = {
+		label = 'kiloparsec',
+		ucode = 'kpc',
+	},
+	Q1194225 = {
+		label = 'pound-force',
+		ucode = 'lbf',
+	},
+	Q12129 = {
+		label = 'parsec',
+		ucode = 'pc',
+	},
+	Q12438 = {
+		label = 'newton',
+		ucode = 'N',
+	},
+	Q1255620 = {
+		label = 'dram',
+		ucode = 'drachm',
+	},
+	Q12874593 = {
+		label = 'watt-hour',
+		ucode = 'W.h',
+	},
+	Q128822 = {
+		label = 'knot',
+		ucode = 'kn',
+	},
+	Q1374438 = {
+		label = 'kilosecond',
+		ucode = 'ks',
+	},
+	Q1377051 = {
+		label = 'gigasecond',
+		ucode = 'Gs',
+	},
+	Q14754979 = {
+		label = 'zettagram',
+		ucode = 'Zg',
+	},
+	Q14786969 = {
+		label = 'megajoule',
+		ucode = 'MJ',
+	},
+	Q14787261 = {
+		label = 'megawatt hour',
+		ucode = 'MW.h',
+	},
+	Q1550511 = {
+		label = 'square yard',
+		ucode = 'sqyd',
+	},
+	Q160857 = {
+		label = 'horsepower',
+		ucode = 'hp',
+	},
+	Q1628990 = {
+		label = 'horsepower-hour',
+		ucode = 'hph',
+	},
+	Q163343 = {
+		label = 'tesla',
+		ucode = 'T',
+	},
+	Q1645498 = {
+		label = 'microgram',
+		ucode = 'ug',
+	},
+	Q17087835 = {
+		label = 'cuerda',
+		ucode = 'cda',
+	},
+	Q174728 = {
+		label = 'centimetre',
+		ucode = 'cm',
+	},
+	Q174789 = {
+		label = 'millimetre',
+		ucode = 'mm',
+	},
+	Q175821 = {
+		label = 'micrometre',
+		ucode = 'um',
+	},
+	Q1770733 = {
+		label = 'teragram',
+		ucode = 'Tg',
+	},
+	Q1772386 = {
+		label = 'decigram',
+		ucode = 'dg',
+	},
+	Q177493 = {
+		label = 'gauss',
+		ucode = 'G',
+	},
+	Q1777507 = {
+		label = 'femtosecond',
+		ucode = 'fs',
+	},
+	Q177974 = {
+		label = 'atmosphere',
+		ucode = 'atm',
+	},
+	Q178674 = {
+		label = 'nanometre',
+		ucode = 'nm',
+	},
+	Q180154 = {
+		label = 'kilometre per hour',
+		ucode = 'km/h',
+	},
+	Q180892 = {
+		label = 'solar mass',
+		ucode = 'solar mass',
+	},
+	Q1811 = {
+		label = 'astronomical unit',
+		ucode = 'au',
+	},
+	Q1815100 = {
+		label = 'centiliter',
+		ucode = 'cl',
+	},
+	Q182098 = {
+		label = 'kilowatt hour',
+		ucode = 'kW.h',
+	},
+	Q1823150 = {
+		label = 'microwatt',
+		ucode = 'uW',
+	},
+	Q182429 = {
+		label = 'metre per second',
+		ucode = 'm/s',
+	},
+	Q1826195 = {
+		label = 'deciliter',
+		ucode = 'dl',
+	},
+	Q185078 = {
+		label = 'are',
+		ucode = 'a',
+	},
+	Q185153 = {
+		label = 'erg',
+		ucode = 'erg',
+	},
+	Q185648 = {
+		label = 'torr',
+		ucode = 'Torr',
+	},
+	Q190095 = {
+		label = 'gray',
+		ucode = 'Gy',
+	},
+	Q191118 = {
+		label = 'tonne',
+		ucode = 'tonne',
+	},
+	Q1913097 = {
+		label = 'femtogram',
+		ucode = 'fg',
+	},
+	Q192274 = {
+		label = 'picometre',
+		ucode = 'pm',
+	},
+	Q1972579 = {
+		label = 'poundal',
+		ucode = 'pdl',
+	},
+	Q200323 = {
+		label = 'decimetre',
+		ucode = 'dm',
+	},
+	Q201933 = {
+		label = 'dyne',
+		ucode = 'dyn',
+	},
+	Q2029519 = {
+		label = 'hectoliter',
+		ucode = 'hl',
+	},
+	Q2051195 = {
+		label = 'gigawatt hour',
+		ucode = 'GW.h',
+	},
+	Q207488 = {
+		label = 'Rankine scale',
+		ucode = 'R',
+	},
+	Q208788 = {
+		label = 'femtometre',
+		ucode = 'fm',
+	},
+	Q2101 = {
+		label = 'elementary charge',
+		ucode = 'e',
+	},
+	Q21014455 = {
+		label = 'metre per minute',
+		ucode = 'm/min',
+	},
+	Q21062777 = {
+		label = 'megapascal',
+		ucode = 'MPa',
+	},
+	Q21064807 = {
+		label = 'kilopascal',
+		ucode = 'kPa',
+	},
+	Q211256 = {
+		label = 'miles per hour',
+		ucode = 'mph',
+	},
+	Q21178489 = {
+		label = 'barrels per day',
+		ucode = 'oilbbl/d',
+	},
+	Q2143992 = {
+		label = 'kilohertz',
+		ucode = 'kHz',
+	},
+	Q21467992 = {
+		label = 'cubic foot per second',
+		ucode = 'cuft/s',
+	},
+	Q215571 = {
+		label = 'newton metre',
+		ucode = 'Nm',
+	},
+	Q216795 = {
+		label = 'dunam',
+		ucode = 'dunam',
+	},
+	Q216880 = {
+		label = 'kilogram-force',
+		ucode = 'kgf',
+	},
+	Q18413919 = {
+		label = 'centimetre per second',
+		ucode = 'cm/s',
+	},
+	Q218593 = {
+		label = 'inch',
+		ucode = 'in',
+	},
+	Q2282891 = {
+		label = 'microliter',
+		ucode = 'ul',
+	},
+	Q2282906 = {
+		label = 'nanogram',
+		ucode = 'ng',
+	},
+	Q229354 = {
+		label = 'curie',
+		ucode = 'Ci',
+	},
+	Q232291 = {
+		label = 'square mile',
+		ucode = 'sqmi',
+	},
+	Q2332346 = {
+		label = 'milliliter',
+		ucode = 'ml',
+	},
+	Q23387 = {
+		label = 'week',
+		ucode = 'week',
+	},
+	Q23823681 = {
+		label = 'terawatt',
+		ucode = 'TW',
+	},
+	Q23925410 = {
+		label = 'gallon',
+		ucode = 'impgal',
+	},
+	Q23925413 = {
+		label = 'gallon',
+		ucode = 'USgal',
+	},
+	Q2438073 = {
+		label = 'attogram',
+		ucode = 'ag',
+	},
+	Q2474258 = {
+		label = 'millisievert',
+		ucode = 'mSv',
+	},
+	Q2483628 = {
+		label = 'attosecond',
+		ucode = 'as',
+	},
+	Q2489298 = {
+		label = 'square centimetre',
+		ucode = 'cm2',
+	},
+	Q2518569 = {
+		label = 'nanosievert',
+		ucode = 'nSv',
+	},
+	Q25235 = {
+		label = 'hour',
+		ucode = 'h',
+	},
+	Q25236 = {
+		label = 'watt',
+		ucode = 'W',
+	},
+	Q25267 = {
+		label = 'degree Celsius',
+		ucode = 'C',
+	},
+	Q25269 = {
+		label = 'joule',
+		ucode = 'J',
+	},
+	Q253276 = {
+		label = 'mile',
+		ucode = 'mi',
+	},
+	Q25343 = {
+		label = 'square metre',
+		ucode = 'm2',
+	},
+	Q25406 = {
+		label = 'coulomb',
+		ucode = 'coulomb',
+	},
+	Q25517 = {
+		label = 'cubic metre',
+		ucode = 'm3',
+	},
+	Q260126 = {
+		label = 'Roentgen equivalent man',
+		ucode = 'rem',
+	},
+	Q2612219 = {
+		label = 'petagram',
+		ucode = 'Pg',
+	},
+	Q2619500 = {
+		label = 'Foe',
+		ucode = 'foe',
+	},
+	Q2637946 = {
+		label = 'decaliter',
+		ucode = 'dal',
+	},
+	Q2655272 = {
+		label = 'exagram',
+		ucode = 'Eg',
+	},
+	Q2691798 = {
+		label = 'centigram',
+		ucode = 'cg',
+	},
+	Q2739114 = {
+		label = 'microsievert',
+		ucode = 'uSv',
+	},
+	Q2799294 = {
+		label = 'gigagram',
+		ucode = 'Gg',
+	},
+	Q3013059 = {
+		label = 'kiloannum',
+		ucode = 'millennium',
+	},
+	Q305896 = {
+		label = 'dots per inch',
+		ucode = 'dpi',
+	},
+	Q3207456 = {
+		label = 'milliwatt',
+		ucode = 'mW',
+	},
+	Q3221356 = {
+		label = 'yoctometre',
+		ucode = 'ym',
+	},
+	Q3239557 = {
+		label = 'picogram',
+		ucode = 'pg',
+	},
+	Q3241121 = {
+		label = 'milligram',
+		ucode = 'mg',
+	},
+	Q3267417 = {
+		label = 'terametre',
+		ucode = 'Tm',
+	},
+	Q3270676 = {
+		label = 'zeptometre',
+		ucode = 'zm',
+	},
+	Q3276763 = {
+		label = 'gigahertz',
+		ucode = 'GHz',
+	},
+	Q3277907 = {
+		label = 'exametre',
+		ucode = 'Em',
+	},
+	Q3277915 = {
+		label = 'zettametre',
+		ucode = 'Zm',
+	},
+	Q3277919 = {
+		label = 'petametre',
+		ucode = 'Pm',
+	},
+	Q3312063 = {
+		label = 'femtoliter',
+		ucode = 'fl',
+	},
+	Q3320608 = {
+		label = 'kilowatt',
+		ucode = 'kW',
+	},
+	Q3332822 = {
+		label = 'megaton',
+		ucode = 'Mt(TNT)',
+	},
+	Q35852 = {
+		label = 'hectare',
+		ucode = 'ha',
+	},
+	Q3675550 = {
+		label = 'cubic millimetre',
+		ucode = 'mm3',
+	},
+	Q3710 = {
+		label = 'foot',
+		ucode = 'ft',
+	},
+	Q3773454 = {
+		label = 'megaparsec',
+		ucode = 'Mpc',
+	},
+	Q3902688 = {
+		label = 'picoliter',
+		ucode = 'pl',
+	},
+	Q3902709 = {
+		label = 'picosecond',
+		ucode = 'ps',
+	},
+	Q39369 = {
+		label = 'hertz',
+		ucode = 'Hz',
+	},
+	Q3972226 = {
+		label = 'kiloliter',
+		ucode = 'kl',
+	},
+	Q4068266 = {
+		label = "apothecaries' drachm",
+		ucode = 'drachm',
+	},
+	Q41803 = {
+		label = 'gram',
+		ucode = 'g',
+	},
+	Q4220561 = {
+		label = 'kilometer per second',
+		ucode = 'km/s',
+	},
+	Q42289 = {
+		label = 'degree Fahrenheit',
+		ucode = 'F',
+	},
+	Q4243638 = {
+		label = 'cubic kilometre',
+		ucode = 'km3',
+	},
+	Q44395 = {
+		label = 'pascal',
+		ucode = 'Pa',
+	},
+	Q48013 = {
+		label = 'ounce',
+		ucode = 'oz',
+	},
+	Q482798 = {
+		label = 'yard',
+		ucode = 'yd',
+	},
+	Q4989854 = {
+		label = 'kilojoule',
+		ucode = 'kJ',
+	},
+	Q4992853 = {
+		label = 'kiloton',
+		ucode = 'kt(TNT)',
+	},
+	Q5139563 = {
+		label = 'hectopascal',
+		ucode = 'hPa',
+	},
+	Q5151 = {
+		label = 'month',
+		ucode = 'month',
+	},
+	Q531 = {
+		label = 'light-year',
+		ucode = 'ly',
+	},
+	Q5465723 = {
+		label = 'foot-poundal',
+		ucode = 'ftpdl',
+	},
+	Q573 = {
+		label = 'day',
+		ucode = 'd',
+	},
+	Q577 = {
+		label = 'year',
+		ucode = 'year',
+	},
+	Q5879479 = {
+		label = 'gigawatt',
+		ucode = 'GW',
+	},
+	Q6003257 = {
+		label = 'attometre',
+		ucode = 'am',
+	},
+	Q613726 = {
+		label = 'yottagram',
+		ucode = 'Yg',
+	},
+	Q6170164 = {
+		label = 'yoctogram',
+		ucode = 'yg',
+	},
+	Q667419 = {
+		label = 'long ton',
+		ucode = 'LT',
+	},
+	Q673166 = {
+		label = 'gravity of Earth',
+		ucode = 'g0',
+	},
+	Q693944 = {
+		label = 'grain',
+		ucode = 'gr',
+	},
+	Q6982035 = {
+		label = 'megawatt',
+		ucode = 'MW',
+	},
+	Q712226 = {
+		label = 'square kilometre',
+		ucode = 'km2',
+	},
+	Q723733 = {
+		label = 'millisecond',
+		ucode = 'ms',
+	},
+	Q732454 = {
+		label = 'Ma',
+		ucode = 'Myr',
+	},
+	Q732707 = {
+		label = 'megahertz',
+		ucode = 'MHz',
+	},
+	Q752079 = {
+		label = 'gross register ton',
+		ucode = 'grt',
+	},
+	Q752197 = {
+		label = 'kilojoule per mole',
+		ucode = 'kJ/mol',
+	},
+	Q7727 = {
+		label = 'minute',
+		ucode = 'min',
+	},
+	Q794261 = {
+		label = 'cubic metre per second',
+		ucode = 'm3/s',
+	},
+	Q809678 = {
+		label = 'barye',
+		ucode = 'Ba',
+	},
+	Q81292 = {
+		label = 'acre',
+		ucode = 'acre',
+	},
+	Q81454 = {
+		label = 'ångström',
+		ucode = 'angstrom',
+	},
+	Q828224 = {
+		label = 'kilometre',
+		ucode = 'km',
+	},
+	Q83327 = {
+		label = 'electronvolt',
+		ucode = 'eV',
+	},
+	Q838801 = {
+		label = 'nanosecond',
+		ucode = 'ns',
+	},
+	Q842015 = {
+		label = 'microsecond',
+		ucode = 'us',
+	},
+	Q844211 = {
+		label = 'kilogram per cubic metre',
+		ucode = 'kg/m3',
+	},
+	Q844338 = {
+		label = 'hectometre',
+		ucode = 'hm',
+	},
+	Q844976 = {
+		label = 'oersted',
+		ucode = 'Oe',
+	},
+	Q848856 = {
+		label = 'decametre',
+		ucode = 'dam',
+	},
+	Q854546 = {
+		label = 'gigametre',
+		ucode = 'Gm',
+	},
+	Q857027 = {
+		label = 'square foot',
+		ucode = 'sqft',
+	},
+	Q9048643 = {
+		label = 'nanoliter',
+		ucode = 'nl',
+	},
+	Q93318 = {
+		label = 'nautical mile',
+		ucode = 'nmi',
+	},
+}
+
+return { wikidata_units = wikidata_units }
