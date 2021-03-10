@@ -1,5 +1,5 @@
--- Данни за превръщане на мерки използвани от [[Module:Convert]], който ползва mw.loadData()
--- за четене от този модул, so that it is loaded only once per page.
+-- Conversion data used by [[Module:Convert]] which uses mw.loadData() for
+-- read-only access to this module so that it is loaded only once per page.
 --
 -- These data tables follow:
 --   all_units           all properties for a unit, including default output
@@ -64,7 +64,7 @@ local all_units = {
 	name1_us = "kilometer per hour per second",
 	name2    = "kilometres per hour per second",
 	name2_us = "kilometers per hour per second",
-	symbol   = "km/(h·s)",
+	symbol   = "km/(h⋅s)",
 	utype    = "acceleration",
 	scale    = 0.27777777777777779,
 	default  = "mph/s",
@@ -130,6 +130,7 @@ local all_units = {
 	utype    = "area",
 	scale    = 4046.8564224,
 	default  = "ha",
+	subdivs  = { ["rood"] = { 4, default = "ha" }, ["sqperch"] = { 160, default = "ha" } },
     },
     ["acre-sing"] = {
 	target   = "acre",
@@ -146,38 +147,7 @@ local all_units = {
 	symbol   = "cda",
 	utype    = "area",
 	scale    = 3930.395625,
-	default  = "acre ha",
-    },
-    ["Cypriot donum"] = {
-	symbol   = "donum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1337.803776,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["Cypriot dunam"] = {
-	symbol   = "dunam",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1337.803776,
-	default  = "km2 sqmi",
-    },
-    ["Cypriot dunum"] = {
-	symbol   = "dunum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1337.803776,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["Cypriot dönüm"] = {
-	symbol   = "dönüm",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1337.803776,
-	default  = "km2 sqmi",
-	link     = "Dunam",
+	default  = "ha acre",
     },
     ["daa"] = {
 	name1    = "decare",
@@ -185,14 +155,6 @@ local all_units = {
 	utype    = "area",
 	scale    = 1000,
 	default  = "km2 sqmi",
-    },
-    ["donum"] = {
-	symbol   = "donum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1000,
-	default  = "km2 sqmi",
-	link     = "Dunam",
     },
     ["dunam"] = {
 	symbol   = "dunam",
@@ -203,14 +165,6 @@ local all_units = {
     },
     ["dunum"] = {
 	symbol   = "dunum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 1000,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["dönüm"] = {
-	symbol   = "dönüm",
 	usename  = 1,
 	utype    = "area",
 	scale    = 1000,
@@ -232,37 +186,6 @@ local all_units = {
 	scale    = 10000,
 	default  = "acre",
     },
-    ["Iraqi donum"] = {
-	symbol   = "donum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 2500,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["Iraqi dunam"] = {
-	symbol   = "dunam",
-	usename  = 1,
-	utype    = "area",
-	scale    = 2500,
-	default  = "km2 sqmi",
-    },
-    ["Iraqi dunum"] = {
-	symbol   = "dunum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 2500,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["Iraqi dönüm"] = {
-	symbol   = "dönüm",
-	usename  = 1,
-	utype    = "area",
-	scale    = 2500,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
     ["Irish acre"] = {
 	name1    = "Irish acre",
 	symbol   = "Irish&nbsp;acres",
@@ -282,37 +205,6 @@ local all_units = {
 	default  = "sqft",
 	link     = "Square metre",
     },
-    ["old donum"] = {
-	symbol   = "donum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 919.3,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["old dunam"] = {
-	symbol   = "dunam",
-	usename  = 1,
-	utype    = "area",
-	scale    = 919.3,
-	default  = "km2 sqmi",
-    },
-    ["old dunum"] = {
-	symbol   = "dunum",
-	usename  = 1,
-	utype    = "area",
-	scale    = 919.3,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
-    ["old dönüm"] = {
-	symbol   = "dönüm",
-	usename  = 1,
-	utype    = "area",
-	scale    = 919.3,
-	default  = "km2 sqmi",
-	link     = "Dunam",
-    },
     ["pondemaat"] = {
 	name1    = "pondemaat",
 	name2    = "pondemaat",
@@ -330,12 +222,20 @@ local all_units = {
 	scale    = 3.3057851239669422,
 	default  = "m2",
     },
+    ["rai"] = {
+	name2    = "rai",
+	symbol   = "rai",
+	utype    = "area",
+	scale    = 1600,
+	default  = "m2",
+	link     = "Rai (unit)",
+    },
     ["rood"] = {
 	symbol   = "rood",
 	usename  = 1,
 	utype    = "area",
 	scale    = 1011.7141056,
-	default  = "sqft sqm",
+	default  = "sqft m2",
 	subdivs  = { ["sqperch"] = { 40, default = "m2" } },
 	link     = "Rood (unit)",
     },
@@ -384,7 +284,7 @@ local all_units = {
 	usename  = 1,
 	utype    = "area",
 	scale    = 25.29285264,
-	default  = "sqm",
+	default  = "m2",
 	link     = "Perch (unit)#Area",
     },
     ["sqverst"] = {
@@ -417,20 +317,8 @@ local all_units = {
     ["are"] = {
 	target   = "a",
     },
-    ["Cypriot donum diaeresis"] = {
-	target   = "Cypriot dönüm",
-    },
-    ["Cypriot donum dots"] = {
-	target   = "Cypriot dönüm",
-    },
     ["decare"] = {
 	target   = "daa",
-    },
-    ["donum diaeresis"] = {
-	target   = "dönüm",
-    },
-    ["donum dots"] = {
-	target   = "dönüm",
     },
     ["foot2"] = {
 	target   = "sqfoot",
@@ -442,29 +330,8 @@ local all_units = {
 	target   = "sqin",
 	symbol   = "in<sup>2</sup>",
     },
-    ["Iraqi donum diaeresis"] = {
-	target   = "Iraqi dönüm",
-    },
-    ["Iraqi donum dots"] = {
-	target   = "Iraqi dönüm",
-    },
     ["km²"] = {
 	target   = "km2",
-    },
-    ["metric donum"] = {
-	target   = "donum",
-    },
-    ["metric donum diaeresis"] = {
-	target   = "dönüm",
-    },
-    ["metric donum dots"] = {
-	target   = "dönüm",
-    },
-    ["metric dunam"] = {
-	target   = "dunam",
-    },
-    ["metric dönüm"] = {
-	target   = "dönüm",
     },
     ["mi2"] = {
 	target   = "sqmi",
@@ -483,12 +350,6 @@ local all_units = {
     },
     ["nmi2"] = {
 	target   = "sqnmi",
-    },
-    ["old donum diaeresis"] = {
-	target   = "old dönüm",
-    },
-    ["old donum dots"] = {
-	target   = "old dönüm",
     },
     ["pond"] = {
 	target   = "pondemaat",
@@ -529,6 +390,7 @@ local all_units = {
 	utype    = "area per unit area",
 	scale    = 2.295684113865932e-5,
 	default  = "m2/ha",
+	link     = "Basal area",
     },
     ["cent"] = {
 	name1    = "cent",
@@ -542,8 +404,8 @@ local all_units = {
 	target   = "cent",
     },
     ["A.h"] = {
-	name1    = "ampere-hour",
-	symbol   = "A·h",
+	name1    = "ampere hour",
+	symbol   = "A⋅h",
 	utype    = "charge",
 	scale    = 3600,
 	default  = "coulomb",
@@ -564,12 +426,9 @@ local all_units = {
 	scale    = 1.602176487e-19,
 	default  = "coulomb",
     },
-    ["A·h"] = {
-	target   = "A.h",
-    },
     ["g-mol"] = {
 	name1    = "gram-mole",
-	symbol   = "g-mol",
+	symbol   = "g&#8209;mol",
 	utype    = "chemical amount",
 	scale    = 1,
 	default  = "lbmol",
@@ -593,7 +452,7 @@ local all_units = {
     },
     ["lb-mol"] = {
 	name1    = "pound-mole",
-	symbol   = "lb-mol",
+	symbol   = "lb&#8209;mol",
 	utype    = "chemical amount",
 	scale    = 453.59237,
 	default  = "mol",
@@ -644,81 +503,6 @@ local all_units = {
 	per      = { "mg", "kg" },
 	utype    = "concentration",
 	default  = "oz/lb",
-    },
-    ["$/acre"] = {
-	per      = { "$", "acre" },
-	utype    = "cost $ per unit area",
-	default  = "$/ha",
-    },
-    ["$/ha"] = {
-	per      = { "$", "ha" },
-	utype    = "cost $ per unit area",
-	default  = "$/acre",
-    },
-    ["$/m2"] = {
-	per      = { "$", "m2" },
-	utype    = "cost $ per unit area",
-	default  = "$/sqft",
-    },
-    ["$/sqft"] = {
-	per      = { "$", "sqft" },
-	utype    = "cost $ per unit area",
-	default  = "$/m2",
-    },
-    ["$/km"] = {
-	per      = { "$", "km" },
-	utype    = "cost $ per unit length",
-	default  = "$/mi",
-    },
-    ["$/mi"] = {
-	per      = { "$", "mi" },
-	utype    = "cost $ per unit length",
-	default  = "$/km",
-    },
-    ["$/kg"] = {
-	per      = { "$", "kg" },
-	utype    = "cost $ per unit mass",
-	default  = "$/lb",
-    },
-    ["$/g"] = {
-	per      = { "$", "g" },
-	utype    = "cost $ per unit mass",
-	default  = "$/lb",
-    },
-    ["$/lb"] = {
-	per      = { "$", "lb" },
-	utype    = "cost $ per unit mass",
-	default  = "$/kg",
-    },
-    ["$/oz"] = {
-	per      = { "$", "oz" },
-	utype    = "cost $ per unit mass",
-	default  = "$/g",
-    },
-    ["$/ozt"] = {
-	per      = { "$", "ozt" },
-	utype    = "cost $ per unit mass",
-	default  = "$/kg",
-    },
-    ["$/m3"] = {
-	per      = { "$", "m3" },
-	utype    = "cost $ per unit volume",
-	default  = "$/oilbbl",
-    },
-    ["$/oilbbl"] = {
-	per      = { "$", "oilbbl" },
-	utype    = "cost $ per unit volume",
-	default  = "$/m3",
-    },
-    ["£/acre"] = {
-	per      = { "£", "acre" },
-	utype    = "cost £ per unit area",
-	default  = "£/ha",
-    },
-    ["£/ha"] = {
-	per      = { "£", "ha" },
-	utype    = "cost £ per unit area",
-	default  = "£/acre",
     },
     ["g/dm3"] = {
 	name1    = "gram per cubic decimetre",
@@ -918,7 +702,7 @@ local all_units = {
 	per      = { "g", "m3" },
 	utype    = "density",
 	default  = "lb/cuyd",
-	link     = "density",
+	link     = "Density",
     },
     ["Mg/m3"] = {
 	per      = { "Mg", "m3" },
@@ -930,13 +714,13 @@ local all_units = {
 	utype    = "density",
 	default  = "oz/cuin",
     },
-    ["µg/dL"] = {
-	per      = { "µg", "dL" },
+    ["μg/dL"] = {
+	per      = { "μg", "dL" },
 	utype    = "density",
 	default  = "lb/cuin",
     },
-    ["µg/l"] = {
-	per      = { "µg", "l" },
+    ["μg/l"] = {
+	per      = { "μg", "l" },
 	utype    = "density",
 	default  = "oz/cuin",
     },
@@ -950,19 +734,16 @@ local all_units = {
 	target   = "lbm/cuin",
     },
     ["mcg/dL"] = {
-	target   = "µg/dL",
+	target   = "μg/dL",
     },
     ["oz/in3"] = {
 	target   = "oz/cuin",
     },
     ["ug/dL"] = {
-	target   = "µg/dL",
-    },
-    ["μg/dL"] = {
-	target   = "µg/dL",
+	target   = "μg/dL",
     },
     ["ug/l"] = {
-	target   = "µg/l",
+	target   = "μg/l",
     },
     ["B.O.T.U."] = {
 	name1    = "Board of Trade Unit",
@@ -1211,7 +992,7 @@ local all_units = {
     ["ccatm"] = {
 	name1    = "cubic centimetre-atmosphere",
 	name1_us = "cubic centimeter-atmosphere",
-	symbol   = "cc·atm",
+	symbol   = "cc⋅atm",
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
@@ -1224,12 +1005,12 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1899.100534716,
 	default  = "kJ",
-	link     = "Conversion of units",
+	link     = "Conversion of units#Energy",
     },
     ["cm3atm"] = {
 	name1    = "cubic centimetre-atmosphere",
 	name1_us = "cubic centimeter-atmosphere",
-	symbol   = "cm<sup>3</sup>·atm",
+	symbol   = "cm<sup>3</sup>⋅atm",
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
@@ -1252,7 +1033,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1055055.85262,
 	default  = "MJ",
-	link     = "Conversion of units",
+	link     = "Conversion of units#Energy",
     },
     ["cuftatm"] = {
 	name1    = "cubic foot of atmosphere",
@@ -1271,7 +1052,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1055055.85262,
 	default  = "MJ",
-	link     = "Conversion of units",
+	link     = "Conversion of units#Energy",
     },
     ["cuydatm"] = {
 	name1    = "cubic yard of atmosphere",
@@ -1293,7 +1074,7 @@ local all_units = {
 	symbol   = "erg",
 	utype    = "energy",
 	scale    = 0.0000001,
-	default  = "µJ",
+	default  = "μJ",
     },
     ["eV"] = {
 	name1    = "electronvolt",
@@ -1319,7 +1100,7 @@ local all_units = {
     },
     ["ftlb"] = {
 	name1    = "foot-pound",
-	symbol   = "ft·lb",
+	symbol   = "ft⋅lb",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 1.3558179483314004,
@@ -1329,7 +1110,7 @@ local all_units = {
     ["ftlb-f"] = {
 	name1    = "foot-pound force",
 	name2    = "foot-pounds force",
-	symbol   = "ft·lb<sub>f</sub>",
+	symbol   = "ft⋅lb<sub>f</sub>",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 1.3558179483314004,
@@ -1339,7 +1120,7 @@ local all_units = {
     ["ftlbf"] = {
 	name1    = "foot-pound force",
 	name2    = "foot-pounds force",
-	symbol   = "ft·lbf",
+	symbol   = "ft⋅lbf",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 1.3558179483314004,
@@ -1348,7 +1129,7 @@ local all_units = {
     },
     ["ftpdl"] = {
 	name1    = "foot-poundal",
-	symbol   = "ft·pdl",
+	symbol   = "ft⋅pdl",
 	utype    = "energy",
 	scale    = 0.0421401100938048,
 	default  = "J",
@@ -1364,7 +1145,7 @@ local all_units = {
     ["GLatm"] = {
 	name1    = "gigalitre-atmosphere",
 	name1_us = "gigaliter-atmosphere",
-	symbol   = "GL·atm",
+	symbol   = "GL⋅atm",
 	utype    = "energy",
 	scale    = 101325000000,
 	default  = "GJ",
@@ -1373,7 +1154,7 @@ local all_units = {
     ["Glatm"] = {
 	name1    = "gigalitre-atmosphere",
 	name1_us = "gigaliter-atmosphere",
-	symbol   = "Gl·atm",
+	symbol   = "Gl⋅atm",
 	utype    = "energy",
 	scale    = 101325000000,
 	default  = "GJ",
@@ -1417,7 +1198,7 @@ local all_units = {
     },
     ["GW.h"] = {
 	name1    = "gigawatt-hour",
-	symbol   = "GW·h",
+	symbol   = "GW⋅h",
 	utype    = "energy",
 	scale    = 3.6e12,
 	default  = "TJ",
@@ -1433,7 +1214,7 @@ local all_units = {
     },
     ["hph"] = {
 	name1    = "horsepower-hour",
-	symbol   = "hp·h",
+	symbol   = "hp⋅h",
 	utype    = "energy",
 	scale    = 2684519.537696172792,
 	default  = "kWh",
@@ -1441,7 +1222,7 @@ local all_units = {
     },
     ["impgalatm"] = {
 	name1    = "imperial gallon-atmosphere",
-	symbol   = "imp gal·atm",
+	symbol   = "imp gal⋅atm",
 	utype    = "energy",
 	scale    = 460.63256925,
 	default  = "J",
@@ -1449,7 +1230,7 @@ local all_units = {
     },
     ["inlb"] = {
 	name1    = "inch-pound",
-	symbol   = "in·lb",
+	symbol   = "in⋅lb",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 0.1129848290276167,
@@ -1459,7 +1240,7 @@ local all_units = {
     ["inlb-f"] = {
 	name1    = "inch-pound force",
 	name2    = "inch-pounds force",
-	symbol   = "in·lb<sub>f</sub>",
+	symbol   = "in⋅lb<sub>f</sub>",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 0.1129848290276167,
@@ -1469,7 +1250,7 @@ local all_units = {
     ["inlbf"] = {
 	name1    = "inch-pound force",
 	name2    = "inch-pounds force",
-	symbol   = "in·lbf",
+	symbol   = "in⋅lbf",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 0.1129848290276167,
@@ -1479,7 +1260,7 @@ local all_units = {
     ["inoz-f"] = {
 	name1    = "inch-ounce force",
 	name2    = "inch-ounces force",
-	symbol   = "in·oz<sub>f</sub>",
+	symbol   = "in⋅oz<sub>f</sub>",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 0.00706155181422604375,
@@ -1489,7 +1270,7 @@ local all_units = {
     ["inozf"] = {
 	name1    = "inch-ounce force",
 	name2    = "inch-ounces force",
-	symbol   = "in·ozf",
+	symbol   = "in⋅ozf",
 	utype    = "energy",
 	alttype  = "torque",
 	scale    = 0.00706155181422604375,
@@ -1577,7 +1358,7 @@ local all_units = {
     ["kLatm"] = {
 	name1    = "kilolitre-atmosphere",
 	name1_us = "kiloliter-atmosphere",
-	symbol   = "kL·atm",
+	symbol   = "kL⋅atm",
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
@@ -1586,7 +1367,7 @@ local all_units = {
     ["klatm"] = {
 	name1    = "kilolitre-atmosphere",
 	name1_us = "kiloliter-atmosphere",
-	symbol   = "kl·atm",
+	symbol   = "kl⋅atm",
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
@@ -1630,7 +1411,7 @@ local all_units = {
     },
     ["kW.h"] = {
 	name1    = "kilowatt-hour",
-	symbol   = "kW·h",
+	symbol   = "kW⋅h",
 	utype    = "energy",
 	scale    = 3600000,
 	default  = "MJ",
@@ -1647,7 +1428,7 @@ local all_units = {
     ["Latm"] = {
 	name1    = "litre-atmosphere",
 	name1_us = "liter-atmosphere",
-	symbol   = "L·atm",
+	symbol   = "L⋅atm",
 	utype    = "energy",
 	scale    = 101.325,
 	default  = "J",
@@ -1656,7 +1437,7 @@ local all_units = {
     ["latm"] = {
 	name1    = "litre-atmosphere",
 	name1_us = "liter-atmosphere",
-	symbol   = "l·atm",
+	symbol   = "l⋅atm",
 	utype    = "energy",
 	scale    = 101.325,
 	default  = "J",
@@ -1665,164 +1446,11 @@ local all_units = {
     ["m3atm"] = {
 	name1    = "cubic metre-atmosphere",
 	name1_us = "cubic meter-atmosphere",
-	symbol   = "m<sup>3</sup>·atm",
+	symbol   = "m<sup>3</sup>⋅atm",
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
 	link     = "Atmosphere (unit)",
-    },
-    ["MBtu"] = {
-	name1    = "thousand British thermal units",
-	name2    = "thousand British thermal units",
-	symbol   = "MBtu",
-	utype    = "energy",
-	scale    = 1055055.85262,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-39F"] = {
-	name1    = "thousand British thermal units (39°F)",
-	name2    = "thousand British thermal units (39°F)",
-	symbol   = "MBTU<sub>39°F</sub>",
-	utype    = "energy",
-	scale    = 1059670,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-39F"] = {
-	name1    = "thousand British thermal units (39°F)",
-	name2    = "thousand British thermal units (39°F)",
-	symbol   = "MBtu<sub>39°F</sub>",
-	utype    = "energy",
-	scale    = 1059670,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-59F"] = {
-	name1    = "thousand British thermal units (59°F)",
-	name2    = "thousand British thermal units (59°F)",
-	symbol   = "MBTU<sub>59°F</sub>",
-	utype    = "energy",
-	scale    = 1054804,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-59F"] = {
-	name1    = "thousand British thermal units (59°F)",
-	name2    = "thousand British thermal units (59°F)",
-	symbol   = "MBtu<sub>59°F</sub>",
-	utype    = "energy",
-	scale    = 1054804,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-60F"] = {
-	name1    = "thousand British thermal units (60°F)",
-	name2    = "thousand British thermal units (60°F)",
-	symbol   = "MBTU<sub>60°F</sub>",
-	utype    = "energy",
-	scale    = 1054680,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-60F"] = {
-	name1    = "thousand British thermal units (60°F)",
-	name2    = "thousand British thermal units (60°F)",
-	symbol   = "MBtu<sub>60°F</sub>",
-	utype    = "energy",
-	scale    = 1054680,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-63F"] = {
-	name1    = "thousand British thermal units (63°F)",
-	name2    = "thousand British thermal units (63°F)",
-	symbol   = "MBTU<sub>63°F</sub>",
-	utype    = "energy",
-	scale    = 1054600,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-63F"] = {
-	name1    = "thousand British thermal units (63°F)",
-	name2    = "thousand British thermal units (63°F)",
-	symbol   = "MBtu<sub>63°F</sub>",
-	utype    = "energy",
-	scale    = 1054600,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-ISO"] = {
-	name1    = "thousand British thermal units (ISO)",
-	name2    = "thousand British thermal units (ISO)",
-	symbol   = "MBTU<sub>ISO</sub>",
-	utype    = "energy",
-	scale    = 1055056,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-ISO"] = {
-	name1    = "thousand British thermal units (ISO)",
-	name2    = "thousand British thermal units (ISO)",
-	symbol   = "MBtu<sub>ISO</sub>",
-	utype    = "energy",
-	scale    = 1055056,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-IT"] = {
-	name1    = "thousand British thermal units (IT)",
-	name2    = "thousand British thermal units (IT)",
-	symbol   = "MBTU<sub>IT</sub>",
-	utype    = "energy",
-	scale    = 1055055.85262,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-IT"] = {
-	name1    = "thousand British thermal units (IT)",
-	name2    = "thousand British thermal units (IT)",
-	symbol   = "MBtu<sub>IT</sub>",
-	utype    = "energy",
-	scale    = 1055055.85262,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-mean"] = {
-	name1    = "thousand British thermal units (mean)",
-	name2    = "thousand British thermal units (mean)",
-	symbol   = "MBTU<sub>mean</sub>",
-	utype    = "energy",
-	scale    = 1055870,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-mean"] = {
-	name1    = "thousand British thermal units (mean)",
-	name2    = "thousand British thermal units (mean)",
-	symbol   = "MBtu<sub>mean</sub>",
-	utype    = "energy",
-	scale    = 1055870,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBTU-th"] = {
-	name1    = "thousand British thermal units (thermochemical)",
-	name2    = "thousand British thermal units (thermochemical)",
-	symbol   = "MBTU<sub>th</sub>",
-	utype    = "energy",
-	scale    = 1054350.26444,
-	default  = "MJ",
-	link     = "British thermal unit",
-    },
-    ["MBtu-th"] = {
-	name1    = "thousand British thermal units (thermochemical)",
-	name2    = "thousand British thermal units (thermochemical)",
-	symbol   = "MBtu<sub>th</sub>",
-	utype    = "energy",
-	scale    = 1054350.26444,
-	default  = "MJ",
-	link     = "British thermal unit",
     },
     ["Mcal"] = {
 	name1    = "megacalorie",
@@ -1907,7 +1535,7 @@ local all_units = {
 	symbol   = "merg",
 	utype    = "energy",
 	scale    = 0.0000000001,
-	default  = "µJ",
+	default  = "μJ",
 	link     = "Erg",
     },
     ["MeV"] = {
@@ -1929,7 +1557,7 @@ local all_units = {
     ["MLatm"] = {
 	name1    = "megalitre-atmosphere",
 	name1_us = "megaliter-atmosphere",
-	symbol   = "ML·atm",
+	symbol   = "ML⋅atm",
 	utype    = "energy",
 	scale    = 101325000,
 	default  = "MJ",
@@ -1938,7 +1566,7 @@ local all_units = {
     ["Mlatm"] = {
 	name1    = "megalitre-atmosphere",
 	name1_us = "megaliter-atmosphere",
-	symbol   = "Ml·atm",
+	symbol   = "Ml⋅atm",
 	utype    = "energy",
 	scale    = 101325000,
 	default  = "MJ",
@@ -1947,7 +1575,7 @@ local all_units = {
     ["mLatm"] = {
 	name1    = "millilitre-atmosphere",
 	name1_us = "milliliter-atmosphere",
-	symbol   = "L·atm",
+	symbol   = "L⋅atm",
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
@@ -1956,7 +1584,7 @@ local all_units = {
     ["mlatm"] = {
 	name1    = "millilitre-atmosphere",
 	name1_us = "milliliter-atmosphere",
-	symbol   = "l·atm",
+	symbol   = "l⋅atm",
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
@@ -1968,150 +1596,6 @@ local all_units = {
 	symbol   = "MMBtu",
 	utype    = "energy",
 	scale    = 1055055852.62,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-39F"] = {
-	name1    = "million British thermal units (39°F)",
-	name2    = "million British thermal units (39°F)",
-	symbol   = "MMBTU<sub>39°F</sub>",
-	utype    = "energy",
-	scale    = 1059670000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-39F"] = {
-	name1    = "million British thermal units (39°F)",
-	name2    = "million British thermal units (39°F)",
-	symbol   = "MMBtu<sub>39°F</sub>",
-	utype    = "energy",
-	scale    = 1059670000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-59F"] = {
-	name1    = "million British thermal units (59°F)",
-	name2    = "million British thermal units (59°F)",
-	symbol   = "MMBTU<sub>59°F</sub>",
-	utype    = "energy",
-	scale    = 1054804000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-59F"] = {
-	name1    = "million British thermal units (59°F)",
-	name2    = "million British thermal units (59°F)",
-	symbol   = "MMBtu<sub>59°F</sub>",
-	utype    = "energy",
-	scale    = 1054804000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-60F"] = {
-	name1    = "million British thermal units (60°F)",
-	name2    = "million British thermal units (60°F)",
-	symbol   = "MMBTU<sub>60°F</sub>",
-	utype    = "energy",
-	scale    = 1054680000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-60F"] = {
-	name1    = "million British thermal units (60°F)",
-	name2    = "million British thermal units (60°F)",
-	symbol   = "MMBtu<sub>60°F</sub>",
-	utype    = "energy",
-	scale    = 1054680000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-63F"] = {
-	name1    = "million British thermal units (63°F)",
-	name2    = "million British thermal units (63°F)",
-	symbol   = "MMBTU<sub>63°F</sub>",
-	utype    = "energy",
-	scale    = 1054600000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-63F"] = {
-	name1    = "million British thermal units (63°F)",
-	name2    = "million British thermal units (63°F)",
-	symbol   = "MMBtu<sub>63°F</sub>",
-	utype    = "energy",
-	scale    = 1054600000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-ISO"] = {
-	name1    = "million British thermal units (ISO)",
-	name2    = "million British thermal units (ISO)",
-	symbol   = "MMBTU<sub>ISO</sub>",
-	utype    = "energy",
-	scale    = 1055056000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-ISO"] = {
-	name1    = "million British thermal units (ISO)",
-	name2    = "million British thermal units (ISO)",
-	symbol   = "MMBtu<sub>ISO</sub>",
-	utype    = "energy",
-	scale    = 1055056000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-IT"] = {
-	name1    = "million British thermal units (IT)",
-	name2    = "million British thermal units (IT)",
-	symbol   = "MMBTU<sub>IT</sub>",
-	utype    = "energy",
-	scale    = 1055055852.62,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-IT"] = {
-	name1    = "million British thermal units (IT)",
-	name2    = "million British thermal units (IT)",
-	symbol   = "MMBtu<sub>IT</sub>",
-	utype    = "energy",
-	scale    = 1055055852.62,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-mean"] = {
-	name1    = "million British thermal units (mean)",
-	name2    = "million British thermal units (mean)",
-	symbol   = "MMBTU<sub>mean</sub>",
-	utype    = "energy",
-	scale    = 1055870000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-mean"] = {
-	name1    = "million British thermal units (mean)",
-	name2    = "million British thermal units (mean)",
-	symbol   = "MMBtu<sub>mean</sub>",
-	utype    = "energy",
-	scale    = 1055870000,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBTU-th"] = {
-	name1    = "million British thermal units (thermochemical)",
-	name2    = "million British thermal units (thermochemical)",
-	symbol   = "MMBTU<sub>th</sub>",
-	utype    = "energy",
-	scale    = 1054350264.44,
-	default  = "GJ",
-	link     = "British thermal unit",
-    },
-    ["MMBtu-th"] = {
-	name1    = "million British thermal units (thermochemical)",
-	name2    = "million British thermal units (thermochemical)",
-	symbol   = "MMBtu<sub>th</sub>",
-	utype    = "energy",
-	scale    = 1054350264.44,
 	default  = "GJ",
 	link     = "British thermal unit",
     },
@@ -2171,7 +1655,7 @@ local all_units = {
     },
     ["MW.h"] = {
 	name1    = "megawatt-hour",
-	symbol   = "MW·h",
+	symbol   = "MW⋅h",
 	utype    = "energy",
 	scale    = 3600000000,
 	default  = "GJ",
@@ -2179,7 +1663,7 @@ local all_units = {
     },
     ["mW.h"] = {
 	name1    = "milliwatt-hour",
-	symbol   = "mW·h",
+	symbol   = "mW⋅h",
 	utype    = "energy",
 	scale    = 3.6,
 	default  = "J",
@@ -2224,6 +1708,13 @@ local all_units = {
 	scale    = 1.602176487e-31,
 	default  = "yJ",
 	link     = "Electronvolt",
+    },
+    ["PSh"] = {
+	name1    = "Pferdestärkenstunde",
+	symbol   = "PSh",
+	utype    = "energy",
+	scale    = 2647795.5,
+	default  = "kWh",
     },
     ["quad"] = {
 	name1    = "quadrillion British thermal units",
@@ -2300,7 +1791,7 @@ local all_units = {
 	symbol   = "TeV",
 	utype    = "energy",
 	scale    = 1.602176487e-7,
-	default  = "µJ",
+	default  = "μJ",
 	link     = "Electronvolt",
     },
     ["th"] = {
@@ -2309,7 +1800,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4186800,
 	default  = "MJ",
-	link     = "Conversion of units",
+	link     = "Conversion of units#Energy",
     },
     ["thm-EC"] = {
 	name1    = "therm (EC)",
@@ -2387,7 +1878,7 @@ local all_units = {
     },
     ["TW.h"] = {
 	name1    = "terawatt-hour",
-	symbol   = "TW·h",
+	symbol   = "TW⋅h",
 	utype    = "energy",
 	scale    = 3.6e15,
 	default  = "PJ",
@@ -2404,8 +1895,8 @@ local all_units = {
     ["USgalatm"] = {
 	name1    = "US gallon-atmosphere",
 	name1_us = "U.S. gallon-atmosphere",
-	symbol   = "US&nbsp;gal·atm",
-	sym_us   = "U.S.&nbsp;gal·atm",
+	symbol   = "US&nbsp;gal⋅atm",
+	sym_us   = "U.S.&nbsp;gal⋅atm",
 	utype    = "energy",
 	scale    = 383.5568490138,
 	default  = "J",
@@ -2413,7 +1904,7 @@ local all_units = {
     },
     ["W.h"] = {
 	name1    = "watt-hour",
-	symbol   = "W·h",
+	symbol   = "W⋅h",
 	utype    = "energy",
 	scale    = 3600,
 	default  = "kJ",
@@ -2425,69 +1916,33 @@ local all_units = {
 	scale    = 3600,
 	default  = "kJ",
     },
-    ["µerg"] = {
+    ["μerg"] = {
 	name1    = "microerg",
-	symbol   = "µerg",
+	symbol   = "μerg",
 	utype    = "energy",
 	scale    = 1e-13,
 	default  = "nJ",
 	link     = "Erg",
     },
-    ["µeV"] = {
+    ["μeV"] = {
 	name1    = "microelectronvolt",
-	symbol   = "µeV",
+	symbol   = "μeV",
 	utype    = "energy",
 	scale    = 1.602176487e-25,
 	default  = "yJ",
 	link     = "Electronvolt",
     },
-    ["µLatm"] = {
-	name1    = "microlitre-atmosphere",
-	name1_us = "microliter-atmosphere",
-	symbol   = "µL·atm",
-	utype    = "energy",
-	scale    = 0.000101325,
-	default  = "µJ",
-	link     = "Atmosphere (unit)",
-    },
-    ["µlatm"] = {
-	name1    = "microlitre-atmosphere",
-	name1_us = "microliter-atmosphere",
-	symbol   = "µl·atm",
-	utype    = "energy",
-	scale    = 0.000101325,
-	default  = "µJ",
-	link     = "Atmosphere (unit)",
-    },
-    ["µtonTNT"] = {
-	name2    = "microtons of TNT",
-	symbol   = "microton of TNT",
-	usename  = 1,
-	utype    = "energy",
-	scale    = 4184,
-	default  = "kJ",
-	link     = "TNT equivalent",
-    },
-    ["µtTNT"] = {
-	name2    = "microtonnes of TNT",
-	symbol   = "microtonne of TNT",
-	usename  = 1,
-	utype    = "energy",
-	scale    = 4184,
-	default  = "kJ",
-	link     = "TNT equivalent",
-    },
-    ["µW.h"] = {
+    ["μW.h"] = {
 	name1    = "microwatt-hour",
-	symbol   = "µW·h",
+	symbol   = "μW⋅h",
 	utype    = "energy",
 	scale    = 0.0036,
 	default  = "mJ",
 	link     = "Watt-hour",
     },
-    ["µWh"] = {
+    ["μWh"] = {
 	name1    = "microwatt-hour",
-	symbol   = "µWh",
+	symbol   = "μWh",
 	utype    = "energy",
 	scale    = 0.0036,
 	default  = "mJ",
@@ -2505,9 +1960,6 @@ local all_units = {
     },
     ["ft.lbf"] = {
 	target   = "ftlbf",
-    },
-    ["ft·lb-f"] = {
-	target   = "ftlb-f",
     },
     ["ft·lbf"] = {
 	target   = "ftlbf",
@@ -2560,9 +2012,6 @@ local all_units = {
     ["hp.h"] = {
 	target   = "hph",
     },
-    ["hp·h"] = {
-	target   = "hph",
-    },
     ["in.lb-f"] = {
 	target   = "inlb-f",
     },
@@ -2573,18 +2022,6 @@ local all_units = {
 	target   = "inoz-f",
     },
     ["in.ozf"] = {
-	target   = "inozf",
-    },
-    ["in·lb-f"] = {
-	target   = "inlb-f",
-    },
-    ["in·lbf"] = {
-	target   = "inlbf",
-    },
-    ["in·oz-f"] = {
-	target   = "inoz-f",
-    },
-    ["in·ozf"] = {
 	target   = "inozf",
     },
     ["kbboe"] = {
@@ -2615,13 +2052,7 @@ local all_units = {
     ["MW·h"] = {
 	target   = "MW.h",
     },
-    ["mW·h"] = {
-	target   = "mW.h",
-    },
     ["TW-h"] = {
-	target   = "TW.h",
-    },
-    ["TW·h"] = {
 	target   = "TW.h",
     },
     ["U.S.galatm"] = {
@@ -2629,79 +2060,34 @@ local all_units = {
 	sp_us    = true,
     },
     ["uerg"] = {
-	target   = "µerg",
+	target   = "μerg",
     },
     ["ueV"] = {
-	target   = "µeV",
-    },
-    ["uLatm"] = {
-	target   = "µLatm",
-    },
-    ["ulatm"] = {
-	target   = "µlatm",
+	target   = "μeV",
     },
     ["usgalatm"] = {
 	target   = "USgalatm",
     },
-    ["utonTNT"] = {
-	target   = "µtonTNT",
-    },
-    ["utTNT"] = {
-	target   = "µtTNT",
-    },
     ["uW-h"] = {
-	target   = "µW.h",
+	target   = "μW.h",
     },
     ["uW.h"] = {
-	target   = "µW.h",
+	target   = "μW.h",
     },
     ["uWh"] = {
-	target   = "µWh",
-    },
-    ["uW·h"] = {
-	target   = "µW.h",
+	target   = "μWh",
     },
     ["W-h"] = {
 	target   = "W.h",
     },
-    ["W·h"] = {
-	target   = "W.h",
-    },
-    ["µW-h"] = {
-	target   = "µW.h",
-    },
-    ["µW·h"] = {
-	target   = "µW.h",
-    },
-    ["μerg"] = {
-	target   = "µerg",
-    },
-    ["μeV"] = {
-	target   = "µeV",
-    },
-    ["μLatm"] = {
-	target   = "µLatm",
-    },
-    ["μlatm"] = {
-	target   = "µlatm",
-    },
-    ["μtonTNT"] = {
-	target   = "µtonTNT",
-    },
-    ["μtTNT"] = {
-	target   = "µtTNT",
-    },
-    ["μW-h"] = {
-	target   = "µW.h",
-    },
-    ["μW.h"] = {
-	target   = "µW.h",
-    },
-    ["μWh"] = {
-	target   = "µWh",
-    },
-    ["μW·h"] = {
-	target   = "µW.h",
+    ["eVpar"] = {
+	_name1   = "electronvolt",
+	_symbol  = "eV",
+	utype    = "energy per chemical amount",
+	scale    = 96485.329522144166,
+	prefixes = 1,
+	default  = "kcal/mol",
+	link     = "Electronvolt",
     },
     ["kcal/mol"] = {
 	per      = { "kcal", "mol" },
@@ -2720,7 +2106,7 @@ local all_units = {
 	name1_us = "kilowatt-hour per 100 kilometers",
 	name2    = "kilowatt-hours per 100 kilometres",
 	name2_us = "kilowatt-hours per 100 kilometers",
-	symbol   = "kW·h/100&nbsp;km",
+	symbol   = "kW⋅h/100&nbsp;km",
 	utype    = "energy per unit length",
 	scale    = 36,
 	default  = "MJ/km kWh/mi",
@@ -2729,7 +2115,7 @@ local all_units = {
     ["kWh/100 mi"] = {
 	name1    = "kilowatt-hour per 100 miles",
 	name2    = "kilowatt-hours per 100 miles",
-	symbol   = "kW-hrs/100&nbsp;mi",
+	symbol   = "kW⋅h/100&nbsp;mi",
 	utype    = "energy per unit length",
 	scale    = 22.3694,
 	default  = "mpge",
@@ -2749,7 +2135,7 @@ local all_units = {
     ["mpge"] = {
 	name1    = "mile per gallon gasoline equivalent",
 	name2    = "miles per gallon gasoline equivalent",
-	symbol   = "mpg-e",
+	symbol   = "mpg&#8209;e",
 	utype    = "energy per unit length",
 	scale    = 13e-6,
 	invert   = -1,
@@ -2809,7 +2195,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 1e9,
 	default  = "ktTNT/t",
-	link     = "Joule",
+	link     = "Specific energy",
     },
     ["J/g"] = {
 	name1    = "joule per gram",
@@ -2818,7 +2204,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 1000,
 	default  = "kcal/g",
-	link     = "Joule",
+	link     = "Specific energy",
     },
     ["kcal/g"] = {
 	name1    = "kilocalorie per gram",
@@ -2835,7 +2221,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 1000000,
 	default  = "kcal/g",
-	link     = "Joule",
+	link     = "Specific energy",
     },
     ["kJ/kg"] = {
 	name1    = "kilojoule per kilogram",
@@ -2844,6 +2230,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 1000,
 	default  = "BTU/lb",
+	link     = "Specific energy",
     },
     ["ktonTNT/MT"] = {
 	name2    = "kilotons of TNT per metric ton",
@@ -2888,7 +2275,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 1e12,
 	default  = "MtTNT/MT",
-	link     = "Joule",
+	link     = "Specific energy",
     },
     ["Cal/g"] = {
 	per      = { "Cal", "g" },
@@ -3368,7 +2755,6 @@ local all_units = {
 	utype    = "flow",
 	scale    = 1.1995246102365199e-10,
 	default  = "m3/s",
-	link     = "US gallon per day",
     },
     ["USgal/d"] = {
 	name1    = "US gallon per day",
@@ -3506,8 +2892,8 @@ local all_units = {
 	symbol   = "gr<sub>f</sub>",
 	utype    = "force",
 	scale    = 0.0006354602307515,
-	default  = "µN",
-	link     = "Pound-force",
+	default  = "μN",
+	link     = "Pound (force)",
     },
     ["grf"] = {
 	name1    = "grain-force",
@@ -3515,8 +2901,8 @@ local all_units = {
 	symbol   = "grf",
 	utype    = "force",
 	scale    = 0.0006354602307515,
-	default  = "µN",
-	link     = "Pound-force",
+	default  = "μN",
+	link     = "Pound (force)",
     },
     ["kdyn"] = {
 	name1    = "kilodyne",
@@ -3573,6 +2959,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 4.4482216152605,
 	default  = "N",
+	link     = "Pound (force)",
     },
     ["lbf"] = {
 	name1    = "pound-force",
@@ -3581,6 +2968,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 4.4482216152605,
 	default  = "N",
+	link     = "Pound (force)",
     },
     ["lb(f)"] = {
 	name1    = "pound",
@@ -3588,7 +2976,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 4.4482216152605,
 	default  = "N",
-	link     = "Pound-force",
+	link     = "Pound (force)",
     },
     ["LT-f"] = {
 	name1    = "long ton-force",
@@ -3629,7 +3017,7 @@ local all_units = {
 	symbol   = "mg<sub>f</sub>",
 	utype    = "force",
 	scale    = 0.00000980665,
-	default  = "µN gr-f",
+	default  = "μN gr-f",
 	link     = "Kilogram-force",
     },
     ["mgf"] = {
@@ -3638,7 +3026,7 @@ local all_units = {
 	symbol   = "mgf",
 	utype    = "force",
 	scale    = 0.00000980665,
-	default  = "µN grf",
+	default  = "μN grf",
 	link     = "Kilogram-force",
     },
     ["Mp"] = {
@@ -3654,7 +3042,7 @@ local all_units = {
 	symbol   = "mp",
 	utype    = "force",
 	scale    = 0.00000980665,
-	default  = "µN gr-f",
+	default  = "μN gr-f",
 	link     = "Kilogram-force",
     },
     ["N"] = {
@@ -3673,7 +3061,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.2780138203095378125,
 	default  = "mN",
-	link     = "Pound-force",
+	link     = "Pound (force)",
     },
     ["ozf"] = {
 	name1    = "ounce-force",
@@ -3682,7 +3070,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.2780138203095378125,
 	default  = "mN",
-	link     = "Pound-force",
+	link     = "Pound (force)",
     },
     ["p"] = {
 	name1    = "pond",
@@ -3843,21 +3231,21 @@ local all_units = {
     },
     ["mpgimp"] = {
 	per      = { "mi", "@impgal" },
-	symbol   = "mpg<sub><small>-imp</small></sub>",
+	symbol   = "mpg<sub>&#8209;imp</sub>",
 	utype    = "fuel efficiency",
 	invert   = -1,
 	iscomplex= true,
 	default  = "L/100 km+mpgus",
-	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub><small>-[[Imperial units|imp]]</small></sub>",
+	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub>&#8209;[[Imperial units|imp]]</sub>",
     },
     ["mpgus"] = {
 	per      = { "mi", "+USgal" },
-	symbol   = "mpg<sub><small>-US</small></sub>",
+	symbol   = "mpg<sub>&#8209;US</sub>",
 	utype    = "fuel efficiency",
 	invert   = -1,
 	iscomplex= true,
 	default  = "L/100 km+mpgimp",
-	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub><small>-[[United States customary units|US]]</small></sub>",
+	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub>&#8209;[[United States customary units|US]]</sub>",
     },
     ["U.S.gal/mi"] = {
 	per      = { "*U.S.gal", "mi" },
@@ -3885,15 +3273,15 @@ local all_units = {
     },
     ["mpgU.S."] = {
 	target   = "mpgus",
-	symbol   = "mpg<sub><small>-U.S.</small></sub>",
+	symbol   = "mpg<sub>&#8209;U.S.</sub>",
 	sp_us    = true,
-	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub><small>-[[United States customary units|U.S.]]</small></sub>",
+	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub>&#8209;[[United States customary units|U.S.]]</sub>",
     },
     ["mpgu.s."] = {
 	target   = "mpgus",
-	symbol   = "mpg<sub><small>-U.S.</small></sub>",
+	symbol   = "mpg<sub>&#8209;U.S.</sub>",
 	sp_us    = true,
-	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub><small>-[[United States customary units|U.S.]]</small></sub>",
+	symlink  = "[[Fuel economy in automobiles#Units of measure|mpg]]<sub>&#8209;[[United States customary units|U.S.]]</sub>",
     },
     ["mpgUS"] = {
 	target   = "mpgus",
@@ -4032,6 +3420,14 @@ local all_units = {
 	subdivs  = { ["ft"] = { 66, default = "m" }, ["yd"] = { 22, default = "m" } },
 	link     = "Chain (unit)",
     },
+    ["chlk"] = {
+	name1    = "[[Chain (unit)|chain]]",
+	symbol   = "[[Chain (unit)|ch]]",
+	utype    = "length",
+	scale    = 20.1168,
+	default  = "ft m",
+	link     = "",
+    },
     ["chain"] = {
 	symbol   = "chain",
 	usename  = 1,
@@ -4040,6 +3436,14 @@ local all_units = {
 	default  = "ft m",
 	subdivs  = { ["ft"] = { 66, default = "m" }, ["yd"] = { 22, default = "m" } },
 	link     = "Chain (unit)",
+    },
+    ["chainlk"] = {
+	symbol   = "[[Chain (unit)|chain]]",
+	usename  = 1,
+	utype    = "length",
+	scale    = 20.1168,
+	default  = "ft m",
+	link     = "",
     },
     ["dpcm"] = {
 	name2    = "dot/cm",
@@ -4102,7 +3506,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e24,
 	default  = "Mpc",
-	link     = "Light-year#Distances in light-years",
+	link     = "Light-year#Definitions",
     },
     ["Gpc"] = {
 	name1    = "gigaparsec",
@@ -4145,7 +3549,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e18,
 	default  = "pc",
-	link     = "Light-year#Distances in light-years",
+	link     = "Light-year#Definitions",
     },
     ["kpc"] = {
 	name1    = "kiloparsec",
@@ -4165,6 +3569,7 @@ local all_units = {
     },
     ["league"] = {
 	symbol   = "league",
+	usename  = 1,
 	utype    = "length",
 	scale    = 4828.032,
 	default  = "km",
@@ -4193,7 +3598,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1609.344,
 	default  = "km",
-	subdivs  = { ["ch"] = { 80, default = "km" }, ["chain"] = { 80, default = "km" }, ["ft"] = { 5280, default = "km" }, ["yd"] = { 1760, default = "km" } },
+	subdivs  = { ["ch"] = { 80, default = "km" }, ["chlk"] = { 80, default = "km" }, ["chain"] = { 80, default = "km" }, ["chainlk"] = { 80, default = "km" }, ["ft"] = { 5280, default = "km" }, ["furlong"] = { 8, default = "km" }, ["yd"] = { 1760, default = "km" } },
     },
     ["mil"] = {
 	symbol   = "mil",
@@ -4209,7 +3614,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e21,
 	default  = "kpc",
-	link     = "Light-year#Distances in light-years",
+	link     = "Light-year#Definitions",
     },
     ["Mpc"] = {
 	name1    = "megaparsec",
@@ -4264,8 +3669,8 @@ local all_units = {
 	link     = "Rod (unit)",
     },
     ["pitch"] = {
-	name2    = "µm",
-	symbol   = "µm",
+	name2    = "μm",
+	symbol   = "μm",
 	utype    = "length",
 	scale    = 1e-6,
 	default  = "dpi",
@@ -4283,7 +3688,7 @@ local all_units = {
     },
     ["pre1954U.S.nmi"] = {
 	name1    = "(pre-1954&nbsp;U.S.) nautical mile",
-	symbol   = "(pre-1954&nbsp;U.S.) nmi",
+	symbol   = "(pre&#8209;1954&nbsp;U.S.) nmi",
 	utype    = "length",
 	scale    = 1853.24496,
 	default  = "km mi",
@@ -4292,8 +3697,8 @@ local all_units = {
     ["pre1954USnmi"] = {
 	name1    = "(pre-1954&nbsp;US) nautical mile",
 	name1_us = "(pre-1954&nbsp;U.S.) nautical mile",
-	symbol   = "(pre-1954&nbsp;US) nmi",
-	sym_us   = "(pre-1954&nbsp;U.S.) nmi",
+	symbol   = "(pre&#8209;1954&nbsp;US) nmi",
+	sym_us   = "(pre&#8209;1954&nbsp;U.S.) nmi",
 	utype    = "length",
 	scale    = 1853.24496,
 	default  = "km mi",
@@ -4338,7 +3743,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 0.30303030303030304,
 	default  = "m",
-	link     = "Japanese units of measurement#Length",
+	link     = "Shaku (unit)",
     },
     ["sm"] = {
 	name1    = "smoot",
@@ -4355,6 +3760,14 @@ local all_units = {
 	scale    = 1609.344,
 	default  = "km",
 	subdivs  = { ["chain"] = { 80, default = "km" } },
+    },
+    ["solar radius"] = {
+	name1    = "solar radius",
+	name2    = "solar radii",
+	symbol   = "''R''<sub>☉</sub>",
+	utype    = "length",
+	scale    = 695700e3,
+	default  = "km",
     },
     ["sun"] = {
 	name2    = "sun",
@@ -4389,14 +3802,14 @@ local all_units = {
 	default  = "m",
 	subdivs  = { ["ft"] = { 3, default = "m" } },
     },
-    ["µin"] = {
+    ["μin"] = {
 	name1    = "microinch",
 	name2    = "microinches",
-	symbol   = "µin",
+	symbol   = "μin",
 	utype    = "length",
 	scale    = 0.0000000254,
 	default  = "nm",
-	link     = "SI prefix#Non-SI units",
+	link     = "SI prefix#Non-metric units",
     },
     ["Å"] = {
 	name1    = "ångström",
@@ -4404,7 +3817,6 @@ local all_units = {
 	utype    = "length",
 	scale    = 0.0000000001,
 	default  = "in",
-	link     = "Angstrom",
     },
     ["Hz"] = {
 	_name1   = "hertz",
@@ -4475,7 +3887,11 @@ local all_units = {
 	target   = "m",
     },
     ["micrometre"] = {
-	target   = "µm",
+	target   = "μm",
+    },
+    ["micron"] = {
+	target   = "μm",
+	default  = "μin",
     },
     ["mile"] = {
 	target   = "mi",
@@ -4493,7 +3909,7 @@ local all_units = {
 	target   = "sm",
     },
     ["uin"] = {
-	target   = "µin",
+	target   = "μin",
     },
     ["yard"] = {
 	target   = "yd",
@@ -4503,9 +3919,6 @@ local all_units = {
     },
     ["yds"] = {
 	target   = "yd",
-    },
-    ["μin"] = {
-	target   = "µin",
     },
     ["dtex"] = {
 	name1    = "decitex",
@@ -4887,7 +4300,7 @@ local all_units = {
     ["solar mass"] = {
 	name1    = "solar mass",
 	name2    = "solar masses",
-	symbol   = "M<sub>☉</sub>",
+	symbol   = "''M''<sub>☉</sub>",
 	utype    = "mass",
 	scale    = 1.98855e30,
 	default  = "kg",
@@ -4943,7 +4356,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1.632932532,
 	default  = "kg",
-	link     = "Burmese units of measurement#mass",
+	link     = "Myanmar units of measurement#Mass",
     },
     ["billion tonne"] = {
 	target   = "e9t",
@@ -4967,7 +4380,7 @@ local all_units = {
 	target   = "LT",
     },
     ["mcg"] = {
-	target   = "µg",
+	target   = "μg",
     },
     ["million tonne"] = {
 	target   = "e6t",
@@ -5018,16 +4431,16 @@ local all_units = {
     ["g-mol/d"] = {
 	name1    = "gram-mole per day",
 	name2    = "gram-moles per day",
-	symbol   = "g-mol/d",
+	symbol   = "g&#8209;mol/d",
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
-	default  = "µmol/s",
+	default  = "μmol/s",
 	link     = "Mole (unit)",
     },
     ["g-mol/h"] = {
 	name1    = "gram-mole per hour",
 	name2    = "gram-moles per hour",
-	symbol   = "g-mol/h",
+	symbol   = "g&#8209;mol/h",
 	utype    = "molar rate",
 	scale    = 0.00027777777777777778,
 	default  = "mmol/s",
@@ -5036,7 +4449,7 @@ local all_units = {
     ["g-mol/min"] = {
 	name1    = "gram-mole per minute",
 	name2    = "gram-moles per minute",
-	symbol   = "g-mol/min",
+	symbol   = "g&#8209;mol/min",
 	utype    = "molar rate",
 	scale    = 0.016666666666666666,
 	default  = "g-mol/s",
@@ -5045,7 +4458,7 @@ local all_units = {
     ["g-mol/s"] = {
 	name1    = "gram-mole per second",
 	name2    = "gram-moles per second",
-	symbol   = "g-mol/s",
+	symbol   = "g&#8209;mol/s",
 	utype    = "molar rate",
 	scale    = 1,
 	default  = "lb-mol/min",
@@ -5057,7 +4470,7 @@ local all_units = {
 	symbol   = "gmol/d",
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
-	default  = "µmol/s",
+	default  = "μmol/s",
 	link     = "Mole (unit)",
     },
     ["gmol/h"] = {
@@ -5126,7 +4539,7 @@ local all_units = {
     ["lb-mol/d"] = {
 	name1    = "pound-mole per day",
 	name2    = "pound-moles per day",
-	symbol   = "lb-mol/d",
+	symbol   = "lb&#8209;mol/d",
 	utype    = "molar rate",
 	scale    = 0.0052499116898148141,
 	default  = "mmol/s",
@@ -5135,7 +4548,7 @@ local all_units = {
     ["lb-mol/h"] = {
 	name1    = "pound-mole per hour",
 	name2    = "pound-moles per hour",
-	symbol   = "lb-mol/h",
+	symbol   = "lb&#8209;mol/h",
 	utype    = "molar rate",
 	scale    = 0.12599788055555555,
 	default  = "mol/s",
@@ -5144,7 +4557,7 @@ local all_units = {
     ["lb-mol/min"] = {
 	name1    = "pound-mole per minute",
 	name2    = "pound-moles per minute",
-	symbol   = "lb-mol/min",
+	symbol   = "lb&#8209;mol/min",
 	utype    = "molar rate",
 	scale    = 7.5598728333333334,
 	default  = "mol/s",
@@ -5153,7 +4566,7 @@ local all_units = {
     ["lb-mol/s"] = {
 	name1    = "pound-mole per second",
 	name2    = "pound-moles per second",
-	symbol   = "lb-mol/s",
+	symbol   = "lb&#8209;mol/s",
 	utype    = "molar rate",
 	scale    = 453.59237,
 	default  = "kmol/s",
@@ -5210,7 +4623,7 @@ local all_units = {
 	symbol   = "mol/d",
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
-	default  = "µmol/s",
+	default  = "μmol/s",
 	link     = "Mole (unit)",
     },
     ["mol/h"] = {
@@ -5240,27 +4653,24 @@ local all_units = {
 	default  = "lb-mol/min",
 	link     = "Mole (unit)",
     },
-    ["µmol/s"] = {
+    ["μmol/s"] = {
 	name1    = "micromole per second",
 	name2    = "micromoles per second",
-	symbol   = "µmol/s",
+	symbol   = "μmol/s",
 	utype    = "molar rate",
 	scale    = 0.000001,
 	default  = "lb-mol/d",
 	link     = "Mole (unit)",
     },
     ["umol/s"] = {
-	target   = "µmol/s",
-    },
-    ["μmol/s"] = {
-	target   = "µmol/s",
+	target   = "μmol/s",
     },
     ["/acre"] = {
 	name1    = "per acre",
 	name2    = "per acre",
 	symbol   = "/acre",
 	utype    = "per unit area",
-	scale    = 247.10538146716533,
+	scale    = 0.00024710538146716532,
 	default  = "/ha",
 	link     = "Acre",
     },
@@ -5269,7 +4679,7 @@ local all_units = {
 	name2    = "per hectare",
 	symbol   = "/ha",
 	utype    = "per unit area",
-	scale    = 100,
+	scale    = 100e-6,
 	default  = "/acre",
 	link     = "Hectare",
     },
@@ -5280,7 +4690,7 @@ local all_units = {
 	name2_us = "per square centimeter",
 	symbol   = "/cm<sup>2</sup>",
 	utype    = "per unit area",
-	scale    = 1e10,
+	scale    = 1e4,
 	default  = "/sqin",
 	link     = "Square centimetre",
     },
@@ -5289,7 +4699,7 @@ local all_units = {
 	name2    = "per square inch",
 	symbol   = "/in<sup>2</sup>",
 	utype    = "per unit area",
-	scale    = 1550003100.0062001,
+	scale    = 1550.0031000062002,
 	default  = "/sqcm",
 	link     = "Square inch",
     },
@@ -5300,7 +4710,7 @@ local all_units = {
 	name2_us = "per square kilometer",
 	symbol   = "/km<sup>2</sup>",
 	utype    = "per unit area",
-	scale    = 1,
+	scale    = 1e-6,
 	default  = "/sqmi",
 	link     = "Square kilometre",
     },
@@ -5309,7 +4719,7 @@ local all_units = {
 	name2    = "per square mile",
 	symbol   = "/sq&nbsp;mi",
 	utype    = "per unit area",
-	scale    = 0.38610215854244584,
+	scale    = 3.8610215854244582e-7,
 	default  = "/sqkm",
 	link     = "Square mile",
     },
@@ -5318,7 +4728,7 @@ local all_units = {
 	name2    = "inhabitants per acre",
 	symbol   = "/acre",
 	utype    = "per unit area",
-	scale    = 247.10538146716533,
+	scale    = 0.00024710538146716532,
 	default  = "PD/ha",
 	link     = "Acre",
     },
@@ -5327,7 +4737,7 @@ local all_units = {
 	name2    = "inhabitants per hectare",
 	symbol   = "/ha",
 	utype    = "per unit area",
-	scale    = 100,
+	scale    = 100e-6,
 	default  = "PD/acre",
 	link     = "Hectare",
     },
@@ -5338,7 +4748,7 @@ local all_units = {
 	name2_us = "inhabitants per square kilometer",
 	symbol   = "/km<sup>2</sup>",
 	utype    = "per unit area",
-	scale    = 1,
+	scale    = 1e-6,
 	default  = "PD/sqmi",
 	link     = "Square kilometre",
     },
@@ -5347,7 +4757,7 @@ local all_units = {
 	name2    = "inhabitants per square mile",
 	symbol   = "/sq&nbsp;mi",
 	utype    = "per unit area",
-	scale    = 0.38610215854244584,
+	scale    = 3.8610215854244582e-7,
 	default  = "PD/sqkm",
 	link     = "Square mile",
     },
@@ -5424,8 +4834,8 @@ local all_units = {
 	link     = "Calorie",
     },
     ["Cal/h"] = {
-	name1    = "calorie per hour",
-	name2    = "calories per hour",
+	name1    = "large calorie per hour",
+	name2    = "large calories per hour",
 	symbol   = "Cal/h",
 	utype    = "power",
 	scale    = 1.1622222222222223,
@@ -5472,6 +4882,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 746,
 	default  = "kW",
+	link     = "Horsepower#Electrical horsepower",
     },
     ["hp-electrical"] = {
 	name1    = "electrical horsepower",
@@ -5480,6 +4891,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 746,
 	default  = "kW",
+	link     = "Horsepower#Electrical horsepower",
     },
     ["hp-metric"] = {
 	name1    = "metric horsepower",
@@ -5970,7 +5382,16 @@ local all_units = {
 	scale    = 3.7e10,
 	prefixes = 1,
 	default  = "GBq",
-	link     = "Curie",
+	link     = "Curie (unit)",
+    },
+    ["Rd"] = {
+	_name1   = "rutherford",
+	_symbol  = "Rd",
+	utype    = "radioactivity",
+	scale    = 1e6,
+	prefixes = 1,
+	default  = "MBq",
+	link     = "Rutherford (unit)",
     },
     ["cm/h"] = {
 	name1    = "centimetre per hour",
@@ -6012,7 +5433,6 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.3048,
 	default  = "m/s",
-	link     = "Feet per second",
     },
     ["ft/min"] = {
 	name1    = "foot per minute",
@@ -6039,7 +5459,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.00016630952380952381,
 	default  = "km/h mph",
-	link     = "FFF System",
+	link     = "FFF system",
     },
     ["in/h"] = {
 	name1    = "inch per hour",
@@ -6118,8 +5538,8 @@ local all_units = {
 	link     = "Knot (unit)",
     },
     ["kNs/kg"] = {
-	name2    = "kN-s/kg",
-	symbol   = "kN-s/kg",
+	name2    = "kN&#8209;s/kg",
+	symbol   = "kN&#8209;s/kg",
 	utype    = "speed",
 	scale    = 1000,
 	default  = "isp",
@@ -6153,12 +5573,12 @@ local all_units = {
 	builtin  = "mach",
 	scale    = 0,
 	iscomplex= true,
-	default  = "mph km/h",
+	default  = "km/h mph",
 	link     = "Mach number",
     },
     ["mi/d"] = {
-	name1    = "mile per year",
-	name2    = "miles per year",
+	name1    = "mile per day",
+	name2    = "miles per day",
 	symbol   = "mi/d",
 	utype    = "speed",
 	scale    = 1.8626666666666667e-2,
@@ -6195,16 +5615,16 @@ local all_units = {
 	link     = "Miles per hour",
     },
     ["Ns/kg"] = {
-	name2    = "N-s/kg",
-	symbol   = "N-s/kg",
+	name2    = "N&#8209;s/kg",
+	symbol   = "N&#8209;s/kg",
 	utype    = "speed",
 	scale    = 1,
 	default  = "isp",
 	link     = "Specific impulse",
     },
     ["si tsfc"] = {
-	name2    = "g/(kN·s)",
-	symbol   = "g/(kN·s)",
+	name2    = "g/(kN⋅s)",
+	symbol   = "g/(kN⋅s)",
 	utype    = "speed",
 	scale    = 9.9999628621379242e-7,
 	invert   = -1,
@@ -6213,8 +5633,8 @@ local all_units = {
 	link     = "Thrust specific fuel consumption",
     },
     ["tsfc"] = {
-	name2    = "lb/(lbf·h)",
-	symbol   = "lb/(lbf·h)",
+	name2    = "lb/(lbf⋅h)",
+	symbol   = "lb/(lbf⋅h)",
 	utype    = "speed",
 	scale    = 2.832545036049801e-5,
 	invert   = -1,
@@ -6250,7 +5670,7 @@ local all_units = {
 	per      = { "mm", "s" },
 	utype    = "speed",
 	default  = "in/s",
-	link     = "metre per second",
+	link     = "Metre per second",
     },
     ["C"] = {
 	name1    = "degree Celsius",
@@ -6390,6 +5810,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 220903200,
 	default  = "years",
+	link     = "List of unusual units of measurement#Dog year",
     },
     ["fortnight"] = {
 	symbol   = "fortnight",
@@ -6595,32 +6016,34 @@ local all_units = {
     ["kg.m"] = {
 	name1    = "kilogram metre",
 	name1_us = "kilogram meter",
-	symbol   = "kg·m",
+	symbol   = "kg⋅m",
 	utype    = "torque",
 	scale    = 9.80665,
 	default  = "Nm lbft",
+	link     = "Kilogram metre (torque)",
     },
     ["kgf.m"] = {
 	name1    = "kilogram force-metre",
 	name1_us = "kilogram force-meter",
-	symbol   = "kgf·m",
+	symbol   = "kgf⋅m",
 	utype    = "torque",
 	scale    = 9.80665,
 	default  = "Nm lbfft",
-	link     = "Kilogram metre",
+	link     = "Kilogram metre (torque)",
     },
     ["kgm"] = {
 	name1    = "kilogram metre",
 	name1_us = "kilogram meter",
-	symbol   = "kg·m",
+	symbol   = "kg⋅m",
 	utype    = "torque",
 	scale    = 9.80665,
 	default  = "Nm lbfft",
+	link     = "Kilogram metre (torque)",
     },
     ["lb-fft"] = {
 	name1    = "pound force-foot",
 	name2    = "pound force-feet",
-	symbol   = "ft·lb<sub>f</sub>",
+	symbol   = "ft⋅lb<sub>f</sub>",
 	utype    = "torque",
 	scale    = 1.3558179483314004,
 	default  = "Nm",
@@ -6629,7 +6052,7 @@ local all_units = {
     ["lb.ft"] = {
 	name1    = "pound force-foot",
 	name2    = "pound force-feet",
-	symbol   = "lb·ft",
+	symbol   = "lb⋅ft",
 	utype    = "torque",
 	scale    = 1.3558179483314004,
 	default  = "Nm",
@@ -6637,7 +6060,7 @@ local all_units = {
     },
     ["lb.in"] = {
 	name1    = "pound force-inch",
-	symbol   = "lb·in",
+	symbol   = "lb⋅in",
 	utype    = "torque",
 	scale    = 0.1129848290276167,
 	default  = "mN.m",
@@ -6646,7 +6069,7 @@ local all_units = {
     ["lbfft"] = {
 	name1    = "pound force-foot",
 	name2    = "pound force-feet",
-	symbol   = "lbf·ft",
+	symbol   = "lbf⋅ft",
 	utype    = "torque",
 	scale    = 1.3558179483314004,
 	default  = "Nm",
@@ -6655,7 +6078,7 @@ local all_units = {
     ["lbft"] = {
 	name1    = "pound-foot",
 	name2    = "pound-feet",
-	symbol   = "lb·ft",
+	symbol   = "lb⋅ft",
 	utype    = "torque",
 	scale    = 1.3558179483314004,
 	default  = "Nm",
@@ -6666,40 +6089,42 @@ local all_units = {
 	name1_us = "meter kilogram-force",
 	name2    = "metre kilograms-force",
 	name2_us = "meter kilograms-force",
-	symbol   = "m·kg<sub>f</sub>",
+	symbol   = "m⋅kg<sub>f</sub>",
 	utype    = "torque",
 	scale    = 9.80665,
 	default  = "Nm lbfft",
-	link     = "Kilogram metre",
+	link     = "Kilogram metre (torque)",
     },
     ["m.kgf"] = {
 	name1    = "metre kilogram-force",
 	name1_us = "meter kilogram-force",
 	name2    = "metre kilograms-force",
 	name2_us = "meter kilograms-force",
-	symbol   = "m·kgf",
+	symbol   = "m⋅kgf",
 	utype    = "torque",
 	scale    = 9.80665,
 	default  = "Nm lbfft",
-	link     = "Kilogram metre",
+	link     = "Kilogram metre (torque)",
     },
     ["mN.m"] = {
 	name1    = "millinewton metre",
 	name1_us = "millinewton meter",
-	symbol   = "mN·m",
+	symbol   = "mN⋅m",
 	utype    = "torque",
 	scale    = 0.001,
 	default  = "lb.in",
 	link     = "Newton metre",
     },
     ["Nm"] = {
-	name1    = "newton metre",
-	name1_us = "newton meter",
-	symbol   = "N·m",
+	_name1   = "newton metre",
+	_name1_us= "newton meter",
+	_symbol  = "N⋅m",
 	utype    = "torque",
 	alttype  = "energy",
 	scale    = 1,
+	prefixes = 1,
 	default  = "lbfft",
+	link     = "Newton metre",
     },
     ["kN/m"] = {
 	per      = { "kN", "-m-stiff" },
@@ -6712,9 +6137,6 @@ local all_units = {
 	default  = "kN/m",
     },
     ["lb-f.ft"] = {
-	target   = "lb-fft",
-    },
-    ["lb-f·ft"] = {
 	target   = "lb-fft",
     },
     ["lbf.ft"] = {
@@ -6745,7 +6167,7 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.00035488235475000004,
 	default  = "mL",
-	link     = "Beverage can#Capacity",
+	link     = "Beverage can#Standard sizes",
     },
     ["-12USoz(ml)serve"] = {
 	name1_us = "12&nbsp;U.S.&nbsp;fl&nbsp;oz (355&nbsp;ml) serving",
@@ -6754,7 +6176,7 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.00035488235475000004,
 	default  = "ml",
-	link     = "Beverage can#Capacity",
+	link     = "Beverage can#Standard sizes",
     },
     ["-12USozserve"] = {
 	name1_us = "12&nbsp;U.S.&nbsp;fl&nbsp;oz serving",
@@ -6763,12 +6185,12 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.00035488235475000004,
 	default  = "mL",
-	link     = "Beverage can#Capacity",
+	link     = "Beverage can#Standard sizes",
     },
     ["acre foot"] = {
 	name1    = "acre foot",
 	name2    = "acre foot",
-	symbol   = "acre·ft",
+	symbol   = "acre⋅ft",
 	utype    = "volume",
 	scale    = 1233.48183754752,
 	default  = "m3",
@@ -6776,7 +6198,7 @@ local all_units = {
     ["acre ft"] = {
 	name1    = "acre foot",
 	name2    = "acre feet",
-	symbol   = "acre·ft",
+	symbol   = "acre⋅ft",
 	utype    = "volume",
 	scale    = 1233.48183754752,
 	default  = "m3",
@@ -6787,6 +6209,15 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.000020,
 	default  = "ml",
+    },
+    ["Bcuft"] = {
+	name1    = "billion cubic foot",
+	name2    = "billion cubic feet",
+	symbol   = "billion cu&nbsp;ft",
+	utype    = "volume",
+	scale    = 28316846.592,
+	default  = "Gl",
+	link     = "Cubic foot",
     },
     ["bdft"] = {
 	name1    = "board foot",
@@ -6880,6 +6311,7 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.04091481,
 	default  = "l impgal USgal",
+	link     = "Firkin (unit)",
     },
     ["foot3"] = {
 	target   = "cufoot",
@@ -7087,7 +6519,7 @@ local all_units = {
 	link     = "Barrel (unit)#Oil barrel",
     },
     ["stere"] = {
-	symbol   = "stère",
+	symbol   = "stere",
 	usename  = 1,
 	utype    = "volume",
 	scale    = 1,
@@ -7343,9 +6775,6 @@ local all_units = {
     },
     ["acre.ft"] = {
 	target   = "acre ft",
-    },
-    ["acre·foot"] = {
-	target   = "acre foot",
     },
     ["acre·ft"] = {
 	target   = "acre ft",
@@ -7623,6 +7052,21 @@ local all_units = {
 	utype    = "volume per unit length",
 	default  = "cuyd/mi",
     },
+    ["mich"] = {
+	combination= { "ch", "mi" },
+	multiple = { 80 },
+	utype    = "length",
+    },
+    ["michlk"] = {
+	combination= { "chlk", "mi" },
+	multiple = { 80 },
+	utype    = "length",
+    },
+    ["michainlk"] = {
+	combination= { "chainlk", "mi" },
+	multiple = { 80 },
+	utype    = "length",
+    },
     ["miydftin"] = {
 	combination= { "in", "ft", "yd", "mi" },
 	multiple = { 12, 3, 1760 },
@@ -7827,7 +7271,7 @@ local default_exceptions = {
 	["pJ"] = "MeV",
 	["TJ"] = "kWh",
 	["YJ"] = "kWh",
-	["yJ"] = "µeV",
+	["yJ"] = "μeV",
 	["ZJ"] = "kWh",
 	["zJ"] = "meV",
 	["e12cuft/a"] = "v * 2.8316846592 < 100 ! e9 ! e12 ! m3/a",
@@ -7856,7 +7300,7 @@ local default_exceptions = {
 	["e9USgal/a"] = "v * 3.785411784 < 1000 ! e6 ! e9 ! m3/a",
 	["e9USgal/s"] = "v * 3.785411784 < 1000 ! e6 ! e9 ! m3/s",
 	["nN"] = "gr-f",
-	["µN"] = "gr-f",
+	["μN"] = "gr-f",
 	["mN"] = "oz-f",
 	["am"] = "in",
 	["cm"] = "in",
@@ -7886,7 +7330,7 @@ local default_exceptions = {
 	["ym"] = "in",
 	["Zm"] = "mi",
 	["zm"] = "in",
-	["µm"] = "in",
+	["μm"] = "in",
 	["e12lb"] = "v * 4.5359237 < 10 ! Mt ! Gt",
 	["e3lb"] = "v * 4.5359237 < 10 ! kg ! t",
 	["e3ozt"] = "v * 0.311034768 < 10 ! kg ! t",
@@ -7903,10 +7347,10 @@ local default_exceptions = {
 	["mg"] = "gr",
 	["Mg"] = "LT ST",
 	["ng"] = "gr",
-	["µg"] = "gr",
+	["μg"] = "gr",
 	["mBq"] = "fCi",
 	["kBq"] = "nCi",
-	["MBq"] = "µCi",
+	["MBq"] = "μCi",
 	["GBq"] = "mCi",
 	["TBq"] = "Ci",
 	["PBq"] = "kCi",
@@ -7914,12 +7358,12 @@ local default_exceptions = {
 	["fCi"] = "mBq",
 	["pCi"] = "Bq",
 	["nCi"] = "Bq",
-	["µCi"] = "kBq",
+	["μCi"] = "kBq",
 	["mCi"] = "MBq",
 	["kCi"] = "TBq",
 	["MCi"] = "PBq",
-	["ns"] = "µs",
-	["µs"] = "ms",
+	["ns"] = "μs",
+	["μs"] = "ms",
 	["ms"] = "s",
 	["ks"] = "h",
 	["Ms"] = "week",
@@ -7973,8 +7417,8 @@ local default_exceptions = {
 	["ML"] = "v < 28.316846592 ! e3 ! e6 ! cuft",
 	["TL"] = "cumi",
 	["Tl"] = "cumi",
-	["µL"] = "cuin",
-	["µl"] = "cuin",
+	["μL"] = "cuin",
+	["μl"] = "cuin",
 }
 
 ---------------------------------------------------------------------------
@@ -7993,7 +7437,7 @@ local link_exceptions = {
 	["fm"] = "Femtometre",
 	["pm"] = "Picometre",
 	["nm"] = "Nanometre",
-	["µm"] = "Micrometre",
+	["μm"] = "Micrometre",
 	["mm"] = "Millimetre",
 	["cm"] = "Centimetre",
 	["dm"] = "Decimetre",
@@ -8007,7 +7451,7 @@ local link_exceptions = {
 	["Em"] = "Exametre",
 	["Zm"] = "Zettametre",
 	["Ym"] = "Yottametre",
-	["µg"] = "Microgram",
+	["μg"] = "Microgram",
 	["mg"] = "Milligram",
 	["kg"] = "Kilogram",
 	["Mg"] = "Tonne",
@@ -8017,7 +7461,7 @@ local link_exceptions = {
 	["fW"] = "Femtowatt",
 	["pW"] = "Picowatt",
 	["nW"] = "Nanowatt",
-	["µW"] = "Microwatt",
+	["μW"] = "Microwatt",
 	["mW"] = "Milliwatt",
 	["kW"] = "Kilowatt",
 	["MW"] = "Megawatt",
@@ -8031,7 +7475,7 @@ local link_exceptions = {
 	["fs"] = "Femtosecond",
 	["ps"] = "Picosecond",
 	["ns"] = "Nanosecond",
-	["µs"] = "Microsecond",
+	["μs"] = "Microsecond",
 	["ms"] = "Millisecond",
 	["ks"] = "Kilosecond",
 	["Ms"] = "Megasecond",
@@ -8046,8 +7490,8 @@ local link_exceptions = {
 	["dm<sup>3</sup>"] = "Cubic decimetre",
 	["dam<sup>3</sup>"] = "Cubic decametre",
 	["km<sup>3</sup>"] = "Cubic kilometre",
-	["µL"] = "Microlitre",
-	["µl"] = "Microlitre",
+	["μL"] = "Microlitre",
+	["μl"] = "Microlitre",
 	["mL"] = "Millilitre",
 	["ml"] = "Millilitre",
 	["cL"] = "Centilitre",
@@ -8078,20 +7522,15 @@ local per_unit_fixups = {
 	-- Automatically created per units of form "x/y" may have their unit type
 	-- changed, for example, "length/time" is changed to "speed".
 	-- Other adjustments can also be specified.
-	["$/area"] = "cost $ per unit area",
-	["$/length"] = "cost $ per unit length",
-	["$/mass"] = "cost $ per unit mass",
-	["$/volume"] = "cost $ per unit volume",
-	["£/area"] = "cost £ per unit area",
 	["/area"] = "per unit area",
 	["/volume"] = "per unit volume",
 	["area/area"] = "area per unit area",
 	["energy/length"] = "energy per unit length",
 	["energy/mass"] = "energy per unit mass",
-	["energy/time"] = { utype = "power", link = "Power" },
+	["energy/time"] = { utype = "power", link = "Power (physics)" },
 	["energy/volume"] = "energy per unit volume",
 	["force/area"] = { utype = "pressure", link = "Pressure" },
-	["length/length"] = { utype = "gradient", link = "Gradient" },
+	["length/length"] = { utype = "gradient", link = "Grade (slope)" },
 	["length/time"] = { utype = "speed", link = "Speed" },
 	["length/time/time"] = { utype = "acceleration", link = "Acceleration" },
 	["mass/area"] = { utype = "pressure", multiplier = 9.80665 },
