@@ -14,9 +14,8 @@ local usub = ustring.sub
 -- Conversion data and message text are defined in separate modules.
 local config, maxsigfig
 local numdot = ','   -- must be '.' or ',' or a character which works in a regex
-local numsep = ' '   -- non-breaking space between groups
-local numsep_remove = ' '
-local numsep_remove2 = ' '
+local numsep = ' '   -- non-breaking space between groups
+local numsep_remove, numsep_remove2
 local data_code, all_units
 local text_code
 local varname        -- can be a code to use variable names that depend on value
@@ -136,7 +135,9 @@ local function omit_separator(id)
 end
 
 local spell_module  -- name of module that can spell numbers
-local speller       -- function from that module to handle spelling (set if spelling is wanted)
+local speller       -- function from that module to handle spelling (set if needed)
+local wikidata_module, wikidata_data_module  -- names of Wikidata modules
+local wikidata_code, wikidata_data  -- exported tables from those modules (set if needed)
 
 local function set_config(args)
 	-- Set configuration options from template #invoke or defaults.
@@ -147,6 +148,8 @@ local function set_config(args)
 	data_module = "Module:Convert/data" .. sandbox
 	text_module = "Module:Convert/text" .. sandbox
 	extra_module = "Module:Convert/extra" .. sandbox
+	wikidata_module = "Module:Convert/wikidata" .. sandbox
+	wikidata_data_module = "Module:Convert/wikidata/data" .. sandbox
 	spell_module = "Module:ConvertNumeric"
 	data_code = mw.loadData(data_module)
 	text_code = mw.loadData(text_module)
@@ -255,31 +258,52 @@ local function table_len(t)
 	end
 end
 
-local function wanted_category(cat)
-	-- Return cat if it is wanted in current namespace, otherwise return nil.
-	-- This is so tracking categories only include pages that need correction.
+local function wanted_category(catkey, catsort, want_warning)
+	-- Return message category if it is wanted in current namespace,
+	-- otherwise return ''.
+	local cat
 	local title = mw.title.getCurrentTitle()
 	if title then
 		local nsdefault = '0'  -- default namespace: '0' = article; '0,10' = article and template
 		local namespace = title.namespace
 		for _, v in ipairs(split(config.nscat or nsdefault, ',')) do
 			if namespace == tonumber(v) then
-				return cat
+				cat = text_code.all_categories[want_warning and 'warning' or catkey]
+				if catsort and catsort ~= '' and cat:sub(-2) == ']]' then
+					cat = cat:sub(1, -3) .. '|' .. mw.text.nowiki(usub(catsort, 1, 20)) .. ']]'
+				end
+				break
 			end
 		end
 	end
+	return cat or ''
 end
 
-local function message(mcode)
+local function message(parms, mcode, is_warning)
 	-- Return wikitext for an error message, including category if specified
 	-- for the message type.
 	-- mcode = numbered table specifying the message:
 	--    mcode[1] = 'cvt_xxx' (string used as a key to get message info)
-	--    mcode[2] = 'parm1' (string to replace first %s if any in message)
-	--    mcode[3] = 'parm2' (string to replace second %s if any in message)
-	--    mcode[4] = 'parm3' (string to replace third %s if any in message)
-	local msg = text_code.all_messages[mcode[1]]
-	local nowiki = mw.text.nowiki
+	--    mcode[2] = 'parm1' (string to replace '$1' if any in message)
+	--    mcode[3] = 'parm2' (string to replace '$2' if any in message)
+	--    mcode[4] = 'parm3' (string to replace '$3' if any in message)
+	local msg
+	if type(mcode) == 'table' then
+		if mcode[1] == 'cvt_no_output' then
+			-- Some errors should cause convert to output an empty string,
+			-- for example, for an optional field in an infobox.
+			return ''
+		end
+		msg = text_code.all_messages[mcode[1]]
+	end
+	parms.have_problem = true
+	local function subparm(fmt, ...)
+		local rep = {}
+		for i, v in ipairs({...}) do
+			rep['$' .. i] = v
+		end
+		return (fmt:gsub('$%d+', rep))
+	end
 	if msg then
 		local parts = {}
 		local regex, replace = msg.regex, msg.replace
@@ -305,31 +329,45 @@ local function message(mcode)
 					s = usub(s, 1, limit)
 					append = '...'
 				end
-				s = nowiki(s) .. (append or '')
+				s = mw.text.nowiki(s) .. (append or '')
 			else
 				s = '?'
 			end
-			parts[i] = s
+			parts['$' .. i] = s
 		end
-		local title = format(msg[1] or 'Missing message', parts[1], parts[2], parts[3])
-		local text = msg[2] or 'Missing message'
-		local cat = wanted_category(text_code.all_categories[msg[3]]) or ''
+		local function ispreview()
+			-- Return true if a prominent message should be shown.
+			if parms.test == 'preview' or parms.test == 'nopreview' then
+				-- For testing, can preview a real message or simulate a preview
+				-- when running automated tests.
+				return parms.test == 'preview'
+			end
+			local success, revid = pcall(function ()
+				return (parms.frame):preprocess('{{REVISIONID}}') end)
+			return success and (revid == '')
+		end
+		local want_warning = is_warning and
+			not config.warnings and  -- show unobtrusive warnings if config.warnings not configured
+			not msg.nowarn           -- but use msg settings, not standard warning, if specified
+		local title = string.gsub(msg[1] or 'Missing message', '$%d+', parts)
+		local text = want_warning and '*' or msg[2] or 'Missing message'
+		local cat = wanted_category(msg[3], mcode[2], want_warning)
 		local anchor = msg[4] or ''
-		local fmt = text_code.all_messages[msg.format or 'cvt_format'] or 'convert: bug'
-		title = title:gsub('"', '&quot;')
-		return format(fmt, anchor, title, text, cat)
+		local fmtkey = ispreview() and 'cvt_format_preview' or
+			(want_warning and 'cvt_format2' or msg.format or 'cvt_format')
+		local fmt = text_code.all_messages[fmtkey] or 'convert: bug'
+		return subparm(fmt, title:gsub('"', '&quot;'), text, cat, anchor)
 	end
-	return 'Грешка в модула: неизвестно съобщение'
+	return 'Convert internal error: unknown message'
 end
 
 function add_warning(parms, level, key, text1, text2)  -- for forward declaration above
 	-- If enabled, add a warning that will be displayed after the convert result.
+	-- A higher level is more verbose: more kinds of warnings are displayed.
 	-- To reduce output noise, only the first warning is displayed.
-	if config.warnings or level < 0 then
-		if level <= (tonumber(config.warnings) or 1) then
-			if parms.warnings == nil then
-				parms.warnings = message({ key, text1, text2 })
-			end
+	if level <= (tonumber(config.warnings) or 1) then
+		if parms.warnings == nil then
+			parms.warnings = message(parms, { key, text1, text2 }, true)
 		end
 	end
 end
@@ -350,7 +388,7 @@ local function spell_number(parms, inout, number, numerator, denominator)
 		local success
 		success, speller = pcall(get_speller, spell_module)
 		if not success or type(speller) ~= 'function' then
-			add_warning(parms, 1, 'cvt_no_spell')
+			add_warning(parms, 1, 'cvt_no_spell', 'spell')
 			return nil
 		end
 	end
@@ -551,7 +589,8 @@ local unit_per_mt = {
 	-- Metatable to get values for a per unit of form "x/y".
 	-- This is never called to determine a unit name or link because per units
 	-- are handled as a special case.
-	-- Similarly, the default output is handled elsewhere.
+	-- Similarly, the default output is handled elsewhere, and for a symbol
+	-- this is only called from get_default() for default_exceptions.
 	__index = function (self, key)
 		local value
 		if key == 'symbol' then
@@ -576,10 +615,14 @@ local unit_per_mt = {
 	end
 }
 
-local function make_per(unit_table, ulookup)
+local function make_per(unitcode, unit_table, ulookup)
 	-- Return true, t where t is a per unit with unit codes expanded to unit tables,
 	-- or return false, t where t is an error message table.
-	local result = { utype = unit_table.utype, per = {} }
+	local result = {
+		unitcode = unitcode,
+		utype = unit_table.utype,
+		per = {}
+	}
 	override_from(result, unit_table, { 'invert', 'iscomplex', 'default', 'link', 'symbol', 'symlink' })
 	result.symbol_raw = (result.symbol or false)  -- to distinguish between a defined exception and a metatable calculation
 	local prefix
@@ -632,7 +675,7 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 	-- replaced with a space so usage like {{convert|350|board_feet}} works.
 	-- Wikignomes may also put two spaces or "&nbsp;" in combinations, so
 	-- replace underscore, "&nbsp;", and multiple spaces with a single space.
-	utable = utable or all_units
+	utable = utable or parms.unittable or all_units
 	fails = fails or {}
 	depth = depth and depth + 1 or 1
 	if depth > 9 then
@@ -645,6 +688,11 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 		return false, { 'cvt_no_unit' }
 	end
 	unitcode = unitcode:gsub('_', ' '):gsub('&nbsp;', ' '):gsub('  +', ' ')
+	local function call_make_per(t)
+		return make_per(unitcode, t,
+			function (ucode) return lookup(parms, ucode, 'no_combination', utable, fails, depth) end
+		)
+	end
 	local t = utable[unitcode]
 	if t then
 		if t.shouldbe then
@@ -666,7 +714,7 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 			return true, result
 		end
 		if t.per then
-			return make_per(t, function (ucode) return lookup(parms, ucode, 'no_combination', utable, fails, depth) end)
+			return call_make_per(t)
 		end
 		local combo = t.combination  -- nil or a table of unitcodes
 		if combo then
@@ -686,6 +734,7 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 			return true, result
 		end
 		local result = shallow_copy(t)
+		result.unitcode = unitcode
 		if result.prefixes then
 			result.si_name = ''
 			result.si_prefix = ''
@@ -704,31 +753,11 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 			local t = utable[usub(unitcode, plen+1)]
 			if t and t.prefixes then
 				local result = shallow_copy(t)
+				result.unitcode = unitcode
 				result.si_name = parms.opt_sp_us and si.name_us or si.name
 				result.si_prefix = si.prefix or prefix
 				result.scale = t.scale * 10 ^ (si.exponent * t.prefixes)
 				return true, setmetatable(result, unit_prefixed_mt)
-			end
-		end
-	end
-	-- Accept any unit with an engineering notation prefix like "e6cuft"
-	-- (million cubic feet), but not chained prefixes like "e3e6cuft",
-	-- and not if the unit is a combination or multiple,
-	-- and not if the unit has an offset or is a built-in.
-	-- Only en digits are accepted.
-	local has_plus = unitcode:find('+', 1, true)
-	if not has_plus then
-		local exponent, baseunit = unitcode:match('^e(%d+)(.*)')
-		if exponent then
-			local engscale = text_code.eng_scales[exponent]
-			if engscale then
-				local success, result = lookup(parms, baseunit, 'no_combination', utable, fails, depth)
-				if success and not (result.offset or result.builtin or result.engscale) then
-					result.defkey = unitcode  -- key to lookup default exception
-					result.engscale = engscale
-					result.scale = result.scale * 10 ^ tonumber(exponent)
-					return true, result
-				end
 			end
 		end
 	end
@@ -738,7 +767,7 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 	-- but errors are not fatal so the unit code can be looked up as an extra unit.
 	local err_is_fatal
 	local combo = collection()
-	if has_plus then
+	if unitcode:find('+', 1, true) then
 		err_is_fatal = true
 		for item in (unitcode .. '+'):gmatch('%s*(.-)%s*%+') do
 			if item ~= '' then
@@ -777,6 +806,25 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 			return success, result
 		end
 	end
+	-- Accept any unit with an engineering notation prefix like "e6cuft"
+	-- (million cubic feet), but not chained prefixes like "e3e6cuft",
+	-- and not if the unit is a combination or multiple,
+	-- and not if the unit has an offset or is a built-in.
+	-- Only en digits are accepted.
+	local exponent, baseunit = unitcode:match('^e(%d+)(.*)')
+	if exponent then
+		local engscale = text_code.eng_scales[exponent]
+		if engscale then
+			local success, result = lookup(parms, baseunit, 'no_combination', utable, fails, depth)
+			if success and not (result.offset or result.builtin or result.engscale) then
+				result.unitcode = unitcode  -- 'e6cuft' not 'cuft'
+				result.defkey = unitcode  -- key to lookup default exception
+				result.engscale = engscale
+				result.scale = result.scale * 10 ^ tonumber(exponent)
+				return true, result
+			end
+		end
+	end
 	-- Look for x/y; split on right-most slash to get scale correct (x/y/z is x/y per z).
 	local top, bottom = unitcode:match('^(.-)/([^/]+)$')
 	if top and not unitcode:find('e%d') then
@@ -784,7 +832,7 @@ local function lookup(parms, unitcode, what, utable, fails, depth)
 		-- The unitcode must not include extraneous spaces.
 		-- Engineering notation (apart from at start and which has been stripped before here),
 		-- is not supported so do not make a per unit if find text like 'e3' in unitcode.
-		local success, result = make_per({ per = {top, bottom} }, function (ucode) return lookup(parms, ucode, 'no_combination', utable, fails, depth) end)
+		local success, result = call_make_per({ per = {top, bottom} })
 		if success then
 			return true, result
 		end
@@ -913,14 +961,6 @@ local function hyphenated_maybe(parms, want_name, sep, id, inout)
 	return sep .. id .. mid
 end
 
-local function change_sign(text)
-	-- Change sign of text for correct appearance because it is negated.
-	if text:sub(1, 1) == '-' then
-		return text:sub(2)
-	end
-	return '-' .. text
-end
-
 local function use_minus(text)
 	-- Return text with Unicode minus instead of '-', if present.
 	if text:sub(1, 1) == '-' then
@@ -1002,6 +1042,13 @@ function with_separator(parms, text)  -- for forward declaration above
 	-- The text has no sign (caller inserts that later, if necessary).
 	-- When using gaps, they are inserted before and after the decimal mark.
 	-- Separators are inserted only before the decimal mark.
+	-- A trailing dot (as in '123.') is removed because their use appears to
+	-- be accidental, and such a number should be shown as '123' or '123.0'.
+	-- It is useful for convert to suppress the dot so, for example, '4000.'
+	-- is a simple way of indicating that all the digits are significant.
+	if text:sub(-1) == '.' then
+		text = text:sub(1, -2)
+	end
 	if #text < 4 or parms.opt_nocomma or numsep == '' then
 		return from_en(text)
 	end
@@ -1279,7 +1326,6 @@ local function extract_fraction(parms, text, negative)
 	-- Values like '12.3+1/2' are accepted, but are intended only for use
 	-- with the hands unit (not worth adding code to enforce that).
 	------------------------------------------------------------------------
-	local numstr, whole
 	local leading_plus, prefix, numstr, slashes, denstr =
 		text:match('^%s*(%+?)%s*(.-)%s*(%d+)%s*(/+)%s*(%d+)%s*$')
 	if not leading_plus then
@@ -1293,7 +1339,7 @@ local function extract_fraction(parms, text, negative)
 	if numerator == nil or denominator == nil or (negative and leading_plus ~= '') then
 		return nil
 	end
-	local wholestr
+	local whole, wholestr
 	if prefix == '' then
 		wholestr = ''
 		whole = 0
@@ -1332,8 +1378,7 @@ local function extract_number(parms, text, another, no_fraction)
 	-- Parameter another = true if the expected value is not the first.
 	-- Before processing, the input text is cleaned:
 	-- * Any thousand separators (valid or not) are removed.
-	-- * Any sign (and optional following whitespace) is replaced with
-	--   '-' (if negative) or '' (otherwise).
+	-- * Any sign is replaced with '-' (if negative) or '' (otherwise).
 	--   That replaces Unicode minus with '-'.
 	-- If successful, the returned info table contains named fields:
 	--   value    = a valid number
@@ -1359,7 +1404,7 @@ local function extract_number(parms, text, another, no_fraction)
 		local refs = {}
 		while #remainder > 0 do
 			local ref, spaces
-			ref, spaces, remainder = remainder:match('^(\127UNIQ[^\127]*%-ref%-%x+%-QINU\127)(%s*)(.*)')
+			ref, spaces, remainder = remainder:match('^(\127[^\127]*UNIQ[^\127]*%-ref[^\127]*\127)(%s*)(.*)')
 			if ref then
 				table.insert(refs, ref)
 			else
@@ -1393,11 +1438,13 @@ local function extract_number(parms, text, another, no_fraction)
 	else
 		local valstr
 		for _, prefix in ipairs({ '-', MINUS, '&minus;' }) do
-			-- Including '-' means inputs like '- 2' (with space) are accepted as -2.
-			-- It also sets isnegative in case input is a fraction like '-2-3/4'.
+			-- Including '-' sets isnegative in case input is a fraction like '-2-3/4'.
 			local plen = #prefix
 			if clean:sub(1, plen) == prefix then
 				valstr = clean:sub(plen + 1)
+				if valstr:match('^%s') then  -- "- 1" is invalid but "-1 - 1/2" is ok
+					return false, { 'cvt_bad_num', text }
+				end
 				break
 			end
 		end
@@ -1460,14 +1507,13 @@ local function extract_number(parms, text, another, no_fraction)
 			parms.opt_scientific = true
 		end
 	end
-	local altvalue = altvalue or value
 	if isnegative and (value ~= 0) then
 		value = -value
-		altvalue = -altvalue
+		altvalue = -(altvalue or value)
 	end
 	return true, {
 		value = value,
-		altvalue = altvalue,
+		altvalue = altvalue or value,
 		singular = singular,
 		clean = clean,
 		show = show .. (reference or ''),
@@ -1486,7 +1532,7 @@ local function get_number(text)
 	if text then
 		local number = tonumber(to_en(text))
 		if number then
-			local integer, fracpart = math.modf(number)
+			local _, fracpart = math.modf(number)
 			return number, (fracpart == 0)
 		end
 	end
@@ -1564,50 +1610,60 @@ local function preunits(count, preunit1, preunit2)
 	--     p1 is text to insert before the input unit
 	--     p2 is text to insert before the output unit
 	--     p1 or p2 may be nil to mean "no preunit"
-	-- Using '+ ' gives output like "5+ feet" (no preceding space).
-	local function withspace(text, i)
-		-- Insert space at beginning if i == 1, or at end if i == -1.
-		-- However, no space is inserted if there is a space or '&nbsp;'
-		-- or '-' at that position ('-' is for adjectival text).
-		local current = text:sub(i, i)
-		if current == ' ' or current == '-' then
-			return text
+	-- Using '+' gives output like "5+ feet" (no space before, but space after).
+	local function withspace(text, wantboth)
+		-- Return text with space before and, if wantboth, after.
+		-- However, no space is added if there is a space or '&nbsp;' or '-'
+		-- at that position ('-' is for adjectival text).
+		-- There is also no space if text starts with '&'
+		-- (e.g. '&deg;' would display a degree symbol with no preceding space).
+		local char = text:sub(1, 1)
+		if char == '&' then
+			return text  -- an html entity can be used to specify the exact display
 		end
-		if i == 1 then
-			current = text:sub(1, 6)
-		else
-			current = text:sub(-6, -1)
+		if not (char == ' ' or char == '-' or char == '+') then
+			text = ' ' .. text
 		end
-		if current == '&nbsp;' then
-			return text
+		if wantboth then
+			char = text:sub(-1, -1)
+			if not (char == ' ' or char == '-' or text:sub(-6, -1) == '&nbsp;') then
+				text = text .. ' '
+			end
 		end
-		if i == 1 then
-			return ' ' .. text
-		end
-		return text .. ' '
+		return text
 	end
+	local PLUS = '+ '
 	preunit1 = preunit1 or ''
 	local trim1 = strip(preunit1)
 	if count == 1 then
 		if trim1 == '' then
 			return nil
 		end
-		return withspace(withspace(preunit1, 1), -1)
+		if trim1 == '+' then
+			return PLUS
+		end
+		return withspace(preunit1, true)
 	end
+	preunit1 = withspace(preunit1)
 	preunit2 = preunit2 or ''
 	local trim2 = strip(preunit2)
-	if trim1 == '' and trim2 == '' then
-		return nil, nil
+	if trim1 == '+' then
+		if trim2 == '' or trim2 == '+' then
+			return PLUS, PLUS
+		end
+		preunit1 = PLUS
 	end
-	if trim1 ~= '+' then
-		preunit1 = withspace(preunit1, 1)
-	end
-	if trim2 == '&#32;' then  -- trick to make preunit2 empty
-		preunit2 = nil
-	elseif trim2 == '' then
+	if trim2 == '' then
+		if trim1 == '' then
+			return nil, nil
+		end
 		preunit2 = preunit1
-	elseif trim2 ~= '+' then
-		preunit2 = withspace(preunit2, 1)
+	elseif trim2 == '+' then
+		preunit2 = PLUS
+	elseif trim2 == '&#32;' then  -- trick to make preunit2 empty
+		preunit2 = nil
+	else
+		preunit2 = withspace(preunit2)
 	end
 	return preunit1, preunit2
 end
@@ -1639,7 +1695,7 @@ local function range_text(range, want_name, parms, before, after, inout)
 end
 
 local function get_composite(parms, iparm, in_unit_table)
-	-- Look for a composite input unit. For example, "{{convert|1|yd|2|ft|3|in}}"
+	-- Look for a composite input unit. For example, {{convert|1|yd|2|ft|3|in}}
 	-- would result in a call to this function with
 	--   iparm = 3 (parms[iparm] = "2", just after the first unit)
 	--   in_unit_table = (unit table for "yd"; contains value 1 for number of yards)
@@ -1710,6 +1766,14 @@ local function translate_parms(parms, kv_pairs)
 	-- Also, checks are performed which may display warnings, if enabled.
 	-- Return true if successful or return false, t where t is an error message table.
 	currency_text = nil  -- local testing can hold module in memory; must clear globals
+	local accept_any_text = {
+		input = true,
+		qid = true,
+		qual = true,
+		stylein = true,
+		styleout = true,
+		tracking = true,
+	}
 	if kv_pairs.adj and kv_pairs.sing then
 		-- For enwiki (before translation), warn if attempt to use adj and sing
 		-- as the latter is a deprecated alias for the former.
@@ -1718,6 +1782,7 @@ local function translate_parms(parms, kv_pairs)
 		end
 		kv_pairs.sing = nil
 	end
+	kv_pairs.comma = kv_pairs.comma or config.comma  -- for plwiki who want default comma=5
 	for loc_name, loc_value in pairs(kv_pairs) do
 		local en_name = text_code.en_option_name[loc_name]
 		if en_name then
@@ -1743,11 +1808,16 @@ local function translate_parms(parms, kv_pairs)
 					if number and is_integer and number >= minimum then
 						en_value = number
 					else
-						add_warning(parms, 1, (en_name == 'frac' and 'cvt_bad_frac' or 'cvt_bad_sigfig'), loc_value)
+						add_warning(parms, 1, (en_name == 'frac' and 'cvt_bad_frac' or 'cvt_bad_sigfig'), loc_name .. '=' .. loc_value)
 					end
 				end
-			elseif en_name == 'stylein' or en_name == 'styleout' then
-				en_value = loc_value  -- accept user text with no validation
+			elseif accept_any_text[en_name] then
+				en_value = loc_value ~= '' and loc_value or nil  -- accept non-empty user text with no validation
+				if en_name == 'input' then
+					-- May have something like {{convert|input=}} (empty input) if source is an infobox
+					-- with optional fields. In that case, want to output nothing rather than an error.
+					parms.input_text = loc_value  -- keep input because parms.input is nil if loc_value == ''
+				end
 			else
 				en_value = text_code.en_option_value[en_name][loc_value]
 				if en_value and en_value:sub(-1) == '?' then
@@ -1796,12 +1866,23 @@ local function translate_parms(parms, kv_pairs)
 		end
 	end
 	if parms.abbr then
+		if parms.abbr == 'unit' then
+			parms.abbr = 'on'
+			parms.number_word = true
+		end
 		parms.abbr_org = parms.abbr  -- original abbr, before any flip
 	elseif parms.opt_hand_hh then
 		parms.abbr_org = 'on'
 		parms.abbr = 'on'
 	else
 		parms.abbr = 'out'  -- default is to abbreviate output only (use symbol, not name)
+	end
+	if parms.opt_order_out then
+		-- Disable options that do not work in a useful way with order=out.
+		parms.opt_flip = nil  -- override adj=flip
+		parms.opt_spell_in = nil
+		parms.opt_spell_out = nil
+		parms.opt_spell_upper = nil
 	end
 	if parms.opt_spell_out and not abbr_entered then
 		parms.abbr = 'off'  -- should show unit name when spelling the output value
@@ -1963,16 +2044,17 @@ end
 
 local function simple_get_values(parms)
 	-- If input is like "{{convert|valid_value|valid_unit|...}}",
-	-- return true, 3, in_unit, in_unit_table
-	-- 3 = index in parms of whatever follows valid_unit, if anything).
+	-- return true, i, in_unit, in_unit_table
+	-- i = index in parms of what follows valid_unit, if anything.
 	-- The valid_value is not negative and does not use a fraction, and
 	-- no options requiring further processing of the input are used.
-	-- Otherwise, return nothing and caller will reparse the input.
+	-- Otherwise, return nothing or return false, parm1 for caller to interpret.
 	-- Testing shows this function is successful for 96% of converts in articles,
 	-- and that on average it speeds up converts by 8%.
-	if parms.opt_ri or parms.opt_spell_in then return end
 	local clean = to_en(strip(parms[1] or ''), parms)
-	if #clean > 10 or not clean:match('^[0-9.]+$') then return end
+	if parms.opt_ri or parms.opt_spell_in or #clean > 10 or not clean:match('^[0-9.]+$') then
+		return false, clean
+	end
 	local value = tonumber(clean)
 	if not value then return end
 	local info = {
@@ -1989,19 +2071,39 @@ local function simple_get_values(parms)
 	return true, 3, in_unit, in_unit_table
 end
 
-local function get_parms(args)
-	-- If successful, return true, parms, unit where
+local function wikidata_call(parms, operation, ...)
+	-- Return true, s where s is the result of a Wikidata operation,
+	-- or return false, t where t is an error message table.
+	local function worker(...)
+		wikidata_code = wikidata_code or require(wikidata_module)
+		wikidata_data = wikidata_data or mw.loadData(wikidata_data_module)
+		return wikidata_code[operation](wikidata_data, ...)
+	end
+	local success, status, result = pcall(worker, ...)
+	if success then
+		return status, result
+	end
+	if parms.opt_sortable_debug then
+		-- Use debug=yes to crash if an error while accessing Wikidata.
+		error('Error accessing Wikidata: ' .. status, 0)
+	end
+	return false, { 'cvt_wd_fail' }
+end
+
+local function get_parms(parms, args)
+	-- If successful, update parms and return true, unit where
 	--   parms is a table of all arguments passed to the template
 	--        converted to named arguments, and
 	--   unit is the input unit table;
 	-- or return false, t where t is an error message table.
+	-- For special processing (not a convert), can also return
+	-- true, wikitext where wikitext is the final result.
 	-- The returned input unit table may be for a fake unit using the specified
 	-- unit code as the symbol and name, and with bad_mcode = message code table.
 	-- MediaWiki removes leading and trailing whitespace from the values of
 	-- named arguments. However, the values of numbered arguments include any
 	-- whitespace entered in the template, and whitespace is used by some
 	-- parameters (example: the numbered parameters associated with "disp=x").
-	local parms = {}  -- arguments passed to template, after translation
 	local kv_pairs = {}  -- table of input key:value pairs where key is a name; needed because cannot iterate parms and add new fields to it
 	for k, v in pairs(args) do
 		if type(k) == 'number' or k == 'test' then  -- parameter "test" is reserved for testing and is not translated
@@ -2010,10 +2112,26 @@ local function get_parms(args)
 			kv_pairs[k] = v
 		end
 	end
+	if parms.test == 'wikidata' then
+		local ulookup = function (ucode)
+			-- Use empty table for parms so it does not accumulate results when used repeatedly.
+			return lookup({}, ucode, 'no_combination')
+		end
+		return wikidata_call(parms, '_listunits', ulookup)
+	end
 	local success, msg = translate_parms(parms, kv_pairs)
 	if not success then return false, msg end
+	if parms.input then
+		success, msg = wikidata_call(parms, '_adjustparameters', parms, 1)
+		if not success then return false, msg end
+	end
 	local success, i, in_unit, in_unit_table = simple_get_values(parms)
 	if not success then
+		if type(i) == 'string' and i:match('^NNN+$') then
+			-- Some infoboxes have examples like {{convert|NNN|m}} (3 or more "N").
+			-- Output an empty string for these.
+			return false, { 'cvt_no_output' }
+		end
 		local valinfo
 		success, valinfo, i = get_values(parms)
 		if not success then return false, valinfo end
@@ -2021,15 +2139,14 @@ local function get_parms(args)
 		i = i + 1
 		success, in_unit_table = lookup(parms, in_unit, 'no_combination')
 		if not success then
-			if in_unit == nil then
-				in_unit = ''
-			end
+			in_unit = in_unit or ''
 			if parms.opt_ignore_error then  -- display given unit code with no error (for use with {{val}})
 				in_unit_table = ''  -- suppress error message and prevent processing of output unit
 			end
-			in_unit_table = setmetatable({ symbol = in_unit, name2 = in_unit,
-				default = "m", defkey = "m", linkey = "m",
-				utype = "length", scale = 1, bad_mcode = in_unit_table }, unit_mt)
+			in_unit_table = setmetatable({
+				symbol = in_unit, name2 = in_unit, utype = in_unit,
+				scale = 1, default = '', defkey = '', linkey = '',
+				bad_mcode = in_unit_table }, unit_mt)
 		end
 		in_unit_table.valinfo = valinfo
 	end
@@ -2064,7 +2181,7 @@ local function get_parms(args)
 			in_unit_table.altitude = info.value
 		end
 	end
-	local next = strip(parms[i])
+	local word = strip(parms[i])
 	i = i + 1
 	local precision, is_bad_precision
 	local function set_precision(text)
@@ -2079,20 +2196,20 @@ local function get_parms(args)
 			return true  -- text was used for precision, good or bad
 		end
 	end
-	if not set_precision(next) then
-		parms.out_unit = next
+	if word and not set_precision(word) then
+		parms.out_unit = parms.out_unit or word
 		if set_precision(strip(parms[i])) then
 			i = i + 1
 		end
 	end
 	if parms.opt_adj_mid then
-		next = parms[i]
+		word = parms[i]
 		i = i + 1
-		if next then  -- mid-text words
-			if next:sub(1, 1) == '-' then
-				parms.mid = next
+		if word then  -- mid-text words
+			if word:sub(1, 1) == '-' then
+				parms.mid = word
 			else
-				parms.mid = ' ' .. next
+				parms.mid = ' ' .. word
 			end
 		end
 	end
@@ -2132,7 +2249,14 @@ local function get_parms(args)
 	else
 		parms.precision = precision
 	end
-	return true, parms, in_unit_table
+	for j = i, i + 3 do
+		local parm = parms[j]  -- warn if find a non-empty extraneous parameter
+		if parm and parm:match('%S') then
+			add_warning(parms, 1, 'cvt_unknown_option', parm)
+			break
+		end
+	end
+	return true, in_unit_table
 end
 
 local function record_default_precision(parms, out_current, precision)
@@ -2168,7 +2292,6 @@ local function default_precision(parms, invalue, inclean, denominator, outvalue,
 	-- Code follows procedures used in old template.
 	local fudge = 1e-14  -- {{Order of magnitude}} adds this, so we do too
 	local prec, minprec, adjust
-	local utype = out_current.utype
 	local subunit_ignore_trailing_zero
 	local subunit_more_precision  -- kludge for "in" used in input like "|2|ft|6|in"
 	local composite = in_current.composite
@@ -2406,15 +2529,23 @@ local function make_table_or_sort(parms, invalue, info, in_current, scaled_top)
 		end
 	end
 	local sortspan
-	if sortkey and (parms.opt_sortable_debug or not parms.table_align) then
+	if sortkey and not parms.table_align then
 		sortspan = parms.opt_sortable_debug and
-			'<span style="border:1px solid;display:inline;" class="sortkey">' .. sortkey .. '♠</span>' or
-			'<span style="display:none" class="sortkey">' .. sortkey .. '♠</span>'
+			'<span data-sort-value="' .. sortkey .. '♠"><span style="border:1px solid">' .. sortkey .. '♠</span></span>' or
+			'<span data-sort-value="' .. sortkey .. '♠"></span>'
 		parms.join_before = sortspan
 	end
 	if parms.table_align then
+		local sort
+		if sortkey then
+			sort = ' data-sort-value="' .. sortkey .. '"'
+			if parms.opt_sortable_debug then
+				parms.join_before = '<span style="border:1px solid">' .. sortkey .. '</span>'
+			end
+		else
+			sort = ''
+		end
 		local style = 'style="text-align:' .. parms.table_align .. ';'
-		local sort = sortkey and ' data-sort-value="' .. sortkey .. '"' or ''
 		local joins = {}
 		for i = 1, 2 do
 			joins[i] = (i == 1 and '' or '\n|') .. style .. user_style(parms, i) .. '"' .. sort .. '|'
@@ -2433,23 +2564,13 @@ local function cvtround(parms, info, in_current, out_current)
 	--   singular = true if result (after rounding and ignoring any negative sign)
 	--      is "1", or like "1.00", or is a fraction with value < 1;
 	--   (and more fields shown below, and a calculated 'absvalue' field).
-	-- or return true, nil if no value specified;
 	-- or return false, t where t is an error message table.
 	-- Input info.clean uses en digits (it has been translated, if necessary).
 	-- Output show uses en or non-en digits as appropriate, or can be spelled.
-	local invalue
-	if info then
-		invalue = info.value
-		if in_current.builtin == 'hand' then
-			invalue = info.altvalue
-		end
-	end
-	if invalue == nil or invalue == '' then
-		return true, nil
-	end
 	if out_current.builtin == 'hand' then
 		return cvt_to_hand(parms, info, in_current, out_current)
 	end
+	local invalue = in_current.builtin == 'hand' and info.altvalue or info.value
 	local outvalue, extra = convert(parms, invalue, info, in_current, out_current)
 	if parms.need_table_or_sort then
 		parms.need_table_or_sort = nil  -- process using first input value only
@@ -2468,7 +2589,7 @@ local function cvtround(parms, info, in_current, out_current)
 		isnegative = true
 		outvalue = -outvalue
 	end
-	local numerator, precision, success, show, exponent
+	local precision, show, exponent
 	local denominator = out_current.frac
 	if denominator then
 		show = fraction_table(outvalue, denominator)
@@ -2720,18 +2841,27 @@ end
 
 local linked_pages  -- to record linked pages so will not link to the same page more than once
 
-local function make_link(link, id, link_key)
+local function unlink(unit_table)
+	-- Forget that the given unit has previously been linked (if it has).
+	-- That is needed when processing a range of inputs or outputs when an id
+	-- for the first range value may have been evaluated, but only an id for
+	-- the last value is displayed, and that id may need to be linked.
+	linked_pages[unit_table.unitcode or unit_table] = nil
+end
+
+local function make_link(link, id, unit_table)
 	-- Return wikilink "[[link|id]]", possibly abbreviated as in examples:
 	--   [[Mile|mile]]  --> [[mile]]
 	--   [[Mile|miles]] --> [[mile]]s
 	-- However, just id is returned if:
 	-- * no link given (so caller does not need to check if a link was defined); or
 	-- * link has previously been used during the current convert (to avoid overlinking).
-	-- Linking with a unit uses the unit table as the link key, which fails to detect
-	-- overlinking for conversions like the following (each links "mile" twice):
-	--   {{convert|1|impgal/mi|USgal/mi|lk=on}}
-	--   {{convert|1|l/km|impgal/mi USgal/mi|lk=on}}
-	link_key = link_key or link  -- use key if given (the key, but not the link, may be known when need to cancel a link record)
+	local link_key
+	if unit_table then
+		link_key = unit_table.unitcode or unit_table
+	else
+		link_key = link
+	end
 	if not link or link == '' or linked_pages[link_key] then
 		return id
 	end
@@ -2776,6 +2906,9 @@ local function variable_name(clean, unit_table)
 		else
 			i = 3
 		end
+		if i > 1 and varname == 'pl' then
+			i = i - 1
+		end
 		vname = split(unit_table.varname, '!')[i]
 	end
 	if vname then
@@ -2805,6 +2938,7 @@ local function linked_id(parms, unit_table, key_id, want_link, clean)
 	local multiplier = rawget(unit_table, 'multiplier')
 	local per = unit_table.per
 	if per then
+		local paren1, paren2 = '', ''  -- possible parentheses around bottom unit
 		local unit1 = per[1]  -- top unit_table, or nil
 		local unit2 = per[2]  -- bottom unit_table
 		if abbr_on then
@@ -2816,6 +2950,9 @@ local function linked_id(parms, unit_table, key_id, want_link, clean)
 				if symbol then
 					return symbol  -- for exceptions that have the symbol built-in
 				end
+			end
+			if (unit2.symbol):find('⋅', 1, true) then
+				paren1, paren2 = '(', ')'
 			end
 		end
 		local key_id2  -- unit2 is always singular
@@ -2855,7 +2992,7 @@ local function linked_id(parms, unit_table, key_id, want_link, clean)
 		elseif omitsep then
 			unit_table.sep = ''
 		end
-		return result .. linked_id(parms, unit2, key_id2, want_link, '1')
+		return result .. paren1 .. linked_id(parms, unit2, key_id2, want_link, '1') .. paren2
 	end
 	if multiplier then
 		-- A multiplier (like "100" in "100km") forces the unit to be plural.
@@ -2936,7 +3073,6 @@ local function make_id(parms, which, unit_table)
 	local info = unit_table.valinfo[which]
 	local abbr_org = parms.abbr_org
 	local adjectival = parms.opt_adjectival
-	local disp = parms.disp
 	local lk = parms.lk
 	local want_link = (lk == 'on' or lk == inout)
 	local usename = unit_table.usename
@@ -3021,12 +3157,12 @@ local function decorate_value(parms, unit_table, which, number_word)
 		if engscale then
 			local inout = unit_table.inout
 			local abbr = parms.abbr
-			if abbr == 'on' or abbr == inout then
+			if (abbr == 'on' or abbr == inout) and not parms.number_word then
 				info.show = info.show ..
-				'<span style="margin-left:0.2em">×<span style="margin-left:0.1em">' ..
-				from_en('10') ..
-				'</span></span><s style="display:none">^</s><sup>' ..
-				from_en(tostring(engscale.exponent)) .. '</sup>'
+					'<span style="margin-left:0.2em">×<span style="margin-left:0.1em">' ..
+					from_en('10') ..
+					'</span></span><s style="display:none">^</s><sup>' ..
+					from_en(tostring(engscale.exponent)) .. '</sup>'
 			elseif number_word then
 				local number_id
 				local lk = parms.lk
@@ -3083,7 +3219,7 @@ local function process_input(parms, in_current)
 		end
 		return  preunit .. id1
 	end
-	if parms.opt_also_symbol and not composite then
+	if parms.opt_also_symbol and not composite and not parms.opt_flip then
 		local join1 = parms.joins[1]
 		if join1 == ' (' or join1 == ' [' then
 			parms.joins = { ' [' .. first_unit[parms.opt_sp_us and 'sym_us' or 'symbol'] .. ']' .. join1 , parms.joins[2] }
@@ -3128,7 +3264,7 @@ local function process_input(parms, in_current)
 		(not want_name and parms.abbr_range_x)
 	local range = parms.range
 	if range and not add_unit then
-		linked_pages[first_unit] = nil  -- so the final and only id will be linked, if wanted
+		unlink(first_unit)
 	end
 	local id = range and make_id(parms, range.n + 1, first_unit) or id1
 	local extra, was_hyphenated = hyphenated_maybe(parms, want_name, sep, id, 'in')
@@ -3165,6 +3301,7 @@ end
 local function process_one_output(parms, out_current)
 	-- Processing required for each output unit.
 	-- Return block of text to represent output (value/unit).
+	local inout = out_current.inout  -- normally 'out' but can be 'in' for order=out
 	local id1, want_name = make_id(parms, 1, out_current)
 	local sep = out_current.sep  -- set by make_id
 	local preunit = parms.preunit2
@@ -3186,7 +3323,7 @@ local function process_one_output(parms, out_current)
 		local result = prefix .. valinfo[1].show
 		if range then
 			-- For simplicity and because more not needed, handle one range item only.
-			result = range_text(range[1], want_name, parms, result, prefix .. valinfo[2].show, 'out')
+			result = range_text(range[1], want_name, parms, result, prefix .. valinfo[2].show, inout)
 		end
 		return preunit .. result
 	end
@@ -3195,10 +3332,10 @@ local function process_one_output(parms, out_current)
 		not parms.opt_output_number_only
 	local range = parms.range
 	if range and not add_unit then
-		linked_pages[out_current] = nil  -- so the final and only id will be linked, if wanted
+		unlink(out_current)
 	end
 	local id = range and make_id(parms, range.n + 1, out_current) or id1
-	local extra, was_hyphenated = hyphenated_maybe(parms, want_name, sep, id, 'out')
+	local extra, was_hyphenated = hyphenated_maybe(parms, want_name, sep, id, inout)
 	if was_hyphenated then
 		add_unit = false
 	end
@@ -3219,7 +3356,7 @@ local function process_one_output(parms, out_current)
 			if i == 0 then
 				result = show
 			else
-				result = range_text(range[i], want_name, parms, result, show, 'out')
+				result = range_text(range[i], want_name, parms, result, show, inout)
 			end
 		end
 	else
@@ -3236,12 +3373,15 @@ local function make_output_single(parms, in_unit_table, out_unit_table)
 	-- Return true, item where item = wikitext of the conversion result
 	-- for a single output (which is not a combination or a multiple);
 	-- or return false, t where t is an error message table.
-	out_unit_table.valinfo = collection()
-	local range = parms.range
-	for i = 1, (range and (range.n + 1) or 1) do
-		local success, info = cvtround(parms, in_unit_table.valinfo[i], in_unit_table, out_unit_table)
-		if not success then return false, info end
-		out_unit_table.valinfo:add(info)
+	if parms.opt_order_out and in_unit_table.unitcode == out_unit_table.unitcode then
+		out_unit_table.valinfo = in_unit_table.valinfo
+	else
+		out_unit_table.valinfo = collection()
+		for _, v in ipairs(in_unit_table.valinfo) do
+			local success, info = cvtround(parms, v, in_unit_table, out_unit_table)
+			if not success then return false, info end
+			out_unit_table.valinfo:add(info)
+		end
 	end
 	return true, process_one_output(parms, out_unit_table)
 end
@@ -3250,14 +3390,15 @@ local function make_output_multiple(parms, in_unit_table, out_unit_table)
 	-- Return true, item where item = wikitext of the conversion result
 	-- for an output which is a multiple (like 'ftin');
 	-- or return false, t where t is an error message table.
+	local inout = out_unit_table.inout  -- normally 'out' but can be 'in' for order=out
 	local multiple = out_unit_table.multiple  -- table of scaling factors (will not be nil)
 	local combos = out_unit_table.combination  -- table of unit tables (will not be nil)
 	local abbr = parms.abbr
 	local abbr_org = parms.abbr_org
 	local disp = parms.disp
 	local want_name = (abbr_org == nil and (disp == 'or' or disp == 'slash')) or
-						not (abbr == 'on' or abbr == 'out' or abbr == 'mos')
-	local want_link = (parms.lk == 'on' or parms.lk == 'out')
+						not (abbr == 'on' or abbr == inout or abbr == 'mos')
+	local want_link = (parms.lk == 'on' or parms.lk == inout)
 	local mid = parms.opt_flip and parms.mid or ''
 	local sep1 = '&nbsp;'
 	local sep2 = ' '
@@ -3273,7 +3414,7 @@ local function make_output_multiple(parms, in_unit_table, out_unit_table)
 		for i = 1, #combos do
 			local tfrac, thisvalue, strforce
 			local out_current = combos[i]
-			out_current.inout = 'out'
+			out_current.inout = inout
 			local scale = multiple[i]
 			if i == 1 then  -- least significant unit ('in' from 'ftin')
 				local decimals
@@ -3355,17 +3496,17 @@ local function make_output_multiple(parms, in_unit_table, out_unit_table)
 				end
 			end
 			local strval
-			local inout = (i == #combos or outvalue == 0) and 'out' or ''  -- trick so the last value processed (first displayed) has uppercase, if requested
+			local spell_inout = (i == #combos or outvalue == 0) and inout or ''  -- trick so the last value processed (first displayed) has uppercase, if requested
 			if strforce and outvalue == 0 then
 				sign = ''  -- any sign is in strforce
 				strval = strforce  -- show small values in scientific notation; will only use least significant unit
 			elseif tfrac then
 				local wholestr = (thisvalue > 0) and tostring(thisvalue) or nil
-				strval = format_fraction(parms, inout, false, wholestr, tfrac.numstr, tfrac.denstr, do_spell)
+				strval = format_fraction(parms, spell_inout, false, wholestr, tfrac.numstr, tfrac.denstr, do_spell)
 			else
 				strval = (thisvalue == 0) and from_en('0') or with_separator(parms, format(fmt, thisvalue))
 				if do_spell then
-					strval = spell_number(parms, inout, strval) or strval
+					strval = spell_number(parms, spell_inout, strval) or strval
 				end
 			end
 			table.insert(results, strval .. sep1 .. id)
@@ -3388,25 +3529,25 @@ local function make_output_multiple(parms, in_unit_table, out_unit_table)
 		for i = 1, range.n do
 			local success, result2 = make_result(valinfo[i+1])
 			if not success then return false, result2 end
-			result = range_text(range[i], want_name, parms, result, result2, 'out')
+			result = range_text(range[i], want_name, parms, result, result2, inout)
 		end
 	end
 	return true, result .. mid
 end
 
 local function process(parms, in_unit_table, out_unit_table)
-	-- Return true, s where s = final wikitext result,
+	-- Return true, s, outunit where s = final wikitext result,
 	-- or return false, t where t is an error message table.
 	linked_pages = {}
 	local success, bad_output
-	local bad_input_mcode = in_unit_table.bad_mcode  -- false if input unit is valid
-	local invalue1 = in_unit_table.valinfo[1].value
+	local bad_input_mcode = in_unit_table.bad_mcode  -- nil if input unit is a valid convert unit
 	local out_unit = parms.out_unit
-	if out_unit == nil or out_unit == '' then
+	if out_unit == nil or out_unit == '' or type(out_unit) == 'function' then
 		if bad_input_mcode or parms.opt_input_unit_only then
 			bad_output = ''
 		else
-			success, out_unit = get_default(invalue1, in_unit_table)
+			local getdef = type(out_unit) == 'function' and out_unit or get_default
+			success, out_unit = getdef(in_unit_table.valinfo[1].value, in_unit_table)
 			parms.out_unit = out_unit
 			if not success then
 				bad_output = out_unit
@@ -3424,83 +3565,96 @@ local function process(parms, in_unit_table, out_unit_table)
 			bad_output = out_unit_table
 		end
 	end
+	local lhs, rhs
 	local flipped = parms.opt_flip and not bad_input_mcode
-	local parts = {}
-	for part = 1, 2 do
-		-- The LHS (parts[1]) is normally the input, but is the output if flipped.
-		-- Process LHS first so it will be linked, if wanted.
-		-- Linking to the same item is suppressed in the RHS to avoid overlinking.
-		if (part == 1 and not flipped) or (part == 2 and flipped) then
-			parts[part] = process_input(parms, in_unit_table)
-		elseif bad_output then
-			parts[part] = (bad_output == '') and '' or message(bad_output)
-		else
-			local outputs = {}
-			local combos  -- nil (for 'ft' or 'ftin'), or table of unit tables (for 'm ft')
-			if not out_unit_table.multiple then  -- nil/false ('ft' or 'm ft'), or table of factors ('ftin')
-				combos = out_unit_table.combination
-			end
-			local frac = parms.frac  -- nil or denominator of fraction for output values
-			if frac then
-				-- Apply fraction to the unit (if only one), or to non-SI units (if a combination),
-				-- except that if a precision is also specified, the fraction only applies to
-				-- the hand unit; that allows the following result:
-				-- {{convert|156|cm|in hand|1|frac=2}} → 156 centimetres (61.4 in; 15.1½ hands)
-				-- However, the following is handled elsewhere as a special case:
-				-- {{convert|156|cm|hand in|1|frac=2}} → 156 centimetres (15.1½ hands; 61½ in)
-				if combos then
-					local precision = parms.precision
-					for _, unit in ipairs(combos) do
-						if unit.builtin == 'hand' or (not precision and not unit.prefixes) then
-							unit.frac = frac
-						end
-					end
-				else
-					out_unit_table.frac = frac
-				end
-			end
-			local out_first
-			local imax = combos and #combos or 1  -- 1 (single unit) or number of unit tables
-			for i = 1, imax do
-				local success, item
-				local out_current = combos and combos[i] or out_unit_table
-				out_current.inout = 'out'
-				if i == 1 then
-					out_first = out_current
-					if imax > 1 and out_current.builtin == 'hand' then
-						out_current.out_next = combos[2]  -- built-in hand can influence next unit in a combination
+	if bad_output then
+		rhs = (bad_output == '') and '' or message(parms, bad_output)
+	elseif parms.opt_input_unit_only then
+		rhs = ''
+	else
+		local combos  -- nil (for 'ft' or 'ftin'), or table of unit tables (for 'm ft')
+		if not out_unit_table.multiple then  -- nil/false ('ft' or 'm ft'), or table of factors ('ftin')
+			combos = out_unit_table.combination
+		end
+		local frac = parms.frac  -- nil or denominator of fraction for output values
+		if frac then
+			-- Apply fraction to the unit (if only one), or to non-SI units (if a combination),
+			-- except that if a precision is also specified, the fraction only applies to
+			-- the hand unit; that allows the following result:
+			-- {{convert|156|cm|in hand|1|frac=2}} → 156 centimetres (61.4 in; 15.1½ hands)
+			-- However, the following is handled elsewhere as a special case:
+			-- {{convert|156|cm|hand in|1|frac=2}} → 156 centimetres (15.1½ hands; 61½ in)
+			if combos then
+				local precision = parms.precision
+				for _, unit in ipairs(combos) do
+					if unit.builtin == 'hand' or (not precision and not unit.prefixes) then
+						unit.frac = frac
 					end
 				end
-				if out_current.multiple then
-					success, item = make_output_multiple(parms, in_unit_table, out_current)
-				else
-					success, item = make_output_single(parms, in_unit_table, out_current)
-				end
-				if not success then return false, item end
-				table.insert(outputs, item)
-			end
-			if parms.opt_input_unit_only then
-				parts[part] = ''
 			else
-				local sep = parms.table_joins and parms.table_joins[2] or parms.join_between
-				parts[part] = table.concat(outputs, sep)
+				out_unit_table.frac = frac
 			end
+		end
+		local outputs = {}
+		local imax = combos and #combos or 1  -- 1 (single unit) or number of unit tables
+		if imax == 1 then
+			parms.opt_order_out = nil  -- only useful with an output combination
+		end
+		if not flipped and not parms.opt_order_out then
+			-- Process left side first so any duplicate links (from lk=on) are suppressed
+			-- on right. Example: {{convert|28|e9pc|e9ly|abbr=off|lk=on}}
+			lhs = process_input(parms, in_unit_table)
+		end
+		for i = 1, imax do
+			local success, item
+			local out_current = combos and combos[i] or out_unit_table
+			out_current.inout = 'out'
+			if i == 1 then
+				if imax > 1 and out_current.builtin == 'hand' then
+					out_current.out_next = combos[2]  -- built-in hand can influence next unit in a combination
+				end
+				if parms.opt_order_out then
+					out_current.inout = 'in'
+				end
+			end
+			if out_current.multiple then
+				success, item = make_output_multiple(parms, in_unit_table, out_current)
+			else
+				success, item = make_output_single(parms, in_unit_table, out_current)
+			end
+			if not success then return false, item end
+			outputs[i] = item
+		end
+		if parms.opt_order_out then
+			lhs = outputs[1]
+			table.remove(outputs, 1)
+		end
+		local sep = parms.table_joins and parms.table_joins[2] or parms.join_between
+		rhs = table.concat(outputs, sep)
+	end
+	if flipped or not lhs then
+		local input = process_input(parms, in_unit_table)
+		if flipped then
+			lhs = rhs
+			rhs = input
+		else
+			lhs = input
 		end
 	end
 	if parms.join_before then
-		parts[1] = parms.join_before .. parts[1]
+		lhs = parms.join_before .. lhs
 	end
 	local wikitext
 	if bad_input_mcode then
 		if bad_input_mcode == '' then
-			wikitext = parts[1]
+			wikitext = lhs
 		else
-			wikitext = parts[1] .. message(bad_input_mcode)
+			wikitext = lhs .. message(parms, bad_input_mcode)
 		end
 	elseif parms.table_joins then
-		wikitext = parms.table_joins[1] .. parts[1] .. parms.table_joins[2] .. parts[2]
+		wikitext = parms.table_joins[1] .. lhs .. parms.table_joins[2] .. rhs
 	else
-		wikitext = parts[1] .. parms.joins[1] .. parts[2] .. parms.joins[2]
+		wikitext = lhs .. parms.joins[1] .. rhs .. parms.joins[2]
 	end
 	if parms.warnings and not bad_input_mcode then
 		wikitext = wikitext .. parms.warnings
@@ -3510,11 +3664,16 @@ end
 
 local function main_convert(frame)
 	-- Do convert, and if needed, do it again with higher default precision.
+	local parms = { frame = frame }  -- will hold template arguments, after translation
 	set_config(frame.args)
-	local result, out_unit_table
-	local success, parms, in_unit_table = get_parms(frame:getParent().args)
+	local success, result = get_parms(parms, frame:getParent().args)
 	if success then
-		for i = 1, 2 do  -- use counter so cannot get stuck repeating convert
+		if type(result) ~= 'table' then
+			return tostring(result)
+		end
+		local in_unit_table = result
+		local out_unit_table
+		for _ = 1, 2 do  -- use counter so cannot get stuck repeating convert
 			success, result, out_unit_table = process(parms, in_unit_table, out_unit_table)
 			if success and parms.do_convert_again then
 				parms.do_convert_again = false
@@ -3522,13 +3681,26 @@ local function main_convert(frame)
 				break
 			end
 		end
-	else
-		result = parms
 	end
-	if success then
-		return result
+	-- If input=x gives a problem, the result should be just the user input
+	-- (if x is a property like P123 it has been replaced with '').
+	-- An unknown input unit would display the input and an error message
+	-- with success == true at this point.
+	-- Also, can have success == false with a message that outputs an empty string.
+	if parms.input_text then
+		if success and not parms.have_problem then
+			return result
+		end
+		local cat
+		if parms.tracking then
+			-- Add a tracking category using the given text as the category sort key.
+			-- There is currently only one type of tracking, but in principle multiple
+			-- items could be tracked, using different sort keys for convenience.
+			cat = wanted_category('tracking', parms.tracking)
+		end
+		return parms.input_text .. (cat or '')
 	end
-	return message(result)
+	return success and result or message(parms, result)
 end
 
 local function _unit(unitcode, options)
@@ -3569,12 +3741,11 @@ local function _unit(unitcode, options)
 		opt_sortable_on = options.sort == 'on' or options.sort == 'debug',
 		opt_sortable_debug = options.sort == 'debug',
 	}
-	local utable
 	if options.si then
 		-- Make a dummy table of units (just one unit) for lookup to use.
 		-- This makes lookup recognize any SI prefix in the unitcode.
 		local symbol = options.si[1] or '?'
-		utable = { [symbol] = {
+		parms.unittable = { [symbol] = {
 			_name1 = symbol,
 			_name2 = symbol,
 			_symbol = symbol,
@@ -3585,12 +3756,11 @@ local function _unit(unitcode, options)
 			link = options.si[2],
 		}}
 	end
-	local success, unit_table = lookup(parms, unitcode, 'no_combination', utable)
+	local success, unit_table = lookup(parms, unitcode, 'no_combination')
 	if not success then
 		unit_table = setmetatable({
-				symbol = unitcode, name2 = unitcode,
-				default = "m", defkey = "m", linkey = "m",
-				utype = "length", scale = 1 }, unit_mt)
+			symbol = unitcode, name2 = unitcode, utype = unitcode,
+			scale = 1, default = '', defkey = '', linkey = '' }, unit_mt)
 	end
 	local value = tonumber(options.value) or 1
 	local clean = tostring(abs(value))
