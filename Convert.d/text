@@ -3,25 +3,25 @@
 -- Some units accept an SI prefix before the unit code, such as "kg" for kilogram.
 local SIprefixes = {
 	-- The prefix field is what the prefix should be, if different from the prefix used.
-	['Y'] = { exponent = 24, name = 'йота',                  },
-	['Z'] = { exponent = 21, name = 'зета',                  },
-	['E'] = { exponent = 18, name = 'екса'  ,                  },
-	['P'] = { exponent = 15, name = 'пета' ,                  },
-	['T'] = { exponent = 12, name = 'тера' ,                  },
-	['G'] = { exponent =  9, name = 'гига' ,                  },
-	['M'] = { exponent =  6, name = 'мега' ,                  },
-	['k'] = { exponent =  3, name = 'кило' ,                  },
-	['h'] = { exponent =  2, name = 'хекто',                  },
-	['da']= { exponent =  1, name = 'дека' , name_us = 'deka' },
-	['d'] = { exponent = -1, name = 'деци' ,                  },
-	['c'] = { exponent = -2, name = 'санти',                  },
-	['m'] = { exponent = -3, name = 'мили',                  },
-	['μ'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- key = 'GREEK SMALL LETTER MU' (U+03BC) utf-8 CE BC
-	['µ'] = { exponent = -6, name = 'микро',                  },  -- key = 'MICRO SIGN' (U+00B5) utf-8 C2 B5
-	['u'] = { exponent = -6, name = 'микро', prefix = 'µ'     },  -- not an SI prefix, but allow for people typing this
-	['n'] = { exponent = -9, name = 'нано' ,                  },
-	['p'] = { exponent =-12, name = 'пико' ,                  },
-	['f'] = { exponent =-15, name = 'фемто',                  },
+	['Y'] = { exponent = 24, name = 'yotta',                  },
+	['Z'] = { exponent = 21, name = 'zetta',                  },
+	['E'] = { exponent = 18, name = 'exa'  ,                  },
+	['P'] = { exponent = 15, name = 'peta' ,                  },
+	['T'] = { exponent = 12, name = 'tera' ,                  },
+	['G'] = { exponent =  9, name = 'giga' ,                  },
+	['M'] = { exponent =  6, name = 'mega' ,                  },
+	['k'] = { exponent =  3, name = 'kilo' ,                  },
+	['h'] = { exponent =  2, name = 'hecto',                  },
+	['da']= { exponent =  1, name = 'deca' , name_us = 'deka' },
+	['d'] = { exponent = -1, name = 'deci' ,                  },
+	['c'] = { exponent = -2, name = 'centi',                  },
+	['m'] = { exponent = -3, name = 'milli',                  },
+	['μ'] = { exponent = -6, name = 'micro',                  },  -- key = 'GREEK SMALL LETTER MU' (U+03BC) utf-8 CE BC
+	['µ'] = { exponent = -6, name = 'micro', prefix = 'μ'     },  -- key = 'MICRO SIGN' (U+00B5) utf-8 C2 B5
+	['u'] = { exponent = -6, name = 'micro', prefix = 'μ'     },  -- not an SI prefix, but allow for people typing this
+	['n'] = { exponent = -9, name = 'nano' ,                  },
+	['p'] = { exponent =-12, name = 'pico' ,                  },
+	['f'] = { exponent =-15, name = 'femto',                  },
 	['a'] = { exponent =-18, name = 'atto' ,                  },
 	['z'] = { exponent =-21, name = 'zepto',                  },
 	['y'] = { exponent =-24, name = 'yocto',                  },
@@ -46,10 +46,11 @@ local eng_scales = {
 	["15"] = { "quadrillion", link = "1000000000000000 (number)", exponent = 15 },
 }
 
--- One of the following categories is included in the text of each message.
 local all_categories = {
-	unit = "[[Category:Convert invalid units]]",
-	option = "[[Category:Convert invalid options]]",
+	unit = "[[Category:Convert errors]]",
+	option = "[[Category:Convert errors]]",
+	warning = '[[Category:Convert invalid options]]',
+	tracking = '[[Category:Convert tracking]]',
 }
 
 -- For some error messages, the following puts the wanted style around
@@ -59,10 +60,11 @@ local unitcode_replace = { ['{'] = '"', ['}'] = '"' }  -- no longer need the mor
 
 -- All messages that may be displayed if a problem occurs.
 local all_messages = {
-	-- Message format string, %s parameters: anchor, title, text, category.
+	-- Message format string: $1=title, $2=text, $3=category, $4=anchor.
 	-- Each displayed message starts with "Convert:" so can easily locate by searching article.
-	cvt_format = '<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i>[[Help:Convert messages#%s|<span title="Convert: %s">convert: %s</span>]]</i>]</sup>%s',
-	cvt_format2 = '<sup class="noprint Inline-Template" style="white-space:nowrap;">[[Help:Convert messages#%s|<span title="Convert: %s">%s</span>]]</sup>%s',
+	cvt_format = '<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i>[[Help:Convert messages#$4|<span title="Convert: $1">convert: $2</span>]]</i>]</sup>$3<span class="error"></span>',
+	cvt_format2 = '<sup class="noprint Inline-Template" style="white-space:nowrap;">[[Help:Convert messages#$4|<span title="Convert: $1">$2</span>]]</sup>$3<span class="error"></span>',
+	cvt_format_preview = '<strong class="error">Error in convert: $1 [[Help:Convert messages#$4|(help)]]</strong>$3',
 	-- Each of following messages is a table:
 	-- { [1] = 'title',         -- mouseover title text
 	--   [2] = 'text',          -- link text displayed in article
@@ -71,27 +73,29 @@ local all_messages = {
 	--   regex = gsub_regex,
 	--   replace = gsub_table,
 	-- }                    Mouseover title text                           Link text               CatKey     Anchor
-	cvt_bad_num        = { 'Стойността "%s" трябва да е число'                , 'invalid number'      , 'option',  'invalid_number'       },
-	cvt_big_prec       = { 'Precision "%s" is too large'                , 'precision too large' , 'option',  'precision_too_large'  },
+	cvt_bad_input      = { 'input "$1" must be a number and unit'       , 'invalid input'       , 'option',  'invalid_input'        },
+	cvt_bad_num        = { 'Value "$1" must be a number'                , 'invalid number'      , 'option',  'invalid_number'       },
+	cvt_big_prec       = { 'Precision "$1" is too large'                , 'precision too large' , 'option',  'precision_too_large'  },
 	cvt_invalid_num    = { 'Number has overflowed'                      , 'number overflow'     , 'option',  'number_overflow'      },
 	cvt_no_num         = { 'Needs the number to be converted'           , 'needs a number'      , 'option',  'needs_number'         },
 	cvt_no_num2        = { 'Needs another number for a range'           , 'needs another number', 'option',  'needs_another_number' },
-	cvt_bad_frac       = { 'frac "%s" must be an integer above 1'       , 'invalid fraction'    , 'option',  'invalid_fraction'     },
-	cvt_bad_prec       = { 'Precision "%s" must be an integer'          , 'invalid precision'   , 'option',  'invalid_precision'    },
-	cvt_bad_sigfig     = { 'sigfig "%s" must be a positive integer'     , 'invalid sigfig'      , 'option',  'invalid_sigfig'       },
-	cvt_empty_option   = { 'Ignored empty option "%s"'                  , 'empty option'        , 'option',  'empty_option'         },
-	cvt_deprecated     = { 'Option "%s" is deprecated'                  , '*'                   , 'option',  'deprecated_option', format = 'cvt_format2' },
+	cvt_bad_frac       = { '"$1" needs an integer above 1'              , 'invalid fraction'    , 'option',  'invalid_fraction'     },
+	cvt_bad_prec       = { 'Precision "$1" must be an integer'          , 'invalid precision'   , 'option',  'invalid_precision'    },
+	cvt_bad_sigfig     = { '"$1" needs a positive integer'              , 'invalid sigfig'      , 'option',  'invalid_sigfig'       },
+	cvt_empty_option   = { 'Ignored empty option "$1"'                  , 'empty option'        , 'option',  'empty_option'         },
+	cvt_deprecated     = { 'Option "$1" is deprecated'                  , '*'                   , 'option',  'deprecated_option', format = 'cvt_format2', nowarn = true },
 	cvt_no_spell       = { 'Spelling is not available'                  , 'bug, ask for help'   , 'option',  'ask_for_help'         },
-	cvt_unknown_option = { 'Ignored invalid option "%s"'                , 'invalid option'      , 'option',  'invalid_option'       },
-	cvt_bad_default    = { 'Unit "%s" has an invalid default'           , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
-	cvt_bad_unit       = { 'Unit "%s" is invalid here'                  , 'unit invalid here'   , 'unit'  ,  'unit_invalid_here'    },
-	cvt_no_default     = { 'Unit "%s" has no default output unit'       , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
+	cvt_unknown_option = { 'Ignored invalid option "$1"'                , 'invalid option'      , 'option',  'invalid_option'       },
+	cvt_wd_fail        = { 'Unable to access Wikidata'                  , 'wikidata problem'    , 'option',  'wikidata_problem'     },
+	cvt_bad_default    = { 'Unit "$1" has an invalid default'           , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
+	cvt_bad_unit       = { 'Unit "$1" is invalid here'                  , 'unit invalid here'   , 'unit'  ,  'unit_invalid_here'    },
+	cvt_no_default     = { 'Unit "$1" has no default output unit'       , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
 	cvt_no_unit        = { 'Needs name of unit'                         , 'needs unit name'     , 'unit'  ,  'needs_unit_name'      },
-	cvt_unknown        = { 'Unit name "%s" is not known'                , 'unknown unit'        , 'unit'  ,  'unknown_unit'         },
-	cvt_should_be      = { '%s'                                         , 'ambiguous unit'      , 'unit'  ,  'ambiguous_unit', regex = unitcode_regex, replace = unitcode_replace },
-	cvt_mismatch       = { 'Cannot convert "%s" to "%s"'                , 'unit mismatch'       , 'unit'  ,  'unit_mismatch'        },
+	cvt_unknown        = { 'Unit name "$1" is not known'                , 'unknown unit'        , 'unit'  ,  'unknown_unit'         },
+	cvt_should_be      = { '$1'                                         , 'ambiguous unit'      , 'unit'  ,  'ambiguous_unit', regex = unitcode_regex, replace = unitcode_replace },
+	cvt_mismatch       = { 'Cannot convert "$1" to "$2"'                , 'unit mismatch'       , 'unit'  ,  'unit_mismatch'        },
 	cvt_bug_convert    = { 'Bug: Cannot convert between specified units', 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
-	cvt_lookup         = { 'Unit "%s" is incorrectly defined'           , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
+	cvt_lookup         = { 'Unit "$1" is incorrectly defined'           , 'bug, ask for help'   , 'unit'  ,  'ask_for_help'         },
 }
 
 -- Text to join input value/unit with output value/unit.
@@ -135,17 +139,15 @@ local range_types = {
 	["+/-"]    = { off = "&nbsp;±&nbsp;", on = "&nbsp;±&nbsp;", adj = "&nbsp;±&nbsp;", is_range_change = true },
 	["by(x)"]  = { input = " by ", output = " ×&nbsp;", out_range_x = true },
 	["x"]      = { off = " by ", on = " ×&nbsp;", abbr_range_x = true },
-	["X"]      = { off = " by ", on = " ×&nbsp;" },  -- TEMPORARY and undocumented option for experiments to compare with new abbr_range_x
 	["xx"]     = "&nbsp;×&nbsp;",
-	["*"]      = "×",  -- use "*" to replace "x" in {{convert/2}} which is different from "x" in old {{convert}}
+	["*"]      = "×",
+	["/"]      = "&thinsp;/&thinsp;",  -- for a table of high/low temperatures with {{convert|83|/|63|F|disp=br()|abbr=values}}
 }
 
 local range_aliases = {
 	-- ["alternative name for a range"] = "standard range name"
-	["&"]        = "and",
 	["–"]        = "-",
 	["&ndash;"]  = "-",
-	["to-"]      = "to(-)",
 	["×"]        = "x",
 	["&times;"]  = "x",
 	["±"]        = "+/-",
@@ -173,10 +175,13 @@ local en_option_name = {
 	["debug"] = "debug",
 	["disp"] = "disp",
 	["frac"] = "frac",
+	["input"] = "input",
 	["lang"] = "lang",
 	["lk"] = "lk",
-	["near"] = "near",
 	["order"] = "order",
+	["qid"] = "qid",
+	["qual"] = "qual",
+	["qualifier"] = "qual",
 	["round"] = "round",
 	["sigfig"] = "sigfig",
 	["sing"] = "adj",                   -- "sing" is an old alias for "adj"
@@ -185,14 +190,15 @@ local en_option_name = {
 	["spell"] = "spell",
 	["stylein"] = "stylein",
 	["styleout"] = "styleout",
+	["tracking"] = "tracking",
 }
 
 -- Valid option values.
 -- Convention: parms.opt_xxx refers to an option that is set here
 -- (not intended to be set by the template which invokes this module).
--- Example: At en.wiki, "abbr" includes:
+-- Example: At enwiki, "abbr" includes:
 --     ["comma"] = "opt_nocomma"
--- As a result, if the template uses abbr=comma, this script sets:
+-- As a result, if the template uses abbr=comma, Module:Convert sets:
 --     parms["opt_nocomma"] = true
 --     parms["abbr"] = nil
 -- Therefore parms.abbr will be nil, or will have one of the listed values
@@ -202,25 +208,20 @@ local en_option_value = {
 	-- $=x is handled as a special case: x should be a currency symbol that will be used instead of "$"
 	["abbr"] = {
 		-- ["local text for option value"] = "en value used in this module"
-		["comma"] = "opt_nocomma?",     -- no numsep in input or output numbers
 		["def"] = "",                   -- ignored (some wrapper templates call convert with "abbr=def" to mean "default abbreviation")
 		["h"] = "on",                   -- abbr=on + use "h" for hand unit (default)
 		["hh"] = "opt_hand_hh",         -- abbr=on + use "hh" for hand unit
 		["in"] = "in",                  -- use symbol for LHS unit
-		["mos"] = "mos",                -- in a range, repeat the input unit (no longer used)
 		["none"] = "off",               -- old name for "off"
 		["off"] = "off",                -- use name for all units
 		["on"] = "on",                  -- use symbol for all units
 		["out"] = "out",                -- use symbol for RHS unit (default)
+		["unit"] = "unit",              -- abbr=on but abbreviate units only: e6km → million km (not ×10⁶ km)
 		["values"] = "opt_values",      -- show only input and output numbers, not units
 		["~"] = "opt_also_symbol",      -- show input unit symbol as well as name
 	},
 	["adj"] = {
-		["1"] = "opt_singular",         -- unit name is singular when value satisfies: (-1 <= v and v < 0) or (0 < v and v <= 1)
-		["flip"] = "opt_flip?",         -- reverse order of input/output
-		["j"] = "opt_use_nbsp",         -- "join": use "&nbsp;" instead of " " between value and unit name
 		["mid"] = "opt_adjectival, opt_adj_mid",  -- adj=on with user-specified text after input unit (between input and output)
-		["nocomma"] = "opt_nocomma?",   -- no numsep in input or output numbers
 		["off"] = "",                   -- ignored (off is the default)
 		["on"] = "opt_adjectival",      -- unit name is singular and hyphenated
 		["pre"] = "opt_one_preunit",    -- user-specified text before input unit
@@ -233,42 +234,35 @@ local en_option_value = {
 		["5"] = "opt_comma5",           -- only use numsep grouping if 5 or more digits
 		["gaps"] = "opt_gaps",          -- use gaps, not numsep, to separate groups of digits
 		["gaps3"] = "opt_gaps, opt_gaps3",  -- group only in threes rather than default of no gap before a single digit after decimal mark
-		["gaps5"] = "opt_gaps?",        -- deprecated 2015-05-29, was: opt_gaps + opt_comma5
 		["off"] = "opt_nocomma",        -- no numsep in input or output numbers
 	},
 	["debug"] = {
 		["yes"] = "opt_sortable_debug", -- make the normally hidden sort key visible
 	},
 	["disp"] = {
-		["/"] = "or?",                  -- see "slash"
-		["2"] = "opt_output_only?",     -- display only output value and symbol/name (not input)
-		["5"] = "opt_round=5",          -- round output value to nearest 5
+		["5"] = "opt_round=5?",         -- round output value to nearest 5
 		["b"] = "b",                    -- join: '(...)'
 		["(or)"] = "(or)",              -- join: '(...)' with 'or' between outputs in a combination
 		["br"] = "br",                  -- join: '<br />'
 		["br()"] = "br()",              -- join: '<br />(...)'
 		["comma"] = "comma",            -- join: ','
 		["flip"] = "opt_flip",          -- reverse order of input/output
-		["flip5"] = "opt_flip, opt_round=5?",  -- disp=flip + disp=5
-		["nocomma"] = "opt_nocomma?",   -- no numsep in input or output numbers
 		["number"] = "opt_output_number_only",  -- display output value (not input, and not output symbol/name)
 		["or"] = "or",                  -- join: 'or'
 		["out"] = "opt_output_only",
 		["output number only"] = "opt_output_number_only",
 		["output only"] = "opt_output_only",
 		["preunit"] = "opt_two_preunits",    -- user-specified text before input and output units
-		["s"] = "or?",                  -- see "slash"
-		["slash"] = "or?",              -- 2014-11-03: "disp=slash" is now equivalent to "disp=or" as slash is unhelpful
 		["sqbr"] = "sqbr",              -- join: '[...]'
 		["table"] = "opt_table",        -- output is suitable for a table cell with align="right"
 		["tablecen"] = "opt_tablecen",  -- output is suitable for a table cell with align="center"
-		["u2"] = "opt_output_unit_only?", -- display output symbol/name (not input, and not output value)
 		["unit"] = "opt_input_unit_only", -- display input symbol/name (not output, and not input value)
 		["unit or text"] = "opt_input_unit_only, opt_ignore_error", -- display input symbol/name, or given unit code if not known
 		["unit2"] = "opt_output_unit_only",
 		["x"] = "x",                    -- join: <first>...<second> (user-specified text)
 	},
 	-- frac=x is handled as a special case: x must be an integer (possibly in local language) = 2 or more
+	-- input=x is handled as a special case: x should be <value><space><unitcode> or <wikidata-property-id>
 	["lang"] = {                        -- language for output digits (both en and local digits are always accepted for input)
 		["en"] = "opt_lang_en",         -- use en digits for numbers, regardless of local language
 		["local"] = "opt_lang_local",   -- use local digits for numbers (default, although config can change default to en)
@@ -279,12 +273,12 @@ local en_option_value = {
 		["on"] = "on",                  -- link all unit names or symbols (but not twice for the same unit)
 		["out"] = "out",                -- link RHS unit name or symbol
 	},
-	["near"] = {
-		["5"] = "opt_round=5?",         -- round output value to nearest 5
-	},
 	["order"] = {
 		["flip"] = "opt_flip",          -- reverse order of input/output
+		["out"] = "opt_order_out",      -- do not show input; instead, use order in output combination, with the first output shown as the input
 	},
+	-- qid=x is handled as a special case: x should be a Wikidata Q item identifier.
+	-- qual=x is handled as a special case: x should be a Wikidata Q item identifier.
 	["round"] = {
 		["0.5"] = "opt_round=0.5",      -- round output value to nearest 0.5
 		["5"] = "opt_round=5",          -- round output value to nearest 5
@@ -296,9 +290,8 @@ local en_option_value = {
 	-- sigfig=x is handled as a special case: x must be an integer (possibly in local language) = 1 or more
 	["sortable"] = {
 		["off"] = "",                   -- ignored (off is the default)
-		["in"] = "opt_sortable_on?",    -- same as "on"
 		["on"] = "opt_sortable_on",     -- output sort key for use in a sortable table, based on value from converting to a standard base unit
-		["out"] = "opt_sortable_on?",   -- same as "on"
+		["debug"] = "opt_sortable_on, opt_sortable_debug",  -- |sortable=debug is the same as |sortable=on|debug=yes
 	},
 	["sp"] = {
 		["us"] = "opt_sp_us",           -- use U.S. spelling (like "meter" instead of default "metre")
@@ -311,13 +304,14 @@ local en_option_value = {
 	},
 	-- stylein=x is handled as a special case: x can be any text
 	-- styleout=x is handled as a special case: x can be any text
+	-- tracking=x is handled as a special case: x can be any text
 }
 
 return {
 	SIprefixes = SIprefixes,
 	all_categories = all_categories,
 	all_messages = all_messages,
-	currency = { ['$'] = true, ['£'] = true },
+	currency = { ['$'] = true, ['£'] = true, ['€'] = true, ['₱'] = true, ['₽'] = true, ['¥'] = true },
 	customary_units = customary_units,
 	disp_joins = disp_joins,
 	en_option_name = en_option_name,
