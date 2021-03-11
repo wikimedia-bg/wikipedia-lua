@@ -604,7 +604,6 @@ local THEMES = {
 			{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 	
 	-- ДРУГИ
-	{ 'Картун Нетуърк|Cartoon Network', 'Cartoon_Network_box_device.svg' },
 	{ 'ГНУ|линукс', 'Heckert GNU white.png' },
 	{ 'ЛГБТ', 'Gay flag.svg' },
 	{ 'НЛО', 'Nuvola apps konquest.png' },
