@@ -673,6 +673,7 @@ local THEMES = {
 	{ 'религия', 'P religion world.svg' },
 	{ 'риболов', 'Fishing.svg' },
 	{ 'секс', 'Sexuality icon.svg' },
+	{ 'сериал', 'Television icon.svg', 'сериали' },
 	{ 'софтуер', 'Crystal Clear app kpackage.png' },
 	{ 'списание', 'Magazine.svg', 'списания' },
 	{ 'стадион', 'Colosseum-2003-07-09.jpg', 'стадиони' },
