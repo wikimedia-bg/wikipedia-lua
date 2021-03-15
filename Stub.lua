@@ -680,6 +680,7 @@ local THEMES = {
 	{ 'счетоводство', 'Crystal kchart.png' },
 	{ 'танц', 'Ballerina-icon.jpg', 'танци' },
 	{ 'театър', 'P culture.svg' },
+	{ 'телевизионен канал', 'Television icon.svg', 'телевизионни канали' },
 	{ 'телевизионно предаване', 'Television icon.svg', 'телевизионни предавания' },
 	{ 'телевизия', 'Television icon.svg' },
 	{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
