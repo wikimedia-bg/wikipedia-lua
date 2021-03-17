@@ -449,6 +449,7 @@ local THEMES = {
 					{ 'измислено място', 'Crystal Clear app wp.png', 'измислени места' },
 					{ 'историческа област|историческа държава', 'Map icon.svg', 'исторически области' },
 					{ 'място', 'Geographylogo.svg', 'места' },
+					{ 'остров', 'OpenMoji-color 1F3DD.svg', 'острови' },
 					{ 'планина', 'Refuge icone.svg', 'планини' },
 					{ 'пустиня', 'Emojione 1F42B.svg', 'пустини' },
 					{ 'селище|населено място|град|село', 'Pictograma Poblado.PNG', 'селища' },
