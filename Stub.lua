@@ -660,6 +660,7 @@ local THEMES = {
 	{ 'оръжие', 'SIG220-Morges.jpg' },
 	{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
 	{ 'партия', 'Political_template.gif', 'партии' },
+	{ 'измислен герой|персонаж|герой|литературен герой|филмов герой', 'Cib-staticman (CoreUI Icons v1.0.0).svg', 'измислени герои' },
 	{ 'песен', 'Musical notes.svg', 'песни' },
 	{ 'пиеса', 'Comedy and tragedy masks.svg', 'пиеси' },
 	{ 'подводница', 'Orzel.svg', 'подводници' },
