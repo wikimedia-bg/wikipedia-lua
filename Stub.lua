@@ -668,6 +668,7 @@ local THEMES = {
 	{ 'празник', 'Calendar icon.svg', 'празници' },
 	{ 'произведение', 'Deus Drawing.png', 'произведения' },
 	{ 'произведение на изкуството|творба|скулптура|картина', 'P Art2 green1.png', 'произведения на изкуството' },
+	{ 'професия|занятие', 'Creative-Tail-People-police-women.svg', 'професии' },
 	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
 	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
 	{ 'радио', 'Radio icon.png' },
