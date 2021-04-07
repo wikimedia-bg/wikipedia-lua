@@ -659,7 +659,7 @@ end
 
 function p.europeanaLink(id)
 	--P7704's format regex: (place|agent|concept|organisation)/base/[1-9]\d+ (e.g. agent/base/59832)
-	local s1, s2, s3 = id:match('^([^/]+)([^%d]+)([1-9]%d+)$')
+	local s1, s2, s3 = id:match('^([^/]+)([^%d]+)(%d+)$')
 	if (s1 and s2 and s3) and (s1 == 'place' or s1 == 'agent' or s1 == 'concept' or s1 == 'organisation') then
  		return '[http://data.europeana.eu/' .. id .. ' ' .. s3 .. ']' .. p.getCatForId('Europeana')
 	end
@@ -677,7 +677,7 @@ end
 function p.worldcatidLink(id)
 	--P7859's format regex: (viaf|lccn|np)-.+ (e.g. lccn-n88603570)
 	local s1, s2, s3 = id:match('^(%l+)(%-)(.+)$')
-	if (s1 and s2 and s3) and (s1 == 'viaf' or s1 == 'lccn' or s1 == 'np') then
+	if (s1 and s2 and s3) and (s1 == 'viaf' or s1 == 'lccn' or s1 == 'np' or s1 == 'nc') then
 		return '[https://www.worldcat.org/identities/' .. id .. ' ' .. id:gsub('%%20', ' ') .. ']' .. p.getCatForId('WorldCat')
 	end
 	return false
