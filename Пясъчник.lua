@@ -12,6 +12,7 @@ local function toBgNum(n)
 end
 
 local function renderTimeline(t)
+	local height = 26.5 * (#t + 2)
 	local mval = 1
 	local bardata = ''
 	local plotdata1 = ''
@@ -36,7 +37,7 @@ local function renderTimeline(t)
 			.. ' id:c value:rgb(1,1,1)' .. '\n'
 			.. ' id:d value:rgb(0.6,0.7,1)' .. '\n\n'
 			-- variuos other timeline options
-			.. 'ImageSize = width:auto barincrement:40 height:320' .. '\n'
+			.. 'ImageSize = width:auto barincrement:40 height:' .. height .. '\n'
 			.. 'PlotArea = left:50 bottom:30 top:30 right:30' .. '\n'
 			.. 'DateFormat = x.y' .. '\n'
 			.. 'Period = from:0 till:' .. mval .. '\n'
