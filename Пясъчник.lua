@@ -8,7 +8,7 @@ local function toBgNum(n)
 		end
 		return cap
 	end):gsub('%.', ',')
-	return n
+	return mw.text.trim(n)
 end
 
 local function renderTimeline(t)
