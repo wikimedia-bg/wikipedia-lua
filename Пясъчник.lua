@@ -22,19 +22,19 @@ local function renderTimeline(t)
 		y = t[i].year
 		v = t[i].val
 		mval = math.max(mval, v)
-		bardata = bardata .. 'bar:' .. y .. ' text:' .. y .. '\n'
-		plotdata1 = plotdata1 .. 'bar:' .. y .. ' from:0 till:' .. v .. '\n'
-		plotdata2 = plotdata2 .. 'bar:' .. y .. ' at:' .. v .. ' fontsize:S text:"' .. toBgNum(v) .. '" shift:(-10,5)\n'
+		bardata = bardata .. '  bar:' .. y .. ' text:' .. y .. '\n'
+		plotdata1 = plotdata1 .. '  bar:' .. y .. ' from:0 till:' .. v .. '\n'
+		plotdata2 = plotdata2 .. '  bar:' .. y .. ' at:' .. v .. ' fontsize:S text:"' .. toBgNum(v) .. '" shift:(-10,5)\n'
 	end
 
 	-- some ugly code ahead :)
 	local result = '\n'
 			-- timeline color options
 			.. 'Colors=' .. '\n'
-			.. 'id:a value:gray(0.9)' .. '\n'
-			.. 'id:b value:gray(0.7)' .. '\n'
-			.. 'id:c value:rgb(1,1,1)' .. '\n'
-			.. 'id:d value:rgb(0.6,0.7,1)' .. '\n\n'
+  			.. ' id:a value:gray(0.9)' .. '\n'
+			.. ' id:b value:gray(0.7)' .. '\n'
+			.. ' id:c value:rgb(1,1,1)' .. '\n'
+			.. ' id:d value:rgb(0.6,0.7,1)' .. '\n\n'
 			-- variuos other timeline options
 			.. 'ImageSize = width:auto barincrement:35 height:250' .. '\n'
 			.. 'PlotArea = left:50 bottom:30 top:30 right:30' .. '\n'
@@ -47,7 +47,7 @@ local function renderTimeline(t)
 			.. bardata .. '\n'
 			-- first plot data
 			.. 'PlotData=' .. '\n'
-			.. 'color:d width:20 align:left' .. '\n'
+			.. ' color:d width:20 align:left' .. '\n'
 			.. plotdata1 .. '\n'
 			-- second plot data
 			.. 'PlotData=' .. '\n'
