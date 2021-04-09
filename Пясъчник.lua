@@ -127,7 +127,7 @@ local function renderTable(t, order, link, notimeline, align, timeline)
 		else
 			y = '[[' .. y .. ']]'
 		end
-		wikitablecontent = wikitablecontent .. '|-' .. rowstyle .. '\n| ' .. attryear .. y .. ' || ' .. attrnum .. toBgNum(v) .. t[i].refs .. '\n'
+		wikitablecontent = wikitablecontent .. '|-' .. rowstyle .. '\n| ' .. attryear .. y .. ' || ' .. attrnum .. toBgNum(v) .. '\n'
 	end
 
 	return wikitablebegin .. wikitablecontent .. wikitableend
@@ -148,16 +148,7 @@ function p.main(frame)
 	for k, v in pairs(pargs) do
 		k = tonumber(k)
 		if mw.ustring.match(tostring(k), '^%d%d%d%d$') and (k >= 1650 and k <= os.date('*t').year) then
-			-- remove all the refs and keep them in a separate var
-			ref = ''
-			v = mw.ustring.gsub(v, '(<%f[%w]ref%f[%W][^>]*/>)', function(cap)
-				ref = ref + cap
-				return ''
-			end) -- self-closing refs
-			v = mw.ustring.gsub(v, '(<%f[%w]ref%f[%W][^>]*>.-</%f[%w]ref%f[%W][^>]*>)', function(cap)
-				ref = ref + cap
-				return ''
-			end) -- normal refs
+			v = mw.text.killMarkers(v)
 			v = mw.ustring.gsub(v, '&.-;', '') -- remove any HTML entities
 			v = mw.ustring.gsub(v, '%s', '') -- remove any whitespace characters
 			v = mw.ustring.gsub(v, ',', '.') -- replace commas with dots
@@ -166,7 +157,7 @@ function p.main(frame)
 			if count > 1 then v = mw.ustring.gsub(v, '%.', '', count - 1) end
 			v = tonumber(v) -- if unsuccessful then it will be nil; the next "if" will be skipped
 			if v then
-				table.insert(stats, {year = k, val = v, refs = ref})
+				table.insert(stats, {year = k, val = v})
 			end
 		end
 	end
