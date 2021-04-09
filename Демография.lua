@@ -88,39 +88,39 @@ local function renderTable(t, order, link, notimeline, align, timeline)
 		class = 'wikitable'
 	end
 
-	local wikitablebegin, wikitableend, style
-	local wikitablecontent = ''
+	local tablebegin, tableend
+	local tablecontent = ''
 	local rowstyle = ''
+	local style = ''
 
 	-- some ugly code ahead :)
 	if notimeline then -- notimeline option is true, so plain sortable table
-		wikitablebegin = '{| class="' .. class .. ' sortable" style="text-align:center; white-space:nowrap"\n'
-			.. '|-\n'
-			.. '! Година на<br>преброяване !! Численост' .. order.. '\n'
-		-- end of wikitablebegin
-		wikitableend = '|}'
+		tablebegin = '<table class="' .. class .. ' sortable" style="text-align:center; white-space:nowrap">\n'
+			.. '<tr><th>Година на<br>преброяване</th><th>Численост' .. order.. '</th></tr>\n'
+		-- end of tablebegin
+		tableend = '</table>'
 	else -- here a timeline have to be added, so there has to be 2 tables - the sortable one and the outter table which holds both the inner table and the timeline
-		rowstyle = 'style="border-top:1px #aaa solid'
-		style = 'style="border-right:1px #aaa solid" | ' -- explicitly add a style because the inner table has no border
-		wikitablebegin = '{| class="' .. class .. '"\n' -- outer table
-			.. '|-\n' -- row
-			.. '| style="padding:0" |\n' -- cell that will hold the inner table; no padding for the inner table
-			.. '{| class="wikitable sortable" style="margin:0; border:0; text-align:center; white-space:nowrap"\n' -- sortable inner table with removed margins and border
-			.. '|-\n' -- row
-			..'! ' .. style .. 'Година на<br>преброяване !! Численост' .. order.. '\n'
-		-- end of wikitablebegin
-		wikitableend = '|}\n' -- closing of the inner table
-			.. '| style="text-align:center" | ' .. timeline .. '\n' -- timeline cell
-			.. '|}' -- closing of the outer table
-		-- end of wikitableend
+		-- explicitly add a style because the inner table has no border
+		rowstyle = ' style="border-top:1px #aaa solid"'
+		style = ' style="border-right:1px #aaa solid"'
+
+		tablebegin = '<table class="' .. class .. '">\n' -- outer table
+			.. '<tr><td style="padding:0">\n' -- cell that will hold the inner table; no padding for the inner table
+			.. '<table class="wikitable sortable" style="margin:0; border:0; text-align:center; white-space:nowrap">\n' -- sortable inner table with removed margins and border
+			.. '<tr><th' .. style .. '>Година на<br>преброяване</th><th>Численост' .. order.. '</th></tr>\n'
+		-- end of tablebegin
+		tableend = '</table>\n' -- closing of the inner table
+			.. '</td><td style="text-align:center">' .. timeline .. '</td></tr>\n' -- timeline cell
+			.. '</table>' -- closing of the outer table
+		-- end of tableend
 	end
 
 	local y, v, attryear, attrnum
 	for i = 1, #t do
 		y = t[i].year
 		v = t[i].val
-		attryear = 'data-sort-value="' .. y .. '" ' .. (style or '| ')
-		attrnum = 'data-sort-value="' .. v .. '" style="text-align:right" | '
+		attryear = ' data-sort-value="' .. y .. '"' .. style
+		attrnum = ' data-sort-value="' .. v .. '" style="text-align:right"'
 		if link ~= '' then
 			if link ~= '0' or link ~= 'не' or link ~= 'без' or link ~= 'no' then
 				y = '[[' .. mw.ustring.gsub(link, '%%година%%', tostring(y)) .. '|' .. y .. ']]'
@@ -128,10 +128,10 @@ local function renderTable(t, order, link, notimeline, align, timeline)
 		else
 			y = '[[' .. y .. ']]'
 		end
-		wikitablecontent = wikitablecontent .. '|-' .. rowstyle .. '\n| ' .. attryear .. y .. ' || ' .. attrnum .. toBgNum(v) .. '\n'
+		tablecontent = tablecontent .. '<tr' .. rowstyle .. '><td' .. attryear .. '>' .. y .. '</td><td' .. attrnum .. '>' .. toBgNum(v) .. '</td></tr>\n'
 	end
 
-	return wikitablebegin .. wikitablecontent .. wikitableend
+	return tablebegin .. tablecontent .. tableend
 end
 
 function p.main(frame)
