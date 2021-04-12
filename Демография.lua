@@ -122,7 +122,7 @@ local function renderTable(t, order, link, notimeline, align, timeline)
 		attryear = ' data-sort-value="' .. y .. '"' .. style
 		attrnum = ' data-sort-value="' .. v .. '" style="text-align:right"'
 		if link ~= '' then
-			if link ~= '0' or link ~= 'не' or link ~= 'без' or link ~= 'no' then
+			if link ~= '0' and link ~= 'не' and link ~= 'без' and link ~= 'no' then
 				y = '[[' .. mw.ustring.gsub(link, '%%година%%', tostring(y)) .. '|' .. y .. ']]'
 			end
 		else
