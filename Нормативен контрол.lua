@@ -654,7 +654,7 @@ function p.conorBGLink( id )
 	if not string.match( id, '^%d+$' ) then
 		return false
 	end
-	return '[https://opac.bg.cobiss.net/opac7/conor/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'conorBG' )
+	return '[https://opac.bg.cobiss.net/opac7/conor/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'CONOR.BG' )
 end
 
 function p.openLibraryLink( id )
