@@ -649,6 +649,14 @@ function p.koninklijkeLink( id )
 	return '[http://data.bibliotheken.nl/doc/thes/p' .. id .. ' ' .. id .. ']'..p.getCatForId( 'Koninklijke' )
 end
 
+function p.conorBGLink( id )
+	--P8849's format regex: \d+
+	if not string.match( id, '^%d+$' ) then
+		return false
+	end
+	return '[https://opac.bg.cobiss.net/opac7/conor/' .. id .. ' ' .. id .. ']'..p.getCatForId( 'conorBG' )
+end
+
 function p.openLibraryLink( id )
 	--P648's format regex: OL\d{1,7}[AMW] (e.g. OL3156833A)
 	if not string.match( id, '^OL%d%d?%d?%d?%d?%d?%d?%d?[AMW]$' ) then
@@ -786,6 +794,7 @@ p.conf = {
 	{ 'Botanist', 'Botanist', 428, p.botanistLink },
 	{ 'BPN', 'BPN', 651, p.bpnLink },
 	{ 'CINII', 'CiNii', 271, p.ciniiLink },
+	{ 'CONOR.BG', 'CONOR.BG', 8849, p.conorBGLink },
 	{ 'DBLP', 'DBLP', 2456, p.dblpLink },
 	{ 'DSI', 'DSI', 2349, p.dsiLink },
 	{ 'EBE', linkedLabel('Национална библиотека на Гърция', 'ΕΒΕ'), 3348, p.EBEIDLink },
