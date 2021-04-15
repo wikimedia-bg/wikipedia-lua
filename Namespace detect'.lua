@@ -20,8 +20,8 @@ local cfg = data.cfg
 local mappings = data.mappings
 
 local yesno = require('Модул:Yesno')
-local mArguments -- Lazily initialise Module:Arguments
-local mTableTools -- Lazily initilalise Module:TableTools
+local mArguments -- Lazily инициализиране на Модул:Arguments
+local mTableTools -- Lazily инициализиране на Модул:TableTools
 local ustringLower = mw.ustring.lower
 
 local p = {}
@@ -129,7 +129,7 @@ function p._main(args)
 end
 
 function p.main(frame)
-	mArguments = require('Module:Arguments')
+	mArguments = require('Модул:Arguments')
 	local args = mArguments.getArgs(frame, {removeBlanks = false})
 	local ret = p._main(args)
 	return ret or ''
@@ -143,7 +143,7 @@ function p.table(frame)
 	--]]
 	
 	-- Load modules and initialise variables.
-	mTableTools = require('Module:TableTools')
+	mTableTools = require('Модул:TableTools')
 	local namespaces = mw.site.namespaces
 	local cfg = data.cfg
 	local useTalk = type(frame) == 'table' 
