@@ -14,12 +14,12 @@
 --------------------------------------------------------------------------------
 --]]
 
-local data = mw.loadData('Module:Namespace detect/data')
+local data = mw.loadData('Модул:Namespace detect/data')
 local argKeys = data.argKeys
 local cfg = data.cfg
 local mappings = data.mappings
 
-local yesno = require('Module:Yesno')
+local yesno = require('Модул:Yesno')
 local mArguments -- Lazily initialise Module:Arguments
 local mTableTools -- Lazily initilalise Module:TableTools
 local ustringLower = mw.ustring.lower
