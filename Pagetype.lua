@@ -10,12 +10,12 @@
 --------------------------------------------------------------------------------
 
 -- Load config.
-local cfg = mw.loadData('Module:Pagetype/config')
+local cfg = mw.loadData('Модул:Pagetype/config')
 
 -- Load required modules.
-local getArgs = require('Module:Arguments').getArgs
-local yesno = require('Module:Yesno')
-local nsDetectModule = require('Module:Namespace detect')
+local getArgs = require('Модул:Arguments').getArgs
+local yesno = require('Модул:Yesno')
+local nsDetectModule = require('Модул:Namespace detect')
 local nsDetect = nsDetectModule._main
 local getParamMappings = nsDetectModule.getParamMappings
 local getPageObject = nsDetectModule.getPageObject
@@ -61,7 +61,7 @@ local function getPagetypeFromClass(class, param, aliasTable, default)
 end
 
 local function getNsDetectValue(args)
-	-- Builds the arguments to pass to [[Module:Namespace detect]] and returns
+	-- Builds the arguments to pass to [[Модул:Namespace detect]] and returns
 	-- the result.
 
 	-- Get the default values.
