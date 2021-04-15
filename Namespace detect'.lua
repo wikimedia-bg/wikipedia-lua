@@ -14,14 +14,14 @@
 --------------------------------------------------------------------------------
 --]]
 
-local data = mw.loadData('Модул:Namespace detect/data')
+local data = mw.loadData('Module:Namespace detect/data')
 local argKeys = data.argKeys
 local cfg = data.cfg
 local mappings = data.mappings
 
-local yesno = require('Модул:Yesno')
-local mArguments -- Lazily инициализиране на Модул:Arguments
-local mTableTools -- Lazily инициализиране на Модул:TableTools
+local yesno = require('Module:Yesno')
+local mArguments -- Lazily инициализиране на Module:Arguments
+local mTableTools -- Lazily инициализиране на Module:TableTools
 local ustringLower = mw.ustring.lower
 
 local p = {}
@@ -143,7 +143,7 @@ function p.table(frame)
 	--]]
 	
 	-- Load modules and initialise variables.
-	mTableTools = require('Модул:TableTools')
+	mTableTools = require('Module:TableTools')
 	local namespaces = mw.site.namespaces
 	local cfg = data.cfg
 	local useTalk = type(frame) == 'table' 
