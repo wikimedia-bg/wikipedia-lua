@@ -1,0 +1,132 @@
+--------------------------------------------------------------------------------
+--                  Module:Pagetype configuration data                        --
+-- This page holds localisation and configuration data for Module:Pagetype.   --
+--------------------------------------------------------------------------------
+
+local cfg = {} -- Don't edit this line.
+
+--------------------------------------------------------------------------------
+--                        Start configuration data                            --
+--------------------------------------------------------------------------------
+
+-- This table holds the values to use for "main=true", "user=true", etc. Keys to
+-- this table should be namespace parameters that can be used with
+-- [[Module:Namespace detect]]. 
+cfg.pagetypes = {
+	['main']              = 'article',
+	['user']              = 'user page',
+	['project']           = 'project page',
+	['wikipedia']         = 'project page',
+	['wp']                = 'project page',
+	['file']              = 'file',
+	['image']             = 'file',
+	['mediawiki']         = 'interface page',
+	['template']          = 'template',
+	['help']              = 'help page',
+	['category']          = 'category',
+	['portal']            = 'portal',
+	['book']              = 'book',
+	['draft']             = 'draft',
+	['education program'] = 'education program page',
+	['timedtext']         = 'Timed Text page',
+	['module']            = 'module',
+	['topic']             = 'topic',
+	['gadget']            = 'gadget',
+	['gadget definition'] = 'gadget definition',
+	['talk']              = 'talk page',
+	['special']           = 'special page',
+	['media']             = 'file',
+}
+
+-- This table holds the names of the namespaces to be looked up from
+-- cfg.pagetypes by default.
+cfg.defaultNamespaces = {
+	'main',
+	'file',
+	'template',
+	'category',
+	'module',
+	'book'
+}
+
+-- This table holds the names of the namespaces to be looked up from
+-- cfg.pagetypes if cfg.defaultnsExtended is set.
+cfg.extendedNamespaces = {
+	'main',
+	'user',
+	'project',
+	'file',
+	'mediawiki',
+	'template',
+	'category',
+	'help',
+	'portal',
+	'module',
+	'book',
+	'draft'
+}
+
+-- The parameter name to set which default namespace values to be looked up from
+-- cfg.pagetypes.
+cfg.defaultns = 'defaultns'
+
+-- The value of cfg.defaultns to set all namespaces, including talk.
+cfg.defaultnsAll = 'all'
+
+-- The value of cfg.defaultns to set the namespaces listed in
+-- cfg.extendedNamespaces
+cfg.defaultnsExtended = 'extended'
+
+-- The value of cfg.defaultns to set no default namespaces.
+cfg.defaultnsNone = 'none'
+
+-- The parameter name to use for disambiguation pages page.
+cfg.dab = 'dab'
+
+-- This table holds the different possible aliases for disambiguation-class
+-- pages. These should be lower-case.
+cfg.dabAliases = {
+	'disambiguation',
+	'disambig',
+	'disamb',
+	'dab'
+}
+
+-- The default value for disambiguation pages.
+cfg.dabDefault = 'page'
+
+-- The parameter name to use for N/A-class page.
+cfg.na = 'na'
+
+-- This table holds the different possible aliases for N/A-class pages. These
+-- should be lower-case.
+cfg.naAliases = {'na', 'n/a'}
+
+-- The default value for N/A-class pages.
+cfg.naDefault = 'page'
+
+-- The parameter name to use for redirects.
+cfg.redirect = 'redirect'
+
+-- The default value to use for redirects.
+cfg.redirectDefault = 'redirect'
+
+-- The parameter name for undefined namespaces.
+cfg.other = 'other'
+
+-- The value used if the module detects an undefined namespace.
+cfg.otherDefault = 'page'
+
+-- The usual suffix denoting a plural.
+cfg.plural = 's'
+
+-- This table holds plurals not formed by a simple suffix.
+cfg.irregularPlurals = {
+	["category"] = "categories"
+}
+
+--------------------------------------------------------------------------------
+--                        End configuration data                              --
+--------------------------------------------------------------------------------
+
+return cfg -- Don't edit this line
