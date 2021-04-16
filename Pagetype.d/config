@@ -15,7 +15,7 @@ local cfg = {} -- Don't edit this line.
 cfg.pagetypes = {
 	['main']              = 'статия',
 	['user']              = 'потребител',
-	['project']           = 'project page',
+	['project']           = 'проект',
 	['wikipedia']         = 'project page',
 	['wp']                = 'project page',
 	['file']              = 'файл',
@@ -122,7 +122,8 @@ cfg.plural = 's'
 
 -- This table holds plurals not formed by a simple suffix.
 cfg.irregularPlurals = {
-	["category"] = "categories"
+	["категория"] = "категории",
+	["статия"] = "статии"
 }
 
 --------------------------------------------------------------------------------
