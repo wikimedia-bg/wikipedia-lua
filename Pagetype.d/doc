@@ -1,0 +1,565 @@
+{{used in system|in [[MediaWiki:Templatesandbox-editform-legend]]}}
+{{module rating|protected}}
+{{Lua|Module:Arguments|Module:Namespace detect|Module:Pagetype/config|Module:Yesno}}
+
+This module is used to detect the page type of a given page. It detects [[WP:REDIRECT|redirect pages]] automatically and is highly customisable. It can be used on its own or as a meta-module to create other page-type-detection templates. This module can also be accessed using {{tl|pagetype}}.
+
+== Syntax ==
+
+; Basic usage
+
+<pre>
+{{#invoke:pagetype|main}}
+</pre>
+
+; All parameters
+
+<pre>
+{{#invoke:pagetype|main
+| page              = 
+| defaultns         = 
+| main              = 
+| user              = 
+| wikipedia         = 
+| project           = 
+| wp                = 
+| file              = 
+| image             = 
+| mediawiki         = 
+| template          = 
+| help              = 
+| category          = 
+| portal            = 
+| book              = 
+| draft             = 
+| education program = 
+| timedtext         = 
+| module            = 
+| topic             = 
+| special           = 
+| media             = 
+| talk              = 
+| redirect          = 
+| dab               = 
+| na                = 
+| other             = 
+| plural            = 
+}}
+</pre>
+
+== Basic usage ==
+
+For simple detection of the page type of the current page, use the default settings:
+
+ &#123;{#invoke:pagetype|main}}
+
+That will produce the following results, depending on the page type or the [[WP:NAMESPACE|namespace]]:
+
+{| class="wikitable"
+! Page type / namespace !! Output
+|-
+| Redirects (in any namespace) || <code>redirect</code>
+|-
+| Main namespace || <code>article</code>
+|-
+| File namespace || <code>file</code>
+|-
+| Template namespace || <code>template</code>
+|-
+| Category namespace || <code>category</code>
+|-
+| Module namespace || <code>module</code>
+|-
+| Book namespace || <code>book</code>
+|-
+| Other namespaces || <code>page</code>
+|}
+
+If the module is used on a talk page, it will detect the page type for the corresponding subject page.
+
+; Example
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main}}</nowiki></code> || {{#invoke:pagetype|main}}
+|}
+
+== Page parameter ==
+
+You can use the <code>page</code> parameter to make the module act as though it was called from that page.
+
+ &#123;{#invoke:pagetype|main|page=''page name''}}
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=UK}}</nowiki></code> || {{#invoke:pagetype|main|page=UK}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=File:Example.svg}}</nowiki></code> || {{#invoke:pagetype|main|page=File:Example.svg}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}
+|}
+
+== Adding and removing namespaces ==
+
+It is possible to specify different behaviour for each namespace than that described in the [[#Basic usage|basic usage]] section. For example, you might want the module to display "user page" for pages in the user namespace, instead of the default "page". To do this, you can use the code {{para|user|yes}}. This looks up the typical name used for pages in the user namespace, in this case "user page", and uses that text when the module is used with a page in the user namespace. To use this with other namespaces, use the namespace name in lower case as a parameter:
+
+ &#123;{#invoke:pagetype|main
+ | user              = ''yes''
+ | wikipedia         = ''yes''
+ | project           = ''yes''
+ | wp                = ''yes''
+ | mediawiki         = ''yes''
+ | help              = ''yes''
+ | portal            = ''yes''
+ | draft             = ''yes''
+ | education program = ''yes''
+ | timedtext         = ''yes''
+ | topic             = ''yes''
+ | special           = ''yes''
+ | media             = ''yes''
+ }}
+
+You can use any of the following to specify the namespace: "<code>yes</code>", "<code>y</code>", "<code>true</code>" or "<code>1</code>". They can be used in any combination of upper and lower case. (These values are defined by [[Module:Yesno]].)
+
+The default text for these namespaces is as follows:
+
+{| class="wikitable"
+! Page type / namespace !! Output
+|-
+| User namespace || <code>user page</code>
+|-
+| Wikipedia namespace || <code>project page</code>
+|-
+| MediaWiki namespace || <code>interface page</code>
+|-
+| Help namespace || <code>help page</code>
+|-
+| Portal namespace || <code>portal</code>
+|-
+| Draft namespace || <code>draft</code>
+|-
+| Education program namespace || <code>education program page</code>
+|-
+| Timed Text namespace || <code>Timed Text page</code>
+|-
+| Topic namespace || <code>topic</code>
+|-
+| Special namespace || <code>special page</code>
+|-
+| Media namespace || <code>file</code>
+|}
+
+You can use a similar process to remove any of the default namespace values as well. For example, if you use the code {{para|template|no}}, then the module will display "page" when used on a template page, rather than the default "template".
+
+ &#123;{#invoke:pagetype|main
+ | main     = ''no''
+ | file     = ''no''
+ | template = ''no''
+ | category = ''no''
+ | module   = ''no''
+ | book     = ''no''
+ }}
+
+The following values will all work to remove namespace values: "<code>no</code>", "<code>n</code>", "<code>false</code>" or "<code>0</code>". They can be used in any combination of upper and lower case.
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|wikipedia=yes}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|wikipedia=yes}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom|talk=y}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom|talk=y}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|main=no}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|main=no}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|timedtext=Yes}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|timedtext=Yes}}
+|}
+
+== Default namespace sets ==
+
+As well as adding and removing individual namespaces, it is possible to specify different sets of namespaces by using the {{para|defaultns}}. There are four different sets available: <code>all</code>, <code>extended</code>, <code>none</code> and the default set. These sets allow you to specify many namespaces at once, without having to use all of the individual namespace parameters. Namespaces are set according to the following table:
+
+{| class="wikitable"
+|-
+! rowspan="2" | Namespace
+! colspan="4" | Value of {{para|defaultns}}
+! rowspan="2" | Output
+|-
+| style="width: 75px; text-align: center;" | <code>none</code>
+| style="width: 75px; text-align: center;" | <code>extended</code>
+| style="width: 75px; text-align: center;" | <code>all</code>
+| style="width: 75px; text-align: center;" | Other values
+|-
+| Main
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| article
+|-
+| User
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| user page
+|-
+| Wikipedia
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| project page
+|-
+| File
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| file
+|-
+| MediaWiki
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| interface page
+|-
+| Template
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| template
+|-
+| Help
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| help page
+|-
+| Category
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| category
+|-
+| Portal
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| portal
+|-
+| Book
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| book
+|-
+| Draft
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| draft
+|-
+| Education Program
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| education program page
+|-
+| TimedText
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| Timed Text page
+|-
+| Module
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{tick}}
+| module
+|-
+| Topic (Flow boards) 
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| topic
+|-
+| All talk namespaces
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| talk page
+|-
+| Special
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| special page
+|-
+| Media
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{cross}}
+| style="text-align: center;" | {{tick}}
+| style="text-align: center;" | {{cross}}
+| file
+|}
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|defaultns=none}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|defaultns=none}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom|defaultns=all}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom|defaultns=all}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=File:Example.svg}}</nowiki></code> || {{#invoke:pagetype|main|page=File:Example.svg}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=File:Example.svg|defaultns=none}}</nowiki></code> || {{#invoke:pagetype|main|page=File:Example.svg|defaultns=none}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|defaultns=extended}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|defaultns=extended}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|defaultns=extended}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|defaultns=extended}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|defaultns=all}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|defaultns=all}}
+|}
+
+== Custom namespace values ==
+
+It is possible to specify a custom value for any namespace:
+
+ &#123;{#invoke:pagetype|main
+ | main              = ''custom text''
+ | user              = ''custom text''
+ | wikipedia         = ''custom text''
+ | project           = ''custom text''
+ | wp                = ''custom text''
+ | file              = ''custom text''
+ | image             = ''custom text''
+ | mediawiki         = ''custom text''
+ | template          = ''custom text''
+ | help              = ''custom text''
+ | category          = ''custom text''
+ | portal            = ''custom text''
+ | book              = ''custom text''
+ | draft             = ''custom text''
+ | education program = ''custom text''
+ | timedtext         = ''custom text''
+ | module            = ''custom text''
+ | topic             = ''custom text''
+ | special           = ''custom text''
+ | media             = ''custom text''
+ }}
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|wikipedia=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|wikipedia=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Talk:United Kingdom|talk=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=Talk:United Kingdom|talk=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|main=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|main=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|timedtext=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt|timedtext=custom text}}
+|}
+
+== Talk parameter ==
+
+Normally, the module will treat talk pages as if they were in the corresponding subject namespace. However, if the <code>talk</code> parameter is set, the module will treat talk pages separately from subject pages. The <code>talk</code> parameter sets values for all talk pages, i.e. pages in the Talk: namespace, pages in the User talk: namespace, pages in the Wikipedia talk: namespace, and so on.
+
+ &#123;{#invoke:pagetype|main|talk=''yes''}}
+
+ &#123;{#invoke:pagetype|main|talk=''custom text''}}
+
+The default value for "<code>talk=''yes''</code>" is "talk page".
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace|talk=yes}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace|talk=yes}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes|talk=yes}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes|talk=yes}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace|talk=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace|talk=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes|talk=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia talk:Namespace|wikipedia=yes|talk=custom text}}
+|}
+
+== Main namespace classes ==
+
+For pages in the main namespace, it is possible to add a class value in the first positional parameter:
+
+ &#123;{#invoke:pagetype|main|''class''}}
+
+If the class value matches one of the values in the table below, it will produce an alternative to the default output of <code>article</code>.
+
+{| class="wikitable"
+|-
+! Class !! Class values !! Output
+|-
+| Disambiguation page || <code>disambiguation</code>, <code>disambig</code>, <code>disamb</code>, <code>dab</code> || <code>page</code>
+|-
+| No applicable class || <code>na</code>, <code>n/a</code> || <code>page</code>
+|-
+|}
+
+You can input the class value in any combination of upper and lower case.
+
+=== Custom main namespace classes ===
+
+It is also possible to specify a custom value for the main namespace classes:
+
+ &#123;{#invoke:pagetype|main|''class''|dab=''yes''|na=''yes''}}
+
+ &#123;{#invoke:pagetype|main|''class''|dab=''custom text''|na=''custom text''}}
+
+This works the same way that it does for the custom namespace page types. Possible parameters are:
+* '''dab''': a custom value for disambiguation-class pages. If set to "<code>yes</code>", "<code>y</code>", "<code>true</code>" or "<code>1</code>", this produces "disambiguation page". If set to "<code>no</code>", "<code>n</code>", "<code>false</code>" or "<code>0</code>", no custom value is produced. If set to any other value it produces that text.
+* '''na''': a custom value for NA-class pages. It works in the same way as the <code>dab</code> parameter. The default value for "<code>yes</code>" etc. is "page".
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|dab}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|dab}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|dab|dab=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|dab|dab=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|na}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|na}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|na|na=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|na|na=custom text}}
+|}
+
+== Redirects ==
+
+By default, the module automatically detects redirects in all namespace. It is not possible to specify redirect behaviour by namespace, but you can turn redirect detection off, or use a custom value for redirect pages.
+
+ &#123;{#invoke:pagetype|main|redirect=''no''}}
+
+ &#123;{#invoke:pagetype|main|redirect=''custom text''}}
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=UK}}</nowiki></code> || {{#invoke:pagetype|main|page=UK}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=UK|redirect=no}}</nowiki></code> || {{#invoke:pagetype|main|page=UK|redirect=no}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=UK|redirect=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=UK|redirect=custom text}}
+|}
+
+== Other namespaces ==
+
+By default, the module produces "<code>page</code>" if used from a namespace that hasn't been specified. This value can be changed with the {{para|other}} parameter:
+
+ &#123;{#invoke:pagetype|main|other=''custom text''}}
+
+; Examples
+
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text|wikipedia=wikipedia-space text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text|wikipedia=wikipedia-space text}}
+|}
+
+== Plurals ==
+
+By default the module returns the name of the namespace in the singular. Adding the parameter {{para|plural|y}} returns the plural form.
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|plural=y}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|plural=y}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Category:Books}}</nowiki></code> || {{#invoke:pagetype|main|page=Category:Books}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=Category:Books|plural=y}}</nowiki></code> || {{#invoke:pagetype|main|page=Category:Books|plural=y}}
+|}
+The rules for pluralisation can be customised in [[Module:Pagetype/config]] to allow localisation.
+
+== Capitalisation ==
+
+By default the module returns the page type in lowercase. Adding the parameter {{para|caps|y}} returns a version with a capital letter at the start.
+{| class="wikitable"
+|-
+! Code !! Result
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|caps=y}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|caps=y}}
+|-
+| <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom|plural=y|caps=y}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom|plural=y|caps=y}}
+|}
