@@ -16,7 +16,7 @@ end
 
 function p.table(frame)
 	-- header/init
-	resultTable = '{| class="wikitable sortable" width=100%\n|-\n! № !! style="width:18%"|Статия !! class="unsortable"|<span title="Азербайджански език">[[File:Azerbaijan-orb.png|15px]] аз </span>!! class="unsortable"|[[File:Belarus-orb.png|15px]] be !! class="unsortable"|[[File:Bosnia-and-Herzegovina-orb.png|15px]] bs !! class="unsortable"|[[File:Bulgaria-orb.png|15px]] bg !! class="unsortable"|[[File:Czech-Republic-orb.png|15px]] cs !! class="unsortable"|[[File:Austria-orb.png|15px]] de !! class="unsortable"|[[File:Greece-orb.png|15px]] el !! class="unsortable"| <br> eo !! class="unsortable"|[[File:Estonia-orb.png|15px]] et !! class="unsortable"|[[File:Croatia-orb.png|15px]] hr !! class="unsortable"|[[File:Hungary-orb.png|15px]] hu !! class="unsortable"|[[File:Armenia-orb.png|15px]] hy !! class="unsortable"|[[File:Georgia-orb.png|15px]] ka !! class="unsortable"|[[File:Kazakhstan-orb.png|15px]] kk !! class="unsortable"|[[File:Lithuania-orb.png|15px]] lt !! class="unsortable"|[[File:Latvia-orb.png|15px]] lv !! class="unsortable"|[[File:Macedonia-orb.png|15px]] mk !! class="unsortable"|[[File:Poland-orb.png|15px]] pl !! class="unsortable"|[[File:Romania-orb.png|15px]] ro !! class="unsortable"|[[File:Russia-orb.png|15px]] ru !! class="unsortable"| <br> sh !! class="unsortable"|[[File:Slovakia-orb.png|15px]] sk !! class="unsortable"|[[File:slovenia-orb.png|15px]] sl !! class="unsortable"|[[File:Albania-orb.png|15px]] sq !! class="unsortable"|[[File:Serbia-and-Montenegro-orb.png|15px]] sr !! class="unsortable"|[[File:Turkey-orb.png|15px]] tr !! class="unsortable"|[[File:Ukraine-orb.png|15px]] uk !! Σ <br> !! Уикиданни !! <span title="Брой изявления на обекта">Из.</span> !! \n|-'
+	resultTable = '{| class="wikitable sortable" width=100%\n|-\n! № !! style="width:18%"|Статия !! class="unsortable"|<span title="Азербайджански език">[[File:Azerbaijan-orb.png|15px]] az </span>!! class="unsortable"|<span title="Беларуски език">[[File:Belarus-orb.png|15px]] be </span> !! class="unsortable"|<span title="Бошняшки език">[[File:Bosnia-and-Herzegovina-orb.png|15px]] bs </span> !! class="unsortable"|[[File:Bulgaria-orb.png|15px]] bg !! class="unsortable"|[[File:Czech-Republic-orb.png|15px]] cs !! class="unsortable"|[[File:Austria-orb.png|15px]] de !! class="unsortable"|[[File:Greece-orb.png|15px]] el !! class="unsortable"| <br> eo !! class="unsortable"|[[File:Estonia-orb.png|15px]] et !! class="unsortable"|[[File:Croatia-orb.png|15px]] hr !! class="unsortable"|[[File:Hungary-orb.png|15px]] hu !! class="unsortable"|[[File:Armenia-orb.png|15px]] hy !! class="unsortable"|[[File:Georgia-orb.png|15px]] ka !! class="unsortable"|[[File:Kazakhstan-orb.png|15px]] kk !! class="unsortable"|[[File:Lithuania-orb.png|15px]] lt !! class="unsortable"|[[File:Latvia-orb.png|15px]] lv !! class="unsortable"|[[File:Macedonia-orb.png|15px]] mk !! class="unsortable"|[[File:Poland-orb.png|15px]] pl !! class="unsortable"|[[File:Romania-orb.png|15px]] ro !! class="unsortable"|[[File:Russia-orb.png|15px]] ru !! class="unsortable"| <br> sh !! class="unsortable"|[[File:Slovakia-orb.png|15px]] sk !! class="unsortable"|[[File:slovenia-orb.png|15px]] sl !! class="unsortable"|[[File:Albania-orb.png|15px]] sq !! class="unsortable"|[[File:Serbia-and-Montenegro-orb.png|15px]] sr !! class="unsortable"|[[File:Turkey-orb.png|15px]] tr !! class="unsortable"|[[File:Ukraine-orb.png|15px]] uk !! Σ <br> !! Уикиданни !! <span title="Брой изявления на обекта">Из.</span> !! \n|-'
 	index = 1
 	ctt = {}
 	statementst = 0
@@ -177,7 +177,7 @@ function p.table(frame)
 			mapme = mapme .. "&nbsp;map"
 		end
 		if images > 0 then
-			mapme = mapme .. "&nbsp;gallery"
+			mapme = mapme .. "&nbsp;Wikidata Query"
 		end
 		mapme = mapme .. "]"
 	end
@@ -189,7 +189,7 @@ function p.table(frame)
 			result2 = result2 .. '\n |' .. ctt[langCount]
 			ct = ct + ctt[langCount]
 	end
-	resultTable = resultTable .. result1 .. result2 ..'\n| ' .. ct .. '\n| data-sort-value="999999999999"| avg:&nbsp;<span title="average number of language versions (of ' .. #langTable .. ') per article">' .. math.floor(ct/(index-1)+0.5) .. '</span>\\<span title="average number of articles (of ' .. (index-1) .. ') per language">' .. math.floor(ct / #langTable + 0.5) .. '</span>\\<span title="overall in percent (all: '..  (#langTable * (index-1)) .. ')">' .. math.floor( ct / #langTable / (index-1)*100 + 0.5) .. '%</span>\n|' .. statementst .. '\n| [[File:Commons-logo.svg|16px|Wikimedia Commons]]'
+	resultTable = resultTable .. result1 .. result2 ..'\n| ' .. ct .. '\n| data-sort-value="999999999999"| средно:&nbsp;<span title="Брой съществуващи (от ' .. #langTable .. ' езика) за статията">' .. math.floor(ct/(index-1)+0.5) .. '</span>\\<span title="Среден брой (от ' .. (index-1) .. ') за езикова версия">' .. math.floor(ct / #langTable + 0.5) .. '</span>\\<span title="Общо процент (от: '..  (#langTable * (index-1)) .. ')">' .. math.floor( ct / #langTable / (index-1)*100 + 0.5) .. '%</span>\n|' .. statementst .. '\n| [[File:Commons-logo.svg|16px|Wikimedia Commons]]'
 
 	resultTable = resultTable .. '\n|}\n'
 	return resultTable
