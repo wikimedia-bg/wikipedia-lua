@@ -14,13 +14,13 @@ local cfg = {} -- Don't edit this line.
 -- [[Module:Namespace detect]]. 
 cfg.pagetypes = {
 	['main']              = 'статия',
-	['user']              = 'user page',
+	['user']              = 'потребител',
 	['project']           = 'project page',
 	['wikipedia']         = 'project page',
 	['wp']                = 'project page',
-	['file']              = 'file',
+	['file']              = 'файл',
 	['image']             = 'file',
-	['mediawiki']         = 'interface page',
+	['mediawiki']         = 'медияуики',
 	['template']          = 'шаблон',
 	['help']              = 'помощна страница',
 	['category']          = 'категория',
@@ -33,8 +33,8 @@ cfg.pagetypes = {
 	['topic']             = 'topic',
 	['gadget']            = 'gadget',
 	['gadget definition'] = 'gadget definition',
-	['talk']              = 'talk page',
-	['special']           = 'special page',
+	['talk']              = 'беседа',
+	['special']           = 'специални',
 	['media']             = 'file',
 }
 
