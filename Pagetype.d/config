@@ -106,19 +106,19 @@ cfg.naAliases = {'na', 'n/a'}
 cfg.naDefault = 'page'
 
 -- The parameter name to use for redirects.
-cfg.redirect = 'redirect'
+cfg.redirect = 'пренасочване'
 
 -- The default value to use for redirects.
-cfg.redirectDefault = 'redirect'
+cfg.redirectDefault = 'пренасочване'
 
 -- The parameter name for undefined namespaces.
 cfg.other = 'other'
 
 -- The value used if the module detects an undefined namespace.
-cfg.otherDefault = 'page'
+cfg.otherDefault = 'страница'
 
 -- The usual suffix denoting a plural.
-cfg.plural = 's'
+cfg.plural = 'и'
 
 -- This table holds plurals not formed by a simple suffix.
 cfg.irregularPlurals = {
