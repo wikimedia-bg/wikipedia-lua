@@ -47,32 +47,32 @@ This module is used to detect the page type of a given page. It detects [[WP:RED
 }}
 </pre>
 
-== Basic usage ==
+== Основна употреба ==
 
-For simple detection of the page type of the current page, use the default settings:
+За да засечете типа на текущата страница използвайте шаблона по подразбиране:
 
  &#123;{#invoke:pagetype|main}}
 
-That will produce the following results, depending on the page type or the [[WP:NAMESPACE|namespace]]:
+Това ще доведе до следните резултати в зависимост от типа на страницата [[WP:NAMESPACE|namespace]]:
 
 {| class="wikitable"
-! Page type / namespace !! Output
+! Page type / namespace !! Изходен резултат
 |-
-| Redirects (in any namespace) || <code>redirect</code>
+| Redirects (in any namespace) || <code>пренасочване</code>
 |-
-| Main namespace || <code>article</code>
+| Основно именно пространство || <code>статия</code>
 |-
-| File namespace || <code>file</code>
+| File namespace || <code>файл</code>
 |-
-| Template namespace || <code>template</code>
+| Именно пространство Шаблон || <code>шаблон</code>
 |-
-| Category namespace || <code>category</code>
+| Category namespace || <code>категория</code>
 |-
-| Module namespace || <code>module</code>
+| Module namespace || <code>модул</code>
 |-
-| Book namespace || <code>book</code>
+| Book namespace || <code>книга</code>
 |-
-| Other namespaces || <code>page</code>
+| Other namespaces || <code>страница</code>
 |}
 
 If the module is used on a talk page, it will detect the page type for the corresponding subject page.
@@ -81,7 +81,7 @@ If the module is used on a talk page, it will detect the page type for the corre
 
 {| class="wikitable"
 |-
-! Code !! Result
+! Код !! Резултат
 |-
 | <code><nowiki>{{#invoke:pagetype|main}}</nowiki></code> || {{#invoke:pagetype|main}}
 |}
