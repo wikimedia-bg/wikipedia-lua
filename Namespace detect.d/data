@@ -4,7 +4,7 @@
 -- page, rather than per #invoke, for performance reasons.                    --
 --------------------------------------------------------------------------------
 
-local cfg = require('Module:Namespace detect/config')
+local cfg = require('Модул:Namespace detect/config')
 
 local function addKey(t, key, defaultKey)
 	if key ~= defaultKey then
