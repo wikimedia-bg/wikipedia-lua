@@ -111,7 +111,7 @@ You can use the <code>page</code> parameter to make the module act as though it 
 | <code><nowiki>{{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}</nowiki></code> || {{#invoke:pagetype|main|page=TimedText:Imagine.ogg.en.srt}}
 |}
 
-== Adding and removing namespaces ==
+== Добавяне и премахване на именни пространства ==
 
 It is possible to specify different behaviour for each namespace than that described in the [[#Basic usage|basic usage]] section. For example, you might want the module to display "user page" for pages in the user namespace, instead of the default "page". To do this, you can use the code {{para|user|yes}}. This looks up the typical name used for pages in the user namespace, in this case "user page", and uses that text when the module is used with a page in the user namespace. To use this with other namespaces, use the namespace name in lower case as a parameter:
 
@@ -136,15 +136,15 @@ You can use any of the following to specify the namespace: "<code>yes</code>", "
 The default text for these namespaces is as follows:
 
 {| class="wikitable"
-! Page type / namespace !! Output
+! Тип на страницата / именно пространство !! Изходен резултат
 |-
-| User namespace || <code>user page</code>
+| Потребител || <code>потребителска страница</code>
 |-
-| Wikipedia namespace || <code>project page</code>
+| Уикипедия || <code>project page</code>
 |-
 | MediaWiki namespace || <code>interface page</code>
 |-
-| Help namespace || <code>help page</code>
+| Помощ || <code>помощна страница</code>
 |-
 | Portal namespace || <code>portal</code>
 |-
