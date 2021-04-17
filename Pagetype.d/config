@@ -10,23 +10,23 @@ local cfg = {} -- Don't edit this line.
 --------------------------------------------------------------------------------
 
 -- This table holds the values to use for "main=true", "user=true", etc. Keys to
--- this table should be namespace parameters that can be used with
--- [[Module:Namespace detect]]. 
+-- Вляво са параметрите, които могат да се ползват с
+-- [[Модул:Namespace detect]]. 
 cfg.pagetypes = {
 	['main']              = 'статия',
-	['user']              = 'потребител',
+	['user']              = 'потребителска страница',
 	['project']           = 'проект',
 	['wikipedia']         = 'project page',
 	['wp']                = 'project page',
 	['file']              = 'файл',
-	['image']             = 'file',
+	['image']             = 'файл',
 	['mediawiki']         = 'медияуики',
 	['template']          = 'шаблон',
 	['help']              = 'помощна страница',
 	['category']          = 'категория',
 	['portal']            = 'портал',
 	['book']              = 'книга',
-	['draft']             = 'draft',
+	['draft']             = 'чернова',
 	['education program'] = 'education program page',
 	['timedtext']         = 'Timed Text page',
 	['module']            = 'модул',
@@ -35,7 +35,7 @@ cfg.pagetypes = {
 	['gadget definition'] = 'gadget definition',
 	['talk']              = 'беседа',
 	['special']           = 'специални',
-	['media']             = 'file',
+	['media']             = 'файл',
 }
 
 -- This table holds the names of the namespaces to be looked up from
