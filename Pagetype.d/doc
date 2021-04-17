@@ -550,9 +550,9 @@ By default, the module produces "<code>page</code>" if used from a namespace tha
 |}
 The rules for pluralisation can be customised in [[Module:Pagetype/config]] to allow localisation.
 
-== Capitalisation ==
+== С главни букви ==
 
-By default the module returns the page type in lowercase. Adding the parameter {{para|caps|y}} returns a version with a capital letter at the start.
+По подразбиране модулът връща типа на страницата с малки букви (долен регистър) . Добавянето на параметъра {{пара|caps|y}} връща резултата с първа главна буква.
 {| class="wikitable"
 |-
 ! Code !! Result
