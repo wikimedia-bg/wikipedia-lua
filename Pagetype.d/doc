@@ -533,9 +533,9 @@ By default, the module produces "<code>page</code>" if used from a namespace tha
 | <code><nowiki>{{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text|wikipedia=wikipedia-space text}}</nowiki></code> || {{#invoke:pagetype|main|page=Wikipedia:Namespace|other=custom text|wikipedia=wikipedia-space text}}
 |}
 
-== Plurals ==
+== Множествено число на типовете ==
 
-By default the module returns the name of the namespace in the singular. Adding the parameter {{para|plural|y}} returns the plural form.
+По подразбиране модулът връща именното пространство в единствено число. Добавянето на параметър {{пара|plural|y}} преобразува единственото число в множествено.
 {| class="wikitable"
 |-
 ! Code !! Result
