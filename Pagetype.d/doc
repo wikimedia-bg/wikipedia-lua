@@ -555,7 +555,7 @@ The rules for pluralisation can be customised in [[Module:Pagetype/config]] to a
 По подразбиране модулът връща типа на страницата с малки букви (долен регистър) . Добавянето на параметъра {{пара|caps|y}} връща резултата с първа главна буква.
 {| class="wikitable"
 |-
-! Code !! Result
+! Код !! Резултат
 |-
 | <code><nowiki>{{#invoke:pagetype|main|page=United Kingdom}}</nowiki></code> || {{#invoke:pagetype|main|page=United Kingdom}}
 |-
