@@ -1,5 +1,4 @@
 {{used in system|in [[MediaWiki:Templatesandbox-editform-legend]]}}
-{{module rating|protected}}
 {{Lua|Module:Arguments|Module:Namespace detect|Module:Pagetype/config|Module:Yesno}}
 
 This module is used to detect the page type of a given page. It detects [[WP:REDIRECT|redirect pages]] automatically and is highly customisable. It can be used on its own or as a meta-module to create other page-type-detection templates. This module can also be accessed using {{tl|pagetype}}.
