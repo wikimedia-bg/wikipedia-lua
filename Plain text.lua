@@ -16,9 +16,9 @@ function p._main(text)
 		:gsub('<i.->(.-)</i>', '%1') --remove italics while keeping text inside
 		:gsub('<.->.-<.->', '') --strip out remaining tags and the text inside
 		:gsub('<.->', '') --remove any other tag markup
-		:gsub('%[%[%s*[Ff]ile%s*:.-%]%]', '') --strip out files
-		:gsub('%[%[%s*[Ii]mage%s*:.-%]%]', '') --strip out use of image:
-		:gsub('%[%[%s*[Cc]ategory%s*:.-%]%]', '') --strip out categories
+		:gsub('%[%[%s*[Фф]айл%s*:.-%]%]', '') --strip out files
+		:gsub('%[%[%s*[Ии]зображение%s*:.-%]%]', '') --strip out use of image:
+		:gsub('%[%[%s*[Кк]атегория%s*:.-%]%]', '') --strip out categories
 		:gsub('%[%[[^%]]-|', '') --strip out piped link text
 		:gsub('[%[%]]', '') --then strip out remaining [ and ]
 		:gsub("'''''", "") --strip out bold italic markup
