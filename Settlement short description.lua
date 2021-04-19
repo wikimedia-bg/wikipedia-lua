@@ -74,7 +74,7 @@ function p.main(frame)
 	local subdivision_types = {}
 	local subdivision_names = {}
 	local args = getArgs (frame, {parentOnly = true})
-	local settlement_type = p.validate(plain(args.settlement_type or args.type), "settlement type") or "Place"
+	local settlement_type = p.validate(plain(args.settlement_type or args.type), "settlement type") or "Място"
 	local short_description = plain(args.short_description)
 	subdivision_types = p.assign(args, "subdivision_type", 2)
 	subdivision_names = p.assign(args, "subdivision_name", 2)
