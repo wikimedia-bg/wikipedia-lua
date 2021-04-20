@@ -1,5 +1,9 @@
 local p = {}
 
+p.trim = function(frame)
+	local s = mw.text.trim(frame.args[1] or "")
+	return s
+end
 
 p.upper = function(frame)
 	local s = mw.text.trim(frame.args[1] or "")
@@ -20,26 +24,26 @@ p.ucfirst = function (frame )
 	local s =  mw.text.trim( frame.args[1] or "" )
 	local s1 = ""
 	-- if it's a list chop off and (store as s1) everything up to the first <li>
-	local lipos = string.find(s, "<li>" )
+	local lipos = mw.ustring.find(s, "<li>" )
 	if lipos then
-		s1 = string.sub(s, 1, lipos + 3)
-		s = string.sub(s, lipos + 4)
+		s1 = mw.ustring.sub(s, 1, lipos + 3)
+		s = mw.ustring.sub(s, lipos + 4)
 	end
 	-- s1 is either "" or the first part of the list markup, so we can continue
 	-- and prepend s1 to the returned string
 	local letterpos
-	if string.find(s, "^%[%[[^|]+|[^%]]+%]%]") then
+	if mw.ustring.find(s, "^%[%[[^|]+|[^%]]+%]%]") then
 		-- this is a piped wikilink, so we capitalise the text, not the pipe
 		local _
-		_, letterpos = string.find(s, "|%A*%a") -- find the first letter after the pipe
+		_, letterpos = mw.ustring.find(s, "|%A*%a") -- find the first letter after the pipe
 	else
-		letterpos = string.find(s, '%a')
+		letterpos = mw.ustring.find(s, '%a')
 	end
 	if letterpos then
-		local first = string.sub(s, 1, letterpos - 1)
-		local letter = string.sub(s, letterpos, letterpos)
-		local rest = string.sub(s, letterpos + 1)
-		return s1 .. first .. string.upper(letter) .. rest
+		local first = mw.ustring.sub(s, 1, letterpos - 1)
+		local letter = mw.ustring.sub(s, letterpos, letterpos)
+		local rest = mw.ustring.sub(s, letterpos + 1)
+		return s1 .. first .. mw.ustring.upper(letter) .. rest
 	else
 		return s1 .. s
 	end
@@ -69,6 +73,23 @@ p.title = function (frame )
 	return table.concat(words, " ")
 end
 
+-- findlast finds the last item in a list
+-- the first unnamed parameter is the list
+-- the second, optional unnamed parameter is the list separator (default = comma space)
+-- returns the whole list if separator not found
+p.findlast = function(frame)
+	local s =  mw.text.trim( frame.args[1] or "" )
+	local sep = frame.args[2] or ""
+	if sep == "" then sep = ", " end
+	local pattern = ".*" .. sep .. "(.*)"
+	local a, b, last = s:find(pattern)
+	if a then
+		return last
+	else
+		return s
+	end
+end
+
 -- stripZeros finds the first number and strips leading zeros (apart from units)
 -- e.g "0940" -> "940"; "Year: 0023" -> "Year: 23"; "00.12" -> "0.12"
 p.stripZeros = function(frame)
@@ -92,11 +113,19 @@ end
 -- It takes the text to match as the second unnamed parameter, which is trimmed and
 -- any double quotes " are stripped out.
 p.posnq = function(frame)
-	local str = mw.text.trim(frame.args[1] or "")
-	local match = mw.text.trim(frame.args[2] or ""):gsub('"', '')
-	if  str == "" or match == "" then return nil end
+	local args = frame.args
+	local pargs = frame:getParent().args
+	for k, v in pairs(pargs) do
+		args[k] = v
+	end
+	local str = mw.text.trim(args[1] or args.source or "")
+	local match = mw.text.trim(args[2] or args.target or ""):gsub('"', '')
+	if str == "" or match == "" then return nil end
+	local plain = mw.text.trim(args[3] or args.plain or "")
+	if plain == "false" then plain = false else plain = true end
+	local nomatch = mw.text.trim(args[4] or args.nomatch or "")
 	-- just take the start position
-	local pos = str:find(match, 1, true)
+	local pos = mw.ustring.find(str, match, 1, plain) or nomatch
 	return pos
 end
 
@@ -114,7 +143,9 @@ p.split = function(frame)
 	local idx = tonumber(args[3] or args.idx) or 1
 	local plain = (args[4] or args.plain or "true"):sub(1,1)
 	plain = (plain ~= "f" and plain ~= "n" and plain ~= "0")
-	return mw.text.split( txt, sep, plain )[idx]
+	local splittbl = mw.text.split( txt, sep, plain )
+	if idx < 0 then idx = #splittbl + idx + 1 end
+	return splittbl[idx]
 end
 
 -- val2percent scans through a string, passed as either the first unnamed parameter or |txt=
@@ -133,5 +164,141 @@ p.val2percent = function(frame)
 	return txt
 end
 
+-- one2a scans through a string, passed as either the first unnamed parameter or |txt=
+-- it converts each occurrence of 'one ' into either 'a ' or 'an ' and returns the resultant string.
+p.one2a = function(frame)
+	local args = frame.args
+	if not(args[1] or args.txt) then args = frame:getParent().args end
+	local txt = mw.text.trim(args[1] or args.txt or "")
+	if txt == "" then return nil end
+	txt = txt:gsub(" one ", " a "):gsub("^one", "a"):gsub("One ", "A "):gsub("a ([aeiou])", "an %1"):gsub("A ([aeiou])", "An %1")
+	return txt
+end
+
+-- findpagetext returns the position of a piece of text in a page
+-- First positional parameter or |text is the search text
+-- Optional parameter |title is the page title, defaults to current page
+-- Optional parameter |plain is either true for plain search (default) or false for Lua pattern search
+-- Optional parameter |nomatch is the return value when no match is found; default is nil
+p._findpagetext = function(args)
+	-- process parameters
+	local nomatch = args.nomatch or ""
+	if nomatch == "" then nomatch = nil end
+	--
+	local text = mw.text.trim(args[1] or args.text or "")
+	if text == "" then return nil end
+	--
+	local title = args.title or ""
+	local titleobj
+	if title == "" then
+		titleobj = mw.title.getCurrentTitle()
+	else
+		titleobj = mw.title.new(title)
+	end
+	--
+	local plain = args.plain or ""
+	if plain:sub(1, 1) == "f" then plain = false else plain = true end
+	-- get the page content and look for 'text' - return position or nomatch
+	local content = titleobj:getContent()
+	return mw.ustring.find(content, text, 1, plain) or nomatch	-- returns multiple values
+end
+p.findpagetext = function(frame)
+	local args = frame.args
+	local pargs = frame:getParent().args
+	for k, v in pairs(pargs) do
+		args[k] = v
+	end
+	if not (args[1] or args.text) then return nil end
+	-- just the first value
+	return (p._findpagetext(args))
+end
+
+-- returns the decoded url. Inverse of parser function {{urlencode:val|TYPE}}
+-- Type is:
+-- QUERY decodes + to space (default)
+-- PATH does no extra decoding
+-- WIKI decodes _ to space
+p._urldecode = function(url, type)
+	url = url or ""
+	type = (type == "PATH" or type == "WIKI") and type
+	return mw.uri.decode( url, type )
+end
+-- {{#invoke:String2|urldecode|url=url|type=type}}
+p.urldecode = function(frame)
+	return mw.uri.decode( frame.args.url, frame.args.type )
+end
+
+-- what follows was merged from Module:StringFunc
+
+-- helper functions
+p._GetParameters = require('Модул:GetParameters')
+
+-- Argument list helper function, as per Module:String
+p._getParameters = p._GetParameters.getParameters
+
+-- Escape Pattern helper function so that all characters are treated as plain text, as per Module:String
+function p._escapePattern( pattern_str)
+	return mw.ustring.gsub( pattern_str, "([%(%)%.%%%+%-%*%?%[%^%$%]])", "%%%1" );
+end
+
+-- Helper Function to interpret boolean strings, as per Module:String
+p._getBoolean = p._GetParameters.getBoolean
+
+--[[
+Strip
+
+This function Strips characters from string
+
+Usage:
+{{#invoke:String2|strip|source_string|characters_to_strip|plain_flag}}
+
+Parameters
+	source: The string to strip
+	chars:  The pattern or list of characters to strip from string, replaced with ''
+	plain:  A flag indicating that the chars should be understood as plain text. defaults to true.
+
+Leading and trailing whitespace is also automatically stripped from the string.
+]]
+function p.strip( frame )
+	local new_args = p._getParameters( frame.args,  {'source', 'chars', 'plain'} )
+	local source_str = new_args['source'] or '';
+	local chars = new_args['chars'] or '' or 'characters';
+	source_str = mw.text.trim(source_str);
+	if source_str == '' or chars == '' then
+		return source_str;
+	end
+	local l_plain = p._getBoolean( new_args['plain'] or true );
+	if l_plain then
+		chars = p._escapePattern( chars );
+	end
+	local result;
+	result = mw.ustring.gsub(source_str, "["..chars.."]", '')
+	return result;
+end
+
+--[[
+Match any
+Returns the index of the first given pattern to match the input. Patterns must be consecutively numbered.
+Returns the empty string if nothing matches for use in {{#if:}}
+
+Usage:
+	{{#invoke:String2|matchAll|source=123 abc|456|abc}} returns '2'.
+
+Parameters:
+	source: the string to search
+	plain:  A flag indicating that the patterns should be understood as plain text. defaults to true.
+	1, 2, 3, ...: the patterns to search for
+]]
+function p.matchAny(frame)
+	local source_str = frame.args['source'] or error('The source parameter is mandatory.')
+	local l_plain = p._getBoolean( frame.args['plain'] or true )
+	for i = 1, math.huge do
+		local pattern = frame.args[i]
+		if not pattern then return '' end
+		if mw.ustring.find(source_str, pattern, 1, l_plain) then
+			return tostring(i)
+		end
+	end
+end
 
 return p
