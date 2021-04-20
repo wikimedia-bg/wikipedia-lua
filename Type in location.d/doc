@@ -1,0 +1,21 @@
+{{Documentation subpage}}
+{{high use}}
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+== Usage ==
+For generating [[WP:SHORTDESC|short descriptions]] for infoboxes of structures/small places such as dams and museums, which are often in the format of type in location.
+Example:
+<pre>{{#invoke:Type in location|main|{{{type|}}}|{{{location|}}}|check-patterns = [Mm]useum;foo;bar}}</pre>
+Description only shows if check-pattern is matched in type.
+
+Multiple check-patterns can be specified as "pattern1;pattern2;pattern3" and so on. 
+
+Also has helper functions of prepareLoc (for removing extraneous from addresses) and generalLoc (for getting more general location from specific address) which can be used seperately.
+
+What is specified in the {{para|invalidadd}} parameter will be added with a space if the check-patterns fail.
+
+Setting {{para|full-loc}} gives the full of the location (with slight processing) instead of the more general location.
+
+<includeonly>{{sandbox other||
+<!-- Categories below this line, please; interwikis at Wikidata -->
+[[Category:Modules that create a short description]]
+}}</includeonly>
