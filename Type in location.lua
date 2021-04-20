@@ -80,7 +80,7 @@ function p._main (args, frame)
 		loc = ""
 	end
 	typ = p.validateTyp (typ, args)
-	if typ then return frame:expandTemplate {title = 'Short description', args = {typ..loc, 'noreplace'}} end
+	if typ then return frame:expandTemplate {title = 'Кратко описание', args = {typ..loc, 'noreplace'}} end
 end
 
 return p
