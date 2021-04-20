@@ -69,7 +69,7 @@ function p._main (args, frame)
 	typ = args[1]
 	if typ then typ = plaintext(args[1]) end
 	if not typ then return end --check after plaintexting if typ exists
-	sep = ((args.sep == 'no') and '') or args.sep or ' in ' --if args.sep set to no, nothing between typ and loc, if it has other value put that
+	sep = ((args.sep == 'без') and '') or args.sep or ' в ' --if args.sep е 'без', нищо между typ и loc, иначе сложи другата стойност
 	local loc = args[2]
 	if args['full-loc'] then func = '_prepareLoc' else func =  '_generalLoc' end
 	if loc then
