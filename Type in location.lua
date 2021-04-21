@@ -1,7 +1,7 @@
 local p = {}
 local plaintext = require("Module:Plain text")._main
 
---Cleanup/format location for use in short descriptions
+-- Почистване и форматиране на местоположението за използване в краткото описание
 function p.prepareLoc (frame)
 	return p._prepareLoc (frame.args[1])
 end
@@ -13,8 +13,8 @@ function p._prepareLoc (text)
 			   :gsub('[^%s,]*%d[^%s,]*', '') --remove things with digits as generally being unnecessary postal codes/road numbers etc
 			   :gsub('(,%s-),', '%1') --fix possible blank separated commas from previous cleanup
 			   :gsub('%s%s', ' ') --fix possible extra spaces from previous cleanup
-			   :gsub('^[%s,]*', '') --trim commas and spaces from beginning
-			   :gsub('[%s,]*$', '') --trim commas and spaces from end
+			   :gsub('^[%s,]*', '') --премахване на запетаи и интервали от началото
+			   :gsub('[%s,]*$', '') --премахване на запетаи и интервали от края
 	return text
 end
 
@@ -75,6 +75,10 @@ function p._main (args, frame)
 	if loc then
 		loc = p[func](loc)
 		loc = cleanupLoc (loc)
+		-- във пред в и ф
+		local f = mw.ustring.codepoint(loc, 1, 1) 
+		if f == 1042 or f == 1074 or f == 1060 or f == 1092 then sep = ' във ' end
+		--
 		if loc then loc =  sep..loc else loc = "" end
 	else
 		loc = ""
