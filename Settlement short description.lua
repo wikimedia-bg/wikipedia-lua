@@ -61,7 +61,9 @@ function p.cleanupLoc (location)
 		["New York City, New York, United States"] =  "New York City",
 		["^United States$"] = "the United States",
 		["London, United Kingdom"] = "London",
-		["London, England"] = "London"
+		["London, England"] = "London",
+		-- Шаблон:BUL (BGR)
+		[" на България"] = ""
 	}
 	for i, v in pairs(replacements) do 
 		location = location:gsub(i, v) --series of replacements
