@@ -256,14 +256,23 @@ function isAfterGregorianIntroduced(date)
 end
 
 function formatDate(vars, calendar)
-	if vars == nil then
-		return ""
-	end
+	if vars == nil then return '' end
 
-	local output = wd._property({'linked', vars.date.q, vars.date.p})
+	local output = ''
+	local earliest = ''
+	local latest = ''
+	local sourcing = ''
+	local str = wd._property({'linked', 'qualifier', 'qualifier', 'qualifier', vars.date.q, vars.date.p, 'P1319', 'P1326', 'P1480', format='o=%p[\ne=%q1][\nl=%q2][\ns=%q3]'})
+	for m in mw.ustring.gmatch(str, '[^\n]+') do
+		m = mw.text.trim(m)
+		output = mw.ustring.match(m, '^o=(.+)$') or output
+		earliest = mw.ustring.match(m, '^e=(.+)$') or earliest
+		latest = mw.ustring.match(m, '^l=(.+)$') or latest
+		sourcing = mw.ustring.match(m, '^s=(.+)$') or sourcing
+	end
+	if output == '' then return '' end
+
 	if output == 'неизвестна' then
-		local earliest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1319', format='%q'})
-		local latest = wd._property({'qualifier', vars.date.q, vars.date.p, 'P1326', format='%q'})
 		if (earliest ~= '') and (latest ~= '') then
 			output = 'между ' .. earliest .. ' и ' .. latest
 		elseif (earliest ~= '') then
@@ -274,9 +283,8 @@ function formatDate(vars, calendar)
 			output = 'неизв.'
 		end
 	else
-		local sourcing = wd._qualifier({vars.date.q, vars.date.p, 'P1480'})
 		if sourcing ~= '' then
-			output = sourcing .. " " .. output
+			output = sourcing .. ' ' .. output
 		end
 	end
 
