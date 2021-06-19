@@ -326,7 +326,7 @@ end
 
 function isSettlement(qid, iterate)
         local notsettlements = {'Q123705'}
-        local settlements = {'Q486972', 'Q3957', 'Q7930989', 'Q10354598', 'Q498162', 'Q17343829', 'Q22674925', 'Q1529096', 'Q515', 'Q484170', 'Q15630849', 'Q89487741', 'Q562061', 'Q667509', 'Q2039348'}
+        local settlements = {'Q486972', 'Q3957', 'Q7930989', 'Q10354598', 'Q498162', 'Q17343829', 'Q22674925', 'Q1529096', 'Q515', 'Q484170', 'Q15630849', 'Q89487741', 'Q562061', 'Q667509', 'Q2039348', 'Q5084'}
         local s = wd._properties ({ 'raw', qid, 'P31', sep='', ["sep%s"]='\t' })
         if s == '' then
                 s = wd._properties ({ 'raw', qid, 'P279', sep='', ["sep%s"]='\t' })
