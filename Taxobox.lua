@@ -53,6 +53,7 @@ local CATS = {
 
 local ITEM = {
 	EXTINCT_SPECIES = 'Q237350',
+	EXTINCT_TAXON = 'Q98961713',
 	FEMALE_ORGANISM = 'Q43445',
 	FOSSIL_TAXON = 'Q23038290',
 	MALE_ORGANISM = 'Q44148',
@@ -857,7 +858,7 @@ local function getClassification(itemId, isHighlighted, taxons)
 		end
 		
 		local isMonotypic = instanceOf and (string.match(instanceOf, ITEM.MONOTYPIC_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
-		local isFossil = instanceOf and (string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
+		local isExtinct = instanceOf and (string.match(instanceOf, ITEM.EXTINCT_TAXON) or string.match(instanceOf, ITEM.FOSSIL_TAXON) or string.match(instanceOf, ITEM.MONOTYPIC_FOSSIL_TAXON))
 		isHighlighted = isHighlighted and (not next(taxons) or isMonotypic)
 		
 		local authority
@@ -877,7 +878,7 @@ local function getClassification(itemId, isHighlighted, taxons)
 			bgLabel = bgLabel,
 			bgSiteLink = bgSiteLink,
 			authority = authority,
-			isFossil = isFossil,
+			isExtinct = isExtinct,
 			isHighlighted = isHighlighted
 		})
 		
@@ -1125,7 +1126,7 @@ local function getTaxobox(itemId)
 			if taxon.isHighlighted or isAllowed(taxon) or i == 2 then
 				classification = (classification or '') .. '<tr><td style="text-align:right; padding-right:5px">' .. taxon.rank.name .. ':</td><td>'
 				local latinName = KINGDOM and KINGDOM:upper() ~= 'VIRUS' and getShortName(taxon.latinName) or taxon.latinName
-				local dead = taxon.isFossil and '†' or ''
+				local dead = taxon.isExtinct and '†' or ''
 				if taxon.isHighlighted then
 					latinName = toItalicIfUnderGenus(to.bold(latinName), taxon.rank)
 					if HYBRID and RANK == TAXONOMICRANK.HYBRID and string.find(latinName, '×') then
