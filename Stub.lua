@@ -627,6 +627,7 @@ local THEMES = {
 	{ 'документ|договор|стандарт', 'Crystal Clear mimetype document2.png', 'документи' },
 	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
 	{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
+	{ 'жанр', 'Deus Drawing.png', 'жанрове' },
 	{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
 	{ 'игра', 'Tic tac toe.svg', 'игри' },
 	{ 'играчка', 'Rubiks cube scrambled.jpg', 'играчки' },
