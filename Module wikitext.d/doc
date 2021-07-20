@@ -1,0 +1,10 @@
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+{{Twinkle standard installation}}
+== Usage ==
+
+This is an auxiliary module used to allow module pages to display wikitext. Use it by setting this module's <code>text</code> value to whatever content you want to display. The <code>_addText</code> helper method may be useful. For example, to tag a module with {{tl|db-g7}}, put <syntaxhighlight lang="lua" inline>require('Module:Module wikitext')._addText('{{db-g7}}')</syntaxhighlight> at the top of it.
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
