@@ -6,7 +6,7 @@
 --require "mw.text"
 
 local z = {
-    wikitext = require("Module:Wikitext"),
+    wikitext = require("Module:Module wikitext"),
     extensiontags = {
         nowiki = true,
         ref = true,
