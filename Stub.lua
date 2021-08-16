@@ -489,7 +489,7 @@ local THEMES = {
 		{ 'древногръцката митология|гръцка митология', 'Minotaur.jpg', 'древногръцка митология' },
 		{ 'електроника', 'Transistor stub.svg' },
 		{ 'електротехника', 'Transformer-hightolow-ironcore.png' },
-		{ 'енергетика', 'Rostock Steinkohlekraftwerk 2.jpg' },
+		{ 'енергетика|ядрена енергетика', 'Rostock Steinkohlekraftwerk 2.jpg' },
 		{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
 		{ 'изкуство|фотография', 'David face.png' },
 		{ 'икономика', 'TwoCoins.svg' },
@@ -517,7 +517,6 @@ local THEMES = {
 		{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
 			{ 'електрическо устройство', 'Elektryk MW - zawodowy.png', 'електрически устройства' },
 		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
-		{ 'ядрена енергетика', 'Nuclear power plant.svg' },
 	
 	-- МЪНИЧЕТА ЗА СПОРТ
 	{ 'спорт', 'Crystal Clear app clicknrun.png' },
