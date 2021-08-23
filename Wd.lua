@@ -1191,8 +1191,9 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				precision = 1 / 3600 -- precision not set (correctly), set to arcsecond
 			end
 			-- remove insignificant detail
-			latitude = math.floor(latitude / precision + 0.5) * precision
-			longitude = math.floor(longitude / precision + 0.5) * precision
+            -- feature disabled: a lot of entities in Wikidata have unreasonably high precision values; example: [[Бахово]]
+--			latitude = math.floor(latitude / precision + 0.5) * precision
+--			longitude = math.floor(longitude / precision + 0.5) * precision
 
 			if lat_only then
 				return latitude
