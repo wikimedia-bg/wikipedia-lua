@@ -478,7 +478,7 @@ local THEMES = {
 		-- други
 		{ 'анимация', 'Animhorse.gif' },
 		{ 'археология', 'Farm-Fresh vase.png' },
-		{ 'архитектура|архитект|градоустройство', 'Corinthian_capital.png' },
+		{ 'архитектура|градоустройство', 'Corinthian_capital.png' },
 		{ 'астрология', 'Mercury symbol.svg' },
 		{ 'будизъм', 'Dharma Wheel.svg' },
 		{ 'военен конфликт|битка|война|бой|сражение|революция|бунт|въстание', 'Belegeringen 2.svg', 'военни конфликти' },
@@ -547,6 +547,7 @@ local THEMES = {
 			{ 'порно актьор', 'Pink silhouette.svg', 'порно актьори' },
 			{ 'танцьор', 'Ballerina-icon.jpg', 'танцьори' },
 			{ 'турски актьор', 'Turkey film clapperboard.svg', 'турски актьори' },
+		{ 'архитект', 'Corinthian_capital.png' },
 		{ 'бизнесмен', 'Crystal kchart.png', 'бизнесмени' },
 		{ 'военен', 'Army-personnel-icon.png', 'военни личности' },
 		{ 'журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG', 'журналисти' },
