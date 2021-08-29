@@ -1,6 +1,6 @@
 local p = {}
 
-local link_prefix = 'http://promacedonia.org/gva/gva_'
+local link_prefix = 'http://macedonia.kroraina.com/gva/gva_'
 local link_suffix = '.htm'
 
 local ranges = {
