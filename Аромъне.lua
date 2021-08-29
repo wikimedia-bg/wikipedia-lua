@@ -3,6 +3,11 @@ local p = {}
 local link_prefix = 'http://macedonia.kroraina.com/gva/gva_'
 local link_suffix = '.htm'
 
+-- The values are the URL elements between the link_prefix and the link suffix.
+-- Each key represents the _last_ page from the book that the corresponding web
+-- page includes in it. For example, page 227 can be found online at the URL
+-- "link_prefix .. '6' ... linux_suffix" because 227 > 213, which is the last
+-- page included in '5', but < 243, which is the last page included in '6'.
 local ranges = {
 	[2] = false,
 	[5] = 'pred',
