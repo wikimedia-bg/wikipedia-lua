@@ -1,8 +1,21 @@
+/* Копирано от 31 август 2021 от https://en.wikipedia.org/w/index.php?title=Module:Hatnote/styles.css&oldid=1033289096 */
 .hatnote {
 	font-style: italic;
 }
 
+/* Limit structure CSS to divs because of [[Module:Hatnote inline]] */
 div.hatnote {
+	/* @noflip */
 	padding-left: 1.6em;
 	margin-bottom: 0.5em;
+}
+
+.hatnote i {
+	font-style: normal;
+}
+
+/* The templatestyles element inserts a link element before hatnotes.
+ * TODO: Remove link if/when WMF resolves T200206 */
+.hatnote + link + .hatnote {
+	margin-top: -0.5em;
 }
