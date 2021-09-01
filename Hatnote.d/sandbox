@@ -294,7 +294,7 @@ function p._hatnote(s, options)
 	return string.format(
 		'%s<div role="note" class="%s">%s</div>',
 		mw.getCurrentFrame():extensionTag{
-			name = 'templatestyles', args = { src = 'Модул:Hatnote/styles.css' }
+			name = 'templatestyles', args = { src = 'Module:Hatnote/styles.css' }
 		},
 		table.concat(classes, ' '),
 		s
