@@ -409,12 +409,12 @@ function p.lsc(frame)
 		return lstr
 	end
 
-    d = mw.text.trim(frame.args[2])
+    d = mw.text.trim(frame.args[2] or '')
     if d == '' then
-      d = mw.text.trim(frame.args[5])   -- tries with latest date
+      d = mw.text.trim(frame.args[5] or '')   -- tries with latest date
     end
     if d == '' then
-      d = mw.text.trim(frame.args[4])   -- tries with earliest date
+      d = mw.text.trim(frame.args[4] or '')   -- tries with earliest date
     end
 	if isSettlement(location, 1) then
 		if cstr == '' then
