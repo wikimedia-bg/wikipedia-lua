@@ -649,7 +649,6 @@ local THEMES = {
 	{ 'напитка', 'Emojione BW 1F378.svg', 'напитки' },
 	{ 'облекло', 'Signorina in viola.svg' },
 	{ 'образование', 'Nuvola apps bookcase.png' },
-	{ 'околна среда', 'Leaf.svg' },
 	{ 'ООН', 'Flag of the United Nations.svg' },
 	{ 'опера', 'RongeTurandot.jpg' },
 	{ 'опорно-двигателна система', 'Gray188.png' },
