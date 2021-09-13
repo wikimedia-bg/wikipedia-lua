@@ -213,7 +213,7 @@ local THEMES = {
 				{ 'Шумен', 'Emblem of Shumen.png' },
 		{ 'Ватикана|Ватикан', 'Flag of the Vatican City.svg'},
 		{ 'Германия', 'Flag of Germany.svg|border' },
-			{ 'Хесен', 'Flag of Hesse (state).svg|border' },
+			{ 'Хесен|провинция Хесен', 'Flag of Hesse (state).svg|border' },
 			{ 'Нацистка Германия', 'Reichsadler.svg' },
 		{ 'Гърция', 'Flag of Greece.svg' },
 			{ 'ВМОРО', 'Flag of the IMARO.svg' },
