@@ -594,7 +594,6 @@ local THEMES = {
 
 		-- други
 		{ 'благородник|аристократ', 'Coat of arms of Brabant.svg', 'благородници' },
-		{ 'Българската академия на науките|БАН', 'Bulgarian Academy of Sciences fragment 2.jpg', 'БАН' },
 		{ 'български владетел', 'Crown of Bulgaria.svg', 'български владетели' },
 		{ 'индианец', 'NSRW Sitting Bull.jpg', 'индианци' },
 		{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
