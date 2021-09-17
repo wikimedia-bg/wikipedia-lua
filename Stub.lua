@@ -576,6 +576,7 @@ local THEMES = {
 			{ 'физик', 'Albert_Einstein_Head.jpg', 'физици' },
 			{ 'философ', 'Head Platon Glyptothek Munich 548.jpg', 'философи' },
 			{ 'химик', 'AlfredNobel adjusted.jpg', 'химици' },
+		{ 'учител', 'Teaching_icon.png', 'учители' },
 		{ 'художник|фотограф', 'Vincent Willem van Gogh 107.jpg', 'художници' },
 			{ 'скулптор', 'Auguste Rodin - Penseur.png', 'скулптори' },
 		{ 'юрист', 'Scale of justice.svg', 'юристи' },
