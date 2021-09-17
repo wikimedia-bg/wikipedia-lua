@@ -668,7 +668,6 @@ local THEMES = {
 	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
 	{ 'религия', 'P religion world.svg' },
 	{ 'риболов', 'Fishing.svg' },
-	{ 'секс', 'Sexuality icon.svg' },
 	{ 'сериал', 'Television icon.svg', 'сериали' },
 	{ 'софтуер', 'Crystal Clear app kpackage.png' },
 	{ 'списание', 'Magazine.svg', 'списания' },
