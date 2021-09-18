@@ -557,6 +557,7 @@ local THEMES = {
 		{ 'медик|лекар', 'Stethoscope-2.png', 'медици' },
 		{ 'музикант|певец|певица|композитор', 'Musical notes.svg', 'музиканти' },
 			{ 'китарист', 'Crystal Clear app kguitar gray.svg', 'китаристи' },
+		{ 'общественик|революционер', 'Society.png', 'общественици' },
 		{ 'оператор', 'Filmreel-icon.svg', 'оператори' },
 		{ 'писател', 'Quill and ink-wikipedia.png', 'писатели' },
 			{ 'немски писател|Германия-писател', 'Flag of Germany.svg', 'немски писатели' },
