@@ -567,6 +567,10 @@ local THEMES = {
 			{ 'пират', 'Pirate Flag of Rack Rackham.svg', 'пирати' },
 		{ 'психолог', 'Sigmund freud um 1905.jpg', 'психолози' },
 		{ 'режисьор', 'Filmreel-icon.svg', 'режисьори' },
+		{ 'религиозен деец|равин', 'P religion world.svg', 'религиозни дейци' },		
+			{ 'светец', 'Saint-stub-icon.jpg', 'светци' },
+			{ 'християнски духовник|епископ|игумен', 'Coa Illustration Cross Greek.svg ', 'християнски духовници' },		
+				{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 		{ 'спортист', 'Crystal Clear app clicknrun.png', 'спортисти' },
 			{ 'алпинист', 'Climber silhouette.svg', 'алпинисти' },
 			{ 'футболист', 'Football pictogram.svg', 'футболисти' },
@@ -599,11 +603,8 @@ local THEMES = {
 		{ 'български владетел', 'Crown of Bulgaria.svg', 'български владетели' },
 		{ 'индианец', 'NSRW Sitting Bull.jpg', 'индианци' },
 		{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
-		{ 'светец', 'Saint-stub-icon.jpg', 'светци' },
 		{ 'тамплиери', 'Cross templars.svg' },
 		{ 'тевтонци', 'CHE Köniz COA.svg' },
-		{ 'християнски духовник|епископ|игумен', 'Coa Illustration Cross Greek.svg ', 'християнски духовници' },		
-			{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 	
 	-- ДРУГИ
 	{ 'ЛГБТ', 'Gay flag.svg' },
