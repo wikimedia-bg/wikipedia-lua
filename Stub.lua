@@ -526,7 +526,6 @@ local THEMES = {
 		{ 'тенис|тенисист', 'Tennis icon.png' },
 		{ 'Формула 1|Ф1', 'Ferrari stub.gif' },
 		{ 'футбол', 'Soccerball.svg' },
-			{ 'ЦСКА (София)|ЦСКА', 'CSKA Sofia logo.svg', 'ЦСКА' },
 		{ 'шахмат', 'Chess.svg' },
 	
 	-- КИНО
