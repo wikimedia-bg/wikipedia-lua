@@ -493,6 +493,7 @@ local THEMES = {
 		{ 'индуизъм', 'AUM symbol, the primary (highest) name of the God as per the Vedas.svg' },
 		{ 'исторически период|епоха|ера', 'P writing icon.svg', 'исторически периоди' },
 		{ 'историческо събитие|събитие', 'HSHistory.svg', 'събития' },
+			{ 'състезание', 'Crystal Clear app clicknrun.png', 'състезания' },
 		{ 'история', 'P history yellow.png' },
 		{ 'история на България|История-България', 'BG His.jpg' },
 		{ 'криптозоология|криптиди', 'Mammouth.png' },
