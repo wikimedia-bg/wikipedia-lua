@@ -518,7 +518,6 @@ local THEMES = {
 	-- МЪНИЧЕТА ЗА СПОРТ
 	{ 'спорт', 'Crystal Clear app clicknrun.png' },
 		{ 'баскетбол', 'Basketball.png' },
-		{ 'бойно изкуство', 'Yin and Yang symbol.svg', 'бойни изкуства' },
 		{ 'бокс|боксьор', 'Icon-boxing-gloves.jpg' },
 		{ 'волейбол', 'Volley ball angelo gelmi 01.svg' },
 		{ 'колоездене|колоездач', 'Pictgram bicycle man.svg' },
