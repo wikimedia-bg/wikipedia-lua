@@ -650,6 +650,7 @@ local THEMES = {
 	{ 'опорно-двигателна система', 'Gray188.png' },
 	{ 'вид организация', 'Handshake (Workshop Cologne \'06).jpeg', 'видове организации' },
 	{ 'организация', 'Handshake (Workshop Cologne \'06).jpeg', 'организации' }, 
+		{ 'отбор|спортен отбор', 'Crystal Clear app clicknrun.png', 'отбори' },
 	{ 'оръжие', 'SIG220-Morges.jpg' },
 	{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
 	{ 'партия', 'Political_template.gif', 'партии' },
