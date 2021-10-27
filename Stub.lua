@@ -568,7 +568,7 @@ local THEMES = {
 			{ 'философ', 'Head Platon Glyptothek Munich 548.jpg', 'философи' },
 			{ 'химик', 'AlfredNobel adjusted.jpg', 'химици' },
 		{ 'учител', 'Teaching_icon.png', 'учители' },
-		{ 'човек на изкуството|цирков артист|оператор', 'Arts and Culture - The Noun Project.svg', 'хора на изкуството' },
+		{ 'човек на изкуството|цирков артист|оператор|дизайнер|готвач', 'Arts and Culture - The Noun Project.svg', 'хора на изкуството' },
 			{ 'актьор', 'Ausuebende Audiovision.png', 'актьори' },
 				{ 'порно актьор', 'Pink silhouette.svg', 'порно актьори' },
 				{ 'танцьор', 'Ballerina-icon.jpg', 'танцьори' },
