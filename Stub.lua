@@ -278,6 +278,7 @@ local THEMES = {
 		{ 'Самоа', 'Flag of Samoa.svg' },
 		{ 'Соломоновите острови|Соломонови острови', 'Flag of the Solomon Islands.svg' },
 		{ 'Тонга', 'Flag of Tonga.svg' },
+		{ 'Тувалу', 'Flag of Tuvalu.svg' },
 		{ 'Фиджи', 'Flag of Fiji.svg' },
 		{ 'Френска Полинезия', 'Flag of French Polynesia.svg' },
 	{ 'Северна Америка', 'TinyNorthAmerica.png' },
