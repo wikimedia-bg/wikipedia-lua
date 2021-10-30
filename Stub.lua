@@ -269,6 +269,7 @@ local THEMES = {
 		{ 'Вануату', 'Flag of Vanuatu.svg' },
 		{ 'Кирибати', 'Flag of Kiribati.svg' },
 		{ 'Маршаловите острови|Маршалови острови', 'Flag of the Marshall Islands.svg' },
+		{ 'Микронезия', 'Flag of the Federated States of Micronesia.svg' },
 		{ 'Науру', 'Flag of Nauru.svg|border' },
 		{ 'Нова Зеландия', 'Flag of New Zealand.svg' },
 		{ 'Нова Каледония', 'Flag of FLNKS.svg' },
