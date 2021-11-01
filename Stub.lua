@@ -509,7 +509,7 @@ local THEMES = {
 			{ 'софтуер', 'Crystal Clear app kpackage.png' },
 		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
 
-	-- ИЗКУСТВО И КУЛТУРА
+	-- МЪНИЧЕТА ЗА ИЗКУСТВО И КУЛТУРА
 	{ 'култура', 'Art template.gif' },
 	{ 'изкуство|фотография', 'David face.png' },
 		{ 'кино', 'Movie template.gif' },
@@ -545,7 +545,7 @@ local THEMES = {
 			{ 'напитка', 'Emojione BW 1F378.svg', 'напитки' },
 				{ 'вино', 'Red_Wine_Glass.jpg' },
 
-	-- РЕЛИГИЯ, МИТОЛОГИЯ, ВЯРА И УБЕЖДЕНИЯ
+	-- МЪНИЧЕТА ЗА РЕЛИГИЯ, МИТОЛОГИЯ, ВЯРА И УБЕЖДЕНИЯ
 	{ 'религия', 'P religion world.svg' },
 		{ 'будизъм', 'Dharma Wheel.svg' },
 		{ 'даоизъм', 'Yin and Yang symbol.svg' },
