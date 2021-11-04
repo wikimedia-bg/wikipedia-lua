@@ -487,9 +487,12 @@ local THEMES = {
 			{ 'артилерия', 'P military green.png' },
 			{ 'военен конфликт|битка|война|бой|сражение|революция|бунт|въстание', 'Belegeringen 2.svg', 'военни конфликти' },
 			{ 'оръжие', 'SIG220-Morges.jpg' },
+				{ 'бойна ракета', 'Agm119_penguin.png', 'бойни ракети' },
 		{ 'движение|течение', 'Society.png', 'движения' },
 		{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
 		{ 'икономика', 'TwoCoins.svg' },
+			{ 'маркетинг', 'Human-emblem-marketing.svg' },
+			{ 'международни отношения', 'Society.png' },
 			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 			{ 'счетоводство', 'Crystal kchart.png' },
 			{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
@@ -538,6 +541,7 @@ local THEMES = {
 				{ 'титла|пост|длъжност', 'Crown of Italy.svg', 'титли' },
 			{ 'език|диалект|езикова група|езиково семейство|говор', 'Noun project 1822.svg', 'езици', link = 'език (лингвистика)' },
 		{ 'литература', 'Book template.svg' },
+			{ 'документ|договор|стандарт', 'Crystal Clear mimetype document2.png', 'документи' },
 			{ 'вестник', 'newspaper.svg', 'вестници' },
 			{ 'жанр', 'Deus Drawing.png', 'жанрове' },
 			{ 'книга', 'Books-aj.svg aj ashton 01.svg', 'книги' },
@@ -600,7 +604,8 @@ local THEMES = {
 		{ 'летателен апарат|самолет|хеликоптер|бомбардировач', 'Aero-stub img.svg', 'летателни апарати' },
 		{ 'мотоциклет', 'Motorsport stub.svg', 'мотоциклети' },
 		{ 'подводница', 'Orzel.svg', 'подводници' },
-	
+		{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
+
 	-- МЪНИЧЕТА ЗА ХОРА
 	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
 		-- по занятие
@@ -666,16 +671,11 @@ local THEMES = {
 	
 	-- ДРУГИ
 	{ 'НЛО', 'Nuvola apps konquest.png' },
-	{ 'бойна ракета', 'Agm119_penguin.png', 'бойни ракети' },
-	{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
-	{ 'документ|договор|стандарт', 'Crystal Clear mimetype document2.png', 'документи' },
 	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
 	{ 'игра', 'Tic tac toe.svg', 'игри' },
 		{ 'електронна игра|компютърна игра|видеоигра', 'Nuvola apps package games.png', 'електронни игри' },
 		{ 'играчка', 'Rubiks cube scrambled.jpg', 'играчки' },
 	{ 'мебел|обзавеждане', 'Furniture template.svg', 'мебели' },
-	{ 'маркетинг', 'Human-emblem-marketing.svg' },
-	{ 'международни отношения', 'Society.png' },
 	{ 'музей', 'David face.png', 'музеи' },
 	{ 'награда|отличие', 'Cup of Gold.svg', 'отличия' },
 	{ 'образование', 'Nuvola apps bookcase.png' },
