@@ -10,7 +10,6 @@ return {
 	{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
 		{ 'архитектурен елемент|строителен елемент|помещение', 'Corinthian_capital.png', 'строителни елементи' },
 		{ 'електрическо устройство|хардуер|изчислителна техника|компютър|компютри|комп', 'Elektryk MW - zawodowy.png', 'електрически устройства' },
-		{ 'софтуер', 'Crystal Clear app kpackage.png' },
 
 	-- МЪНИЧЕТА ЗА ТЕРИТОРИЯ
 	{ 'Азия', 'TinyAsia.png' },
@@ -451,8 +450,9 @@ return {
 				{ 'фармакология', 'Emoji u1f48a.svg' },
 					{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 		{ 'информатика', 'Computer-blue.svg' },
-			{ 'уебсайт', 'Crystal Clear mimetype html.png', 'уебсайтове' },
-				{ 'Уикипедия', 'Wikipedia-logo-v2.svg' },
+			{ 'софтуер', 'Crystal Clear app kpackage.png' },
+				{ 'уебсайт', 'Crystal Clear mimetype html.png', 'уебсайтове' },
+					{ 'Уикипедия', 'Wikipedia-logo-v2.svg' },
 		{ 'космически изследвания', 'Gas giants in the solar system.jpg' },
 			{ 'ракета|ракети', 'Shuttle.svg', 'ракетна техника и космически апарати' },
 		{ 'математика', 'e-to-the-i-pi.svg' },
