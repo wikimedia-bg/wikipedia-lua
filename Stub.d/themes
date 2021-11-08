@@ -480,6 +480,7 @@ return {
 		{ 'философия', 'Philosophy_template.gif' },
 		{ 'социология', 'People icon.svg' },
 			{ 'социална група|общност', 'Society.png', 'социални групи' },
+				{ 'движение|течение', 'Society.png', 'движения' },
 				{ 'род|династия|семейство|фамилия', 'OOjs UI-like kinship-progressive-black.svg', 'родове' },
 				{ 'организация', 'Handshake (Workshop Cologne \'06).jpeg', 'организации' }, 
 					{ 'вид организация', 'Handshake (Workshop Cologne \'06).jpeg', 'видове организации' },
