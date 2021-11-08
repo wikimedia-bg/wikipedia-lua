@@ -521,12 +521,21 @@ return {
 			{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
 			{ 'маркетинг', 'Human-emblem-marketing.svg' },
 			{ 'международни отношения', 'Society.png' },
-			{ 'счетоводство', 'Crystal kchart.png' },
-			{ 'търговия', 'CashRegister.svg' },
-			{ 'финанси', '5000 Tugriks - Recto.jpg' },
-			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 			{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
 				{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
+			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
+			{ 'счетоводство', 'Crystal kchart.png' },
+			{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
+				{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
+				{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
+				{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
+				{ 'корабоплаване|кораб', 'ShipClipart.png' },
+				{ 'летателен апарат|самолет|хеликоптер|бомбардировач', 'Aero-stub img.svg', 'летателни апарати' },
+				{ 'мотоциклет', 'Motorsport stub.svg', 'мотоциклети' },
+				{ 'подводница', 'Orzel.svg', 'подводници' },
+				{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
+			{ 'търговия', 'CashRegister.svg' },
+			{ 'финанси', '5000 Tugriks - Recto.jpg' },
 	
 	-- МЪНИЧЕТА ЗА ИЗКУСТВО И КУЛТУРА
 	{ 'култура', 'Art template.gif' },
@@ -596,17 +605,6 @@ return {
 	{ 'митология', 'Draig.svg' },
 		{ 'древногръцката митология|гръцка митология', 'Minotaur.jpg', 'древногръцка митология' },
 	
-	-- МЪНИЧЕТА ЗА ТРАНСПОРТ
-	{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
-	{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
-		{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
-		{ 'железопътен транспорт', 'Aiga railtransportation 25.svg' },
-		{ 'корабоплаване|кораб', 'ShipClipart.png' },
-		{ 'летателен апарат|самолет|хеликоптер|бомбардировач', 'Aero-stub img.svg', 'летателни апарати' },
-		{ 'мотоциклет', 'Motorsport stub.svg', 'мотоциклети' },
-		{ 'подводница', 'Orzel.svg', 'подводници' },
-		{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
-
 	-- МЪНИЧЕТА ЗА ХОРА
 	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
 		-- по занятие
