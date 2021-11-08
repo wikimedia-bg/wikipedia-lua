@@ -1,4 +1,4 @@
-local THEMES = {
+return {
 	-- МЪНИЧЕТА ЗА ТЕРИТОРИЯ
 	{ 'Азия', 'TinyAsia.png' },
 		{ 'Азербайджан', 'Flag of Azerbaijan.svg|border' },
@@ -689,5 +689,3 @@ local THEMES = {
 	{ 'финанси', '5000 Tugriks - Recto.jpg' },
 	{ 'явление', 'Noun Big Bang Icon 58857.svg', 'явления' },
 }
-
-return THEMES
