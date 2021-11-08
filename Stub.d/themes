@@ -1,4 +1,17 @@
 return {
+	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
+	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
+	{ 'свойство', 'Hoejde.png', 'свойства' },
+	{ 'явление', 'Noun Big Bang Icon 58857.svg', 'явления' },
+	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
+	{ 'символ|знак', 'फ् कारः.jpg', 'символи' },
+		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
+	{ 'мебел|обзавеждане', 'Furniture template.svg', 'мебели' },
+	{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
+		{ 'архитектурен елемент|строителен елемент|помещение', 'Corinthian_capital.png', 'строителни елементи' },
+		{ 'електрическо устройство|хардуер|изчислителна техника|компютър|компютри|комп', 'Elektryk MW - zawodowy.png', 'електрически устройства' },
+		{ 'софтуер', 'Crystal Clear app kpackage.png' },
+
 	-- МЪНИЧЕТА ЗА ТЕРИТОРИЯ
 	{ 'Азия', 'TinyAsia.png' },
 		{ 'Азербайджан', 'Flag of Azerbaijan.svg|border' },
@@ -666,19 +679,4 @@ return {
 		{ 'монарх', 'Earlkrona, Nordisk familjebok.png', 'монарси' },
 		{ 'тамплиери', 'Cross templars.svg' },
 		{ 'тевтонци', 'CHE Köniz COA.svg' },
-	
-	-- ДРУГИ
-	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
-	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
-	{ 'движение|течение', 'Society.png', 'движения' },
-	{ 'свойство', 'Hoejde.png', 'свойства' },
-	{ 'явление', 'Noun Big Bang Icon 58857.svg', 'явления' },
-	{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
-	{ 'символ|знак', 'फ् कारः.jpg', 'символи' },
-		{ 'хералдика', 'Azure,_a_bend_Or.svg' },
-	{ 'мебел|обзавеждане', 'Furniture template.svg', 'мебели' },
-	{ 'устройство|машина|апарат|уред|инструмент', 'Spur Gear 12mm, 18t.svg', 'устройства' },
-		{ 'архитектурен елемент|строителен елемент|помещение', 'Corinthian_capital.png', 'строителни елементи' },
-		{ 'електрическо устройство|хардуер|изчислителна техника|компютър|компютри|комп', 'Elektryk MW - zawodowy.png', 'електрически устройства' },
-		{ 'софтуер', 'Crystal Clear app kpackage.png' },
 }
