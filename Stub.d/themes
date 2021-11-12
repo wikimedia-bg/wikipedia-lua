@@ -494,6 +494,7 @@ return {
 				{ 'организация', 'Handshake (Workshop Cologne \'06).jpeg', 'организации' }, 
 					{ 'вид организация', 'Handshake (Workshop Cologne \'06).jpeg', 'видове организации' },
 					{ 'отбор|спортен отбор', 'Crystal Clear app clicknrun.png', 'отбори' },
+						{ 'футболен отбор', 'Soccerball.svg', 'футболни отбори' },
 					{ 'Европейския съюз|Европейски съюз|ЕС', 'Flag of Europe.svg' },
 					{ 'ООН', 'Flag of the United Nations.svg' },
 			{ 'общество|феминизъм', 'Society.png' },
