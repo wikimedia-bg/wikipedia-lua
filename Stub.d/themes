@@ -214,6 +214,7 @@ return {
 		{ 'Ватикана|Ватикан', 'Flag of the Vatican City.svg'},
 		{ 'Германия', 'Flag of Germany.svg|border' },
 			{ 'Хесен|провинция Хесен', 'Flag of Hesse (state).svg|border' },
+		{ 'Гибралтар', 'Flag of Gibraltar.svg|border' },
 		{ 'Гърция', 'Flag of Greece.svg' },
 			{ 'ВМОРО', 'Flag of the IMARO.svg' },
 			{ 'Егейска Македония', 'Flag of Greek Macedonia.svg' },
