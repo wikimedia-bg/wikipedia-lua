@@ -173,6 +173,8 @@ local TAXONOMICRANK = {
 }
 
 local FOSSILSTAGES = {
+	
+	-- Кватернер
 	{ age = 0, name = 'настояще' },
 	{ age = 0.00245, name = 'субатлантик' },
 	{ age = 0.00566, name = 'суборий' },
@@ -192,7 +194,9 @@ local FOSSILSTAGES = {
 	{ age = 1.806, name = 'ебуроний', grade = 1, link = 'Ебуроний|Ебу', color = '#76BA33' },
 	{ age = 2.4, name = 'тиглий', grade = 1, link = 'Тиглий', color = '#00B003' },
 	{ age = 2.588, name = 'претиглий', grade = 1, link = 'Претиглий|Пт', color = '#0FD236' },
-	{ age = 3.6, name = 'пияцензий', grade = 1, link = 'Плиоцен|Плц', color = '#00ED01' },
+	
+	-- Неоген
+	{ age = 3.6, name = 'пиячензий', grade = 1, link = 'Плиоцен|Плц', color = '#00ED01' },
 	{ age = 5.332, name = 'занклий' },
 	{ age = 7.246, name = 'месиний' },
 	{ age = 11.608, name = 'тортоний' },
@@ -200,6 +204,8 @@ local FOSSILSTAGES = {
 	{ age = 15.97, name = 'лангий' },
 	{ age = 20.43, name = 'бурдигалий' },
 	{ age = 23.03, name = 'аквитаний', grade = 2, link = 'Неоген|Н', color = '#FEDD2D' },
+	
+	-- Палеоген
 	{ age = 28.1, name = 'хатий' },
 	{ age = 33.9, name = 'орелий' },
 	{ age = 37.8, name = 'приабоний' },
@@ -209,7 +215,9 @@ local FOSSILSTAGES = {
 	{ age = 59.2, name = 'танетий' },
 	{ age = 61.6, name = 'зеландий' },
 	{ age = 66, name = 'даний', grade = 2, link = 'Палеоген|Пг', color = '#FEA163' },
-	{ age = 70.6, name = 'маастрихтий' },
+	
+	-- Креда
+	{ age = 70.6, name = 'мастрихтий' },
 	{ age = 83.5, name = 'кампаний' },
 	{ age = 85.8, name = 'сантоний' },
 	{ age = 89.3, name = 'конякий' },
@@ -219,19 +227,23 @@ local FOSSILSTAGES = {
 	{ age = 125, name = 'аптий' },
 	{ age = 130, name = 'баремий' },
 	{ age = 136.4, name = 'хотривий' },
-	{ age = 140.2, name = 'валангиний' },
+	{ age = 140.2, name = 'валанжиний' },
 	{ age = 145.5, name = 'бериасий', grade = 2, link = 'Креда|К', color = '#6FC86B' },
+	
+	-- Юра
 	{ age = 152.1, name = 'титоний' },
-	{ age = 157.3, name = 'кимеридгий' },
+	{ age = 157.3, name = 'кимерижий' },
 	{ age = 163.5, name = 'оксфордий' },
 	{ age = 166.1, name = 'каловий' },
 	{ age = 168.3, name = 'батоний' },
 	{ age = 170.3, name = 'байосий' },
 	{ age = 174.1, name = 'аалений' },
-	{ age = 182.7, name = 'тоархий' },
-	{ age = 190.8, name = 'плиенсбахий' },
+	{ age = 182.7, name = 'тоарсий' },
+	{ age = 190.8, name = 'плинсбахий' },
 	{ age = 199.3, name = 'синемурий' },
-	{ age = 201.3, name = 'хетангий', grade = 2, link = 'Юра|Ю', color = '#00BBE7' },
+	{ age = 201.3, name = 'хетанжий', grade = 2, link = 'Юра|Ю', color = '#00BBE7' },
+	
+	-- Триас
 	{ age = 208.5, name = 'ретий' },
 	{ age = 228, name = 'норий' },
 	{ age = 235, name = 'карний' },
@@ -239,6 +251,8 @@ local FOSSILSTAGES = {
 	{ age = 247.2, name = 'анисий' },
 	{ age = 251.2, name = 'спатий' },
 	{ age = 252.2, name = 'индий', grade = 2, link = 'Триас|Т', color = '#994E96' },
+	
+	-- Перм
 	{ age = 254.1, name = 'чангсингий' },
 	{ age = 259.8, name = 'лонгтаний' },
 	{ age = 265.1, name = 'капитаний' },
@@ -248,13 +262,17 @@ local FOSSILSTAGES = {
 	{ age = 290.1, name = 'артинский' },
 	{ age = 295, name = 'сакмарий' },
 	{ age = 298.9, name = 'аселий', grade = 2, link = 'Перм (период)|П', color = '#F7583C' },
+	
+	-- Карбон
 	{ age = 303.7, name = 'гжелий' },
-	{ age = 307, name = 'казимовий' },
+	{ age = 307, name = 'касимовий' },
 	{ age = 315.2, name = 'московий (период)|московий' },
 	{ age = 323.2, name = 'башкирий' },
 	{ age = 330.9, name = 'серпуковий' },
 	{ age = 346.7, name = 'визий' },
 	{ age = 358.9, name = 'турний', grade = 2, link = 'Карбон|К', color = '#3FAEAD' },
+	
+	-- Девон
 	{ age = 372.2, name = 'фамений' },
 	{ age = 382.7, name = 'франий' },
 	{ age = 387.7, name = 'живетий' },
@@ -262,6 +280,8 @@ local FOSSILSTAGES = {
 	{ age = 407.6, name = 'емсий' },
 	{ age = 410.8, name = 'прагий' },
 	{ age = 419.2, name = 'локовий', grade = 2, link = 'Девон|Д', color = '#DD9651' },
+	
+	-- Силур
 	{ age = 423, name = 'придолий' },
 	{ age = 425.6, name = 'лудфордий' },
 	{ age = 427.4, name = 'горстий' },
@@ -270,6 +290,8 @@ local FOSSILSTAGES = {
 	{ age = 438.5, name = 'телихий' },
 	{ age = 440.8, name = 'аероний' },
 	{ age = 443.4, name = 'руданий', grade = 2, link = 'Силур|С', color = '#A6DFC5' },
+	
+	-- Ордовик
 	{ age = 445.2, name = 'хирнантий' },
 	{ age = 453, name = 'катий' },
 	{ age = 458.4, name = 'сандбий' },
@@ -277,6 +299,8 @@ local FOSSILSTAGES = {
 	{ age = 470, name = 'дапингий' },
 	{ age = 477.7, name = 'флоий' },
 	{ age = 485.4, name = 'тремадокий', grade = 2, link = 'Ордовик|О', color = '#00A98A' },
+	
+	-- Камбрий
 	{ age = 489.5, name = 'мансий' },
 	{ age = 494, name = 'джиангшаний' },
 	{ age = 497, name = 'пейбий' },
@@ -287,6 +311,8 @@ local FOSSILSTAGES = {
 	{ age = 521, name = 'ченгжианг' },
 	{ age = 529, name = 'томотий' },
 	{ age = 541, name = 'фортуний', grade = 2, link = 'Камбрий|К', color = '#81AA72' },
+	
+	-- Протерозой
 	{ age = 635, name = 'едиакарий', grade = 2, link = 'Прекамбрий|ПреК', color = '#FED67B' },
 	{ age = 850, name = 'байкалий' },
 	{ age = 1000, name = 'тоний', grade = 3, link = 'Неопротерозой|Нп', color = '#FFB86C' },
@@ -299,10 +325,14 @@ local FOSSILSTAGES = {
 	{ age = 2050, name = 'орозирий' },
 	{ age = 2300, name = 'рясий' },
 	{ age = 2500, name = 'сидерий', grade = 3, link = 'Палеопротерозой|Пп', color = '#FF6333' },
+	
+	-- Архай
 	{ age = 2800, name = 'неоархай', grade = 3, link = 'Неоархай|На', color = '#FA62FF' },
 	{ age = 3200, name = 'мезоархай', grade = 3, link = 'Мезоархай|Ма', color = '#C867FF' },
 	{ age = 3600, name = 'палеоархай', grade = 3, link = 'Палеоархай|Па', color = '#96ABFF' },
 	{ age = 3800, name = 'еоархай', grade = 3, link = 'Еоархай|Е', color = '#85DBFC' },
+	
+	-- Хадей
 	{ age = 4567.17, name = 'хадей', grade = 3, link = 'Хадей', color = '#96F5FF' }
 }
 
