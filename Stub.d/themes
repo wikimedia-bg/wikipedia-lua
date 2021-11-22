@@ -672,7 +672,7 @@ return {
 		{ 'грък', 'Greece people stub icon.png', 'гърци' },
 		{ 'канадец', 'Flag of Canada.svg', 'канадци' },
 		{ 'руснак', 'Flag of Russia.svg', 'руснаци' },
-		{ 'северномакедонец|македонец|Северна Македония-личност|РМ-личност', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
+		{ 'северномакедонец|македонец', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
 		{ 'французин', 'Crystal Clear app Login Manager.png', 'французи' },
 
 		-- други
