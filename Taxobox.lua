@@ -96,6 +96,7 @@ local PROPERTY = {
 	PARENT_TAXON_HYBRID = 'P1531',
 	MEDIA_LEGEND = 'P2096',
 	COLLAGE_IMAGE = 'P2716',
+	OBJECT_HAS_ROLE = 'P3831',
 	VIRUS_GENOME = 'P4628'
 }
 
@@ -611,9 +612,9 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 			AUTHORITY = (localAuthorityName and localAuthorityDate) and (localAuthorityName .. ', ' .. localAuthorityDate) or (localAuthorityName or localAuthorityDate or '')
 		end
 
-		local instanceOf = qualifiers[PROPERTY.INSTANCE_OF]
+		local objectHasRole = qualifiers[PROPERTY.OBJECT_HAS_ROLE]
 		local parentheses
-		if instanceOf and instanceOf[1].datavalue.value.id == ITEM.RECOMBINATION then
+		if objectHasRole and objectHasRole[1].datavalue.value.id == ITEM.RECOMBINATION then
 			parentheses = true
 		end
 		
