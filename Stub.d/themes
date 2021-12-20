@@ -533,7 +533,7 @@ return {
 			{ 'земеделие', 'Yorkshire Country Views (26).JPG' },
 			{ 'маркетинг', 'Human-emblem-marketing.svg' },
 			{ 'международни отношения', 'Society.png' },
-			{ 'парична единица|валута', '5000 Tugriks - Recto.jpg', 'парични единици' },
+			{ 'парична единица|валута', 'Gold Currency Symbols.svg', 'парични единици' },
 				{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
 			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 			{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
