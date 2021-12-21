@@ -13,7 +13,7 @@ local function errorMessage(msg, cat)
 end
 
 local function linkExist(name)
-	local extra = mw.ustring.match(name, '^[сзжшч]ки$') and ' език' or ' (език)'
+	local extra = mw.ustring.match(name, '[сзжшч]ки$') and ' език' or ' (език)'
 	local qid = mw.wikibase.getEntityIdForTitle(name .. extra) -- проверка дали страницата съществува/е свързана с Уикиданни, за да се спести проверката с реурсоемката анализираща функция
 	if qid then -- страницата съществува и е свързана с Уикиданни
 		return name .. extra
