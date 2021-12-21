@@ -13,13 +13,19 @@ local function errorMessage(msg, cat)
 end
 
 local function linkExist(name)
-	local success, exist = pcall(function()
-		return mw.title.new(name .. ' език').exists -- Еквивалентът на анализиращата функция #ifexist: в Луа; "success" винаги ще бъде "false", ако бъде надхвърлен лимитът на ресурсоемките анализиращи функции (вж. https://www.mediawiki.org/wiki/Help:Extension:ParserFunctions/bg##ifexist и/или https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Title_objects)
-	end)
-	if success and exist then
-		return name .. ' език'
+	local extra = mw.ustring.match(name, '^[сзжшч]ки$') and ' език' or ' (език)'
+	local qid = mw.wikibase.getEntityIdForTitle(name .. extra) -- проверка дали страницата съществува/е свързана с Уикиданни, за да се спести проверката с реурсоемката анализираща функция
+	if qid then -- страницата съществува и е свързана с Уикиданни
+		return name .. extra
 	else
-		return name
+		local success, exist = pcall(function()
+			return mw.title.new(name .. ' език').exists -- Еквивалентът на анализиращата функция #ifexist: в Луа; "success" винаги ще бъде "false", ако бъде надхвърлен лимитът на ресурсоемките анализиращи функции (вж. https://www.mediawiki.org/wiki/Help:Extension:ParserFunctions/bg##ifexist и/или https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Title_objects)
+		end)
+		if success and exist then
+			return name .. ' език'
+		else
+			return name
+		end
 	end
 end
 
