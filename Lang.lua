@@ -96,7 +96,7 @@ function p.docTable(frame)
 		if norm and mw.ustring.match(norm, '[А-я]') then
 			background = data['renamed'][all_langs[i][1]] and '#dff9f9' or nil
 			name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
-			link = data['link_exception'][all_langs[i][1]] or linkExist(all_langs[i][2])
+			link = data['link_exception'][all_langs[i][1]] or linkExist(name)
 			if data['link_exception'][all_langs[i][1]] then
 				name = "''" .. name .. "''"
 			end
