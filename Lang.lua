@@ -79,7 +79,7 @@ function p.docTable(frame)
 	local not_translated = mw.html.create()
 	local missing = mw.html.create()
 	local result = ''
-	local background, link
+	local background, link, name
 	local all_langs = {}
 
 	for k, v in pairs(mw.language.fetchLanguageNames('bg', 'all')) do
@@ -95,16 +95,17 @@ function p.docTable(frame)
 		norm = norm and mw.ustring.toNFD(norm) or nil
 		if norm and mw.ustring.match(norm, '[А-я]') then
 			background = data['renamed'][all_langs[i][1]] and '#dff9f9' or nil
+			name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
 			link = data['link_exception'][all_langs[i][1]] or linkExist(all_langs[i][2])
-			if data['link_exception'][k] then
-				all_langs[i][2] = "''" .. all_langs[i][2] .. "''"
+			if data['link_exception'][all_langs[i][1]] then
+				name = "''" .. name .. "''"
 			end
 			translated
-				:node(tableRow('td', nil, background, tempExample(all_langs[i][1]), createLink(link, all_langs[i][2])))
+				:node(tableRow('td', nil, background, tempExample(all_langs[i][1]), createLink(link, name)))
 				:newline()
 		else
 			not_translated
-				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), all_langs[i][2]))
+				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), name))
 				:newline()
 		end
 	end
