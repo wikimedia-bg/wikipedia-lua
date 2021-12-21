@@ -176,7 +176,7 @@ function p.main(frame)
 		end
 	end
 
-	local str = (args['на'] or 'на ') .. createLink(link, name)
+	local str = mw.text.trim((args['на'] or 'на') .. ' '  .. createLink(link, name))
 	if #words > 0 then
 		str = str .. ': ' .. mw.text.listToText(words, ', ', ' или ')
 	end
