@@ -105,7 +105,7 @@ function p.docTable(frame)
 				:newline()
 		else
 			not_translated
-				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), name))
+				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), all_langs[i][2]))
 				:newline()
 		end
 	end
