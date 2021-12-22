@@ -14,28 +14,31 @@ end
 
 local function linkCheck(name)
 	 -- проверка дали страницата съществува/е свързана с Уикиданни, за да се спести проверката с реурсоемката анализираща функция
-	local extra = mw.ustring.match(name, '[сзжшчц]ки$') and ' език' or ' (език)'
-	local qid = mw.wikibase.getEntityIdForTitle(name .. extra)
-	if qid then -- страницата следва традиционен формат на името, съществува и е свързана с Уикиданни
-		return name .. extra
-	else -- страницата не следва традиционен формат на името
-		qid = mw.wikibase.getEntityIdForTitle(name) -- друга проверка за съществуващо име
-		if qid then -- страницата съществува и е свързана с Уикиданни
-			local instance = mw.ustring.lower(mw.getCurrentFrame():callParserFunction{name = '#property', args = {'P31', from = qid }}) -- евтин начин за извикване на всички стойности на свойството; избягва се цикленето през отделните стойности и последващото допълнително анализиране
-			local iso_1 = mw.wikibase.getAllStatements(qid, 'P218')
-			local iso_2 = mw.wikibase.getAllStatements(qid, 'P219')
-			local iso_3 = mw.wikibase.getAllStatements(qid, 'P220')
-			local ietf = mw.wikibase.getAllStatements(qid, 'P305')
-			if mw.ustring.match(instance, '%f[%a]език%f[%A]') or mw.ustring.match(instance, '%f[%a]language%f[%A]') or ((#iso_1 + #iso_2 + #iso_3 + #ietf) > 0) then
-				-- страницата е екземпляр на език или съдържа свойства, идентифициращи обекта като език
-				return name
-			else
-				return name .. ' (език)'
+	local qid = mw.wikibase.getEntityIdForTitle(name .. ' език')
+	if qid then -- страницата следва традиционен формат на името "... език", съществува и е свързана с Уикиданни
+		return name .. ' език'
+	else 
+		qid = mw.wikibase.getEntityIdForTitle(name .. ' (език)')
+		if qid then -- страницата следва традиционен формат на името "... (език)", съществува и е свързана с Уикиданни
+			return name .. ' (език)'
+		else -- страницата не следва традиционен формат на името
+			qid = mw.wikibase.getEntityIdForTitle(name) -- друга проверка за съществуващо име
+			if qid then -- страницата съществува и е свързана с Уикиданни
+				local instance = mw.ustring.lower(mw.getCurrentFrame():callParserFunction{name = '#property', args = {'P31', from = qid }}) -- евтин начин за извикване на всички стойности на свойството; избягва се цикленето през отделните стойности и последващото допълнително анализиране
+				local iso_1 = mw.wikibase.getAllStatements(qid, 'P218')
+				local iso_2 = mw.wikibase.getAllStatements(qid, 'P219')
+				local iso_3 = mw.wikibase.getAllStatements(qid, 'P220')
+				local ietf = mw.wikibase.getAllStatements(qid, 'P305')
+				if mw.ustring.match(instance, '%f[%a]език%f[%A]') or mw.ustring.match(instance, '%f[%a]language%f[%A]') or ((#iso_1 + #iso_2 + #iso_3 + #ietf) > 0) then
+					-- страницата е екземпляр на език или съдържа свойства, идентифициращи обекта като език
+					return name
+				end
 			end
 		end
 	end
 
-	return name .. extra
+	-- Страницата не свързана с Уикиданни или е свързана, но не е екземпляр на език и не съдържа свойства, идентифициращи обекта като език
+	return name .. (mw.ustring.match(name, '[жзсчцш]ки$') and ' език' or ' (език)')
 end
 
 local function createLink(pagelink, linktext)
@@ -70,7 +73,7 @@ local function tableRow(celltag, width, background, str1, str2)
 end
 
 local function tempExample(val)
-	return mw.text.nowiki('{{lang|' .. val .. '}}')
+	return "&#123;&#123;lang&#124;'''" .. val .. "'''&#125;&#125;"
 end
 
 function p.docTable(frame)
@@ -88,7 +91,7 @@ function p.docTable(frame)
 		:css('width', '100%')
 		:css('margin', '0')
 		:newline()
-		:node(tableRow('th', '50%', nil, 'Шаблон', 'Език'))
+		:node(tableRow('th', '50%', nil, 'Език', 'Шаблон <small>(езиковият код е отбелязан в получер)</small>'))
 		:newline()
 	local translated = mw.html.create()
 	local not_translated = mw.html.create()
@@ -107,20 +110,21 @@ function p.docTable(frame)
 
 	for i = 1, #all_langs do
 		name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
-		local norm = mw.ustring.toNFC(mw.ustring.lower(name))
-		if norm then norm = mw.ustring.toNFD(norm) end
-		if norm and mw.ustring.match(norm, '[а-я]') then
+		if mw.ustring.match(mw.ustring.lower(name), '^[а-ъьюя%s%p]+$') then
 			background = data['renamed'][all_langs[i][1]] and '#dff9f9' or nil
+			if data['renamed'][all_langs[i][1]] and data['renamed'][all_langs[i][1]] == all_langs[i][2] then
+				background = '#ffdbd4' 
+			end
 			link = data['link_exception'][all_langs[i][1]] or linkCheck(name)
 			if data['link_exception'][all_langs[i][1]] then
 				name = "''" .. name .. "''"
 			end
 			translated
-				:node(tableRow('td', nil, background, tempExample(all_langs[i][1]), createLink(link, name)))
+				:node(tableRow('td', nil, background, createLink(link, name), tempExample(all_langs[i][1])))
 				:newline()
 		else
 			not_translated
-				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), name))
+				:node(tableRow('td', nil, nil, name, tempExample(all_langs[i][1])))
 				:newline()
 		end
 	end
@@ -128,7 +132,7 @@ function p.docTable(frame)
 	for k, v in pairs(data.missing) do
 		link = data['link_exception'][k] or linkCheck(v)
 		missing
-			:node(tableRow('td', nil, nil, tempExample(k), createLink(link, v)))
+			:node(tableRow('td', nil, nil, createLink(link, v), tempExample(k)))
 			:newline()
 	end
 
@@ -152,7 +156,7 @@ function p.cite(frame)		-- Опросена версия за {{cite-lang}}
 
 	local name = data['renamed'][code] or data['missing'][code] or mw.language.fetchLanguageName(code, 'bg')
 	if not name or name == '' then
-		return errorMessage('Неразпознат езиков код „' .. code ..'“')
+		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“')
 	end
 
 	return 'на ' .. name
@@ -170,7 +174,7 @@ function p.main(frame)
 	local name = data['renamed'][code] or data['missing'][code] or mw.language.fetchLanguageName(code, 'bg')
 
 	if not name or name == '' then
-		return errorMessage('Неразпознат езиков код „' .. code ..'“', '[[Категория:Страници с грешки]]')
+		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“', '[[Категория:Страници с грешки]]')
 	end
 
 	local success, dir = pcall(function()
