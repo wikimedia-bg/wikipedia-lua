@@ -12,21 +12,30 @@ local function errorMessage(msg, cat)
 	return tostring(root) .. (cat or '')
 end
 
-local function linkExist(name)
-	local extra = mw.ustring.match(name, '[сзжшч]ки$') and ' език' or ' (език)'
-	local qid = mw.wikibase.getEntityIdForTitle(name .. extra) -- проверка дали страницата съществува/е свързана с Уикиданни, за да се спести проверката с реурсоемката анализираща функция
-	if qid then -- страницата съществува и е свързана с Уикиданни
+local function linkCheck(name)
+	 -- проверка дали страницата съществува/е свързана с Уикиданни, за да се спести проверката с реурсоемката анализираща функция
+	local extra = mw.ustring.match(name, '[сзжшчц]ки$') and ' език' or ' (език)'
+	local qid = mw.wikibase.getEntityIdForTitle(name .. extra)
+	if qid then -- страницата следва традиционен формат на името, съществува и е свързана с Уикиданни
 		return name .. extra
-	else
-		local success, exist = pcall(function()
-			return mw.title.new(name .. ' език').exists -- Еквивалентът на анализиращата функция #ifexist: в Луа; "success" винаги ще бъде "false", ако бъде надхвърлен лимитът на ресурсоемките анализиращи функции (вж. https://www.mediawiki.org/wiki/Help:Extension:ParserFunctions/bg##ifexist и/или https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Title_objects)
-		end)
-		if success and exist then
-			return name .. ' език'
-		else
-			return name
+	else -- страницата не следва традиционен формат на името
+		qid = mw.wikibase.getEntityIdForTitle(name) -- друга проверка за съществуващо име
+		if qid then -- страницата съществува и е свързана с Уикиданни
+			local instance = mw.ustring.lower(mw.getCurrentFrame():callParserFunction{name = '#property', args = {'P31', from = qid }}) -- евтин начин за извикване на всички стойности на свойството; избягва се цикленето през отделните стойности и последващото допълнително анализиране
+			local iso_1 = mw.wikibase.getAllStatements(qid, 'P218')
+			local iso_2 = mw.wikibase.getAllStatements(qid, 'P219')
+			local iso_3 = mw.wikibase.getAllStatements(qid, 'P220')
+			local ietf = mw.wikibase.getAllStatements(qid, 'P305')
+			if mw.ustring.match(instance, '%f[%a]език%f[%A]') or mw.ustring.match(instance, '%f[%a]language%f[%A]') or ((#iso_1 + #iso_2 + #iso_3 + #ietf) > 0) then
+				-- страницата е екземпляр на език или съдържа свойства, идентифициращи обекта като език
+				return name
+			else
+				return name .. ' (език)'
+			end
 		end
 	end
+
+	return name .. extra
 end
 
 local function createLink(pagelink, linktext)
@@ -102,7 +111,7 @@ function p.docTable(frame)
 		if norm and mw.ustring.match(norm, '[А-я]') then
 			background = data['renamed'][all_langs[i][1]] and '#dff9f9' or nil
 			name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
-			link = data['link_exception'][all_langs[i][1]] or linkExist(name)
+			link = data['link_exception'][all_langs[i][1]] or linkCheck(name)
 			if data['link_exception'][all_langs[i][1]] then
 				name = "''" .. name .. "''"
 			end
@@ -117,7 +126,7 @@ function p.docTable(frame)
 	end
 
 	for k, v in pairs(data.missing) do
-		link = data['link_exception'][k] or linkExist(v)
+		link = data['link_exception'][k] or linkCheck(v)
 		missing
 			:node(tableRow('td', nil, nil, tempExample(k), createLink(link, v)))
 			:newline()
@@ -171,7 +180,7 @@ function p.main(frame)
 		dir = 'auto' -- при прехвърляне на лимита на ресурсоемките анализиращи функции
 	end
 
-	local link = data['link_exception'][code] or linkExist(name)
+	local link = data['link_exception'][code] or linkCheck(name)
 
 	for k, v in pairs(args) do
 		k = tonumber(k)
