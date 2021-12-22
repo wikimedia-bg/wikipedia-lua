@@ -106,11 +106,11 @@ function p.docTable(frame)
 	table.sort(all_langs, function(a, b) return a[1] < b[1] end)
 
 	for i = 1, #all_langs do
-		local norm = mw.ustring.toNFC(all_langs[i][2])
-		norm = norm and mw.ustring.toNFD(norm) or nil
-		if norm and mw.ustring.match(norm, '[А-я]') then
+		name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
+		local norm = mw.ustring.toNFC(mw.ustring.lower(name))
+		if norm then norm = mw.ustring.toNFD(norm) end
+		if norm and mw.ustring.match(norm, '[а-я]') then
 			background = data['renamed'][all_langs[i][1]] and '#dff9f9' or nil
-			name = data['renamed'][all_langs[i][1]] or all_langs[i][2]
 			link = data['link_exception'][all_langs[i][1]] or linkCheck(name)
 			if data['link_exception'][all_langs[i][1]] then
 				name = "''" .. name .. "''"
@@ -120,7 +120,7 @@ function p.docTable(frame)
 				:newline()
 		else
 			not_translated
-				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), all_langs[i][2]))
+				:node(tableRow('td', nil, nil, tempExample(all_langs[i][1]), name))
 				:newline()
 		end
 	end
