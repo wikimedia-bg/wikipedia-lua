@@ -3,8 +3,8 @@ local p = {}
 local data = mw.loadData('Модул:Lang/data')
 local ns = mw.title.getCurrentTitle().namespace
 
-local renamed = data['преименувани']
-local missing = data['липсващи']
+local renamed_codes = data['преименувани']
+local missing_codes = data['липсващи']
 local link_exceptions = data['изключения_препратки']
 
 --[=[===========================================================================
@@ -167,14 +167,14 @@ function p.docTable(frame)
 	for k, v in pairs(mw.language.fetchLanguageNames('bg', 'all')) do
 		if type(k) == 'string' and type(v) == 'string' then
 			background = nil
-			if renamed[k] then
-				if renamed[k] == v then
+			if renamed_codes[k] then
+				if renamed_codes[k] == v then
 					background = '#ffdbd4'
 				else
 					background = '#dff9f9'
 				end
 			end
-			v = renamed[k] or v
+			v = renamed_codes[k] or v
 			table.insert(all_langs, {k, v, background})
 
 			if not all_existing_names[v] then
@@ -237,7 +237,7 @@ function p.docTable(frame)
 	if ttype == 'липсващи' then
 		local m_codes = {}
 
-		for k, v in pairs(link_exceptions) do
+		for k, v in pairs(missing_codes) do
 			if type(k) == 'string' and type(v) == 'string' then
 				table.insert(m_codes, {k, v})
 			end
@@ -255,7 +255,7 @@ function p.docTable(frame)
 		for i = 1, #m_codes do
 			local code = m_codes[i][1]
 			local name = m_codes[i][2]
-			local existing_codename = renamed[code] or mw.language.fetchLanguageName(code, 'bg')
+			local existing_codename = renamed_codes[code] or mw.language.fetchLanguageName(code, 'bg')
 			local background = existing_codename ~= '' and '#fff88e' or nil
 			local temp = tempExample(code, background)
 
@@ -264,7 +264,7 @@ function p.docTable(frame)
 						table.sort(duplicated_names[name], function(a, b) return a < b end)
 						for j = 1, #duplicated_names[name] do
 							if duplicated_names[name][j] ~= code then
-								existing_codename = renamed[duplicated_names[name][j]] or mw.language.fetchLanguageName(duplicated_names[name][j], 'bg')
+								existing_codename = renamed_codes[duplicated_names[name][j]] or mw.language.fetchLanguageName(duplicated_names[name][j], 'bg')
 								background = existing_codename ~= '' and '#fff88e' or nil
 								temp = temp .. '<hr>' .. tempExample(duplicated_names[name][j], background)
 								already_added[duplicated_names[name][j]] = true
@@ -302,7 +302,7 @@ function p.cite(frame)
 	local code =  mw.ustring.lower(trimText(frame:getParent().args[1]))
 	if code == '' then return '' end
 
-	local name = renamed[code] or missing[code] or mw.language.fetchLanguageName(code, 'bg')
+	local name = renamed_codes[code] or missing_codes[code] or mw.language.fetchLanguageName(code, 'bg')
 	if not name or name == '' then
 		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“')
 	end
@@ -323,7 +323,7 @@ function p.main(frame)
 		return ns == 0 and errorMessage('Празен първи позиционен параметър', '[[Категория:Страници с грешки]]') or ''
 	end
 
-	local name = renamed[code] or missing[code] or mw.language.fetchLanguageName(code, 'bg')
+	local name = renamed_codes[code] or missing_codes[code] or mw.language.fetchLanguageName(code, 'bg')
 
 	if not name or name == '' then
 		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“', ns == 0 and '[[Категория:Страници с грешки]]')
