@@ -133,6 +133,25 @@ local function tableRow(celltag, width, background, str1, str2)
 	return row
 end
 
+local function tableCreate(child)
+	local div = mw.html.create('div')
+		:css('height', '400px')
+		:css('overflow', 'auto')
+		:css('border', '1px solid black')
+		:css('padding', '0')
+		:tag('table')
+			:addClass('wikitable sortable')
+			:css('width', '100%')
+			:css('margin', '0')
+			:newline()
+			:node(tableRow('th', '50%', nil, 'Език', 'Шаблон'))
+			:newline()
+			:node(child)
+			:allDone()
+
+	return tostring(div)
+end
+
 local function tempExample(val, background, oname)
 	local root = mw.html.create('code')
 	val = "&#123;&#123;lang&#124;'''" .. val .. "'''&#125;&#125;"
@@ -145,18 +164,6 @@ local function tempExample(val, background, oname)
 end
 
 function p.docTable(frame)
-	local div = mw.html.create('div')
-		:css('height', '400px')
-		:css('overflow', 'auto')
-		:css('border', '1px solid black')
-		:css('padding', '0')
-	local tab = mw.html.create('table')
-		:addClass('wikitable sortable')
-		:css('width', '100%')
-		:css('margin', '0')
-		:newline()
-		:node(tableRow('th', '50%', nil, 'Език', 'Шаблон'))
-		:newline()
 	local translated = mw.html.create()
 	local not_translated = mw.html.create()
 	local link, background, original_name
@@ -246,9 +253,9 @@ function p.docTable(frame)
 	end
 
 	return '<h3>Преведени</h3>\n'
-	.. tostring(div:node(tab:node(translated)))
+	.. tableCreate(translated)
 	.. '\n<h3>Непреведени</h3>\n'
-	.. tostring(div:node(tab:node(not_translated)))
+	.. tableCreate(not_translated)
 end
 
 --[=[===========================================================================
