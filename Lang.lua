@@ -3,8 +3,7 @@ local p = {}
 local data = mw.loadData('Модул:Lang/data')
 local ns = mw.title.getCurrentTitle().namespace
 
-local renamed_codes = data['преименувани']
-local missing_codes = data['липсващи']
+local locale_names = data['локално_дефинирани']
 local link_exceptions = data['изключения_препратки']
 
 --[=[===========================================================================
@@ -38,25 +37,32 @@ local function linkCheck(name)
 					local id = instance[i].mainsnak and instance[i].mainsnak.datavalue and instance[i].mainsnak.datavalue.value and instance[i].mainsnak.datavalue.value.id
 					if id then
 						local label = mw.ustring.lower(mw.wikibase.getLabel(id) or '')
-						if mw.ustring.match(label, '%f[%a]език%f[%A]') or mw.ustring.match(label, '%f[%a]language%f[%A]') then
-							return name -- страницата е екземпляр на език
+						if mw.ustring.match(label, '%f[%a][а-ъьюя]-език%f[%A]') or mw.ustring.match(label, '%f[%a][a-z]-language%f[%A]') then
+							return name -- обектът е екземпляр на език
 						end
 					end
 				end
 
-				local iso_1 = mw.wikibase.getAllStatements(qid, 'P218')
-				local iso_2 = mw.wikibase.getAllStatements(qid, 'P219')
-				local iso_3 = mw.wikibase.getAllStatements(qid, 'P220')
-				local ietf = mw.wikibase.getAllStatements(qid, 'P305')
-				if (#iso_1 + #iso_2 + #iso_3 + #ietf) > 0 then
-					-- страницата съдържа свойства, идентифициращи обекта като език
-					return name
+				local lang_properties = {
+					'P218', -- ISO 639-1
+					'P219', -- ISO 639-2
+					'P220', -- ISO 639-3
+					'P305', -- IETF
+					'P506', -- ISO 15924 aлфа-4
+					'P2620', -- ISO 15924 цифров
+				}
+				for i = 1, #lang_properties do
+					local value = mw.wikibase.getAllStatements(qid, lang_properties[i])
+					if #value > 0 then
+						-- обектът съдържа свойство, което го идентифицира като език
+						return name
+					end
 				end
 			end
 		end
 	end
 
-	-- страницата не свързана с Уикиданни или е свързана, но не е екземпляр на език и не съдържа свойства, идентифициращи обекта като език
+	-- страницата не е свързана с Уикиданни или е свързана, но обектът в УД не е екземпляр на език и/или не съдържа свойства, които да го идентифицират като език
 	return name .. (mw.ustring.match(name, '[жзсчцш]ки$') and ' език' or ' (език)')
 end
 
@@ -127,7 +133,7 @@ local function tableRow(celltag, width, background, str1, str2)
 	return row
 end
 
-local function tempExample(val, background)
+local function tempExample(val, background, oname)
 	local root = mw.html.create('code')
 	val = "&#123;&#123;lang&#124;'''" .. val .. "'''&#125;&#125;"
 
@@ -135,14 +141,10 @@ local function tempExample(val, background)
 	root:wikitext(val)
 	root:done()
 
-	return tostring(root)
+	return tostring(root) .. (oname and ' <small>(' .. oname .. ')</small>' or '')
 end
 
 function p.docTable(frame)
-	local ttype = mw.ustring.lower(trimText(frame.args[1]))
-
-	if ttype ~= 'преведени' and ttype ~= 'непреведени' and ttype ~= 'липсващи' then return '' end
-
 	local div = mw.html.create('div')
 		:css('height', '400px')
 		:css('overflow', 'auto')
@@ -157,141 +159,96 @@ function p.docTable(frame)
 		:newline()
 	local translated = mw.html.create()
 	local not_translated = mw.html.create()
-	local missing = mw.html.create()
-	local link, background
+	local link, background, original_name
+	local mediawiki_names = mw.language.fetchLanguageNames('bg', 'all')
 	local all_langs = {}
-	local all_existing_names = {}
-	local duplicated_names = {}
+	local repeated_names = {}
 	local already_added = {}
 
-	for k, v in pairs(mw.language.fetchLanguageNames('bg', 'all')) do
+	for k, v in pairs(mediawiki_names) do
 		if type(k) == 'string' and type(v) == 'string' then
 			background = nil
-			if renamed_codes[k] then
-				if renamed_codes[k] == v then
+			original_name = nil
+			if locale_names[k] then
+				if locale_names[k] == v then
 					background = '#ffdbd4'
 				else
 					background = '#dff9f9'
+					original_name = v
 				end
 			end
-			v = renamed_codes[k] or v
-			table.insert(all_langs, {k, v, background})
+			v = locale_names[k] or v
+			table.insert(all_langs, {k, v, background, original_name})
 
-			if not all_existing_names[v] then
-				all_existing_names[v] = {k}
+			if not repeated_names[v] then
+				repeated_names[v] = {k}
 			else
-				if type(all_existing_names[v]) == 'table' then
-					table.insert(all_existing_names[v], k)
+				if type(repeated_names[v]) == 'table' then
+					table.insert(repeated_names[v], k)
 				end
 			end
 		end
 	end
 
-	if ttype == 'преведени' or ttype == 'непреведени' then
-		table.sort(all_langs, function(a, b) return a[1] < b[1] end)
-		duplicated_names = all_existing_names
-
-		for i = 1, #all_langs do
-			local code = all_langs[i][1]
-			local name = all_langs[i][2]
-			local temp = tempExample(code, all_langs[i][3])
-
-			if not already_added[code] then
-				if type(duplicated_names[name]) == 'table' and #duplicated_names[name] > 1 then
-					table.sort(duplicated_names[name], function(a, b) return a < b end)
-					for j = 1, #duplicated_names[name] do
-						if duplicated_names[name][j] ~= code then
-							background = nil
-							for k = 1, #all_langs do
-								if all_langs[k][1] == duplicated_names[name][j] then
-									background = all_langs[k][3]
-								end
-							end
-							temp = temp .. '<hr>' .. tempExample(duplicated_names[name][j], background)
-							already_added[duplicated_names[name][j]] = true
-						end
-					end
-				end
-
-				if mw.ustring.match(mw.ustring.lower(name), '^[а-ъьюя%s%p]+$') then
-						if ttype == 'преведени' then
-							link = link_exceptions[code] or linkCheck(name)
-							if link_exceptions[code] then
-								name = "''" .. name .. "''"
-							end
-							translated
-								:node(tableRow('td', nil, nil, createLink(link, name), temp))
-								:newline()
-						end
-				else
-					if ttype == 'непреведени' then
-						not_translated
-							:node(tableRow('td', nil, nil, name, temp))
-							:newline()
-					end
+	for k, v in pairs(locale_names) do
+		if type(k) == 'string' and type(v) == 'string' and not mediawiki_names[k] then
+			table.insert(all_langs, {k, v, '#daf7a6'})
+			if not repeated_names[v] then
+				repeated_names[v] = {k}
+			else
+				if type(repeated_names[v]) == 'table' then
+					table.insert(repeated_names[v], k)
 				end
 			end
 		end
 	end
 
-	if ttype == 'липсващи' then
-		local m_codes = {}
+	table.sort(all_langs, function(a, b) return a[1] < b[1] end)
 
-		for k, v in pairs(missing_codes) do
-			if type(k) == 'string' and type(v) == 'string' then
-				table.insert(m_codes, {k, v})
-			end
+	for i = 1, #all_langs do
+		local code = all_langs[i][1]
+		local name = all_langs[i][2]
+		local temp = tempExample(code, all_langs[i][3], all_langs[i][4])
 
-			if not duplicated_names[v] then
-				duplicated_names[v] = {k}
-			else
-				if type(duplicated_names[v]) == 'table' then
-					table.insert(duplicated_names[v], k)
-				end
-			end
-		end
-		table.sort(m_codes, function(a, b) return a[1] < b[1] end)
-
-		for i = 1, #m_codes do
-			local code = m_codes[i][1]
-			local name = m_codes[i][2]
-			local existing_codename = renamed_codes[code] or mw.language.fetchLanguageName(code, 'bg')
-			local background = existing_codename ~= '' and '#fff88e' or nil
-			local temp = tempExample(code, background)
-
-			if not already_added[code] then
-				if type(duplicated_names[name]) == 'table' and #duplicated_names[name] > 1 then
-						table.sort(duplicated_names[name], function(a, b) return a < b end)
-						for j = 1, #duplicated_names[name] do
-							if duplicated_names[name][j] ~= code then
-								existing_codename = renamed_codes[duplicated_names[name][j]] or mw.language.fetchLanguageName(duplicated_names[name][j], 'bg')
-								background = existing_codename ~= '' and '#fff88e' or nil
-								temp = temp .. '<hr>' .. tempExample(duplicated_names[name][j], background)
-								already_added[duplicated_names[name][j]] = true
+		if not already_added[code] then
+			if type(repeated_names[name]) == 'table' and #repeated_names[name] > 1 then
+				table.sort(repeated_names[name], function(a, b) return a < b end)
+				for j = 1, #repeated_names[name] do
+					if repeated_names[name][j] ~= code then
+						background = nil
+						original_name = nil
+						for k = 1, #all_langs do
+							if all_langs[k][1] == repeated_names[name][j] then
+								background = all_langs[k][3]
+								original_name = all_langs[k][4]
 							end
 						end
+						temp = temp .. '<hr>' .. tempExample(repeated_names[name][j], background, original_name)
+						already_added[repeated_names[name][j]] = true
+					end
 				end
+			end
 
+			if mw.ustring.match(mw.ustring.lower(name), '^[а-ъьюя%s%p]+$') then
 				link = link_exceptions[code] or linkCheck(name)
 				if link_exceptions[code] then
 					name = "''" .. name .. "''"
 				end
-				background = all_existing_names[name] and '#daf7a6' or nil
-				missing
-					:node(tableRow('td', nil, background, createLink(link, name), temp))
+				translated
+					:node(tableRow('td', nil, nil, createLink(link, name), temp))
 					:newline()
-
+			else
+				not_translated
+					:node(tableRow('td', nil, nil, name, temp))
+					:newline()
 			end
 		end
 	end
 
-	if ttype == 'преведени' then
-		return tostring(div:node(tab:node(translated)))
-	elseif ttype == 'непреведени' then
-		return tostring(div:node(tab:node(not_translated)))
-	elseif ttype == 'липсващи' then
-		return tostring(div:node(tab:node(missing)))
-	end
+	return '<h3>Преведени</h3>\n'
+	.. tostring(div:node(tab:node(translated)))
+	.. '\n<h3>Непреведени</h3>\n'
+	.. tostring(div:node(tab:node(not_translated)))
 end
 
 --[=[===========================================================================
@@ -302,7 +259,7 @@ function p.cite(frame)
 	local code =  mw.ustring.lower(trimText(frame:getParent().args[1]))
 	if code == '' then return '' end
 
-	local name = renamed_codes[code] or missing_codes[code] or mw.language.fetchLanguageName(code, 'bg')
+	local name = locale_names[code] or mw.language.fetchLanguageName(code, 'bg')
 	if not name or name == '' then
 		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“')
 	end
@@ -323,7 +280,7 @@ function p.main(frame)
 		return ns == 0 and errorMessage('Празен първи позиционен параметър', '[[Категория:Страници с грешки]]') or ''
 	end
 
-	local name = renamed_codes[code] or missing_codes[code] or mw.language.fetchLanguageName(code, 'bg')
+	local name = locale_names[code] or mw.language.fetchLanguageName(code, 'bg')
 
 	if not name or name == '' then
 		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“', ns == 0 and '[[Категория:Страници с грешки]]')
