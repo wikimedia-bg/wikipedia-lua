@@ -418,20 +418,26 @@ function p.lsc(frame)
     end
 	if isSettlement(location, 1) then
 		if cstr == '' then
-			cstr = wd._property({'linked', 'deprecated+', location, 'P17', date=d})
+			country = wd._property({'raw', 'deprecated+', location, 'P17', date=d})
+			cstr = wd._label({ 'linked', country})
+			cstr = relabel(cstr, wd._property({'linked', 'deprecated+', country, 'P1448', date=d}))
 		end
 		lstr = relabel(lstr, wd._property({'linked', 'deprecated+', location, 'P1448', date=d}))
 	else
 		settlement = findSettlement(location, frame.args[2], 3)
 		if settlement ~= '' then
 			if cstr == '' then
-				cstr = wd._property({'linked', 'deprecated+', settlement, 'P17', date=d})
+				country = wd._property({'raw', 'deprecated+', settlement, 'P17', date=d})
+				cstr = wd._label({ 'linked', country})
+				cstr = relabel(cstr, wd._property({'linked', 'deprecated+', country, 'P1448', date=d}))
 			end
 			sstr = wd._label({ 'linked', settlement})
 			sstr = relabel(sstr, wd._property({'linked', 'deprecated+', settlement, 'P1448', date=d}))
 		else
 			if cstr == '' then
-				cstr = wd._property({'linked', 'deprecated+', location, 'P17',  date=d})
+				country = wd._property({'raw', 'deprecated+', location, 'P17', date=d})
+				cstr = wd._label({ 'linked', country})
+				cstr = relabel(cstr, wd._property({'linked', 'deprecated+', country, 'P1448', date=d}))
 			end
 		end
 	end
