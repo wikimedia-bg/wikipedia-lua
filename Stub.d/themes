@@ -547,7 +547,7 @@ return {
 				{ 'подводница', 'Orzel.svg', 'подводници' },
 				{ 'бронирана бойна машина|бронирани|танк', 'Panzer aus Zusatzzeichen 1049-12.svg', 'бронирани бойни машини' },
 			{ 'търговия', 'CashRegister.svg' },
-			{ 'финанси', '5000 Tugriks - Recto.jpg' },
+			{ 'финанси', 'Gold Currency Symbols.svg' },
 	
 	-- МЪНИЧЕТА ЗА ИЗКУСТВО, КУЛТУРА И РЕЛИГИЯ
 	{ 'култура', 'Art template.gif' },
