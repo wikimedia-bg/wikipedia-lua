@@ -41,15 +41,15 @@ local function commonsBelow()
 	local commons
 	local entity = mw.wikibase.getEntity()
 	local pagetitle = mw.title.getCurrentTitle().text
-	local success, val = pcall(function() return entity['claims']['P373'][1]['mainsnak']['datavalue']['value'] end)
+	local success, val = pcall(function() return entity['claims']['P373'][1]['mainsnak']['datavalue']['value'] end) -- Commons category property value
 	if success then
 		commons = 'Category:' .. val
 	else
-		success, val = pcall(function() return entity['claims']['P935'][1]['mainsnak']['datavalue']['value'] end)
+		success, val = pcall(function() return entity['claims']['P935'][1]['mainsnak']['datavalue']['value'] end) -- Commons gallery property value
 		if success then
 			commons = val
 		else
-			success, val = pcall(function() return entity['sitelinks']['commonswiki']['title'] end)
+			success, val = pcall(function() return entity['sitelinks']['commonswiki']['title'] end) -- Commons link value from multilanguage sites links menu
 			if success then commons = val end
 		end
 	end
@@ -394,9 +394,9 @@ function p.infobox(frame)
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
 	-- phantom references appearing in article reference lists.
-	args['child'] = origArgs['child'] -- could blank or absent; different behaviour because of below
+	args['child'] = origArgs['child'] -- could be blank or absent; different behaviour because of below
 	preprocessSingleArg('bodyclass')
-	args['subbox'] = origArgs['subbox'] -- could blank or absent; different behaviour because of below
+	args['subbox'] = origArgs['subbox'] -- could be blank or absent; different behaviour because of below
 	preprocessSingleArg('bodystyle')
 	preprocessSingleArg('title')
 	preprocessSingleArg('titleclass')
