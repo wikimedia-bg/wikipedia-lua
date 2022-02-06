@@ -37,6 +37,29 @@ local function getArgNums(prefix)
 	return nums
 end
 
+local function commonsBelow()
+	local commons
+	local entity = mw.wikibase.getEntity()
+	local success, val = pcall(function() return entity['claims']['P373'][1]['mainsnak']['datavalue']['value'] end) -- Commons category property value
+	if success then
+		commons = 'Category:' .. val
+	else
+		success, val = pcall(function() return entity['claims']['P935'][1]['mainsnak']['datavalue']['value'] end) -- Commons gallery property value
+		if success then
+			commons = val
+		else
+			success, val = pcall(function() return entity['sitelinks']['commonswiki']['title'] end) -- Commons link value from multilanguage sites links menu
+			if success then commons = val end
+		end
+	end
+	
+	if commons then
+		return '<b class="plainlinks">[' .. tostring(mw.uri.fullUrl(':c:' .. commons, 'uselang=bg')) .. ' ' .. mw.ustring.gsub(mw.title.getCurrentTitle().text, '%s+%b()$', '') .. ']</b> в [[Общомедия]]'
+	end
+	
+	return nil
+end
+
 local function addRow(rowArgs)
 	-- Adds a row to the infobox, with either a header cell
 	-- or a label/data cell combination.
@@ -123,6 +146,9 @@ local function renderAboveRow()
 end
 
 local function renderBelowRow()
+	if not (args.child or args.subbox) then
+		args.below = args.below or commonsBelow() -- get commons only when an infobox element doesn't have subbox/child params
+	end
 	if not args.below then return end
 
 	root
@@ -365,9 +391,9 @@ function p.infobox(frame)
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
 	-- phantom references appearing in article reference lists.
-	preprocessSingleArg('child')
+	args['child'] = origArgs['child'] -- could be blank or absent; different behaviour because of renderBelowRow()
 	preprocessSingleArg('bodyclass')
-	preprocessSingleArg('subbox')
+	args['subbox'] = origArgs['subbox'] -- could be blank or absent; different behaviour because of renderBelowRow()
 	preprocessSingleArg('bodystyle')
 	preprocessSingleArg('title')
 	preprocessSingleArg('titleclass')
