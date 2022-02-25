@@ -664,14 +664,14 @@ return {
 		-- по националност
 		{ 'американец|американци', 'USA-people-stub-icon.png', 'американци' },
 		{ 'арумъните|арумъни|армъни', 'Aromanian flag.svg', 'арумъни' },
-		{ 'британец', 'Flag of the United Kingdom.svg', 'британци' },
+		{ 'британец', 'United Kingdom people icon.png', 'британци' },
 		{ 'българин|българи', 'Bulgaria people stub icon.svg', 'българи' },
-		{ 'германец', 'Flag of Germany.svg', 'германци' },
+		{ 'германец', 'Germany people icon.png', 'германци' },
 		{ 'грък', 'Greece people stub icon.png', 'гърци' },
-		{ 'канадец', 'Flag of Canada.svg', 'канадци' },
-		{ 'руснак', 'Flag of Russia.svg', 'руснаци' },
+		{ 'канадец', 'Canada people icon.png', 'канадци' },
+		{ 'руснак', 'Russia people icon.png', 'руснаци' },
 		{ 'северномакедонец|македонец', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
-		{ 'французин', 'Crystal Clear app Login Manager.png', 'французи' },
+		{ 'французин', 'France people icon.png', 'французи' },
 
 		-- други
 		{ 'благородник|аристократ', 'Coat of arms of Brabant.svg', 'благородници' },
