@@ -668,6 +668,7 @@ return {
 		{ 'българин|българи', 'Bulgaria people stub icon.svg', 'българи' },
 		{ 'германец', 'Germany people icon.png', 'германци' },
 		{ 'грък', 'Greece people stub icon.png', 'гърци' },
+		{ 'италианец', 'Italy people stub icon.svg', 'италианци' },
 		{ 'канадец', 'Canada people icon.png', 'канадци' },
 		{ 'руснак', 'Russia people icon.png', 'руснаци' },
 		{ 'северномакедонец|македонец', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
