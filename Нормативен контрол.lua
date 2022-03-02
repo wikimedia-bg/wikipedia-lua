@@ -157,12 +157,11 @@ function p.leonoreLink( id )
 end
 
 function p.sbnLink( id )
-	--P396's format regex: IT\\ICCU\\(\d{10}|\D\D[\D\d]\D\\\d{6}) (e.g. IT\ICCU\CFIV\000163)
-	if not string.match( id, '^IT\\ICCU\\%d%d%d%d%d%d%d%d%d%d$' ) and
-	   not string.match( id, '^IT\\ICCU\\%u%u[%u%d]%u\\%d%d%d%d%d%d$' ) then --legacy: %u used here instead of %D (but the faulty ID cat is empty, out of ~12k uses)
+	--P396's format regex: \D{2}[A-Z0-3]V\d{6} (e.g. IT\ICCU\CFIV\000163)
+	if not string.match( id, '%D%D[A-Z0-3]V%d%d%d%d%d%d^$' ) then
 		return false
 	end
-	return '[https://opac.sbn.it/opacsbn/opac/iccu/scheda_authority.jsp?bid='..id..' '..id..']'..p.getCatForId( 'SBN' )
+	return '[https://opac.sbn.it/risultati-autori/-/opac-autori/detail/'..id..' '..id..']'..p.getCatForId( 'SBN' )
 end
 
 function p.nkcLink( id )
