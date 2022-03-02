@@ -158,7 +158,7 @@ end
 
 function p.sbnLink( id )
 	--P396's format regex: \D{2}[A-Z0-3]V\d{6} (e.g. IT\ICCU\CFIV\000163)
-	if not string.match( id, '%D%D[A-Z0-3]V%d%d%d%d%d%d^$' ) then
+	if not string.match( id, '^%D%D[A-Z0-3]V%d%d%d%d%d%d$' ) then
 		return false
 	end
 	return '[https://opac.sbn.it/risultati-autori/-/opac-autori/detail/'..id..' '..id..']'..p.getCatForId( 'SBN' )
