@@ -103,6 +103,7 @@ local PROPERTY = {
 local IUCNSTATUS = {
 	Q211005 = 'LC',
 	Q719675 = 'NT',
+	Q158862 = 'CD',
 	Q278113 = 'VU',
 	Q11394 = 'EN',
 	Q219127 = 'CR',
@@ -679,7 +680,7 @@ end
 
 local function getStatus(status)
 	if status then
-		local result = to.link(string.format('File:Status iucn3.1 %s bg.svg|200px|%s', status, status)) .. '<br/>'
+		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|200px|%s', status, status)) .. '<br/>'
 		local category = ''
 		if status == 'LC' then
 			result = result .. to.link('Незастрашен вид|Незастрашен')
@@ -687,6 +688,9 @@ local function getStatus(status)
 		elseif status == 'NT' then
 			result = result .. to.link('Почти застрашен вид|Почти застрашен')
 			category = 'Почти застрашени'
+		elseif status == 'CD' then
+			result = result .. to.link('Зависим от защита вид|Зависим от защита') .. ' <small>([[Червен списък на световнозастрашените видове|IUCN 2.3]])</small>'
+			category = 'Зависими от защита'
 		elseif status == 'VU' then
 			result = result .. to.link('Уязвим вид|Уязвим')
 			category = 'Уязвими'
