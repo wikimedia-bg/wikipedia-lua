@@ -276,9 +276,9 @@ function formatDate(vars, calendar)
 		if (earliest ~= '') and (latest ~= '') then
 			output = 'между ' .. earliest .. ' и ' .. latest
 		elseif (earliest ~= '') then
-			output = 'не по-рано от ' .. earliest
+			output = 'след ' .. earliest
 		elseif (latest ~= '') then
-			output = 'не по-късно от ' .. latest
+			output = 'преди ' .. latest
 		else
 			output = 'неизв.'
 		end
