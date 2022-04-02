@@ -636,7 +636,6 @@ return {
 				{ 'папа', 'Emblem of the Papacy SE.svg', 'папи' },
 		{ 'спортист|колоездач', 'Crystal Clear app clicknrun.png', 'спортисти' },
 			{ 'автомобилен състезател', 'Ferrari stub.gif', 'автомобилни състезатели'},
-			{ 'алпинист', 'Climber silhouette.svg', 'алпинисти' },
 			{ 'волейболист', 'Volley ball angelo gelmi 01.svg', 'волейболисти' },
 			{ 'тенисист', 'Tennis pictogram.svg', 'тенисисти' },
 			{ 'футболист', 'Football pictogram.svg', 'футболисти' },
