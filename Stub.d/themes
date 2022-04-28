@@ -10,7 +10,7 @@ return {
 	-- МЪНИЧЕТА ЗА ТЕРИТОРИЯ
 	{ 'Азия', 'TinyAsia.png' },
 		{ 'Азербайджан', 'Flag of Azerbaijan.svg|border' },
-		{ 'Армения', 'Flag of Armenia - Coat of Arms.svg' },
+		{ 'Армения', 'Flag of Armenia' },
 		{ 'Афганистан', 'Flag of Afghanistan.svg' },
 		{ 'Бангладеш', 'Flag of Bangladesh.svg' },
 		{ 'Бахрейн', 'Flag of Bahrain.svg|border' },
