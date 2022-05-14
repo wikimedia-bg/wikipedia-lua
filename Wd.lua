@@ -1093,7 +1093,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					if suffix == linkSuffix then
 						value = '[[' .. value .. suffix .. ']]'
 					else
-						value = '[[' .. value .. linkSuffix .. '|' .. value .. suffix .. ']]'
+						value = '[[' .. value .. linkSuffix .. '|' .. value .. ']]' .. suffix
 					end
 				else
 					value = value .. suffix
