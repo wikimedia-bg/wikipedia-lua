@@ -634,7 +634,7 @@ local function getAuthority(taxonNameClaim, isCurrentTaxon)
 		if taxonDate then
 			datetime = taxonDate[1].datavalue.value.time
 			localAuthorityDate = mw.text.split(mw.ustring.sub(datetime, 2), '-')[1]
-			authorityDate = localAuthorityDate .. '&nbsp;г.'
+			authorityDate = localAuthorityDate
 		end
 	
 		local result = (authorityName and authorityDate) and (authorityName .. ', ' .. authorityDate) or (authorityName or authorityDate or '')
