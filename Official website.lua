@@ -76,7 +76,7 @@ fetchWikidataUrl = function()
 		return websites[1].mainsnak.datavalue.value
 	end)
 
-	-- Cache the result so that we only do the heavy lifting once per #invoke.
+	-- Кеширане на резултата с цел по-малко операции за #invoke.
 	fetchWikidataUrl = function ()
 		return url
 	end
@@ -84,7 +84,7 @@ fetchWikidataUrl = function()
 	return url
 end
 
--- Render the URL link, plus other visible output.
+-- Извеждане на URL и други елементи.
 local function renderUrl(options)
 	if not options.url and not options.wikidataurl then
 		local qid = mw.wikibase.getEntityIdForCurrentPage()
@@ -92,7 +92,7 @@ local function renderUrl(options)
 			'Няма открит URL. Моля, укажете URL тук или го добавете в Уикиданни.' ..
 			'</strong>'
 		if qid then
-			result = result.. ' [[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Edit this at Wikidata |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Edit this at Wikidata]]'
+			result = result.. ' [[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Редактирайте в Уикиданни |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Редактирайте в Уикиданни]]'
 		end
 		return result
 	end
@@ -104,7 +104,7 @@ local function renderUrl(options)
 	if options.wikidataurl and not options.url then
 		local qid = mw.wikibase.getEntityIdForCurrentPage()
 		if qid then
-			ret[#ret + 1] = '[[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Edit this at Wikidata |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Edit this at Wikidata]]'
+			ret[#ret + 1] = '[[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Редактирайте в Уикиданни |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Редактирайте в Уикиданни]]'
 		end
 	end
 	if options.format == 'flash' then
@@ -136,7 +136,7 @@ local function renderTrackingCategory(url, wikidataurl)
 	else
 		category = 'Официалният сайт не е в Уикиданни'
 	end
-	return category and string.format('[[Category:%s]]', category) or ''
+	return category and string.format('[[Категория:%s]]', category) or ''
 end
 
 function p._main(args)
@@ -145,7 +145,7 @@ function p._main(args)
 	local formattedUrl = renderUrl{
 		url = url,
 		wikidataurl = wikidataurl,
-		display = args[2] or args.name or 'Official website',
+		display = args[2] or args.name or 'Официален сайт',
 		format = args.format,
 		mobile = args.mobile
 	}
