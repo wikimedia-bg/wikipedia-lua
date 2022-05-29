@@ -10,8 +10,7 @@ local function quickPcall(func)
 	end
 end
 
--- Gets the rank for a Wikidata property table. Returns 1, 0 or -1, in
--- order of rank.
+-- Взима ранга на свойството от Wikidata. Връща 1, 0 или -1
 local function getRank(prop)
 	local rank = prop.rank
 	if rank == 'preferred' then
@@ -26,11 +25,12 @@ local function getRank(prop)
 	end
 end
 
--- Finds whether a Wikidata property is qualified as being in English.
-local function isEnglish(prop)
+-- Проверява дали Wikidata свойството е обозначено като написано на български език
+-- Тук е единствената разлика с английската версия на модула (Q1860 -> Q7918
+local function isBulgarian(prop)
 	local ret = quickPcall(function ()
 		for i, lang in ipairs(prop.qualifiers.P407) do
-			if lang.datavalue.value['numeric-id'] == 1860 then
+			if lang.datavalue.value['numeric-id'] == 7918 then
 				return true
 			end
 		end
@@ -55,18 +55,15 @@ fetchWikidataUrl = function()
 		website._index = i
 	end
 
-	-- Сортиране на сайтовете, first by highest rank, and then by websites in the
-	-- English language, then by the website's original position in the
-	-- property list. When we are done, get the URL from the highest-sorted
-	-- object.
+	-- Сортиране на сайтовете, първо по най-висок ранг, после по език - български
 	table.sort(websites, function(ws1, ws2)
 		local r1 = getRank(ws1)
 		local r2 = getRank(ws2)
 		if r1 ~= r2 then
 			return r1 > r2
 		end
-		local e1 = isEnglish(ws1)
-		local e2 = isEnglish(ws2)
+		local e1 = isBulgarian(ws1)
+		local e2 = isBulgarian(ws2)
 		if e1 ~= e2 then
 			return e1
 		end
@@ -110,11 +107,11 @@ local function renderUrl(options)
 	if options.format == 'flash' then
 		ret[#ret + 1] = mw.getCurrentFrame():expandTemplate{
 			title = 'Color',
-			args = {'#505050', '(Requires [[Adobe Flash Player]])'}
+			args = {'#505050', '(Изисква [[Adobe Flash Player]])'}
 		}
 	end
 	if options.mobile then
-		ret[#ret + 1] = '(' .. makeUrl(options.mobile, 'Mobile') .. ')'
+		ret[#ret + 1] = '(' .. makeUrl(options.mobile, 'Мобилен сайт') .. ')'
 	end
 	return table.concat(ret, ' ')
 end
@@ -126,15 +123,15 @@ local function renderTrackingCategory(url, wikidataurl)
 	end
 	local category
 	if not url and not wikidataurl then
-		category = 'Без URL за официален сайт'
+		category = 'Без официален сайт'
 	elseif not url and wikidataurl then
 		return ''
 	elseif url and wikidataurl then
 		if url:gsub('/%s*$', '') ~= wikidataurl:gsub('/%s*$', '') then
-			category = 'Различни официални сайтове в Уикиданни и Укипедия'
+			category = 'Различни официални сайтове в Уикиданни и Уикипедия'
 		end
 	else
-		category = 'Официалният сайт не е в Уикиданни'
+		category = 'Без официален сайт в Уикиданни'
 	end
 	return category and string.format('[[Категория:%s]]', category) or ''
 end
