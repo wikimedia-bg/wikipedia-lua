@@ -1,4 +1,4 @@
-local makeUrl = require('Module:URL')._url
+local makeUrl = require('Модул:URL')._url
 
 local p = {}
 
@@ -39,12 +39,12 @@ local function isEnglish(prop)
 	return ret == true
 end
 
--- Fetches the official website URL from Wikidata.
+-- Взема официалният сайт от Уикиданни.
 local fetchWikidataUrl
 fetchWikidataUrl = function()
 	-- Get objects for all official sites on Wikidata.
 	local websites = quickPcall(function ()
-		return mw.wikibase.getEntityObject().claims.P856
+		return mw.wikibase.getAllStatements(mw.wikibase.getEntityIdForCurrentPage(), 'P856')
 	end)
 
 	-- Clone the objects in case other code needs them in their original order.
@@ -55,7 +55,7 @@ fetchWikidataUrl = function()
 		website._index = i
 	end
 
-	-- Sort the websites, first by highest rank, and then by websites in the
+	-- Сортиране на сайтовете, first by highest rank, and then by websites in the
 	-- English language, then by the website's original position in the
 	-- property list. When we are done, get the URL from the highest-sorted
 	-- object.
@@ -87,10 +87,9 @@ end
 -- Render the URL link, plus other visible output.
 local function renderUrl(options)
 	if not options.url and not options.wikidataurl then
-		local entity = mw.wikibase.getEntityObject() or {}
-		local qid = entity.id
+		local qid = mw.wikibase.getEntityIdForCurrentPage()
 		local result = '<strong class="error">' ..
-			'No URL found. Please specify a URL here or add one to Wikidata.' ..
+			'Няма открит URL. Моля, укажете URL тук или го добавете в Уикиданни.' ..
 			'</strong>'
 		if qid then
 			result = result.. ' [[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Edit this at Wikidata |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Edit this at Wikidata]]'
@@ -103,8 +102,7 @@ local function renderUrl(options)
 		makeUrl(options.url or options.wikidataurl, options.display)
 	)
 	if options.wikidataurl and not options.url then
-		local entity = mw.wikibase.getEntityObject() or {}
-		local qid = entity.id
+		local qid = mw.wikibase.getEntityIdForCurrentPage()
 		if qid then
 			ret[#ret + 1] = '[[File:OOjs UI icon edit-ltr-progressive.svg |frameless |text-top |10px |alt=Edit this at Wikidata |link=https://www.wikidata.org/wiki/' .. qid .. '#P856|Edit this at Wikidata]]'
 		end
@@ -128,15 +126,15 @@ local function renderTrackingCategory(url, wikidataurl)
 	end
 	local category
 	if not url and not wikidataurl then
-		category = 'Official website missing URL'
+		category = 'Без URL за официален сайт'
 	elseif not url and wikidataurl then
 		return ''
 	elseif url and wikidataurl then
 		if url:gsub('/%s*$', '') ~= wikidataurl:gsub('/%s*$', '') then
-			category = 'Official website different in Wikidata and Wikipedia'
+			category = 'Различни официални сайтове в Уикиданни и Укипедия'
 		end
 	else
-		category = 'Official website not in Wikidata'
+		category = 'Официалният сайт не е в Уикиданни'
 	end
 	return category and string.format('[[Category:%s]]', category) or ''
 end
@@ -155,8 +153,8 @@ function p._main(args)
 end
 
 function p.main(frame)
-	local args = require('Module:Arguments').getArgs(frame, {
-		wrappers = 'Template:Official website'
+	local args = require('Модул:Arguments').getArgs(frame, {
+		wrappers = 'Шаблон:Официален сайт'
 	})
 	return p._main(args)
 end
