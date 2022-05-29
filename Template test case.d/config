@@ -61,7 +61,7 @@ wrappers = {
 	['Template:Test case nowiki'] = {
 		func = 'nowiki'
 	},
-	['Template:Nowiki template demo'] = {
+	['Шаблон:Неуики шаблон демо'] = {
 		func = 'nowiki',
 		args = {showheader = false, showtemplate2 = false}
 	},
