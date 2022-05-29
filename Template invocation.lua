@@ -23,7 +23,7 @@ function p.name(title)
 			error("invalid title in parameter #1 of function 'name'", 2)
 		end
 	elseif type(title) ~= 'table' or type(title.getContent) ~= 'function' then
-		error("parameter #1 of function 'name' must be a string or a mw.title object", 2)
+		error("параметър #1 на функцията 'name' трябва да бъде низ или обект mw.title", 2)
 	end
 	if title.namespace == 10 then
 		return title.text
@@ -93,21 +93,28 @@ function p.invocation(name, args, format)
 	ret[#ret + 1] = name
 	for k, v in ipairs(invArgs) do
 		if type(v) == 'string' and v:find('=', 1, true) then
-			-- Likely something like 1=foo=bar, we need to do it as a named arg
-			break
+			-- Likely something like 1=foo=bar which needs to be displayed as a named arg.
+		else
+			ret[#ret + 1] = seps.pipe
+			ret[#ret + 1] = v
+			invArgs[k] = nil -- Erase the key so that we don't add the value twice
 		end
-		ret[#ret + 1] = seps.pipe
-		ret[#ret + 1] = v
-		invArgs[k] = nil -- Erase the key so that we don't add the value twice
 	end
-	local invArgs_list = {} -- sort a parameter list; preferable to randomly sorted output
-	for k, v in pairs(invArgs) do
-		invArgs_list[#invArgs_list + 1] = k
+	local keys = {} -- sort parameter list; better than arbitrary order
+	for k, _ in pairs(invArgs) do
+		keys[#keys + 1] = k
 	end
-	table.sort(invArgs_list)
-	for i, v in ipairs(invArgs_list) do -- Add named args based on sorted parameter list
+	table.sort(keys, function (a, b)
+			-- Sort with keys of type number first, then string.
+			if type(a) == type(b) then
+				return a < b
+			elseif type(a) == 'number' then
+				return true
+			end
+		end)
+	for _, v in ipairs(keys) do -- Add named args based on sorted parameter list
 		ret[#ret + 1] = seps.pipe
-		ret[#ret + 1] = v
+		ret[#ret + 1] = tostring(v)
 		ret[#ret + 1] = seps.equals
 		ret[#ret + 1] = invArgs[v]
 	end
