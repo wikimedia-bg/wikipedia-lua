@@ -93,7 +93,11 @@ function Template.new(invocationObj, options)
 end
 
 function Template:getFullPage()
-	if self.template then
+	if not self.template then
+		return self.title.prefixedText
+	elseif self.template:sub(1, 7) == '#invoke' then
+		return 'Module' .. self.template:sub(8):gsub('|.*', '')
+	else
 		local strippedTemplate, hasColon = self.template:gsub('^:', '', 1)
 		hasColon = hasColon > 0
 		local ns = strippedTemplate:match('^(.-):')
@@ -105,8 +109,6 @@ function Template:getFullPage()
 		else
 			return mw.site.namespaces[10].name .. ':' .. strippedTemplate
 		end
-	else
-		return self.title.prefixedText
 	end
 end
 
@@ -180,6 +182,7 @@ TestCase.renderMethods = {
 	rows = 'renderRows',
 	tablerows = 'renderRows',
 	inline = 'renderInline',
+	cells = 'renderCells',
 	default = 'renderDefault'
 }
 
@@ -209,6 +212,7 @@ function TestCase.new(invocationObj, options, cfg)
 	generalOptions.showheader = yesno(generalOptions.showheader) ~= false
 	generalOptions.showcaption = yesno(generalOptions.showcaption) ~= false
 	generalOptions.collapsible = yesno(generalOptions.collapsible)
+	generalOptions.notcollapsed = yesno(generalOptions.notcollapsed)
 	generalOptions.wantdiff = yesno(generalOptions.wantdiff) 
 	obj.options = generalOptions
 
@@ -322,7 +326,7 @@ function TestCase:templateOutputIsEqual()
 	local function normaliseOutput(obj)
 		local out = obj:getOutput()
 		-- Remove the random parts from strip markers.
-		out = out:gsub('(\127\'"`UNIQ.-)%-%x+%-(QINU`"\'\127)', '%1%2')
+		out = out:gsub('(\127[^\127]*UNIQ%-%-%l+%-)%x+(%-%-?QINU[^\127]*\127)', '%1%2')
 		return out
 	end
 	local firstOutput = normaliseOutput(self.templates[1])
@@ -341,43 +345,40 @@ function TestCase:makeCollapsible(s)
 		title = self.templates[1]:getInvocation('kbd')
 	end
 	local isEqual = self:templateOutputIsEqual()
-	local root = mw.html.create('table')
-	if self.options.wantdiff then
+	local root = mw.html.create('div')
 	root
-		:addClass('mw-collapsible mw-collapsed')
-		:css('background-color', 'transparent')
-		:css('width', '100%')
-		:css('border', 'solid silver 1px')
-		:tag('tr')
-			:tag('th')
-				:css('background-color', isEqual and 'yellow' or '#90a8ee')
-				:wikitext(title)
-				:done()
-			:done()
-		:tag('tr')
-			:tag('td')
-				:newline()
-				:wikitext(s)
-				:newline()
-	else
-		root
 		:addClass('mw-collapsible')
-		:addClass(isEqual and 'mw-collapsed' or nil)
-		:css('background-color', 'transparent')
 		:css('width', '100%')
 		:css('border', 'solid silver 1px')
-		:tag('tr')
-			:tag('th')
-				:css('background-color', isEqual and 'lightgreen' or 'yellow')
+		:css('padding', '0.2em')
+		:addClass(self.options.notcollapsed == false and 'mw-collapsed' or nil)
+	if self.options.wantdiff then
+		root
+			:tag('div')
+				:css('background-color', isEqual and 'yellow' or '#90a8ee')
+				:css('font-weight', 'bold')
+				:css('padding', '0.2em')
 				:wikitext(title)
 				:done()
-			:done()
-		:tag('tr')
-			:tag('td')
-				:newline()
-				:wikitext(s)
-				:newline()
-	 end
+	else
+		if self.options.notcollapsed ~= true or false then
+			root
+				:addClass(isEqual and 'mw-collapsed' or nil)
+		end
+		root
+			:tag('div')
+				:css('background-color', isEqual and 'lightgreen' or 'yellow')
+				:css('font-weight', 'bold')
+				:css('padding', '0.2em')
+				:wikitext(title)
+				:done()
+	end
+	root
+		:tag('div')
+			:addClass('mw-collapsible-content')
+			:newline()
+			:wikitext(s)
+			:newline()
 	return tostring(root)
 end
 
@@ -559,6 +560,67 @@ function TestCase:renderInline()
 	return table.concat(ret, '\n')
 end
 
+function TestCase:renderCells()
+	local root = mw.html.create()
+	local dataRow = root:tag('tr')
+	dataRow
+		:css('vertical-align', 'top')
+		:addClass(self.options.class)
+		:cssText(self.options.style)
+
+	-- Row header
+	if self.options.rowheader then
+		dataRow:tag('th')
+			:attr('scope', 'row')
+			:newline()
+			:wikitext(self.options.rowheader or self:message('row-header'))
+	end
+	-- Caption
+	if self.options.showcaption then
+		dataRow:tag('th')
+			:attr('scope', 'row')
+			:newline()
+			:wikitext(self.options.caption or self:message('columns-header'))
+	end
+
+	-- Show code
+	if self.options.showcode then
+		dataRow:tag('td')
+			:newline()
+			:wikitext(self:getInvocation('code'))
+	end
+
+	-- Template output
+	for i, obj in ipairs(self.templates) do
+		if self.options.output == 'nowiki+' then
+			dataRow:tag('td')
+				:newline()
+				:wikitext(self.options.before)
+				:wikitext(self:getTemplateOutput(obj))
+				:wikitext(self.options.after)
+				:wikitext('<pre style="white-space: pre-wrap;">')
+				:wikitext(mw.text.nowiki(self.options.before or ""))
+				:wikitext(mw.text.nowiki(self:getTemplateOutput(obj)))
+				:wikitext(mw.text.nowiki(self.options.after or ""))
+				:wikitext('</pre>')
+		elseif self.options.output == 'nowiki' then
+			dataRow:tag('td')
+				:newline()
+				:wikitext(mw.text.nowiki(self.options.before or ""))
+				:wikitext(mw.text.nowiki(self:getTemplateOutput(obj)))
+				:wikitext(mw.text.nowiki(self.options.after or ""))
+		else
+			dataRow:tag('td')
+				:newline()
+				:wikitext(self.options.before)
+				:wikitext(self:getTemplateOutput(obj))
+				:wikitext(self.options.after)
+		end
+	end
+
+	return tostring(root)
+end
+
 function TestCase:renderDefault()
 	local ret = {}
 	if self.options.showcode then
@@ -570,7 +632,9 @@ function TestCase:renderDefault()
 			ret[#ret + 1] = obj:makeHeader()
 		end
 		if self.options.output == 'nowiki+' then
-			ret[#ret + 1] = self:getTemplateOutput(obj) .. '<pre style="white-space: pre-wrap;">' .. mw.text.nowiki(self:getTemplateOutput(obj)) .. '</pre>'
+			ret[#ret + 1] = self:getTemplateOutput(obj) ..
+			'<pre style="white-space: pre-wrap;">' ..
+			mw.text.nowiki(self:getTemplateOutput(obj)) .. '</pre>'
 		elseif self.options.output == 'nowiki' then
 			ret[#ret + 1] = mw.text.nowiki(self:getTemplateOutput(obj))
 		else
@@ -665,6 +729,12 @@ function TableInvocation:getInvocation(options)
 end
 
 function TableInvocation:getOutput(options)
+	if (options.template:sub(1, 7) == '#invoke') then
+		local moduleCall = mw.text.split(options.template, '|', true)
+		local args = mw.clone(self.invokeArgs)
+		table.insert(args, 1, moduleCall[2])
+		return mw.getCurrentFrame():callParserFunction(moduleCall[1], args)
+	end
 	return mw.getCurrentFrame():expandTemplate{
 		title = options.template,
 		args = self.invokeArgs
