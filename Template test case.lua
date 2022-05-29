@@ -22,10 +22,10 @@
 ]]
 
 -- Load required modules
-local yesno = require('Module:Yesno')
+local yesno = require('Модул:Yesno')
 
 -- Set constants
-local DATA_MODULE = 'Module:Template test case/data'
+local DATA_MODULE = 'Модул:Template test case/data'
 
 -------------------------------------------------------------------------------
 -- Shared methods
@@ -70,7 +70,7 @@ function Template.new(invocationObj, options)
 
 	-- Validate input
 	if not obj.template and not obj.title then
-		error('no template or title specified', 2)
+		error('няма указан шаблон или заглавие', 2)
 	end
 
 	-- Memoize expensive method calls
@@ -96,7 +96,7 @@ function Template:getFullPage()
 	if not self.template then
 		return self.title.prefixedText
 	elseif self.template:sub(1, 7) == '#invoke' then
-		return 'Module' .. self.template:sub(8):gsub('|.*', '')
+		return 'Модул' .. self.template:sub(8):gsub('|.*', '')
 	else
 		local strippedTemplate, hasColon = self.template:gsub('^:', '', 1)
 		hasColon = hasColon > 0
@@ -116,7 +116,7 @@ function Template:getName()
 	if self.template then
 		return self.template
 	else
-		return require('Module:Template invocation').name(self.title)
+		return require('Модул:Template invocation').name(self.title)
 	end
 end
 
@@ -159,7 +159,7 @@ function Template:getInvocation(format)
 end
 
 function Template:getOutput()
-	local protect = require('Module:Protect')
+	local protect = require('Модул:Protect')
 	-- calling self._invocation:getOutput{...}
 	return protect(self._invocation.getOutput)(self._invocation, {
 		template = self:getName(),
@@ -230,7 +230,7 @@ function TestCase.new(invocationObj, options, cfg)
 	templateOptions[2] = templateOptions[2] or {}
 
 	-- Allow the "template" option to override the "template1" option for
-	-- backwards compatibility with [[Module:Testcase table]].
+	-- backwards compatibility with [[Модул:Testcase table]].
 	if generalOptions.template then
 		templateOptions[1].template = generalOptions.template
 	end
@@ -721,7 +721,7 @@ function TableInvocation:getInvocation(options)
 		local nowikiObj = NowikiInvocation.new(self.code, self.cfg)
 		return nowikiObj:getInvocation(options)
 	else
-		return require('Module:Template invocation').invocation(
+		return require('Модул:Template invocation').invocation(
 			options.template,
 			self.invokeArgs
 		)
@@ -813,7 +813,7 @@ function p.main(frame, cfg)
 	-- Module:Arguments, and use Module:Arguments to find the arguments passed
 	-- by the user.
 	local func = wrapperConfig and wrapperConfig.func or 'table'
-	local userArgs = require('Module:Arguments').getArgs(frame, {
+	local userArgs = require('Модул:Arguments').getArgs(frame, {
 		parentOnly = wrapperConfig,
 		frameOnly = not wrapperConfig,
 		trim = func ~= 'table',
