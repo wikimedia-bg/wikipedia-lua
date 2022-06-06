@@ -1,13 +1,13 @@
---[[--------------------------< C O N F I G U R A T I O N >----------------------------------------------------
+--[[--------------------------< НАСТРОЙКИ >----------------------------------------------------
 
-global configuration settings
+Общи настройки
 
 ]]
 
 local config = {
-	maxurls = 10,																-- Max number of URLs allowed. 
-	tname = 'Webarchive',														-- name of calling template. Change if template rename.
-	verifydates = true,															-- See documentation. Set false to disable.
+	maxurls = 10,																-- Максимален брой позволени URL. 
+	tname = 'Webarchive',														-- името на извикващия шаблон. Променете го, ако на български изберете друго име на шаблона.
+	verifydates = true,															-- Вижте документацията. 'false' за изключване.
 	}
 
 
@@ -22,7 +22,7 @@ Note: Namespace names should use underscores instead of spaces.
 local uncategorized_namespaces = {												-- same list as specified at [[Module:Citation/CS1/Configuration]]
 	['User']=true, ['Talk']=true, ['User_talk']=true, ['Wikipedia_talk']=true, ['File_talk']=true,
 	['Template_talk']=true, ['Help_talk']=true, ['Category_talk']=true, ['Portal_talk']=true,
-	['Book_talk']=true, ['Draft_talk']=true, ['Education_Program_talk']=true, ['Module_talk']=true,
+	['Book_talk']=true, ['Draft_talk']=true, ['Module_talk']=true,
 	['MediaWiki_talk']=true,
 	}
 
@@ -79,24 +79,27 @@ this is a table of tables for archive services.  Each service table has:
 ]=]
 
 local services = {
-	['archive.is'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
-	['archive.ec'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
-	['archive.fo'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
-	['archive.li'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
-	['archive.org'] = {true, ':en:Wayback Machine', 'Wayback Machine', 'wayback', categories.wayback},
-	['archive.today'] = {false, ':en:Archive.is', 'Archive.is', 'archiveis', categories.archiveis},
+	['archive.ec'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.fo'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.is'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.li'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.md'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.org'] = {true, 'Wayback Machine', nil, 'wayback', categories.wayback},
+	['archive.ph'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.today'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
+	['archive.vn'] = {false, 'archive.today', nil, 'archiveis', categories.archiveis},
 	['archive-it.org'] = {false, 'Archive-It', nil, 'archiveit'},
 	['arquivo.pt'] = {true, nil, 'Portuguese Web Archive'},
 	['bibalex.org'] = {false, 'Bibliotheca Alexandrina#Internet Archive partnership', 'Bibliotheca Alexandrina'},
 	['collectionscanada'] = {true, 'Canadian Government Web Archive'},
 	['europarchive.org'] = {true, 'National Library of Ireland'},
 	['freezepage.com'] = {false, nil, 'Freezepage'},
+	['ghostarchive.org'] = {false, nil, 'Ghost Archive'},
 	['haw.nsk'] = {true, 'Croatian Web Archive (HAW)'},
 	['langzeitarchivierung.bib-bvb.de'] = {false, 'Bavarian State Library'},
 	['loc.gov'] = {true, 'Library of Congress'},
-	['nationalarchives.gov.uk'] = {true, 'UK Government Web Archive'},
+	['nationalarchives.gov.uk'] = {true, 'UK Government Web Archive', nil, 'ukgwa'},
 	['nlb.gov.sg'] = {false, 'Web Archive Singapore'},
-	['pandora.nla.gov.au'] = {false, 'Pandora Archive'},
 	['parliament.uk'] = {true, 'UK Parliament\'s Web Archive'},
 	['perma.cc'] = {false, 'Perma.cc'},
 	['perma-archives.cc'] = {false, 'Perma.cc'},
@@ -109,9 +112,10 @@ local services = {
 	['vefsafn.is'] = {true, 'National and University Library of Iceland'},
 	['webarchive.bac-lac.gc.ca'] = {false, 'Library and Archives Canada'},
 	['webarchive.loc.gov'] = {true, 'Library of Congress', nil, 'locwebarchives', nil, 'Web Archives'},
+	['webarchive.nla.gov.au'] = {true, 'Australian Web Archive'},
 	['webarchive.org.uk'] = {true, 'UK Web Archive'},
 	['webcache.googleusercontent.com'] = {false, nil, 'Google Cache'},
-	['webcitation.org'] = {false, ':en:WebCite', 'WebCite', 'webcite', categories.webcite},
+	['webcitation.org'] = {false, 'WebCite', nil, 'webcite', categories.webcite},
 	['webharvest.gov'] = {true, 'National Archives and Records Administration'},
 	['webrecorder.io'] = {false, 'webrecorder.io'},
 	['wikiwix.com'] = {false, nil, 'Wikiwix'},
@@ -138,7 +142,7 @@ local s_text = {
 
 --[[--------------------------< E R R _ W A R N _ M S G S >----------------------------------------------------
 
-these tables hold error and warning message text
+таблици със съобщения за грешки и предупреждения
 
 ]]
 
@@ -201,16 +205,16 @@ parameter names in this table shall be lowercase
 
 local params = {
 	['url'] = {'url'},
-	['date'] = {'date', 'datum'},
-	['title'] = {'title', 'titel'},
+	['date'] = {'date', 'datum', 'дата'},
+	['title'] = {'title', 'titel', 'заглавие'},
 	['nolink'] = {'nolink'},
 	['format'] = {'format'}
 	}
 
 local enum_params = {
 	['url#'] = {'url#'},
-	['date#'] = {'date#', 'datum#'},
-	['title#'] = {'title#', 'titel#'},
+	['date#'] = {'date#', 'datum#', 'дата#'},
+	['title#'] = {'title#', 'titel#', 'заглавие#'},
 	}
 
 local format_vals = {															-- |format= accepts two values; add local language variants here
