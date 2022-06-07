@@ -47,12 +47,12 @@ function p.renderBox(modules)
 		if title.contentModel == "Scribunto" then
 			boxArgs.text = 'This module depends on the following other modules:' .. moduleList
 		else
-			boxArgs.text = 'Този шаблон използва [[Wikipedia:Lua|Lua]]:\n' .. moduleList
+			boxArgs.text = 'Този шаблон използва [[Уикипедия:Модули|Lua]]:\n' .. moduleList
 		end
 	end
 	boxArgs.type = 'notice'
 	boxArgs.small = true
-	boxArgs.image = '[[File:Lua-logo-nolabel.svg|30px|alt=Lua logo|link=Уикипедия:Lua]]'
+	boxArgs.image = '[[File:Lua-logo-nolabel.svg|30px|alt=Lua лого|link=Уикипедия:Модули]]'
 	return mMessageBox.main('mbox', boxArgs)
 end
 
