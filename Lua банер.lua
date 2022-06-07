@@ -34,9 +34,21 @@ function p.renderBox(modules)
 		local moduleLinks = {}
 		for i, module in ipairs(modules) do
 			moduleLinks[i] = string.format('[[:%s]]', module)
+		local maybeSandbox = mw.title.new(module .. '/sandbox')
+			if maybeSandbox.exists then
+				moduleLinks[i] = moduleLinks[i] .. string.format(' ([[:%s|sandbox]])', maybeSandbox.fullText)
+			end
 		end
 		local moduleList = mList.makeList('bulleted', moduleLinks)
-		boxArgs.text = 'Ползва [[Уикипедия:Модули|Lua]]:\n' .. moduleList
+		local title = mw.title.getCurrentTitle()
+		if title.subpageText == "doc" then
+			title = title.basePageTitle
+		end
+		if title.contentModel == "Scribunto" then
+			boxArgs.text = 'This module depends on the following other modules:' .. moduleList
+		else
+			boxArgs.text = 'Този шаблон използва [[Wikipedia:Lua|Lua]]:\n' .. moduleList
+		end
 	end
 	boxArgs.type = 'notice'
 	boxArgs.small = true
@@ -48,7 +60,7 @@ function p.renderTrackingCategories(args, modules, titleObj)
 	if yesno(args.nocat) then
 		return ''
 	end
-	
+
 	local cats = {}
 	
 	-- Категория грешки
@@ -64,24 +76,51 @@ function p.renderTrackingCategories(args, modules, titleObj)
 		sandbox2 = true,
 		testcases = true
 	}
-	if titleObj.namespace == 10 
-		and not subpageBlacklist[titleObj.subpageText]
-	then
-		local category = args.category
-		if not category then
-			local categories = {
-				['Модул:String'] = 'Lua шаблони базирани на Модул:String',
-				['Модул:Math'] = 'Lua шаблони базирани на Модул:Math',
-				['Модул:BaseConvert'] = 'Lua шаблони базирани на Модул:BaseConvert',
-				['Модул:Citation'] = 'Lua шаблони базирани на Модул:Citation'
-			}
-			categories['Модул:Citation/CS1'] = categories['Модул:Citation']
-			category = modules[1] and categories[modules[1]]
-			category = category or 'Lua шаблони'
+	if not subpageBlacklist[titleObj.subpageText] then
+		local protCatName
+		if titleObj.namespace == 10 then
+			local category = args.category
+			if not category then
+				local categories = {
+					['Модул:String'] = 'Шаблони базирани на Lua модул String',
+					['Модул:Math'] = 'Шаблони базирани на Lua модул Math',
+					['Модул:BaseConvert'] = 'Шаблони базирани на Lua модул BaseConvert',
+					['Модул:Citation'] = 'Шаблони базирани на Lua модул Citation/CS1'
+				}
+				categories['Модул:Citation/CS1'] = categories['Модул:Citation']
+				category = modules[1] and categories[modules[1]]
+				category = category or 'Шаблони ползващи Lua'
+			end	
+			cats[#cats + 1] = category
+			protCatName = "Templates using under-protected Lua modules"
+		elseif titleObj.namespace == 828 then
+			protCatName = "Modules depending on under-protected modules"
 		end
-		cats[#cats + 1] = category
+		if not args.noprotcat and protCatName then
+			local protLevels = {
+				autoconfirmed = 1,
+				extendedconfirmed = 2,
+				templateeditor = 3,
+				sysop = 4
+			}
+			local currentProt
+			if titleObj.id ~= 0 then
+				-- id is 0 (page does not exist) if am previewing before creating a template.
+				currentProt = titleObj.protectionLevels["edit"][1]
+			end
+			if currentProt == nil then currentProt = 0 else currentProt = protLevels[currentProt] end
+			for i, module in ipairs(modules) do
+				if module ~= "WP:libraryUtil" then
+					local moduleProt = mw.title.new(module).protectionLevels["edit"][1]
+					if moduleProt == nil then moduleProt = 0 else moduleProt = protLevels[moduleProt] end
+					if moduleProt < currentProt then
+						cats[#cats + 1] = protCatName
+						break
+					end
+				end
+			end
+		end
 	end
-	
 	for i, cat in ipairs(cats) do
 		cats[i] = string.format('[[Категория:%s]]', cat)
 	end
