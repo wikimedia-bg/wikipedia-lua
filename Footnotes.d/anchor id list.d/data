@@ -1,0 +1,314 @@
+-- copied from Module:Ref info/data - maybe overkill here?
+-- for this application make lists from the redirect lists and force all template names first character uppercase
+
+require('Module:No globals');
+
+--[[--------------------------< C S 1 _ T E M P L A T E _ P A T T E R N S >------------------------------------
+
+These are patterns for cs1 templates and their redirects.  These patterns exclude redirects that are vcite-like
+which redirects should be deleted because vcite is not cs1.
+
+]]
+
+local cs1_template_patterns = {													-- lua patterns of the cannonical names and redirects
+	'[Cc]ite ar[Xx]iv',															-- arXiv is the canonical name
+		'[Cc]ite ArXiv',
+
+	'[Cc]ite AV media',															-- canonical
+		'[Cc]ite audio', '[Cc]ite AV', '[Cc]ite AV ?Media', '[Cc]ite av media', 
+		'[Cc]ite cd', '[Cc]ite DVD', '[Cc]ite dvd', '[Cc]ite film',
+		'[Cc]ite image', '[Cc]ite media', '[Cc]ite movie',
+		'[Cc]ite music video', '[Cc]ite radio', '[Cc]ite song',
+		'[Cc]ite ?video', '[Cc]ite visual', '[Cc]ite You[Tt]ube',
+		'[Cc]ita vídeo',														-- non-English redirect; TODO: tally separately?
+
+	'[Cc]ite AV media notes',													-- canonical
+		'[Cc]ite album[ %-]notes', '[Cc]ite av media notes',
+		'[Cc]ite DVD[ %-]notes', '[Cc]ite dvd%-notes', '[Cc]ite liner notes',
+		'[Cc]ite music release notes', '[Ll]iner notes',
+
+	'[Cc]ite bio[Rr]xiv',														-- bioRxiv is the canonical form
+	'[Cc]ite [Bb]ook',															-- book is the canonical form
+		'[Bb]ook cite', '[Bb]ook reference', '[Bb]ook reference url',
+		'[Cc] book', '[Cc]it book', '[Cc]ite books', '[Cc]ite chapter',
+		'[Cc]ite ebook', '[Cc]ite manual', '[Cc]ite page',
+		'[Cc]ite publication', '[Cc]ite score',
+		'[Cc]ite work', '[Cc]ite%-?book', 
+		'[Bb]okref', '[Cc]itace monografie', '[Cc]itar livro',					-- non-English redirects; TODO: tally separately?
+		'[Cc]iteer boek', '[Oo]uvrage', '[Rr]ef%-llibre', '서적 인용',
+
+	'[Cc]ite citeseerx',														-- canonical
+	'[Cc]ite conference',														-- canonical
+		'[Cc]ita conferenza', '[Cc]ite proceedings', '[Cc]onference reference',	-- cita conferenza is non-English; TODO: tally separately?
+		
+	'[Cc]ite ?encyclopedia',													-- cite encyclopedia is the canonical name
+		'[Cc]ite contribution', '[Cc]ite dic', '[Cc]ite dictionary',
+		'[Cc]ite encyclopaedia', '[Cc]ite encyclopædia', '[Ee]ncyclopedia',
+
+	'[Cc]ite [Ee]pisode',														-- episode is the canonical form
+		'[Cc]ite show',
+
+	'[Cc]ite interview',														-- canonical
+	'[Cc]ite ?journal',															-- cite journal is the canonical form
+		'[Cc] journal', '[Cc]itation journal', '[Cc]ite abstract',
+		'[Cc]ite document', '[Cc]ite Journal', '[Cc]ite journal zh',
+		'[Cc]ite ?paper', '[Vv]cite2 journal',
+		'[Cc]ita pubblicazione', '[Cc]itace periodika', '[Cc]itar jornal',		-- non-English redirects; TODO: tally separately?
+		'[Cc]itar publicació', '[Cc]ytuj pismo', '[Tt]idskriftsref',
+		'Навод из стручног часописа', '저널 인용',
+
+	'[Cc]ite [Mm]agazine',														-- magazine is the canonical form
+		'[Cc]ite mag', '[Cc]ite magazine article', '[Cc]ite newsletter',
+		'[Cc]ite periodical',
+
+	'[Cc]ite mailing ?list',													-- mailing list is the canonical form
+		'[Cc]ite list',
+
+	'[Cc]ite maps?',															-- map is the canonical form
+	'[Cc]ite[ %-]?news',														-- cite news is the canonical form
+		'[Cc] news', '[Cc]it news', '[Cc]itation news', '[Cc]ite article',
+		'[Cc]ite n', '[Cc]ite new', '[Cc]ite newspaper', '[Cc]ite News',
+		'[Cc]ite news%-q', '[Cc]ite news2', '[Cc]itenewsauthor', '[Cc]ute news',
+		'[Cc]itar notícia', '[Hh]aber kaynağı', '[Tt]idningsref', 'استشهاد بخبر',	-- non-English redirects; TODO: tally separately?
+		'뉴스 인용',
+
+	'[Cc]ite newsgroup',														-- canonical
+		'[Cc]ite usenet',
+		
+	'[Cc]ite podcast',															-- canonical
+	'[Cc]ite [Pp]ress release',													-- press release is the canonical form
+		'[Cc]ite media release', '[Cc]ite news release', '[Cc]ite pr',
+		'[Cc]ite press', '[Cc]ite press release\.', '[Cc]ite press[%-]?release',
+
+	'[Cc]ite report',															-- canonical
+	'[Cc]ite serial',															-- canonical
+	'[Cc]ite sign',																-- canonical
+		'[Cc]ite plaque',
+
+	'[Cc]ite speech',															-- canonical
+	'[Cc]ite ssrn',																-- canonical
+		'[Cc]ite SSRN',
+		
+	'[Cc]ite tech ?report',														-- techreport is the canonical form
+		'[Cc]ite standard', '[Cc]ite technical report', '[Tt]echrep reference',
+
+	'[Cc]ite thesis',															-- canonical
+		'[Cc]ite dissertation',
+		'[Cc]itar tese',														-- non-English redirect; TODO: tally separately?
+
+	'[Cc]ite [Ww]eb',															-- web is the canonical form
+		'[Cc] web', '[Cc]it web', '[Cc]ite blog', '[Cc]ite URL', '[Cc]ite url',
+		'[Cc]ite w', '[Cc]ite wb', '[Cc]ite we', '[Cc]ite web\.',
+		'[Cc]ite webpage', '[Cc]ite website', '[Cc]ite website article',
+		'[Cc]ite%-?web', '[Cc]itweb', '[Cc]w', '[Rr]ef web', '[Ww]eb citation',
+		'[Ww]eb cite', '[Ww]eb link', '[Ww]eb[ %-]reference', '[Ww]eblink',
+		'[Cc]hú thích web', '[Cc]ita web', '[Cc]itace elektronické monografie',	-- non-English redirects; TODO: tally separately?
+		'[Cc]itat web', 'مرجع ويب', 'یادکرد وب', '웹 인용',
+	}
+
+
+--[[--------------------------< C S 2 _ T E M P L A T E _ P A T T E R N S >------------------------------------
+
+These are patterns for cs2 templates redirects.
+
+]]
+
+local cs2_template_patterns = {													-- lua patterns of the cannonical names and redirects
+	'[Cc]itation',
+		'[Cc]ite', '[Cc]ite citation', '[Cc]ite study',
+		'[Cc]ite [Tt]echnical standard',
+	}
+
+
+--[[--------------------------< V C I T E _ T E M P L A T E _ P A T T E R N S >--------------------------------
+
+These are patterns for Vcite-family templates and their redirects.
+
+]]
+
+local vcite_template_patterns = {
+	'[Vv]cite book',															-- canonical
+		'[Vv]ancite book', '[Vv]ancite report', '[Vv]cite encyclopedia',
+		'[Vv]cite report',
+
+	'[Vv]cite journal',															-- canonical
+		'[Cc]it journal', '[Cc]it paper', '[Vv]ancite journal', '[Vv]cite paper',
+
+	'[Vv]cite news',															-- canonical
+		'[Vv]ancite news',
+
+	'[Vv]cite web',																-- canonical
+		'[Vv]ancite web',
+	}
+
+
+--[[--------------------------< H A R V C _ T E M P L A T E _ P A T T E R N S >--------------------------------
+
+These are patterns for the harvc template and its redirects.
+
+]]
+
+local harvc_template_patterns = {
+	'[Hh]arvc',																	-- canonical
+		'[Cc]itec',
+	}
+
+
+--[[--------------------------< C S 1 _ L I K E _ T E M P L A T E _ P A T T E R N S >--------------------------
+
+These are patterns for miscellaneous templates and their redirects that 'look like' cs1 templates (begin with cite ...)
+
+Because they 'look like' cs1 templates they are handled as if they were cs1 templates.  These templates are NOT
+wrapper templates; names and dates are always to be extracted from the article instantiation of the template.
+
+]]
+
+local cs1_like_template_patterns = {
+	'[Cc]ite LSA',																-- canonical
+	}
+
+
+--[[--------------------------< W I K I C I T E _ T E M P L A T E _ P A T T E R N S >--------------------------
+
+These are patterns for the wikicite template and its redirects.
+
+]]
+
+local wikicite_template_patterns = {
+	'[Ww]ikicite',																-- canonical
+	}
+
+
+--[[--------------------------< A N C H O R _ T E M P L A T E _ P A T T E R N S >------------------------------
+
+These are patterns for the anchor template and its redirects.
+
+]]
+
+local anchor_template_patterns = {
+	'[Aa]nchors?',																-- anchor is canonical form
+	'[Aa]nchor for redirect',
+	'[Aa]nchro',
+	'[Aa]ncor',
+	}
+
+
+--[[--------------------------< S F N _ W H I T E L I S T _ P A T T E R N S >----------------------------------
+
+These are patterns for the anchor template and its redirects.
+
+]]
+
+local sfn_whitelist_patterns = {
+	'[Ss]fn whitelist',															-- canonical
+		'[Hh]arv whitelist',
+	}
+
+
+--[[--------------------------< K N O W N _ T E M P L A T E S >------------------------------------------------
+
+These tables are created from the *_template_patterns tables.  To make these tables, entries in the source tables
+are evaluated to replace lua patterns with the appropriate characters to create names for the output tables.
+
+First charqacter is always uppercase
+
+For example:
+	[Cc]ite ar[Xx]iv
+becomes
+	Cite arXiv
+	Cite arxiv
+
+]]
+
+local known_templates_cs12 = {};												-- the exported tables
+local known_templates_vcite = {};
+local known_templates_harvc = {};
+local known_templates_wikicite = {};
+local known_templates_anchor = {};
+local known_templates_sfn_whitelist = {};
+
+	local function add_stripped (list, name)
+		if not list[name] then
+			list[name] = true;
+		end
+	end
+
+
+	local function pattern_convert (pattern, list)
+		local lead, tail, c, l, name;
+		local first_char_patterns = {
+			'^%[(%a)%a%]',														-- leading character (usually uppercase)
+			'^%[%a(%a)%]',														-- leading character (usually lowercase)
+			}
+			
+		c = tostring (pattern:match ('%u'));									-- tostring() required because I don't know why; lua chokes complaining that c is not a string
+		name = pattern:gsub ('^%[%a%a%]', c);									-- replace bracketed first character [Xx] with selected character from the match
+		
+		if name:match ('(.-)%[(%a)(%a)%](.*)') then								-- mixed case optional letters
+			lead, c, l, tail = name:match ('(.-)%[(%a)(%a)%](.*)');
+			add_stripped (list, lead .. c .. tail);								-- uppercase
+			add_stripped (list, lead .. l .. tail);								-- lowercase
+	
+		elseif name:match ('^([^%[]+)(%[ %%%-%]%?)(.+)$') then					-- [ %-]?
+			lead, c, tail = name:match ('^([^%[]+)(%[ %%%-%]%?)(.+)$');
+			add_stripped (list, lead .. tail);									-- neither char
+			add_stripped (list, lead .. ' ' .. tail);							-- space
+			add_stripped (list, lead .. '-' .. tail);							-- hyphen
+	
+		elseif name:match ('^([^%[]+)(%[%%%-%]%?)(.+)$') then					-- [%-]?
+			lead, c, tail = name:match ('^([^%[]+)(%[%%%-%]%?)(.+)$');
+			add_stripped (list, lead .. tail);									-- no hyphen
+			add_stripped (list, lead .. '-' .. tail);							-- hyphen
+	
+		elseif name:match ('^([^%[]+)(%[ %%%-%])(.+)$') then					-- [ %-]
+			lead, c, tail = name:match ('^([^%[]+)(%[ %%%-%])(.+)$');
+			add_stripped (list, lead .. ' ' .. tail);							-- space
+			add_stripped (list, lead .. '-' .. tail);							-- hyphen
+	
+		elseif name:match ('^([^%?]+)(%%%-%?)(.+)$') then						-- %-?
+			lead, c, tail = name:match ('^([^%?]+)(%%%-%?)(.+)$');
+			add_stripped (list, lead .. tail);									-- no hyphen
+			add_stripped (list, lead .. '-' .. tail);							-- hyphen
+	
+		elseif name:match ('^(.-)(%%%-)(.+)$') then								-- %-
+			lead, c, tail = name:match ('^(.-)(%%%-)(.+)$');
+			add_stripped (list, lead .. '-' .. tail);							-- hyphen
+
+		elseif name:match ('^(.-)(.)%?(.*)$') then								-- .?
+			lead, c, tail = name:match ('^(.-)(.)%?(.*)$');
+			add_stripped (list, lead .. tail);									-- no character
+			add_stripped (list, lead .. c .. tail);								-- character
+	
+		else
+			add_stripped (list, name);											-- no patterns so save as is
+		end
+	end
+
+	for _, t in ipairs ({
+		{cs1_template_patterns, known_templates_cs12},
+		{cs2_template_patterns, known_templates_cs12},
+		{cs1_like_template_patterns, known_templates_cs12},
+		{vcite_template_patterns, known_templates_vcite},
+		{harvc_template_patterns, known_templates_harvc},
+		{wikicite_template_patterns, known_templates_wikicite},
+		{anchor_template_patterns, known_templates_anchor},
+		{sfn_whitelist_patterns, known_templates_sfn_whitelist},
+		}) do
+			for _, pattern in ipairs (t[1]) do									-- for each patern in *_template_patterns
+				pattern_convert (pattern, t[2])									-- convert and store in known_templates_*
+			end
+	end
+
+
+--[[--------------------------< E X P O R T S >----------------------------------------------------------------
+]]
+
+return
+	{
+	known_templates_anchor = known_templates_anchor,
+	known_templates_cs12 = known_templates_cs12,
+	known_templates_harvc = known_templates_harvc,
+	known_templates_vcite = known_templates_vcite,
+	known_templates_wikicite = known_templates_wikicite,
+	known_templates_sfn_whitelist = known_templates_sfn_whitelist,
+	}
