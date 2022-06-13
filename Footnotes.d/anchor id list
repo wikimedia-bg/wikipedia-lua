@@ -1,0 +1,830 @@
+require('Module:No globals');
+local data = mw.loadData ('Module:Footnotes/anchor id list/data');
+local whitelist = mw.loadData ('Module:Footnotes/whitelist');
+local Lang_obj = mw.language.getContentLanguage();								-- used by template_list_add() to uppercase first letter of template name TODO: better way to do that?
+
+local redirects_date = {
+	['date'] = true,
+	['datetomos'] = true,
+	['formatdate'] = true,
+	['isotodmymdy'] = true,
+	['isotomos'] = true,
+	}
+local redirects_patent = {														-- special case cs1-like templates because uses different parameters for name and date in anchor ID
+	['Cite patent'] = true,
+	['Citeref patent'] = true,
+	['Ref patent'] = true,
+	}
+local redirects_sfnref = {
+	['sfnref'] = true,
+	['harvid'] = true,
+	}
+local aliases_author = {														-- these use pseudo-patterns in the same way as cs1|2; '#' represents 1 or more enumerator digits
+	'last#',
+	'author#',
+	'surname#',
+	'author-last#',
+	'author#-last',
+	'subject#',
+	'host#',
+	}
+local aliases_contributor = {
+	'contributor#',
+	'contributor-last#',
+	'contributor#-last',
+	'contributor-surname#',
+	'contributor#-surname',
+	}
+local aliases_editor = {
+	'editor#',
+	'editor-last#',
+	'editor#-last',
+	'editor-surname#',
+	'editor#-surname',
+	}
+local aliases_harvc_author = {
+	'last#',
+	'author#',
+	}
+local aliases_inventor = {														-- cite patent
+	'inventor#',
+	'inventor-last#',
+	'inventor#-last',
+	'inventor-surname#',
+	'inventor#-surname',
+	'invent#',
+	'invent-#',
+	}
+local alias_patterns_date = {													-- normal lua patterns for most cs1|2-like templates
+	'|%s*year%s*=%s*',
+	'|%s*date%s*=%s*',
+	'|%s*publication%-?date%s*=%s*',
+	'|%s*air%-?date%s*=%s*',
+	}
+local alias_patterns_harvc_date = {												-- normal lua patterns for harvc template
+	'|%s*anchor%-year%s*=%s*',
+	'|%s*year%s*=%s*',
+	}
+local alias_patterns_patent_date = {											-- normal lua patterns for cite patent templates
+	'|%s*issue%-date%s*=%s*',
+	'|%s*gdate%s*=%s*',
+	'|%s*publication%-date%s*=%s*',
+	'|%s*pubdate%s*=%s*',
+	}
+local patterns_date = {															-- normal lua patterns
+	'(%d%d%d%d–%d%d%d%d%l?)$',													-- YYYY–YYYY four-digit year range at end (Season YYYY–YYYY); with or without dab
+	'^(%d%d%d%d–%d%d%l?)$',														-- YYYY–YY two-digit year range; with or without dab
+	'^(c%. %d%d%d%d?%l?)$',														-- three- or four-digit circa year; with or without dab
+	'(%d%d%d%d?%l?)$',															-- three- or four-digit year at end of date (dmy or mdy); with or without dab
+	'^(%d%d%d%d?%l?)',															-- three- or four-digit year at beginning of date (ymd or YYYY); with or without dab
+	'^(n%.d%.%l?)$',															-- 'no date' with dots; with or without dab
+	'^(nd%l?)$',																-- 'no date' without dots; with or without dab
+	}
+local patterns_tags = {
+	'<nowiki>.-</nowiki>',
+	'<!%-%-.-%-%->',
+	'<pre>.-</pre>',
+	'<syntaxhighlight.->.-</syntaxhighlight>',
+	'<source.->.-</source>',													-- deprecated alias of syntaxhighlight tag
+	}
+local template_skip = {															-- templates to be skipped for whatever reason; mostly because they resemble cs1-like templates
+	['Citation-attribution'] = true,
+	}
+local Article_content;
+
+local anchor_id_list = {};														-- exported tables
+local template_list = {};
+local article_whitelist = {};
+
+
+--[[--------------------------< A R T I C L E _ C O N T E N T _ G E T >----------------------------------------
+
+get article content, remove certain html-like tags and their content so that this code doesn't include any citation
+templates inside the tags as valid tagets; they are not.
+
+]]
+
+local function article_content_get ()
+	if not Article_content then
+		Article_content = mw.title.getCurrentTitle():getContent() or '';		-- get the content of the article or ''; new pages edited w/ve do not have 'content' until saved; ve does not preview; phab:T221625
+		for _, tag in ipairs (patterns_tags) do
+			Article_content = Article_content:gsub (tag, '');					-- remove certain html-like tags and their content
+		end
+	end
+end
+
+
+--[[--------------------------< S F N R E F _ G E T >----------------------------------------------------------
+
+make an anchor id from the contents of {{sfnref}} or {{harvid}}.  this function assumes that {{sfnref}} and {{harvid}}
+are correctly formed.
+
+]]
+
+local function sfnref_get (template)
+	template = template:gsub ('{{%s*(.-)%s*}}', '%1');							-- strip bounding template markup and trim
+	local parts = mw.text.split (template, '%s*|%s*');							-- split at the pipe and remove extraneous space characters
+	local anchor_id = {};
+
+	if redirects_sfnref[parts[1]:lower()] then
+		anchor_id[1] = 'CITEREF';
+	else
+		return nil;																-- not an sfnref or harvid template
+	end
+	
+	local i = 2;																-- indexer into parts{} table
+	local j = 2;																-- indexer into anchor_id{} table which already has 'CITEREF' at [1]
+	while parts[i] and 7 > j do													-- loop through what should be just positional parameters for names and year (2-6 four names and a date)
+		if not parts[i]:find ('=') then											-- look for equal sign (named paraneter in a template that doesn't support named parameters)
+			anchor_id[j] = parts[i];											-- positional parameters are saved
+			j = j+1;															-- bump the anchor_id{} indexer
+		end
+		i = i+ 1;																-- bump the parts{} indexer
+	end
+
+	return table.concat (anchor_id, '');
+end
+
+
+--[[--------------------------< D A T E _ G E T >--------------------------------------------------------------
+
+extract year from one of |year=, |date=, |publicationdate=, or |publication-date in that order.  Does not error
+check (that is left to the cs1|2 templates to do)
+
+also gets date from |<date alias>={{date|...}}
+
+]]
+
+local function date_get (template, aliases)
+	local date;
+	local rvalue;
+
+	for _, pattern in ipairs (aliases) do										-- spin through the date alias patterns
+		rvalue = tostring(template):match (pattern);							-- is this |<date alias>= used (tostring() because something makes match() think template is a table)
+		if rvalue then
+			rvalue = tostring(template):match (pattern .. '(%b{})');			-- is rvalue a template?
+			if rvalue then
+				rvalue = rvalue:gsub ('{{%s*(.-)%s*}}', '%1');					-- strip bounding template markup and trim
+				local parts = mw.text.split (rvalue, '%s*|%s*');				-- split at the pipe and remove extraneous space characters
+
+				if redirects_date[parts[1]:lower()] then						-- if parts[1] names {{date}} or redirect
+					rvalue = parts[2];											-- assume that date template is properly formed, first positional parameter is the date
+				else
+					return '';													-- |date= holds some other template than {{date}} or redirect
+				end
+			else
+				rvalue = template:match (pattern .. '([^|}]+)');
+				if rvalue then													-- if rvalue is something
+					rvalue = mw.text.trim (rvalue);								-- trim it
+				end
+				
+				if not rvalue or '' == rvalue then								-- if rvale was nothing or trimed to nothing
+					rvalue = nil;												-- ensure that it is unset so we can try the next parameter in the list
+				end
+			end
+
+			if rvalue then
+				for _, pattern in ipairs (patterns_date) do						-- spin through the recognized date formats
+					date = rvalue:match (pattern);								-- attempt to extract year portion according to the pattern
+					if date then
+						return date;											-- matched so return;
+					end
+				end
+				break;															-- found a date but it was malformed so abandon
+			end
+		end
+	end
+
+	return '';																	-- no date param or date param doesn't hold a recognized date; empty string for concatenation
+end
+
+ 
+--[[--------------------------< V N A M E S _ G E T >----------------------------------------------------------
+
+extract names from |vauthors= or |veditors=; there is no |vcontributors= parameter.
+
+splits the v parameter value at the comma; correctly handles accept-as-witten markup when used to wrap a comma-
+separated names (corporate)
+
+]]
+
+local function vnames_get (params, vparam)
+	local vnames = {};															-- first four author or editor names go here
+	local split = {};															-- temp table to assist in decoding accept-as-witten-markup
+
+	if params[vparam] then														-- test for |vauthors= or |veditor=
+		split = mw.text.split (params[vparam], '%s*,%s*');						-- this will separate portions of ((Black, Brown, White, an Co.))
+	
+		local i = 1;															-- an indexer
+		
+		while split[i] do
+			if split[i]:match ('^%(%(.*[^%)][^%)]$') then						-- first segment of comma-separated accept-as-witten; this segment has the opening doubled parens
+				local name = split[i];
+				i=i+1;															-- bump indexer to next segment
+				while split[i] do
+					name = name .. ', ' .. split[i];							-- concatenate with previous segments
+					if split[i]:match ('^.*%)%)$') then							-- if this table member has the closing doubled parens
+						break;													-- and done reassembling so
+					end
+					i=i+1;														-- bump indexer
+				end
+				table.insert (vnames, name);									-- and add accept-as-witten name to the vnames table
+	
+			else
+				table.insert (vnames, split[i]);								-- and add name to the vnames table
+			end
+		i=i+1;																	-- bump indexer
+		if 5 == i then break; end												-- limit to four names
+		end
+
+		for i, vname in ipairs (vnames) do
+			if not vname:match ('%(%(.-%)%)') then								-- without accept-this-value-as-written markup
+				vnames[i] = vname:gsub ('(.-)%s+%u+$', '%1');					-- extract and save surname(s)
+			end
+		end
+		for i, vname in ipairs (vnames) do										-- repeat, this time for accept-this-value-as-written markup
+			vnames[i] = vname:gsub ('%(%((.-)%)%)', '%1');						-- remove markup if present and save the whole name
+		end
+	end
+
+	return 0 ~= #vnames and table.concat (vnames) or nil						-- return a concatenation of the vnames; nil else
+end
+
+
+--[[--------------------------< N A M E S _ G E T >------------------------------------------------------------
+
+cs1|2 makes anchor id from contributor, author, or editor name-lists in that order
+
+get the names from the cs1|2 template;  if there are no contributor names, try author names, then try editor names.
+
+returns concatenated names in enumeration order when successful; nil else
+
+empty name (nameholding parameter n is present without value) and missing name (nameholding parameter n is not
+present) are included as empty string with all other names
+
+]]
+
+local function names_get (params, aliases_list)
+	local names = {};															-- first four author or editor names go here
+	local enum_alias;															-- alias with '#' replaced with a digit
+
+	for enum=1, 4 do															-- four names only
+		for i, alias in ipairs (aliases_list) do
+			if not names[enum] then												-- hanven't found a previous alias with this [enum]? see if we can find this alias with this enum
+				enum_alias = alias:gsub ('#', enum);							-- replace '#' to make 'lastn'
+	
+				if 1 == enum then												-- because |last= and last1= are exact aliases
+					if params[enum_alias] then									-- test |last1= first
+						names[enum] = params[enum_alias];						-- found so save the value assigned to |last1=
+						break;													-- next enum
+					else
+						enum_alias = alias:gsub ('#', '');						-- replace '#' to make 'last'
+						if params[enum_alias] then
+							names[enum] = params[enum_alias];					-- found so save the value assigned to |last=
+							break;												-- next enum
+						end
+					end
+				else															-- here for enum 2, 3, 4
+					if params[enum_alias] then
+						names[enum] = params[enum_alias];						-- found so save the value assigned to |lastn=
+						break;													-- next enum
+					end
+				end
+			end
+		end
+	end
+
+	for enum=1, 4 do															-- spin through the names table and
+		local name = names[enum];
+		if not name then														-- when nameholding parameter n is not present (nil)
+			name = '';															-- convert to empty string for concatenation
+		end
+		name = name:gsub('%(%((.-)%)%)', '%1');									-- remove accept-as-written markup if present
+		names[enum] = name;														-- save the modified name
+	end
+
+	local name_str = table.concat (names);										-- concatenate the names
+	return '' ~= name_str and name_str or nil;									-- return the concatenation if not empty string; nil else
+end
+
+
+--[[--------------------------< T E M P L A T E _ S T R I P >--------------------------------------------------
+
+removes the citation or havrc template's {{ and }} markup then removes, in whole, any templates found inside the
+citation or harvc template.
+
+Templates are not allowed in parameters that are made part of COinS metadata; yet, they will appear.  cs1|2 does
+not see the template markup but instead sees the result of the template as html.  cs1|2 strips the html which
+leaves the displayed value for the anchor id.  We can't do that here so, because templates aren't allowed in
+parameters, we simply discard any templates found in the cs1|2 template.
+
+this may leave a |lastn= parameter empty which will be treated as if it were really empty as cs1|2 do (three authors,
+|last2= empty -> CITEREFLast1Last3YYYY (the harv and sfn render: 'Last1, & Last3 YYYY' with CITEREFLast1Last3YYYY).
+
+]]
+
+local function template_strip (template)
+	template = template:gsub ('^{{%s*', ''):gsub ('%s*}}$', '', 1);				-- remove outer {{ and }} (cs1|2 template delimiters with trailing/leading whitespace)
+	template = template:gsub ('%b{}', '');										-- remove any templates from the cs1|2 template
+	return template;
+end
+
+
+--[[--------------------------< E S C A P E _ L U A _ M A G I C _ C H A R S >----------------------------------
+
+Returns a string where all of lua's magic characters have been escaped.  This is important because functions like
+string.gsub() treat their pattern and replace strings as patterns, not literal strings.
+]]
+
+local function escape_lua_magic_chars (argument)
+	argument = argument:gsub("%%", "%%%%");										-- replace % with %%
+	argument = argument:gsub("([%^%$%(%)%.%[%]%*%+%-%?])", "%%%1");				-- replace all other lua magic pattern characters
+	return argument;
+end
+
+
+--[=[-------------------------< W I K I L I N K _ S T R I P >--------------------------------------------------
+
+Wikilink markup does not belong in an anchor id and can / does confuse the code that parses apart citation and
+harvc templates so here we remove any wiki markup:
+	[[link|label]] -> label
+	[[link]] -> link
+	
+]=]
+
+local function wikilink_strip (template)
+	for wikilink in template:gmatch ('%[%b[]%]') do								-- get a wikilink
+		template = template:gsub ('%[%b[]%]', '__57r1P__', 1);					-- install a marker
+		if wikilink:match ('%[%[.-|(.-)%]%]') then
+			wikilink = wikilink:match ('%[%[.-|(.-)%]%]');						-- extract label from complex [[link|label]] wikilink
+		else
+			wikilink = wikilink:match ('%[%[(.-)%]%]');							-- extract link from simple [[link]] wikilinks
+		end
+		wikilink = escape_lua_magic_chars (wikilink);							-- in case there are lua magic characters in wikilink
+		template = template:gsub ('__57r1P__', wikilink, 1);					-- replace the marker with the appropriate text
+	end
+
+	return template;
+end
+
+
+--[[--------------------------< T E M P L A T E _ N A M E _ G E T >--------------------------------------------
+
+return the citation or harvc template's name; convert to lower case and trim leading and trailing whitespace;
+
+when the template is a sandbox the subpage portion of the template name is omitted from the returned template name
+	{{Cite book/new |...}} returns cite book
+
+]]
+
+local function template_name_get (template)
+	local template_name = template:match ('^{{%s*([^/|}]+)');					-- get template name; ignore subpages ~/new, ~/sandbox; parser functions
+
+	if not template_name or template_name:match ('^#') then						-- parser functions, magic words don't count as templates
+		return nil;																-- could not get template name from (possibly corrupt) template; extraneous opening { mid template can cause this;
+	end;
+	template_name = template_name:gsub ('%s*$', '');							-- trim trailing whitespace; leading whitespace already removed
+	return Lang_obj:ucfirst (template_name);									-- first character in template name must be uppercase (same as canonical template name) TODO: better way to do this?
+end
+
+
+--[[--------------------------< T E M P L A T E _ P A R A M S _ G E T >----------------------------------------
+
+parse apart a template's parameters and store in the params table where key is the parameter's name and value is
+the parameter's value; empty parameters are not saved
+
+]]
+
+local function template_params_get (template, params_t)
+	template = wikilink_strip (template);										-- because piped wikilinks confuse code that builds params_t{} and because wikilinks not allowed in an anchor id
+																				-- strip templates after getting |ref= value because |ref={{sfnref}} and |ref={{harvid}} are allowed
+	template = template_strip (template);										-- because template markup can confuse code that builds params_t{} and because templates in name parameters are not allowed
+
+	local temp_t = mw.text.split (template, '%s*|%s*');							--split on the pipe
+	for _, param in ipairs (temp_t) do
+		if param:find ('=', 1, true) then										-- a named parameter?
+			local k, v = param:match ('%s*([^=]-)%s*=%s*([^|}]+)');
+			if v then															-- there must be a value
+				if '' ~= v and not v:match ('^%s$') then						-- skip when value is empty string or only whitespace
+					params_t[k] = mw.text.trim (v);								-- add trimmed value else
+				end
+			end
+		end
+	end
+end
+
+
+--[[--------------------------< C I T E R E F _ M A K E _ H A R V C >------------------------------------------
+
+makes anchor_id from {{harvc}} or redirects
+
+]]
+
+local function anchor_id_make_harvc (template)
+	local date = date_get (template, alias_patterns_harvc_date);				-- get date; done here because might be in {{date}}; return date if valid; empty string else
+	local anchor_id;
+	local params = {};															-- table of harvc parameters
+	local id;																	-- custom anchor id for this {{harvc}} template
+
+	id = template:match ('|%s*id%s*=%s*(%b{})');								-- in case |id={{sfnref}}; done here because templates will be stripped
+
+	template_params_get (template, params);										-- build a table of template parameters and their values; this strips wikilinks and templates
+
+	if id then																	-- when set is {{sfnref}} or {{harvid}} template
+		return sfnref_get (id);													-- returns content of {{sfnref}} or {{harvid}}; nil else
+	end
+	if params.id then															-- custom anchor for this {{harvc}} template (text)
+		return params.id;														-- |id= value as written
+	end
+	
+	anchor_id = names_get (params, aliases_harvc_author);						-- get the harvc contributor names
+
+	if anchor_id then															-- if names were gotten
+		return 'CITEREF' .. anchor_id .. date;
+	end
+	return nil;																	-- no names; no anchor_id
+end
+
+
+--[[--------------------------< A N C H O R _ I D _ M A K E _ W R A P P E R >----------------------------------
+
+for wrapper templates
+
+inspect externally visible |ref= to decide what to do:
+	|ref=										- empty or missing: get names and date from whitelist defaults; override defaults from externally visible template parameters
+	|ref=harv									- same as empty or missing
+	|ref={{SfnRef|name|name|name|name|year}}	- assemble an anchor id from {{sfnref}} positional parameters
+	|ref={{Harvid|name|name|name|name|year}}	- assemble an anchor id from {{harvid}} positional parameters
+	|ref=none									- skip; do nothing because an anchor id intentionally suppressed; TODO: keep with a type code of '0'?
+	|ref=<text>									- save param value because may match an anchor id override value in {{harv}} template |ref= parameter or {{harvc}} |id= parameter
+
+]]
+
+local function anchor_id_make_wrapper (template)
+	local ref;																	-- content of |ref=
+	local template_name;														-- name of the template
+	local anchor_id;															-- the assembled anchor id from this template
+	local date;
+	local name_default;
+	local date_default;
+	local vol;
+	local params = {};															-- table of template parameters
+	
+	template_name = template_name_get (template);								-- get first char uppercase trimmed template name; ignore subpages ~/new, ~/sandbox
+	if not template_name or template_skip[template_name] then
+		return nil;																-- could not extract template name from (possibly corrupted) template (extraneous opening { in the template will cause this)
+	end
+
+	date = date_get (template, alias_patterns_date);							-- get date; done here because might be in {{date}}
+--	if '' == date then
+--		date = whitelist.wrapper_templates[template_name][2] or '';				-- no externally visible date so get default date
+--	end
+
+	ref = template:match ('|%s*ref%s*=%s*(%b{})');								-- first look for |ref={{sfnref}} or |ref={{harvid}} because we will strip templates from the wrapper template
+	if not ref then
+		if template:match ('|%s*ref%s*=([^|}]+)') then							-- |ref={{template}} not found; if there is a |ref= param with an assigned value
+			ref = template:match ('|%s*ref%s*=([^|}]+)');						-- get the value; whitespace is a 'value'
+			if ref then															-- nil when |ref=|... or when |ref=}} (no spaces between assignment operator and pipe or closing brace)
+				ref = mw.text.trim (ref);										-- something, could be just whitespace, so trim leading / trailing whitespace
+				if '' == ref then												-- trimming a string of whitespace makes an empty string
+					ref = nil;													-- make empty ref same as missing ref
+				end
+			end
+		end
+	end
+
+	template_params_get (template, params);										-- build a table of template parameters and their values
+
+	if whitelist.wrapper_templates[template_name][1] then						-- is this wrapper a simple-default wrapper?
+		name_default = whitelist.wrapper_templates[template_name][1];			-- get the default names
+		date_default = whitelist.wrapper_templates[template_name][2];			-- get the default date
+	else
+		vol = params['volume'] or 'default';
+		if not whitelist.wrapper_templates[template_name][vol] then				-- make sure this volume exists
+			vol = 'default';													-- doesn't exist, use default volume
+		end
+		name_default = whitelist.wrapper_templates[template_name][vol][1];		-- get the default names
+		date_default = whitelist.wrapper_templates[template_name][vol][2];		-- get the default date
+	end
+
+	if 'harv' == ref  or not ref then											-- |ref=harv specified or |ref= missing or empty
+		anchor_id = names_get (params, aliases_contributor) or					-- get contributor, author, or editor names
+			names_get (params, aliases_author) or
+			vnames_get (params, 'vauthors') or									-- |vauthors=
+			names_get (params, aliases_editor) or
+			vnames_get (params, 'veditors') or									-- |veditors=
+			name_default;														-- default names from whitelist
+--			whitelist.wrapper_templates[template_name][1];						-- default names from whitelist
+
+		if '' == date then														-- if date not provided in the template
+			date = date_default;												-- use the default date from whitelist
+		end
+
+		if anchor_id then														-- if names were gotten
+			anchor_id = 'CITEREF' .. anchor_id .. date;
+		end
+
+	elseif ref:match ('%b{}') then												-- ref holds a template
+		anchor_id = sfnref_get (ref);											-- returns content of {{sfnref}} or {{harvid}}; nil else
+
+	elseif 'none' == ref then													-- |ref=none
+		return nil;																-- anchor id expicitly suppressed
+		
+	else
+		anchor_id = ref;														-- |ref=<text> may match an anchor id override value in {{harv}} template |ref= parameter
+	end
+	
+	return anchor_id;															-- anchor_id text; nil else
+end
+
+
+--[[--------------------------< A N C H O R _ I D _ M A K E _ C S 1 2 >----------------------------------------
+
+for cs1|2 template and cs1-like templates
+
+inspect |ref= to decide what to do:
+	|ref=										- empty or missing: get names and date from template parameters; all cs1|2 create CITEREF anchor IDs
+	|ref=harv									- get names and date from template parameters
+	|ref={{SfnRef|name|name|name|name|year}}	- assemble an anchor id from {{sfnref}} positional parameters
+	|ref={{Harvid|name|name|name|name|year}}	- assemble an anchor id from {{harvid}} positional parameters
+	|ref=none									- skip; do nothing because an anchor id intentionally suppressed; TODO: keep with a type code of '0'?
+	|ref=<text>									- save param value because may match an anchor id override value in {{harv}} template |ref= parameter or {{harvc}} |id= parameter
+
+]]
+
+local function anchor_id_make_cs12 (template)
+	local ref;																	-- content of |ref=
+	local template_name;														-- name of the template
+	local anchor_id;															-- the assembled anchor id from this template
+	local date;
+	local params = {};															-- table of template parameters
+	
+	template_name = template_name_get (template);								-- get first char uppercase trimmed template name; ignore subpages ~/new, ~/sandbox
+	if not template_name or template_skip[template_name] then
+		return nil;																-- could not extract template name from (possibly corrupted) template (extraneous opening { in the template will cause this)
+	end
+
+	if redirects_patent[template_name] then
+		date = date_get (template, alias_patterns_patent_date);					-- get date; done here because might be in {{date}} 
+	else
+		date = date_get (template, alias_patterns_date);
+	end
+	
+	ref = template:match ('|%s*ref%s*=%s*(%b{})');								-- first look for |ref={{sfnref}} or |ref={{harvid}} because we will strip templates from the cs1|2 template
+	if not ref then
+		if template:match ('|%s*ref%s*=([^|}]+)') then							-- |ref={{template}} not found; if there is a |ref= param with an assigned value
+			ref = template:match ('|%s*ref%s*=([^|}]+)');						-- get the value; whitespace is a 'value'
+			if ref then															-- nil when |ref=|... or when |ref=}} (no spaces between assignment operator and pipe or closing brace)
+				ref = mw.text.trim (ref);										-- something, could be just whitespace, so trim leading / trailing whitespace
+				if '' == ref then												-- trimming a string of whitespace makes an empty string
+					ref = nil;													-- make empty ref same as missing ref
+				end
+			end
+		end
+	end
+
+	template_params_get (template, params);										-- build a table of template parameters and their values
+
+	if not ref then																-- |ref= not set, might be cite LSA which doesn't support |ref=
+		if 'cite lsa' == template_name then
+			return 'CITEREF' .. (params.last or '') .. (params.year or '');		-- cite LSA always creates an anchor id using only |last= and |year= (no aliases)
+		end
+	end
+
+	if 'harv' == ref  or not ref then											-- |ref=harv specified or |ref= missing or empty
+		if redirects_patent[template_name] then									-- if this is a cite patent template
+			anchor_id = names_get (params, aliases_inventor);					-- inventor names only
+		else																	-- cs1|2 template
+			anchor_id = names_get (params, aliases_contributor) or				-- get contributor, author, or editor names
+				names_get (params, aliases_author) or
+				vnames_get (params, 'vauthors') or								-- |vauthors=
+				names_get (params, aliases_editor) or
+				vnames_get (params, 'veditors');								-- |veditors=
+		end
+
+		if anchor_id then														-- if names were gotten
+			anchor_id = 'CITEREF' .. anchor_id .. date;
+		end
+
+	elseif ref:match ('%b{}') then												-- ref holds a template
+		anchor_id = sfnref_get (ref);											-- returns content of {{sfnref}} or {{harvid}}; nil else
+
+	elseif 'none' == ref and not redirects_patent[template_name] then			-- |ref=none; not supported by cite patent
+		return nil;																-- anchor id expicitly suppressed
+		
+	else
+		anchor_id = ref;														-- |ref=<text> may match an anchor id override value in {{harv}} template |ref= parameter
+	end
+	
+	return anchor_id;															-- anchor_id text; nil else
+end
+
+
+--[[--------------------------< L I S T _ A D D >--------------------------------------------------------------
+
+adds an <item> to <list> table; for anchor IDs, the boolean <encode> argument must be set true; no return value
+
+]]
+
+local function list_add (item, list, encode)
+	if item then																-- if there was an item
+		if encode then															-- for anchor IDs ...
+			item = mw.uri.anchorEncode (item);									-- encode to remove wikimarkup, convert spaces to underscores etc
+		end
+		
+		if not list[item] then													-- if not already saved
+			list[item] = 1;														-- save it 
+		else																	-- here when this item already saved
+			list[item] = list[item] + 1;										-- to indicate that there are multiple items
+		end
+	end
+end
+
+
+--[[--------------------------< A N C H O R _ I D _ M A K E _ A N C H O R >------------------------------------
+
+make anchor IDs from {{anchor}}; there may be more than one because {{anchor}} is not limited to the number of
+anchors it may hold.
+
+]]
+
+local function anchor_id_make_anchor (template, anchor_id_list)
+	template = template:gsub ('^{{[^|]+|', ''):gsub ('}}$', '', 1);				-- remove outer {{ and }} and template name
+
+	template = wikilink_strip (template);										-- strip any wikilink markup (there shouldn't be any but just in case)
+	
+	local params = {};
+	local anchor_id;
+	
+	for param in template:gmatch ('%b{}') do									-- loop through the template; remove and save templates (presumed to be sfnref or harvid)
+		table.insert (params, param);											-- save it
+		template = template:gsub ('%b{}', '', 1);								-- remove it from source template
+	end
+	
+	for _, t in ipairs (params) do												-- spin through the templates in params
+		anchor_id = sfnref_get (t);												-- attempt to decode {{sfnref}} and {{harvid}}
+		if anchor_id then														-- nil when not {{sfnref}} or {{harvid}}
+			list_add (anchor_id, anchor_id_list, true);							-- add anchor ID to the list
+		end
+	end
+	
+	template = template:gsub ('|%s*|', '|');									-- when pipe follows pipe with or without white space, remove extraneous pipe
+	template = template:gsub ('^|', ''):gsub('|$', '');							-- remove extraneous leading and trailing pipes
+
+	params = mw.text.split (template, '%s*|%s*');								-- split at the pipe and remove extraneous space characters
+	
+	for _, t in ipairs (params) do												-- spin through the anchor IDs
+		anchor_id = mw.text.trim (t);											-- trim white space
+		if '' ~= anchor_id then													-- should always have something
+			list_add (anchor_id, anchor_id_list, true);							-- add anchor ID to the list
+		end
+	end
+end
+
+
+--[[--------------------------< T E M P L A T E _ L I S T _ A D D >--------------------------------------------
+
+makes a list of templates use in the article.
+
+]]
+
+local function template_list_add (template)
+	local template = template:match ('{{%s*(.-)[|}]');							-- keep the case of the template - this is different from template_name_get()
+	if template and not template:match ('^#') then								-- found a template or magic word; ignore magic words
+		template=mw.text.trim (template);										-- trim whitespace
+		template = Lang_obj:ucfirst (template);									-- first character in template name must be uppercase (same as canonical template name) TODO: better way to do this?
+		list_add (template, template_list);										-- add to list with (unused) tally
+	end
+end
+
+
+--[[--------------------------< A N C H O R _ I D _ L I S T _ M A K E >----------------------------------------
+
+makes a list of anchor ids from cs1|2, cs1|2-like, vcite xxx, harvc, anchor, wikicite templates
+
+Because cs1|2 wrapper templates can, and often do, hide the author and date parameters inside the wrapper,
+these parameters are not available in the article's wikisource so {{harv}}, {{sfn}}, and {{harvc}} templates that
+link correctly to those wrapper templates will incorrectly show error messages.  Use |ignore-err=yes in the {{harv}},
+{{sfn}}, and {{harvc}} templates to supress the error message.
+
+creates a list of templates used in the article for use with the whitelist
+
+creates a list of article-local whitelisted anchor IDs from {{sfn whitelist}}
+
+]]
+
+local function anchor_id_list_make ()
+	article_content_get ();														-- attempt to get this article's content
+
+	if '' == Article_content then												-- when there is no article content
+		return '';																-- no point in continuing
+	end
+	
+	local template;																-- place to hold the template that we found
+	local template_name;
+	local anchor_id;															-- place to hold an anchor id as it is extracted / decoded
+
+	local find_pattern = '%f[{]{{[^{]';
+	local tstart, tend = Article_content:find (find_pattern);					-- find the first template; do not find template variables: {{{template var|}}} 
+
+	while tstart do
+		template = Article_content:match ('%b{}', tstart);						-- get the whole template
+		if not template then
+			break;																-- template is nil for some reason (last template missing closing }} for example) so declare ourselves done
+		end
+
+		template_name = template_name_get (template);							-- get first char uppercase trimmed template name; ignore subpages ~/new, ~/sandbox
+		template_list_add (template);											-- add this template's name to the list
+
+		if data.known_templates_cs12 [template_name] then
+			anchor_id = anchor_id_make_cs12 (template);							-- extract an anchor id from this template
+			list_add (anchor_id, anchor_id_list, true)
+
+		elseif data.known_templates_vcite [template_name] then
+			local ref = template:match ('|%s*ref%s*=%s*(%b{})');				-- first look for |ref={{sfnref}} or |ref={{harvid}} because we will strip templates from the vcite template
+			if ref then															-- |ref={{template}}
+				anchor_id = sfnref_get (ref);									-- returns content of {{sfnref}} or {{harvid}}; nil else
+				list_add (anchor_id, anchor_id_list, true);
+			else
+				local params = {};
+
+				template_params_get (template, params);							-- build a table of template parameters and their values
+
+				anchor_id = params['ref'];										-- when both set, vcite uses value from |ref=
+				if not anchor_id and params['harvid'] then
+					anchor_id = 'CITEREF' .. params['harvid'];					-- in vcite, |harvid= auto-adds 'CITEREF' prefix to the value in |harvid=
+				end
+				list_add (anchor_id, anchor_id_list, true);
+			end
+
+		elseif data.known_templates_harvc [template_name] then
+			anchor_id = anchor_id_make_harvc (template);						-- extract an anchor id from this template
+			list_add (anchor_id, anchor_id_list, true);
+			
+		elseif data.known_templates_wikicite [template_name] then
+			local ref = template:match ('|%s*ref%s*=%s*(%b{})');				-- first look for |ref={{sfnref}} or |ref={{harvid}}
+			
+			if ref then
+				anchor_id = sfnref_get (ref);
+	
+			elseif template:match ('|%s*ref%s*=([^|}]+)') then
+				anchor_id = template:match ('|%s*ref%s*=([^|}]+)');				-- plain-text
+	
+			elseif template:match ('|%s*id%s*=%s*(%b{})') then
+				ref = template:match ('|%s*id%s*=%s*(%b{})');
+				anchor_id = 'Reference-' .. sfnref_get (ref);
+
+			elseif template:match ('|%s*id%s*=([^|}]+)') then
+				anchor_id = 'Reference-' .. template:match ('|%s*id%s*=([^|}]+)');	-- plain-text
+
+			else
+				anchor_id = nil;												-- no matches, ensure that anchor_id has no value
+			end
+			
+			if anchor_id then
+				list_add (anchor_id, anchor_id_list, true);
+			end
+
+		elseif data.known_templates_anchor [template_name] then
+			anchor_id_make_anchor (template, anchor_id_list);					-- extract anchor ids from this template if any
+		
+		elseif data.known_templates_sfn_whitelist [template_name] then
+			template = template:gsub ('^{{[^|]+|', ''):gsub ('}}$', '', 1);		-- remove outer {{ and }} and template name
+			template = mw.text.trim (template, '%s|');							-- trim leading trailing white space and pipes
+			template = mw.text.split (template, '%s*|%s*');						-- make a table of the template's parameters
+
+			for _, anchor_id in ipairs (template) do							-- spin through this template's parameter
+				if '' ~= anchor_id and not article_whitelist[anchor_id] then
+					anchor_id = mw.uri.anchorEncode (anchor_id)
+					article_whitelist[anchor_id] = 1;							-- add to the whitelist
+				end
+			end
+		
+		elseif template_name and whitelist.wrapper_templates[template_name] then
+			anchor_id = anchor_id_make_wrapper (template);						-- extract an anchor id from this template if possible
+			list_add (anchor_id, anchor_id_list, true);
+
+		elseif template_name and template_name:match ('^Cit[ea]') then			-- not known, not known wrapper; last gasp, try as cs1-like
+			anchor_id = anchor_id_make_cs12 (template);							-- extract an anchor id from this template if possible
+			list_add (anchor_id, anchor_id_list, true);
+		end
+
+		tstart, tend = Article_content:find (find_pattern, tend);				-- search for another template; begin at end of last search
+	end
+
+mw.logObject (anchor_id_list, 'anchor_id_list');
+mw.logObject (template_list, 'template_list');
+mw.logObject (article_whitelist, 'article_whitelist');
+
+	return anchor_id_list;
+end
+
+
+--[[--------------------------< E X P O R T E D _ T A B L E S >------------------------------------------------
+]]
+
+return {
+	anchor_id_list = anchor_id_list_make(),										-- table of anchor ids available in this article
+	article_whitelist = article_whitelist,										-- table of anchor ids with false-positive error message to be suppressed
+	template_list = template_list,												-- table of templates used in this article
+	}
