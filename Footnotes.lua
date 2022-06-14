@@ -17,8 +17,8 @@ local args_default = {
 	page = '',
 	pages = '',
 	location = '',
-	page_sep = ", с.&nbsp;",
-	pages_sep = ", с.&nbsp;",
+	page_sep = ", p.&nbsp;",
+	pages_sep = ", pp.&nbsp;",
 	ref = '',
 	template = 'harv',															-- if template name not provided in {{#invoke:}} use this
 	};
