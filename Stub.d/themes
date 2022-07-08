@@ -628,7 +628,7 @@ return {
 		{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
 		{ 'медик|лекар', 'Stethoscope-2.png', 'медици' },
 		{ 'общественик|революционер', 'Society.png', 'общественици' },
-		{ 'политик', 'People Politician.png', 'политици' },
+		{ 'политик', 'Politician (25455) - The Noun Project.svg', 'политици' },
 			{ 'дипломат', 'Crystal_personal.png', 'дипломати' },
 		{ 'престъпник|пират', 'Anthonygaggi.jpg', 'престъпници' },
 		{ 'психолог', 'Sigmund freud um 1905.jpg', 'психолози' },
