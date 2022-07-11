@@ -490,6 +490,7 @@ return {
 					{ 'отбор|спортен отбор', 'Crystal Clear app clicknrun.png', 'отбори' },
 						{ 'футболен отбор', 'Soccerball.svg', 'футболни отбори' },
 					{ 'ВМОРО', 'Flag of the IMARO.svg' },
+				    { 'ВДРО', 'VDROStamp.jpg' },
 					{ 'Европейския съюз|Европейски съюз|ЕС', 'Flag of Europe.svg' },
 					{ 'ООН', 'Flag of the United Nations.svg' },
 			{ 'общество|феминизъм', 'Society.png' },
