@@ -1,12 +1,43 @@
---
--- This module implements {{Infobox}}
---
-
 local p = {}
 
 local args = {}
 local origArgs
 local root
+
+local function addNewline(str)
+	-- add newline when the string begins or ends with wikilists/wikitables/horizontal rules
+	str = mw.ustring.gsub(str, '([\r\n][%*#;:][^\r\n]*)$', '%1\n')
+	str = mw.ustring.gsub(str, '^([%*#;:][^\r\n]*)$', '%1\n')
+	str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
+	str = mw.ustring.gsub(str, '^%s*(%-%-%-%-+)%s*$', '\n%1\n')
+	str = mw.ustring.gsub(str, '^(%{%|)', '\n%1')
+	str = mw.ustring.gsub(str, '^([\r\n]%|%})%s*$', '%1\n')
+	return str
+end
+
+local function noMobileHRRow(str)
+	-- add class 'nomobile' to a row when its headercells 
+	-- or datacells contains only horizontal rule
+	if str then
+		if mw.ustring.match(str, '^%s*%-%-%-%-+%s$') or mw.ustring.match(str, '^%s*<[Hh][Rr][^<>]*>%s*$') then
+			return 'nomobile'
+		end
+	end
+	return nil
+end
+	
+local function cleanInfobox(str)
+	local str2
+	-- remove empty nested rows
+	repeat
+		str2 = str
+		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*><[Tt][DdHh][^<>]*>%s*(<[Tt][Rr][^<>]*><[Tt][DdHh][^<>]*>)', '%1')
+		str = mw.ustring.gsub(str, '(</[Tt][DdHh]%s*></[Tt][Rr]%s*>)%s*</[Tt][DdHh]%s*></[Tt][Rr]%s*>', '%1')
+	until str == str2
+	-- remove empty tables/subboxes
+	str = mw.ustring.gsub(str, '<table[^<>]*>%s*</table>', '')
+	return str
+end
 
 local function union(t1, t2)
 	-- Returns the union of the values of two tables, as a sequence.
@@ -68,6 +99,7 @@ local function addRow(rowArgs)
 		root
 			:tag('tr')
 				:addClass(rowArgs.rowclass)
+				:addClass(noMobileHRRow(rowArgs.header))
 				:cssText(rowArgs.rowstyle)
 				:attr('id', rowArgs.rowid)
 				:tag('th')
@@ -78,13 +110,14 @@ local function addRow(rowArgs)
 					:css('text-align', 'center')
 					:cssText(args.headerstyle)
 					:cssText(rowArgs.headerstyle)
-					:newline()
-					:wikitext(rowArgs.header)
+					:wikitext(addNewline(rowArgs.header))
 					:done()
-					:newline()
 	elseif rowArgs.data then
 		local row = root:tag('tr')
 		row:addClass(rowArgs.rowclass)
+		if not rowArgs.label then
+			row:addClass(noMobileHRRow(rowArgs.data))
+		end
 		row:cssText(rowArgs.rowstyle)
 		row:attr('id', rowArgs.rowid)
 		if rowArgs.label then
@@ -95,26 +128,18 @@ local function addRow(rowArgs)
 					:css('text-align', 'left')
 					:cssText(args.labelstyle)
 					:cssText(rowArgs.labelstyle)
-					:newline()
-					:wikitext(rowArgs.label)
+					:wikitext(addNewline(rowArgs.label))
 					:done()
-					:newline()
 		end
-
-		local dataCell = row:tag('td')
-		if not rowArgs.label then
-			dataCell
-				:attr('colspan', 2)
-				:css('text-align', 'center')
-		end
-		dataCell
+		row:tag('td')
+			:attr('colspan', not rowArgs.label and 2 or nil)
 			:attr('id', rowArgs.dataid)
 			:addClass(rowArgs.class)
+			:css('text-align', not rowArgs.label and 'center' or nil)
 			:cssText(rowArgs.datastyle)
-			:newline()
-			:wikitext(rowArgs.data)
+			:cssText(rowArgs.datastylenum)
+			:wikitext(addNewline(rowArgs.data))
 			:done()
-			:newline()
 	end
 end
 
@@ -140,10 +165,8 @@ local function renderAboveRow()
 				:css('font-size', '125%')
 				:css('font-weight', 'bold')
 				:cssText(args.abovestyle)
-				:newline()
-				:wikitext(args.above)
+				:wikitext(addNewline(args.above))
 				:done()
-				:newline()
 end
 
 local function renderBelowRow()
@@ -161,10 +184,8 @@ local function renderBelowRow()
 				:addClass(args.belowclass)
 				:css('text-align', 'center')
 				:cssText(args.belowstyle)
-				:newline()
-				:wikitext(args.below)
+				:wikitext(addNewline(args.below))
 				:done()
-				:newline()
 end
 
 local function renderSubheaders()
@@ -200,7 +221,7 @@ local function renderImages()
 			data
 				:tag('div')
 					:cssText(args.captionstyle)
-					:wikitext(caption)
+					:wikitext(addNewline(caption))
 		end
 		addRow({
 			data = tostring(data),
@@ -208,6 +229,27 @@ local function renderImages()
 			class = args.imageclass,
 			rowclass = args['imagerowclass' .. tostring(num)]
 		})
+	end
+end
+
+local function preprocessRows()
+	if not args.autoheaders then return end
+	
+	local rownums = union(getArgNums('header'), getArgNums('data'))
+	table.sort(rownums)
+	local lastheader
+	for k, num in ipairs(rownums) do
+		if args['header' .. tostring(num)] then
+			if lastheader then
+				args['header' .. tostring(lastheader)] = nil
+			end
+			lastheader = num
+		elseif args['data' .. tostring(num)] and mw.ustring.match(args['data' .. tostring(num)], '^%S') then
+			lastheader = nil
+		end
+	end
+	if lastheader then
+		args['header' .. tostring(lastheader)] = nil
 	end
 end
 
@@ -223,7 +265,8 @@ local function renderRows()
 			label = args['label' .. tostring(num)],
 			labelstyle = args['labelstyle' .. tostring(num)],
 			data = args['data' .. tostring(num)],
-			datastyle = (args.datastyle or '') ..';'.. (args['datastyle' .. tostring(num)] or ''),
+			datastyle = args.datastyle,
+			datastylenum = args['datastyle' .. tostring(num)],
 			class = args['class' .. tostring(num)],
 			rowclass = args['rowclass' .. tostring(num)],
 			rowstyle = args['rowstyle' .. tostring(num)],
@@ -253,17 +296,6 @@ local function renderItalicTitle()
 	local italicTitle = args['italic title'] and mw.ustring.lower(args['italic title'])
 	if italicTitle == '' or italicTitle == 'force' or italicTitle == 'yes' then
 		root:wikitext(mw.getCurrentFrame():expandTemplate({title = 'italic title'}))
-	end
-end
-
-local function renderTrackingCategories()
-	if args.decat ~= 'yes' then
-		if #(getArgNums('data')) == 0 and mw.title.getCurrentTitle().namespace == 0 then
-			root:wikitext('[[Category:Articles which use infobox templates with no data rows]]')
-		end
-		if args.child == 'yes' and args.title then
-			root:wikitext('[[Category:Pages which use embedded infobox templates with the title parameter]]')
-		end
 	end
 end
 
@@ -306,13 +338,13 @@ local function _infobox()
 
 	renderSubheaders()
 	renderImages()
+	preprocessRows()
 	renderRows()
 	renderBelowRow()
 	renderNavBar()
 	renderItalicTitle()
-	-- renderTrackingCategories()
 
-	return tostring(root)
+	return cleanInfobox(tostring(root))
 end
 
 local function preprocessSingleArg(argName)
@@ -394,6 +426,7 @@ function p.infobox(frame)
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
 	-- phantom references appearing in article reference lists.
+	preprocessSingleArg('autoheaders')
 	args['child'] = origArgs['child'] -- could be blank or absent; different behaviour because of below
 	preprocessSingleArg('bodyclass')
 	args['subbox'] = origArgs['subbox'] -- could be blank or absent; different behaviour because of below
