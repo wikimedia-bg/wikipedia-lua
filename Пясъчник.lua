@@ -19,7 +19,7 @@ local function noMobileHRRow(str)
 	-- add class 'nomobile' to a row when its headercells 
 	-- or datacells contains only horizontal rule
 	if str then
-		if mw.ustring.match(str, '^%s*%-%-%-%-+%s$') or mw.ustring.match(str, '^%s*<[Hh][Rr][^<>]*>%s*$') then
+		if mw.ustring.match(str, '^%s*%-%-%-%-+%s*$') or mw.ustring.match(str, '^%s*<[Hh][Rr][^<>]*>%s*$') then
 			return 'nomobile'
 		end
 	end
@@ -98,8 +98,8 @@ local function addRow(rowArgs)
 	if rowArgs.header then
 		root
 			:tag('tr')
-				:attr('class', noMobileHRRow(rowArgs.header))
 				:addClass(rowArgs.rowclass)
+				:addClass(noMobileHRRow(rowArgs.header))
 				:cssText(rowArgs.rowstyle)
 				:attr('id', rowArgs.rowid)
 				:tag('th')
@@ -114,10 +114,10 @@ local function addRow(rowArgs)
 					:done()
 	elseif rowArgs.data then
 		local row = root:tag('tr')
-		if not rowArgs.label then
-			row:attr('class', noMobileHRRow(rowArgs.data))
-		end
 		row:addClass(rowArgs.rowclass)
+		if not rowArgs.label then
+			row:addClass(noMobileHRRow(rowArgs.data))
+		end
 		row:cssText(rowArgs.rowstyle)
 		row:attr('id', rowArgs.rowid)
 		if rowArgs.label then
