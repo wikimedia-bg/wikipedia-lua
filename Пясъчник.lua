@@ -98,8 +98,8 @@ local function addRow(rowArgs)
 	if rowArgs.header then
 		root
 			:tag('tr')
+				:attr('class', noMobileHRRow(rowArgs.header))
 				:addClass(rowArgs.rowclass)
-				:addClass(noMobileHRRow(rowArgs.header))
 				:cssText(rowArgs.rowstyle)
 				:attr('id', rowArgs.rowid)
 				:tag('th')
@@ -114,10 +114,10 @@ local function addRow(rowArgs)
 					:done()
 	elseif rowArgs.data then
 		local row = root:tag('tr')
-		row:addClass(rowArgs.rowclass)
 		if not rowArgs.label then
-			row:addClass(noMobileHRRow(rowArgs.data))
+			row:attr('class', noMobileHRRow(rowArgs.data))
 		end
+		row:addClass(rowArgs.rowclass)
 		row:cssText(rowArgs.rowstyle)
 		row:attr('id', rowArgs.rowid)
 		if rowArgs.label then
