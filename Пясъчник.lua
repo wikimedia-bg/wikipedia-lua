@@ -14,7 +14,7 @@ local function addNewline(str)
 		str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
 		str = mw.ustring.gsub(str, '^(%{%|)', '\n%1')
 		str = mw.ustring.gsub(str, '^([\r\n]%|%})%s*$', '%1\n')
-		str = mw.ustring.gsub(str, '([\r\n]%-%-%-%-+)\s*$', '%1\n')
+		str = mw.ustring.gsub(str, '([\r\n]%-%-%-%-+)%s*$', '%1\n')
 		str = mw.ustring.gsub(str, '^(%-%-%-%-+)', '\n%1')
 	end
 	return str
