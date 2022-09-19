@@ -433,7 +433,7 @@ return {
 					{ 'вино', 'Red_Wine_Glass.jpg' },
 			{ 'медицина', 'Medistub.svg' },
 				{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
-				{ 'заболяване', 'Esculaap4.svg', 'заболявания' },
+				{ 'заболяване|болест', 'Esculaap4.svg', 'заболявания' },
 				{ 'неврология', 'Neuro-stub.png' },
 				{ 'офталмология', 'Blue eye.svg' },
 				{ 'паразитология', 'Ixodes hexagonus (aka).jpg' },
