@@ -1,12 +1,52 @@
---
 -- This module implements {{Infobox}}
---
 
 local p = {}
 
 local args = {}
 local origArgs
 local root
+
+local function addNewline(str)
+	if str then
+		-- Add newline when a string begins (or ends) with:
+		-- wikilists; wikitables; wikihorizontal rules
+		str = mw.ustring.gsub(str, '([\r\n][%*#;:][^\r\n]*)$', '%1\n')
+		str = mw.ustring.gsub(str, '^([%*#;:][^\r\n]*)$', '%1\n')
+		str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
+		str = mw.ustring.gsub(str, '^(%{%|)', '\n%1')
+		str = mw.ustring.gsub(str, '^([\r\n]%|%})%s*$', '%1\n')
+		str = mw.ustring.gsub(str, '([\r\n]%-%-%-%-+)%s*$', '%1\n')
+		str = mw.ustring.gsub(str, '^(%-%-%-%-+)', '\n%1')
+	end
+	return str
+end
+
+local function noMobileHRRow(str)
+	-- Add class 'nomobile' to a row when its header, label
+	-- or data cells contains only horizontal rule
+	if str and (mw.ustring.match(str, '^%s*%-%-%-%-+%s*$') or mw.ustring.match(str, '^%s*<[Hh][Rr][^<>]*>%s*$')) then
+		return 'nomobile'
+	end
+	return nil
+end
+
+local function cleanInfobox(str)
+	local last
+	repeat
+		last = str
+		-- Remove empty row with other nested rows in it
+		-- This occurs when an infobox with 'child' parameter is placed
+		-- immediately inside a data, label or header cell
+		-- and no other content precedes it/follows it
+		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*(<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>)', '%1')
+		str = mw.ustring.gsub(str, '(</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>)%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '%1')
+		-- Remove rows with empty subboxes
+		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*<[Tt][Aa][Bb][Ll][Ee][^<>]-infobox[^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
+	until str == last
+	-- Remove an empty infobox
+	str = mw.ustring.gsub(str, '^%s*<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*$', '')
+	return str
+end
 
 local function union(t1, t2)
 	-- Returns the union of the values of two tables, as a sequence.
@@ -37,35 +77,13 @@ local function getArgNums(prefix)
 	return nums
 end
 
-local function commonsBelow()
-	local commons
-	local entity = mw.wikibase.getEntity()
-	local success, val = pcall(function() return entity['claims']['P373'][1]['mainsnak']['datavalue']['value'] end) -- Commons category property value
-	if success then
-		commons = 'Category:' .. val
-	else
-		success, val = pcall(function() return entity['claims']['P935'][1]['mainsnak']['datavalue']['value'] end) -- Commons gallery property value
-		if success then
-			commons = val
-		else
-			success, val = pcall(function() return entity['sitelinks']['commonswiki']['title'] end) -- Commons link value from multilanguage sites links menu
-			if success then commons = val end
-		end
-	end
-	
-	if commons then
-		return '<b class="plainlinks">[' .. tostring(mw.uri.fullUrl(':c:' .. commons, 'uselang=bg')) .. ' ' .. mw.ustring.gsub(mw.title.getCurrentTitle().text, '%s+%b()$', '') .. ']</b> в [[Общомедия]]'
-	end
-	
-	return nil
-end
-
 local function addRow(rowArgs)
 	-- Adds a row to the infobox, with either a header cell
 	-- or a label/data cell combination.
 	if rowArgs.header then
 		root
 			:tag('tr')
+				:addClass(noMobileHRRow(rowArgs.header))
 				:addClass(rowArgs.rowclass)
 				:cssText(rowArgs.rowstyle)
 				:attr('id', rowArgs.rowid)
@@ -77,12 +95,13 @@ local function addRow(rowArgs)
 					:css('text-align', 'center')
 					:cssText(args.headerstyle)
 					:cssText(rowArgs.headerstyle)
-					:newline()
-					:wikitext(rowArgs.header)
+					:wikitext(addNewline(rowArgs.header))
 					:done()
-					:newline()
 	elseif rowArgs.data then
 		local row = root:tag('tr')
+		if rowArgs.label == nil or noMobileHRRow(rowArgs.label) == 'nomobile' then
+			row:addClass(noMobileHRRow(rowArgs.data))
+		end
 		row:addClass(rowArgs.rowclass)
 		row:cssText(rowArgs.rowstyle)
 		row:attr('id', rowArgs.rowid)
@@ -94,26 +113,19 @@ local function addRow(rowArgs)
 					:css('text-align', 'left')
 					:cssText(args.labelstyle)
 					:cssText(rowArgs.labelstyle)
-					:newline()
-					:wikitext(rowArgs.label)
+					:wikitext(addNewline(rowArgs.label))
 					:done()
-					:newline()
 		end
-
 		local dataCell = row:tag('td')
-		if not rowArgs.label then
-			dataCell
-				:attr('colspan', 2)
-				:css('text-align', 'center')
-		end
 		dataCell
+			:attr('colspan', not rowArgs.label and 2 or nil)
 			:attr('id', rowArgs.dataid)
 			:addClass(rowArgs.class)
+			:css('text-align', not rowArgs.label and 'center' or nil)
 			:cssText(rowArgs.datastyle)
-			:newline()
-			:wikitext(rowArgs.data)
+			:cssText(rowArgs.datastylenum)
+			:wikitext(addNewline(rowArgs.data))
 			:done()
-			:newline()
 	end
 end
 
@@ -124,7 +136,7 @@ local function renderTitle()
 		:tag('caption')
 			:addClass(args.titleclass)
 			:cssText(args.titlestyle)
-			:wikitext(args.title)
+			:wikitext(addNewline(args.title))
 end
 
 local function renderAboveRow()
@@ -139,15 +151,37 @@ local function renderAboveRow()
 				:css('font-size', '125%')
 				:css('font-weight', 'bold')
 				:cssText(args.abovestyle)
-				:newline()
-				:wikitext(args.above)
+				:wikitext(addNewline(args.above))
 				:done()
-				:newline()
+end
+
+local function commonsBelow()
+	local commons
+	local entity = mw.wikibase.getEntity()
+	local success, val = pcall(function() return entity['claims']['P373'][1]['mainsnak']['datavalue']['value'] end) -- Commons category property value
+
+	if success then
+		commons = 'Category:' .. val
+	else
+		success, val = pcall(function() return entity['claims']['P935'][1]['mainsnak']['datavalue']['value'] end) -- Commons gallery property value
+		if success then
+			commons = val
+		else
+			success, val = pcall(function() return entity['sitelinks']['commonswiki']['title'] end) -- Commons link value from multilanguage sites links menu
+			if success then commons = val end
+		end
+	end
+
+	if commons then
+		return '<b class="plainlinks">[' .. tostring(mw.uri.fullUrl(':c:' .. commons, 'uselang=bg')) .. ' ' .. mw.ustring.gsub(mw.title.getCurrentTitle().text, '%s+%b()$', '') .. ']</b> в [[Общомедия]]'
+	end
+
+	return nil
 end
 
 local function renderBelowRow()
 	if not (args.child or args.subbox) then
-		args.below = args.below or commonsBelow() -- get commons only when an infobox element doesn't have subbox/child params
+		args.below = args.below or commonsBelow() -- Get commons only when an infobox doesn't have subbox/child params
 	end
 	if not args.below then return end
 
@@ -158,10 +192,8 @@ local function renderBelowRow()
 				:addClass(args.belowclass)
 				:css('text-align', 'center')
 				:cssText(args.belowstyle)
-				:newline()
-				:wikitext(args.below)
+				:wikitext(addNewline(args.below))
 				:done()
-				:newline()
 end
 
 local function renderSubheaders()
@@ -175,7 +207,8 @@ local function renderSubheaders()
 	for k, num in ipairs(subheadernums) do
 		addRow({
 			data = args['subheader' .. tostring(num)],
-			datastyle = args.subheaderstyle or args['subheaderstyle' .. tostring(num)],
+			datastyle = args.subheaderstyle,
+			datastylenum = args['subheaderstyle' .. tostring(num)],
 			class = args.subheaderclass,
 			rowclass = args['subheaderrowclass' .. tostring(num)]
 		})
@@ -197,7 +230,7 @@ local function renderImages()
 			data
 				:tag('div')
 					:cssText(args.captionstyle)
-					:wikitext(caption)
+					:wikitext(addNewline(caption))
 		end
 		addRow({
 			data = tostring(data),
@@ -205,6 +238,27 @@ local function renderImages()
 			class = args.imageclass,
 			rowclass = args['imagerowclass' .. tostring(num)]
 		})
+	end
+end
+
+local function preprocessRows()
+	if not args.autoheaders then return end
+
+	local rownums = union(getArgNums('header'), getArgNums('data'))
+	table.sort(rownums)
+	local lastheader
+	for k, num in ipairs(rownums) do
+		if args['header' .. tostring(num)] then
+			if lastheader then
+				args['header' .. tostring(lastheader)] = nil
+			end
+			lastheader = num
+		elseif args['data' .. tostring(num)] and mw.ustring.match(args['data' .. tostring(num)], '^%S') then
+			lastheader = nil
+		end
+	end
+	if lastheader then
+		args['header' .. tostring(lastheader)] = nil
 	end
 end
 
@@ -220,7 +274,8 @@ local function renderRows()
 			label = args['label' .. tostring(num)],
 			labelstyle = args['labelstyle' .. tostring(num)],
 			data = args['data' .. tostring(num)],
-			datastyle = (args.datastyle or '') ..';'.. (args['datastyle' .. tostring(num)] or ''),
+			datastyle = args.datastyle,
+			datastylenum = args['datastyle' .. tostring(num)],
 			class = args['class' .. tostring(num)],
 			rowclass = args['rowclass' .. tostring(num)],
 			rowstyle = args['rowstyle' .. tostring(num)],
@@ -303,13 +358,14 @@ local function _infobox()
 
 	renderSubheaders()
 	renderImages()
+	preprocessRows()
 	renderRows()
 	renderBelowRow()
 	renderNavBar()
 	renderItalicTitle()
 	-- renderTrackingCategories()
 
-	return tostring(root)
+	return cleanInfobox(tostring(root))
 end
 
 local function preprocessSingleArg(argName)
@@ -391,6 +447,7 @@ function p.infobox(frame)
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
 	-- phantom references appearing in article reference lists.
+	preprocessSingleArg('autoheaders')
 	args['child'] = origArgs['child'] -- could be blank or absent; different behaviour because of renderBelowRow()
 	preprocessSingleArg('bodyclass')
 	args['subbox'] = origArgs['subbox'] -- could be blank or absent; different behaviour because of renderBelowRow()
