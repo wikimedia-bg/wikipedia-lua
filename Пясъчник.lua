@@ -251,14 +251,8 @@ local function preprocessRows()
 				args['header' .. tostring(lastheader)] = nil
 			end
 			lastheader = num
-		elseif args['data' .. tostring(num)] and
-			args['data' .. tostring(num)]:gsub(
-				category_in_empty_row_pattern, ''
-			):match('^%S') then
-			local data = args['data' .. tostring(num)]
-			if data:gsub(category_in_empty_row_pattern, ''):match('%S') then
-				lastheader = nil
-			end
+		elseif args['data' .. tostring(num)] and mw.ustring.match(args['data' .. tostring(num)], '^%S') then
+			lastheader = nil
 		end
 	end
 	if lastheader then
