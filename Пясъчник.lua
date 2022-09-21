@@ -44,7 +44,7 @@ local function cleanInfobox(str)
 		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*<[Tt][Aa][Bb][Ll][Ee][^<>]-infobox[^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
 	until str == last
 	-- Remove an empty infobox
-	str = mw.ustring.gsub(str, '^%s*<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*$')
+	str = mw.ustring.gsub(str, '^%s*<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*$', '')
 	return str
 end
 
