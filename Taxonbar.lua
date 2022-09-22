@@ -1,4 +1,4 @@
-local conf = require( 'Модул:Taxonbar/conf' ) --configuration modul
+local conf = require( 'Модул:Taxonbar/conf' ) --configuration module
 local TaxonItalics = require('Модул:TaxonItalics') --use a function from Module:TaxonItalics to italicize a taxon name
 
 --[[==========================================================================]]
@@ -56,7 +56,7 @@ local function getLink( property, val )
 				   property == 3795 or --Flora of Israel Online
 				   property == 5397 --Tierstimmenarchiv
 				then
-					formatterURL = entityObject:getBestStatements('P1630')[2] --use 2nd formatterURL for Bulgarian version
+					formatterURL = entityObject:getBestStatements('P1630')[2] --use 2nd formatterURL for English version
 				end
 				if formatterURL == nil then formatterURL = entityObject:getBestStatements('P1630')[1] end --default to [1]
 				if formatterURL then
@@ -65,7 +65,7 @@ local function getLink( property, val )
 					end
 				end
 			elseif dataType == 'url' then
-				local subjectItem = entityObject:getBestStatements('P1629')[2]
+				local subjectItem = entityObject:getBestStatements('P1629')[1]
 				if subjectItem then
 					local officialWebsite = mw.wikibase.getEntity(subjectItem.mainsnak.datavalue.value.id):getBestStatements('P856')[1]
 					if officialWebsite then	link = officialWebsite.mainsnak.datavalue.value end
