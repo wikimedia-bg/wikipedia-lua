@@ -1,5 +1,6 @@
 return {
 	coord                   = "P625",
+	unitSymbol              = "P5061",
 	-----------------------
 	image                   = "P18",
 	author                  = "P50",
