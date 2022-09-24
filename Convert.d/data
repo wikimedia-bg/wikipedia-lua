@@ -1082,6 +1082,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-19,
 	default  = "aJ",
+	link     = "Електронволт",
     },
     ["feV"] = {
 	name1    = "femtoelectronvolt",
@@ -5565,6 +5566,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 1,
 	default  = "ft/s",
+	link     = "Метър в секунда",
     },
     ["Mach"] = {
 	name2    = "Mach",
