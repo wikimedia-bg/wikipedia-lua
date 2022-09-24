@@ -326,24 +326,13 @@ local function adjustparameters(tdata, parms, index)
 		if result.n == 0 then
 			return quit()
 		end
-		local ucode
-		for i, t in ipairs(result) do
-			-- Convert requires each input unit to be identical.
-			if i == 1 then
-				ucode = t[2]
-			elseif ucode ~= t[2] then
-				return quit()
-			end
-		end
+		local ucode = result[1][2]
 		local item = ucode
-		if item == parms[index] then
-			-- Remove specified output unit if it is the same as the Wikidata unit.
-			-- For example, {{convert|input=P2044|km}} with property "12 km".
-			table.remove(parms, index)
-		end
 		for i = result.n, 1, -1 do
-			insert2(result[i][1], item)
-			item = sep
+			if result[i][2] == ucode then
+				insert2(result[i][1], item)
+				item = sep
+			end
 		end
 		return true
 	else
