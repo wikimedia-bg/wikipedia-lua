@@ -827,6 +827,10 @@ local wikidata_units = {
 		label = 'gravity of Earth',
 		ucode = 'g0',
 	},
+	Q6859652 = {
+		label = 'millimetre of mercury',
+		ucode = 'mmHg',
+	},
 	Q693944 = {
 		label = 'grain',
 		ucode = 'gr',
