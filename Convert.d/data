@@ -68,7 +68,7 @@ local all_units = {
 	utype    = "acceleration",
 	scale    = 0.27777777777777779,
 	default  = "mph/s",
-	link     = "Acceleration",
+	link     = "Ускорение",
     },
     ["km/s2"] = {
 	name1    = "kilometre per second squared",
@@ -79,7 +79,7 @@ local all_units = {
 	utype    = "acceleration",
 	scale    = 1000,
 	default  = "mph/s",
-	link     = "Acceleration",
+	link     = "Ускорение",
     },
     ["m/s2"] = {
 	name1    = "metre per second squared",
@@ -98,7 +98,7 @@ local all_units = {
 	utype    = "acceleration",
 	scale    = 0.44704,
 	default  = "km/hs",
-	link     = "Acceleration",
+	link     = "Ускорение",
     },
     ["km/h/s"] = {
 	target   = "km/hs",
@@ -122,7 +122,7 @@ local all_units = {
 	scale    = 100,
 	prefixes = 1,
 	default  = "sqft",
-	link     = "Hectare#Are",
+	link     = "Хектар",
     },
     ["acre"] = {
 	symbol   = "acre",
@@ -203,7 +203,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 2,
 	default  = "sqft",
-	link     = "Square metre",
+	link     = "Квадратен метър",
     },
     ["pondemaat"] = {
 	name1    = "pondemaat",
@@ -276,7 +276,7 @@ local all_units = {
 	utype    = "area",
 	scale    = 3429904,
 	default  = "km2 sqmi",
-	link     = "Nautical mile",
+	link     = "Морска миля",
     },
     ["sqperch"] = {
 	name2    = "perches",
@@ -417,7 +417,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "e",
-	link     = "Coulomb",
+	link     = "Кулон",
     },
     ["e"] = {
 	name1    = "elementary charge",
@@ -432,7 +432,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 1,
 	default  = "lbmol",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["gmol"] = {
 	name1    = "gram-mole",
@@ -440,7 +440,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 1,
 	default  = "lbmol",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["kmol"] = {
 	name1    = "kilomole",
@@ -448,7 +448,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 1000,
 	default  = "lbmol",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["lb-mol"] = {
 	name1    = "pound-mole",
@@ -456,7 +456,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 453.59237,
 	default  = "mol",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lbmol"] = {
 	name1    = "pound-mole",
@@ -464,7 +464,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 453.59237,
 	default  = "mol",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["mol"] = {
 	name1    = "mole",
@@ -472,7 +472,7 @@ local all_units = {
 	utype    = "chemical amount",
 	scale    = 1,
 	default  = "lbmol",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["kgCO2/L"] = {
 	name1    = "kilogram per litre",
@@ -513,7 +513,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1,
 	default  = "kg/m3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["g/L"] = {
 	name1    = "gram per litre",
@@ -524,7 +524,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1,
 	default  = "lb/cuin",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["g/mL"] = {
 	name1    = "gram per millilitre",
@@ -535,7 +535,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1000,
 	default  = "lb/cuin",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["g/ml"] = {
 	name1    = "gram per millilitre",
@@ -546,7 +546,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1000,
 	default  = "lb/cuin",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["kg/dm3"] = {
 	name1    = "kilogram per cubic decimetre",
@@ -557,7 +557,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1000,
 	default  = "lb/cuft",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["kg/L"] = {
 	name1    = "kilogram per litre",
@@ -568,7 +568,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1000,
 	default  = "lb/USgal",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["kg/l"] = {
 	name1    = "kilogram per litre",
@@ -579,7 +579,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1000,
 	default  = "lb/USgal",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["kg/m3"] = {
 	name1    = "kilogram per cubic metre",
@@ -590,7 +590,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1,
 	default  = "lb/cuyd",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/cuft"] = {
 	name1    = "pound per cubic foot",
@@ -599,7 +599,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 16.018463373960142,
 	default  = "g/cm3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/cuin"] = {
 	name1    = "pound per cubic inch",
@@ -608,7 +608,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 27679.904710203122,
 	default  = "g/cm3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/cuyd"] = {
 	name1    = "pound per cubic yard",
@@ -617,7 +617,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 0.5932764212577829,
 	default  = "kg/m3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/impgal"] = {
 	name1    = "pound per imperial gallon",
@@ -626,7 +626,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 99.776372663101697,
 	default  = "kg/L",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/in3"] = {
 	name1    = "pound per cubic inch",
@@ -635,7 +635,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 27679.904710203122,
 	default  = "g/cm3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/U.S.gal"] = {
 	name1    = "pound per U.S. gallon",
@@ -644,7 +644,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 119.82642731689663,
 	default  = "kg/L",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lb/USbu"] = {
 	name1    = "pound per US bushel",
@@ -662,7 +662,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 119.82642731689663,
 	default  = "kg/L",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["lbm/cuin"] = {
 	name1    = "pound mass per cubic inch",
@@ -671,7 +671,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 27679.904710203122,
 	default  = "g/cm3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["mg/L"] = {
 	name1    = "milligram per litre",
@@ -682,7 +682,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 0.001,
 	default  = "lb/cuin",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["oz/cuin"] = {
 	name1    = "ounce per cubic inch",
@@ -691,7 +691,7 @@ local all_units = {
 	utype    = "density",
 	scale    = 1729.9940443876951,
 	default  = "g/cm3",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["g/cm3"] = {
 	per      = { "g", "cm3" },
@@ -702,7 +702,7 @@ local all_units = {
 	per      = { "g", "m3" },
 	utype    = "density",
 	default  = "lb/cuyd",
-	link     = "Density",
+	link     = "Плътност",
     },
     ["Mg/m3"] = {
 	per      = { "Mg", "m3" },
@@ -751,7 +751,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3600000,
 	default  = "MJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["bboe"] = {
 	name1    = "barrel of oil equivalent",
@@ -942,7 +942,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4185.8,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["cal-15"] = {
 	name1    = "calorie (15°C)",
@@ -951,7 +951,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.1858,
 	default  = "J",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Cal-IT"] = {
 	name1    = "Calorie (International Steam Table)",
@@ -960,7 +960,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4186.8,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["cal-IT"] = {
 	name1    = "calorie (International Steam Table)",
@@ -969,7 +969,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.1868,
 	default  = "J",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Cal-th"] = {
 	name1    = "Calorie (thermochemical)",
@@ -978,7 +978,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["cal-th"] = {
 	name1    = "calorie (thermochemical)",
@@ -987,7 +987,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184,
 	default  = "J",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["ccatm"] = {
 	name1    = "cubic centimetre-atmosphere",
@@ -996,7 +996,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["CHU-IT"] = {
 	name1    = "Celsius heat unit (International Table)",
@@ -1014,7 +1014,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["cufootatm"] = {
 	name1    = "cubic foot of atmosphere",
@@ -1023,7 +1023,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2869.2044809344,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["cufootnaturalgas"] = {
 	name1    = "cubic foot of natural gas",
@@ -1042,7 +1042,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2869.2044809344,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["cuftnaturalgas"] = {
 	name1    = "cubic foot of natural gas",
@@ -1061,7 +1061,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 77468.5209852288,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["Eh"] = {
 	name1    = "Hartree",
@@ -1089,7 +1089,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-34,
 	default  = "yJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["foe"] = {
 	symbol   = "foe",
@@ -1140,7 +1140,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-10,
 	default  = "nJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["GLatm"] = {
 	name1    = "gigalitre-atmosphere",
@@ -1149,7 +1149,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325000000,
 	default  = "GJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["Glatm"] = {
 	name1    = "gigalitre-atmosphere",
@@ -1158,7 +1158,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325000000,
 	default  = "GJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["gTNT"] = {
 	name2    = "grams of TNT",
@@ -1167,7 +1167,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184,
 	default  = "kJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["Gtoe"] = {
 	name1    = "gigatonne of oil equivalent",
@@ -1185,7 +1185,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e18,
 	default  = "EJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["GtTNT"] = {
 	name2    = "gigatonnes of TNT",
@@ -1194,7 +1194,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e18,
 	default  = "EJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["GW.h"] = {
 	name1    = "gigawatt-hour",
@@ -1202,7 +1202,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6e12,
 	default  = "TJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["GWh"] = {
 	name1    = "gigawatt-hour",
@@ -1210,7 +1210,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6e12,
 	default  = "TJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["hph"] = {
 	name1    = "horsepower-hour",
@@ -1218,7 +1218,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2684519.537696172792,
 	default  = "kWh",
-	link     = "Horsepower",
+	link     = "Конска сила",
     },
     ["impgalatm"] = {
 	name1    = "imperial gallon-atmosphere",
@@ -1226,7 +1226,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 460.63256925,
 	default  = "J",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["inlb"] = {
 	name1    = "inch-pound",
@@ -1284,7 +1284,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "cal",
-	link     = "Joule",
+	link     = "Джаул",
     },
     ["kBOE"] = {
 	name1    = "kilo barrel of oil equivalent",
@@ -1301,7 +1301,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["kcal-15"] = {
 	name1    = "kilocalorie (15°C)",
@@ -1310,7 +1310,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4185.8,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["kcal-IT"] = {
 	name1    = "kilocalorie (International Steam Table)",
@@ -1319,7 +1319,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4186.8,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["kcal-th"] = {
 	name1    = "kilocalorie (thermochemical)",
@@ -1328,7 +1328,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184,
 	default  = "kJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["kerg"] = {
 	name1    = "kiloerg",
@@ -1336,7 +1336,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0001,
 	default  = "mJ",
-	link     = "Erg",
+	link     = "Ерг",
     },
     ["keV"] = {
 	name1    = "kiloelectronvolt",
@@ -1344,7 +1344,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-16,
 	default  = "fJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["kgTNT"] = {
 	name2    = "kilograms of TNT",
@@ -1353,7 +1353,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000,
 	default  = "MJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["kLatm"] = {
 	name1    = "kilolitre-atmosphere",
@@ -1362,7 +1362,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["klatm"] = {
 	name1    = "kilolitre-atmosphere",
@@ -1371,7 +1371,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["kt(TNT)"] = {
 	name1    = "kilotonne",
@@ -1380,7 +1380,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e12,
 	default  = "TJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["ktoe"] = {
 	name1    = "kilotonne of oil equivalent",
@@ -1398,7 +1398,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e12,
 	default  = "TJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["ktTNT"] = {
 	name2    = "kilotonnes of TNT",
@@ -1407,7 +1407,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e12,
 	default  = "TJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["kW.h"] = {
 	name1    = "kilowatt-hour",
@@ -1415,7 +1415,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3600000,
 	default  = "MJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["kWh"] = {
 	name1    = "kilowatt-hour",
@@ -1423,7 +1423,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3600000,
 	default  = "MJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["Latm"] = {
 	name1    = "litre-atmosphere",
@@ -1432,7 +1432,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101.325,
 	default  = "J",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["latm"] = {
 	name1    = "litre-atmosphere",
@@ -1441,7 +1441,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101.325,
 	default  = "J",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["m3atm"] = {
 	name1    = "cubic metre-atmosphere",
@@ -1450,7 +1450,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["Mcal"] = {
 	name1    = "megacalorie",
@@ -1458,7 +1458,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000,
 	default  = "MJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["mcal"] = {
 	name1    = "millicalorie",
@@ -1466,7 +1466,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.004184,
 	default  = "mJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Mcal-15"] = {
 	name1    = "megacalorie (15°C)",
@@ -1475,7 +1475,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4185800,
 	default  = "MJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["mcal-15"] = {
 	name1    = "millicalorie (15°C)",
@@ -1484,7 +1484,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0041858,
 	default  = "mJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Mcal-IT"] = {
 	name1    = "megacalorie (International Steam Table)",
@@ -1493,7 +1493,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4186800,
 	default  = "MJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["mcal-IT"] = {
 	name1    = "millicalorie (International Steam Table)",
@@ -1502,7 +1502,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0041868,
 	default  = "mJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Mcal-th"] = {
 	name1    = "megacalorie (thermochemical)",
@@ -1511,7 +1511,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000,
 	default  = "MJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["mcal-th"] = {
 	name1    = "millicalorie (thermochemical)",
@@ -1520,7 +1520,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.004184,
 	default  = "mJ",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Merg"] = {
 	name1    = "megaerg",
@@ -1528,7 +1528,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.1,
 	default  = "J",
-	link     = "Erg",
+	link     = "Ерг",
     },
     ["merg"] = {
 	name1    = "millierg",
@@ -1536,7 +1536,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0000000001,
 	default  = "μJ",
-	link     = "Erg",
+	link     = "Ерг",
     },
     ["MeV"] = {
 	name1    = "megaelectronvolt",
@@ -1544,7 +1544,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-13,
 	default  = "pJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["meV"] = {
 	name1    = "millielectronvolt",
@@ -1552,7 +1552,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-22,
 	default  = "zJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["MLatm"] = {
 	name1    = "megalitre-atmosphere",
@@ -1561,7 +1561,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325000,
 	default  = "MJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["Mlatm"] = {
 	name1    = "megalitre-atmosphere",
@@ -1570,7 +1570,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101325000,
 	default  = "MJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["mLatm"] = {
 	name1    = "millilitre-atmosphere",
@@ -1579,7 +1579,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["mlatm"] = {
 	name1    = "millilitre-atmosphere",
@@ -1588,7 +1588,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["MMBtu"] = {
 	name1    = "million British thermal units",
@@ -1606,7 +1606,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e15,
 	default  = "PJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["Mtoe"] = {
 	name1    = "megatonne of oil equivalent",
@@ -1624,7 +1624,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e15,
 	default  = "PJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["mtonTNT"] = {
 	name2    = "millitons of TNT",
@@ -1633,7 +1633,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000,
 	default  = "MJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["MtTNT"] = {
 	name2    = "megatonnes of TNT",
@@ -1642,7 +1642,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e15,
 	default  = "PJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["mtTNT"] = {
 	name2    = "millitonnes of TNT",
@@ -1651,7 +1651,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000,
 	default  = "MJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["MW.h"] = {
 	name1    = "megawatt-hour",
@@ -1659,7 +1659,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3600000000,
 	default  = "GJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["mW.h"] = {
 	name1    = "milliwatt-hour",
@@ -1667,7 +1667,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6,
 	default  = "J",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["MWh"] = {
 	name1    = "megawatt-hour",
@@ -1675,7 +1675,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3600000000,
 	default  = "GJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["mWh"] = {
 	name1    = "milliwatt-hour",
@@ -1683,7 +1683,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6,
 	default  = "J",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["neV"] = {
 	name1    = "nanoelectronvolt",
@@ -1691,7 +1691,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-28,
 	default  = "yJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["PeV"] = {
 	name1    = "petaelectronvolt",
@@ -1699,7 +1699,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0001602176487,
 	default  = "mJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["peV"] = {
 	name1    = "picoelectronvolt",
@@ -1707,7 +1707,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-31,
 	default  = "yJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["PSh"] = {
 	name1    = "Pferdestärkenstunde",
@@ -1731,7 +1731,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2.1798741e-18,
 	default  = "eV",
-	link     = "Rydberg constant",
+	link     = "Константа на Ридберг",
     },
     ["scc"] = {
 	name1    = "standard cubic centimetre",
@@ -1740,7 +1740,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.101325,
 	default  = "mJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["scf"] = {
 	name1    = "standard cubic foot",
@@ -1749,7 +1749,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2869.2044809344,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["scfoot"] = {
 	name1    = "standard cubic foot",
@@ -1758,7 +1758,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 2869.2044809344,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["scy"] = {
 	name1    = "standard cubic yard",
@@ -1766,7 +1766,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 77468.5209852288,
 	default  = "kJ",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["sl"] = {
 	name1    = "standard litre",
@@ -1775,7 +1775,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 101.325,
 	default  = "J",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["t(TNT)"] = {
 	name1    = "tonne",
@@ -1784,7 +1784,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000000,
 	default  = "GJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["TeV"] = {
 	name1    = "teraelectronvolt",
@@ -1792,7 +1792,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-7,
 	default  = "μJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["th"] = {
 	name1    = "thermie",
@@ -1847,7 +1847,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000000,
 	default  = "GJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["tTNT"] = {
 	name2    = "tonnes of TNT",
@@ -1856,7 +1856,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4184000000,
 	default  = "GJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["TtonTNT"] = {
 	name2    = "teratons of TNT",
@@ -1865,7 +1865,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e21,
 	default  = "ZJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["TtTNT"] = {
 	name2    = "teratonnes of TNT",
@@ -1874,7 +1874,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 4.184e21,
 	default  = "ZJ",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["TW.h"] = {
 	name1    = "terawatt-hour",
@@ -1882,7 +1882,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6e15,
 	default  = "PJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["TWh"] = {
 	name1    = "terawatt-hour",
@@ -1890,7 +1890,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 3.6e15,
 	default  = "PJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["USgalatm"] = {
 	name1    = "US gallon-atmosphere",
@@ -1900,7 +1900,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 383.5568490138,
 	default  = "J",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["W.h"] = {
 	name1    = "watt-hour",
@@ -1922,7 +1922,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1e-13,
 	default  = "nJ",
-	link     = "Erg",
+	link     = "Ерг",
     },
     ["μeV"] = {
 	name1    = "microelectronvolt",
@@ -1930,7 +1930,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 1.602176487e-25,
 	default  = "yJ",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["μW.h"] = {
 	name1    = "microwatt-hour",
@@ -1938,7 +1938,7 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0036,
 	default  = "mJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["μWh"] = {
 	name1    = "microwatt-hour",
@@ -1946,11 +1946,11 @@ local all_units = {
 	utype    = "energy",
 	scale    = 0.0036,
 	default  = "mJ",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["-kW.h"] = {
 	target   = "kW.h",
-	link     = "Kilowatt hour",
+	link     = "Киловатчас",
     },
     ["btu"] = {
 	target   = "BTU",
@@ -2087,7 +2087,7 @@ local all_units = {
 	scale    = 96485.329522144166,
 	prefixes = 1,
 	default  = "kcal/mol",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["kcal/mol"] = {
 	per      = { "kcal", "mol" },
@@ -2110,7 +2110,7 @@ local all_units = {
 	utype    = "energy per unit length",
 	scale    = 36,
 	default  = "MJ/km kWh/mi",
-	link     = "Watt-hour",
+	link     = "Киловатчас",
     },
     ["kWh/100 mi"] = {
 	name1    = "kilowatt-hour per 100 miles",
@@ -2239,7 +2239,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 4184000000,
 	default  = "GJ/kg",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["ktTNT/t"] = {
 	name2    = "kilotonnes of TNT per tonne",
@@ -2248,7 +2248,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 4184000000,
 	default  = "GJ/kg",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["MtonTNT/MT"] = {
 	name2    = "megatons of TNT per metric ton",
@@ -2257,7 +2257,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 4.184e12,
 	default  = "TJ/kg",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["MtTNT/MT"] = {
 	name2    = "megatonnes of TNT per tonne",
@@ -2266,7 +2266,7 @@ local all_units = {
 	utype    = "energy per unit mass",
 	scale    = 4.184e12,
 	default  = "TJ/kg",
-	link     = "TNT equivalent",
+	link     = "Тротилов еквивалент",
     },
     ["TJ/kg"] = {
 	name1    = "terajoule per kilogram",
@@ -2529,7 +2529,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 1.2628027777777779e-6,
 	default  = "m3/h",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["impgal/min"] = {
 	name1    = "imperial gallon per minute",
@@ -2538,7 +2538,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 7.5768166666666671e-5,
 	default  = "m3/s",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["impgal/s"] = {
 	name1    = "imperial gallon per second",
@@ -2736,7 +2736,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 1.0515032733333334e-6,
 	default  = "m3/h",
-	link     = "Gallon",
+	link     = "Галон",
 	customary= 2,
     },
     ["U.S.gal/min"] = {
@@ -2746,7 +2746,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 6.3090196400000003e-5,
 	default  = "m3/s",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["USgal/a"] = {
 	name1    = "US gallon per year",
@@ -2771,7 +2771,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 1.0515032733333334e-6,
 	default  = "m3/h",
-	link     = "Gallon",
+	link     = "Галон",
 	customary= 1,
     },
     ["USgal/min"] = {
@@ -2781,7 +2781,7 @@ local all_units = {
 	utype    = "flow",
 	scale    = 6.3090196400000003e-5,
 	default  = "m3/s",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["USgal/s"] = {
 	name1    = "US gallon per second",
@@ -2875,7 +2875,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00980665,
 	default  = "mN oz-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["gf"] = {
 	name1    = "gram-force",
@@ -2884,7 +2884,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00980665,
 	default  = "mN ozf",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["gr-f"] = {
 	name1    = "grain-force",
@@ -2934,7 +2934,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 9.80665,
 	default  = "N lb-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["L/T-f"] = {
 	name1    = "long ton-force",
@@ -3018,7 +3018,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00000980665,
 	default  = "μN gr-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["mgf"] = {
 	name1    = "milligram-force",
@@ -3027,7 +3027,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00000980665,
 	default  = "μN grf",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["Mp"] = {
 	name1    = "megapond",
@@ -3035,7 +3035,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 9806.65,
 	default  = "kN LT-f ST-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["mp"] = {
 	name1    = "millipond",
@@ -3043,7 +3043,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00000980665,
 	default  = "μN gr-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["N"] = {
 	_name1   = "newton",
@@ -3052,7 +3052,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "lb-f",
-	link     = "Newton (unit)",
+	link     = "Нютон",
     },
     ["oz-f"] = {
 	name1    = "ounce-force",
@@ -3078,7 +3078,7 @@ local all_units = {
 	utype    = "force",
 	scale    = 0.00980665,
 	default  = "mN oz-f",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["pdl"] = {
 	name1    = "poundal",
@@ -3308,7 +3308,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.00001,
 	default  = "ft/mi",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["ft/mi"] = {
 	name1    = "foot per mile",
@@ -3317,7 +3317,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.00018939393939393939,
 	default  = "v < 5.28 ! c ! ! m/km",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["ft/nmi"] = {
 	name1    = "foot per nautical mile",
@@ -3326,7 +3326,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.00016457883369330455,
 	default  = "v < 6.076 ! c ! ! m/km",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["in/ft"] = {
 	name1    = "inch per foot",
@@ -3335,7 +3335,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.083333333333333329,
 	default  = "mm/m",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["in/mi"] = {
 	name1    = "inch per mile",
@@ -3344,7 +3344,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 1.5782828282828283e-5,
 	default  = "v < 0.6336 ! m ! c ! m/km",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["m/km"] = {
 	name1    = "metre per kilometre",
@@ -3355,7 +3355,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.001,
 	default  = "ft/mi",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["mm/km"] = {
 	name1    = "millimetre per kilometre",
@@ -3366,7 +3366,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.000001,
 	default  = "in/mi",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["mm/m"] = {
 	name1    = "millimetre per metre",
@@ -3377,7 +3377,7 @@ local all_units = {
 	utype    = "gradient",
 	scale    = 0.001,
 	default  = "in/ft",
-	link     = "Grade (slope)",
+	link     = "Наклон",
     },
     ["admi"] = {
 	name1    = "admiralty mile",
@@ -3385,7 +3385,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1853.184,
 	default  = "km mi",
-	link     = "Nautical mile",
+	link     = "Морска миля",
     },
     ["AU"] = {
 	name1    = "astronomical unit",
@@ -3400,7 +3400,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1853.184,
 	default  = "km mi",
-	link     = "Nautical mile",
+	link     = "Морска миля",
     },
     ["bu"] = {
 	name2    = "bu",
@@ -3480,7 +3480,7 @@ local all_units = {
 	scale    = 0.3048,
 	default  = "m",
 	subdivs  = { ["in"] = { 12, default = "m" } },
-	link     = "Foot (unit)",
+	link     = "Фут",
     },
     ["ft"] = {
 	name1    = "foot",
@@ -3491,7 +3491,7 @@ local all_units = {
 	exception= "integer_more_precision",
 	default  = "m",
 	subdivs  = { ["in"] = { 12, default = "m" } },
-	link     = "Foot (unit)",
+	link     = "Фут",
     },
     ["furlong"] = {
 	symbol   = "furlong",
@@ -3506,7 +3506,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e24,
 	default  = "Mpc",
-	link     = "Light-year#Definitions",
+	link     = "Светлинна година",
     },
     ["Gpc"] = {
 	name1    = "gigaparsec",
@@ -3514,7 +3514,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 3.0856775814671916e25,
 	default  = "Gly",
-	link     = "Parsec#Megaparsecs and gigaparsecs",
+	link     = "Парсек",
     },
     ["hand"] = {
 	name1    = "hand",
@@ -3541,7 +3541,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 0.0254,
 	default  = "mm",
-	link     = "Inch",
+	link     = "Инч",
     },
     ["kly"] = {
 	name1    = "kilolight-year",
@@ -3549,7 +3549,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e18,
 	default  = "pc",
-	link     = "Light-year#Definitions",
+	link     = "Светлинна година",
     },
     ["kpc"] = {
 	name1    = "kiloparsec",
@@ -3557,7 +3557,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 3.0856775814671916e19,
 	default  = "kly",
-	link     = "Parsec#Parsecs and kiloparsecs",
+	link     = "Парсек",
     },
     ["LD"] = {
 	name1    = "lunar distance",
@@ -3573,7 +3573,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 4828.032,
 	default  = "km",
-	link     = "League (unit)",
+	link     = "Левга",
     },
     ["ly"] = {
 	name1    = "light-year",
@@ -3590,7 +3590,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "v > 0 and v < 3 ! ftin ! ft",
-	link     = "Metre",
+	link     = "Метър",
     },
     ["mi"] = {
 	name1    = "mile",
@@ -3614,7 +3614,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 9.4607304725808e21,
 	default  = "kpc",
-	link     = "Light-year#Definitions",
+	link     = "Светлинна година",
     },
     ["Mpc"] = {
 	name1    = "megaparsec",
@@ -3622,7 +3622,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 3.0856775814671916e22,
 	default  = "Mly",
-	link     = "Parsec#Megaparsecs and gigaparsecs",
+	link     = "Парсек",
     },
     ["NM"] = {
 	name1    = "nautical mile",
@@ -3692,7 +3692,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1853.24496,
 	default  = "km mi",
-	link     = "Nautical mile",
+	link     = "Морска миля",
     },
     ["pre1954USnmi"] = {
 	name1    = "(pre-1954&nbsp;US) nautical mile",
@@ -3702,7 +3702,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1853.24496,
 	default  = "km mi",
-	link     = "Nautical mile",
+	link     = "Морска миля",
     },
     ["rd"] = {
 	name1    = "rod",
@@ -3726,7 +3726,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1000,
 	default  = "mi",
-	link     = "Kilometre",
+	link     = "Километър",
     },
     ["rtmi"] = {
 	name1    = "route mile",
@@ -3734,7 +3734,7 @@ local all_units = {
 	utype    = "length",
 	scale    = 1609.344,
 	default  = "km",
-	link     = "Mile",
+	link     = "Миля",
     },
     ["shaku"] = {
 	name2    = "shaku",
@@ -3828,7 +3828,7 @@ local all_units = {
 	iscomplex= true,
 	prefixes = 1,
 	default  = "m",
-	link     = "Hertz",
+	link     = "Херц",
     },
     ["-ft-frac"] = {
 	target   = "ft",
@@ -3977,7 +3977,7 @@ local all_units = {
 	scale    = 0.0001,
 	prefixes = 1,
 	default  = "T",
-	link     = "Gauss (unit)",
+	link     = "Гаус (единица)",
     },
     ["T"] = {
 	_name1   = "tesla",
@@ -3986,7 +3986,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "G",
-	link     = "Tesla (unit)",
+	link     = "Тесла (единица)",
     },
     ["A/m"] = {
 	name1    = "ampere per metre",
@@ -4059,7 +4059,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 0.0002,
 	default  = "g",
-	link     = "Carat (mass)",
+	link     = "Карат (маса)",
     },
     ["drachm"] = {
 	name1_us = "dram",
@@ -4086,7 +4086,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1016.0469088,
 	default  = "DWtonne",
-	link     = "Tonnage",
+	link     = "Тонаж (морски термин)",
     },
     ["DWtonne"] = {
 	symbol   = "deadweight tonne",
@@ -4094,7 +4094,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000,
 	default  = "DWton",
-	link     = "Tonnage",
+	link     = "Тонаж (морски термин)",
     },
     ["g"] = {
 	_name1   = "gram",
@@ -4103,7 +4103,7 @@ local all_units = {
 	scale    = 0.001,
 	prefixes = 1,
 	default  = "oz",
-	link     = "Gram",
+	link     = "Грам",
     },
     ["gr"] = {
 	name1    = "grain",
@@ -4119,7 +4119,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000000000000,
 	default  = "LT ST",
-	link     = "Tonne",
+	link     = "Тон",
     },
     ["impgalh2o"] = {
 	name1    = "imperial gallon of water",
@@ -4136,7 +4136,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000000,
 	default  = "LT ST",
-	link     = "Tonne",
+	link     = "Тон",
     },
     ["lb"] = {
 	name1    = "pound",
@@ -4199,7 +4199,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000,
 	default  = "long ton",
-	link     = "Tonne",
+	link     = "Тон",
     },
     ["MT"] = {
 	name1    = "metric ton",
@@ -4207,7 +4207,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000,
 	default  = "LT ST",
-	link     = "Tonne",
+	link     = "Тон",
     },
     ["Mt"] = {
 	name1    = "megatonne",
@@ -4215,7 +4215,7 @@ local all_units = {
 	utype    = "mass",
 	scale    = 1000000000,
 	default  = "LT ST",
-	link     = "Tonne",
+	link     = "Тон",
     },
     ["oz"] = {
 	name1    = "ounce",
@@ -4407,7 +4407,7 @@ local all_units = {
 	utype    = "mass per unit power",
 	scale    = 0.001,
 	default  = "lb/hp",
-	link     = "Kilowatt",
+	link     = "Киловат",
     },
     ["lb/hp"] = {
 	name1    = "pound per horsepower",
@@ -4416,7 +4416,7 @@ local all_units = {
 	utype    = "mass per unit power",
 	scale    = 0.00060827738784176115,
 	default  = "kg/kW",
-	link     = "Horsepower",
+	link     = "Конска сила",
     },
     ["kg/h"] = {
 	per      = { "kg", "h" },
@@ -4435,7 +4435,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
 	default  = "μmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["g-mol/h"] = {
 	name1    = "gram-mole per hour",
@@ -4444,7 +4444,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.00027777777777777778,
 	default  = "mmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["g-mol/min"] = {
 	name1    = "gram-mole per minute",
@@ -4453,7 +4453,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.016666666666666666,
 	default  = "g-mol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["g-mol/s"] = {
 	name1    = "gram-mole per second",
@@ -4462,7 +4462,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1,
 	default  = "lb-mol/min",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["gmol/d"] = {
 	name1    = "gram-mole per day",
@@ -4471,7 +4471,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
 	default  = "μmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["gmol/h"] = {
 	name1    = "gram-mole per hour",
@@ -4480,7 +4480,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.00027777777777777778,
 	default  = "mmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["gmol/min"] = {
 	name1    = "gram-mole per minute",
@@ -4489,7 +4489,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.016666666666666666,
 	default  = "gmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["gmol/s"] = {
 	name1    = "gram-mole per second",
@@ -4498,7 +4498,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1,
 	default  = "lbmol/min",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["kmol/d"] = {
 	name1    = "kilomole per day",
@@ -4507,7 +4507,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.011574074074074073,
 	default  = "mmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["kmol/h"] = {
 	name1    = "kilomole per hour",
@@ -4516,7 +4516,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.27777777777777779,
 	default  = "mol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["kmol/min"] = {
 	name1    = "kilomole per minute",
@@ -4525,7 +4525,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 16.666666666666668,
 	default  = "mol/s",
-	link     = "Kilomole (unit)",
+	link     = "Мол",
     },
     ["kmol/s"] = {
 	name1    = "kilomole per second",
@@ -4534,7 +4534,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1000,
 	default  = "lb-mol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["lb-mol/d"] = {
 	name1    = "pound-mole per day",
@@ -4543,7 +4543,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.0052499116898148141,
 	default  = "mmol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lb-mol/h"] = {
 	name1    = "pound-mole per hour",
@@ -4552,7 +4552,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.12599788055555555,
 	default  = "mol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lb-mol/min"] = {
 	name1    = "pound-mole per minute",
@@ -4561,7 +4561,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 7.5598728333333334,
 	default  = "mol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lb-mol/s"] = {
 	name1    = "pound-mole per second",
@@ -4570,7 +4570,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 453.59237,
 	default  = "kmol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lbmol/d"] = {
 	name1    = "pound-mole per day",
@@ -4579,7 +4579,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.0052499116898148141,
 	default  = "mmol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lbmol/h"] = {
 	name1    = "pound-mole per hour",
@@ -4588,7 +4588,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.12599788055555555,
 	default  = "mol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lbmol/min"] = {
 	name1    = "pound-mole per minute",
@@ -4597,7 +4597,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 7.5598728333333334,
 	default  = "mol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["lbmol/s"] = {
 	name1    = "pound-mole per second",
@@ -4606,7 +4606,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 453.59237,
 	default  = "kmol/s",
-	link     = "Mole (unit)#Other units called \"mole\"",
+	link     = "Мол",
     },
     ["mmol/s"] = {
 	name1    = "millimole per second",
@@ -4615,7 +4615,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.001,
 	default  = "lb-mol/d",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["mol/d"] = {
 	name1    = "mole per day",
@@ -4624,7 +4624,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1.1574074074074073e-5,
 	default  = "μmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["mol/h"] = {
 	name1    = "mole per hour",
@@ -4633,7 +4633,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.00027777777777777778,
 	default  = "mmol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["mol/min"] = {
 	name1    = "mole per minute",
@@ -4642,7 +4642,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.016666666666666666,
 	default  = "mol/s",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["mol/s"] = {
 	name1    = "mole per second",
@@ -4651,7 +4651,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 1,
 	default  = "lb-mol/min",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["μmol/s"] = {
 	name1    = "micromole per second",
@@ -4660,7 +4660,7 @@ local all_units = {
 	utype    = "molar rate",
 	scale    = 0.000001,
 	default  = "lb-mol/d",
-	link     = "Mole (unit)",
+	link     = "Мол",
     },
     ["umol/s"] = {
 	target   = "μmol/s",
@@ -4681,7 +4681,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 100e-6,
 	default  = "/acre",
-	link     = "Hectare",
+	link     = "Хектар",
     },
     ["/sqcm"] = {
 	name1    = "per square centimetre",
@@ -4692,7 +4692,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 1e4,
 	default  = "/sqin",
-	link     = "Square centimetre",
+	link     = "Квадратен сантиметър",
     },
     ["/sqin"] = {
 	name1    = "per square inch",
@@ -4712,7 +4712,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 1e-6,
 	default  = "/sqmi",
-	link     = "Square kilometre",
+	link     = "Квадратен километър",
     },
     ["/sqmi"] = {
 	name1    = "per square mile",
@@ -4721,7 +4721,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 3.8610215854244582e-7,
 	default  = "/sqkm",
-	link     = "Square mile",
+	link     = "Квадратна миля",
     },
     ["PD/acre"] = {
 	name1    = "inhabitant per acre",
@@ -4739,7 +4739,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 100e-6,
 	default  = "PD/acre",
-	link     = "Hectare",
+	link     = "Хектар",
     },
     ["PD/sqkm"] = {
 	name1    = "inhabitant per square kilometre",
@@ -4750,7 +4750,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 1e-6,
 	default  = "PD/sqmi",
-	link     = "Square kilometre",
+	link     = "Квадратен километър",
     },
     ["PD/sqmi"] = {
 	name1    = "inhabitant per square mile",
@@ -4759,7 +4759,7 @@ local all_units = {
 	utype    = "per unit area",
 	scale    = 3.8610215854244582e-7,
 	default  = "PD/sqkm",
-	link     = "Square mile",
+	link     = "Квадратна миля",
     },
     ["/cm2"] = {
 	target   = "/sqcm",
@@ -4800,7 +4800,7 @@ local all_units = {
 	utype    = "per unit volume",
 	scale    = 1000,
 	default  = "/usgal",
-	link     = "Litre",
+	link     = "Литър",
     },
     ["/USgal"] = {
 	name1    = "per gallon",
@@ -4822,7 +4822,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 745.69987158227022,
 	default  = "kW",
-	link     = "Horsepower#Brake horsepower",
+	link     = "Конска сила",
     },
     ["Cal/d"] = {
 	name1    = "large calorie per day",
@@ -4831,7 +4831,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 0.048425925925925928,
 	default  = "kJ/d",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["Cal/h"] = {
 	name1    = "large calorie per hour",
@@ -4840,7 +4840,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 1.1622222222222223,
 	default  = "kJ/h",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["cal/h"] = {
 	name1    = "calorie per hour",
@@ -4849,7 +4849,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 0.0011622222222222223,
 	default  = "W",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["CV"] = {
 	name1    = "metric horsepower",
@@ -4882,7 +4882,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 746,
 	default  = "kW",
-	link     = "Horsepower#Electrical horsepower",
+	link     = "Конска сила",
     },
     ["hp-electrical"] = {
 	name1    = "electrical horsepower",
@@ -4891,7 +4891,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 746,
 	default  = "kW",
-	link     = "Horsepower#Electrical horsepower",
+	link     = "Конска сила",
     },
     ["hp-metric"] = {
 	name1    = "metric horsepower",
@@ -4908,7 +4908,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 745.69987158227022,
 	default  = "kW",
-	link     = "Horsepower#Indicated horsepower",
+	link     = "Конска сила",
     },
     ["kcal/h"] = {
 	name1    = "kilocalorie per hour",
@@ -4917,7 +4917,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 1.1622222222222223,
 	default  = "kW",
-	link     = "Calorie",
+	link     = "Калория",
     },
     ["kJ/d"] = {
 	name1    = "kilojoule per day",
@@ -4952,7 +4952,7 @@ local all_units = {
 	utype    = "power",
 	scale    = 745.69987158227022,
 	default  = "kW",
-	link     = "Horsepower#Shaft horsepower",
+	link     = "Конска сила",
     },
     ["W"] = {
 	_name1   = "watt",
@@ -4961,7 +4961,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "hp",
-	link     = "Watt",
+	link     = "Ват",
     },
     ["BTU/h"] = {
 	per      = { "BTU", "h" },
@@ -5093,7 +5093,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 101325,
 	default  = "kPa",
-	link     = "Atmosphere (unit)",
+	link     = "Атмосфера (единица)",
     },
     ["Ba"] = {
 	name1    = "barye",
@@ -5107,7 +5107,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 100000,
 	default  = "kPa",
-	link     = "Bar (unit)",
+	link     = "Бар (единица)",
     },
     ["dbar"] = {
 	name1    = "decibar",
@@ -5115,7 +5115,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 10000,
 	default  = "kPa",
-	link     = "Bar (unit)",
+	link     = "Бар (единица)",
     },
     ["inHg"] = {
 	name1    = "inch of mercury",
@@ -5142,7 +5142,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 98066.5,
 	default  = "psi",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["kg/cm2"] = {
 	name1    = "kilogram per square centimetre",
@@ -5153,7 +5153,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 98066.5,
 	default  = "psi",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["kgf/cm2"] = {
 	name1    = "kilogram-force per square centimetre",
@@ -5164,7 +5164,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 98066.5,
 	default  = "psi",
-	link     = "Kilogram-force",
+	link     = "Килограм-сила",
     },
     ["ksi"] = {
 	name1    = "kilopound per square inch",
@@ -5190,7 +5190,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 100,
 	default  = "hPa",
-	link     = "Bar (unit)",
+	link     = "Бар (единица)",
     },
     ["mbar"] = {
 	name1    = "millibar",
@@ -5198,7 +5198,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 100,
 	default  = "hPa",
-	link     = "Bar (unit)",
+	link     = "Бар (единица)",
     },
     ["mmHg"] = {
 	name1    = "millimetre of mercury",
@@ -5209,7 +5209,7 @@ local all_units = {
 	utype    = "pressure",
 	scale    = 133.322387415,
 	default  = "kPa",
-	link     = "Millimeter of mercury",
+	link     = "Милиметър живачен стълб",
     },
     ["Pa"] = {
 	_name1   = "pascal",
@@ -5218,7 +5218,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "psi",
-	link     = "Pascal (unit)",
+	link     = "Паскал (единица)",
     },
     ["psf"] = {
 	name1    = "pound per square foot",
@@ -5373,7 +5373,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "pCi",
-	link     = "Becquerel",
+	link     = "Бекерел",
     },
     ["Ci"] = {
 	_name1   = "curie",
@@ -5382,7 +5382,7 @@ local all_units = {
 	scale    = 3.7e10,
 	prefixes = 1,
 	default  = "GBq",
-	link     = "Curie (unit)",
+	link     = "Кюри",
     },
     ["Rd"] = {
 	_name1   = "rutherford",
@@ -5402,7 +5402,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 2.7777777777777775e-6,
 	default  = "in/h",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["cm/s"] = {
 	name1    = "centimetre per second",
@@ -5413,7 +5413,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.01,
 	default  = "in/s",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["cm/year"] = {
 	name1    = "centimetre per year",
@@ -5468,7 +5468,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 7.0555555555555559e-6,
 	default  = "cm/h",
-	link     = "Inch",
+	link     = "Инч",
     },
     ["in/s"] = {
 	name1    = "inch per second",
@@ -5477,7 +5477,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.0254,
 	default  = "cm/s",
-	link     = "Inch",
+	link     = "Инч",
     },
     ["in/year"] = {
 	name1    = "inch per year",
@@ -5516,7 +5516,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.27777777777777779,
 	default  = "mph",
-	link     = "Kilometres per hour",
+	link     = "Километър в час",
     },
     ["km/s"] = {
 	name1    = "kilometre per second",
@@ -5527,7 +5527,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 1000,
 	default  = "mi/s",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["kn"] = {
 	name1    = "knot",
@@ -5535,7 +5535,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.51444444444444448,
 	default  = "km/h mph",
-	link     = "Knot (unit)",
+	link     = "Възел (скорост)",
     },
     ["kNs/kg"] = {
 	name2    = "kN&#8209;s/kg",
@@ -5554,7 +5554,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 0.016666666666666666,
 	default  = "ft/min",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["m/s"] = {
 	name1    = "metre per second",
@@ -5592,7 +5592,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 1609.344,
 	default  = "km/s",
-	link     = "Mile",
+	link     = "Миля",
     },
     ["mm/h"] = {
 	name1    = "millimetre per hour",
@@ -5603,7 +5603,7 @@ local all_units = {
 	utype    = "speed",
 	scale    = 2.7777777777777781e-7,
 	default  = "in/h",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["mph"] = {
 	name1    = "mile per hour",
@@ -5670,7 +5670,7 @@ local all_units = {
 	per      = { "mm", "s" },
 	utype    = "speed",
 	default  = "in/s",
-	link     = "Metre per second",
+	link     = "Метър в секунда",
     },
     ["C"] = {
 	name1    = "degree Celsius",
@@ -5683,7 +5683,7 @@ local all_units = {
 	iscomplex= true,
 	istemperature= true,
 	default  = "F",
-	link     = "Celsius",
+	link     = "Градус Целзий",
     },
     ["F"] = {
 	name1    = "degree Fahrenheit",
@@ -5696,7 +5696,7 @@ local all_units = {
 	iscomplex= true,
 	istemperature= true,
 	default  = "C",
-	link     = "Fahrenheit",
+	link     = "Фаренхайт",
     },
     ["K"] = {
 	_name1   = "kelvin",
@@ -5709,7 +5709,7 @@ local all_units = {
 	istemperature= true,
 	prefixes = 1,
 	default  = "C F",
-	link     = "Kelvin",
+	link     = "Келвин",
     },
     ["keVT"] = {
 	name1    = "kiloelectronvolt",
@@ -5719,7 +5719,7 @@ local all_units = {
 	offset   = 0,
 	iscomplex= true,
 	default  = "MK",
-	link     = "Electronvolt",
+	link     = "Електронволт",
     },
     ["R"] = {
 	name1    = "degree Rankine",
@@ -5754,7 +5754,7 @@ local all_units = {
 	utype    = "temperature change",
 	scale    = 1,
 	default  = "F-change",
-	link     = "Celsius",
+	link     = "Градус Целзий",
     },
     ["F-change"] = {
 	name1    = "degree Fahrenheit change",
@@ -5764,7 +5764,7 @@ local all_units = {
 	utype    = "temperature change",
 	scale    = 0.55555555555555558,
 	default  = "C-change",
-	link     = "Fahrenheit",
+	link     = "Фаренхайт",
     },
     ["K-change"] = {
 	name1    = "kelvin change",
@@ -5774,7 +5774,7 @@ local all_units = {
 	utype    = "temperature change",
 	scale    = 1,
 	default  = "F-change",
-	link     = "Kelvin",
+	link     = "Келвин",
     },
     ["°C-change"] = {
 	target   = "C-change",
@@ -5833,7 +5833,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000000000,
 	default  = "Es",
-	link     = "Annum",
+	link     = "Година",
     },
     ["millennium"] = {
 	name1    = "millennium",
@@ -5850,7 +5850,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000000,
 	default  = "Ps",
-	link     = "Annum",
+	link     = "Година",
     },
     ["million year"] = {
 	name1    = "million years",
@@ -5859,7 +5859,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000,
 	default  = "Ts",
-	link     = "Annum",
+	link     = "Година",
     },
     ["min"] = {
 	name1    = "minute",
@@ -5889,7 +5889,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 1,
 	default  = "min",
-	link     = "Second",
+	link     = "Секунда",
     },
     ["short billion year"] = {
 	name1    = "billion years",
@@ -5898,7 +5898,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000000,
 	default  = "Ps",
-	link     = "Annum",
+	link     = "Година",
     },
     ["short trillion year"] = {
 	name1    = "trillion years",
@@ -5907,7 +5907,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000000000,
 	default  = "Es",
-	link     = "Annum",
+	link     = "Година",
     },
     ["thousand million year"] = {
 	name1    = "thousand million years",
@@ -5916,7 +5916,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600000000000,
 	default  = "Ps",
-	link     = "Annum",
+	link     = "Година",
     },
     ["wk"] = {
 	symbol   = "week",
@@ -5931,7 +5931,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600,
 	default  = "Ms",
-	link     = "Annum",
+	link     = "Година",
     },
     ["years"] = {
 	name1    = "year",
@@ -5939,7 +5939,7 @@ local all_units = {
 	utype    = "time",
 	scale    = 31557600,
 	default  = "Ms",
-	link     = "Annum",
+	link     = "Година",
     },
     ["byr"] = {
 	target   = "short billion year",
@@ -6441,7 +6441,7 @@ local all_units = {
 	scale    = 0.001,
 	prefixes = 1,
 	default  = "impgal USgal",
-	link     = "Litre",
+	link     = "Литър",
     },
     ["l"] = {
 	_name1   = "litre",
@@ -6451,7 +6451,7 @@ local all_units = {
 	scale    = 0.001,
 	prefixes = 1,
 	default  = "impgal USgal",
-	link     = "Litre",
+	link     = "Литър",
     },
     ["m3"] = {
 	_name1   = "cubic metre",
@@ -6462,7 +6462,7 @@ local all_units = {
 	scale    = 1,
 	prefixes = 3,
 	default  = "cuft",
-	link     = "Cubic metre",
+	link     = "Кубичен метър",
     },
     ["Mbbl"] = {
 	name1    = "thousand barrels",
@@ -6592,7 +6592,7 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.00440488377086,
 	default  = "l",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["USdrypt"] = {
 	name1    = "US dry pint",
@@ -6622,7 +6622,7 @@ local all_units = {
 	utype    = "volume",
 	scale    = 0.003785411784,
 	default  = "l impgal",
-	link     = "Gallon",
+	link     = "Галон",
     },
     ["USgal"] = {
 	name1    = "US gallon",
@@ -6758,7 +6758,7 @@ local all_units = {
     },
     ["@impgal"] = {
 	target   = "impgal",
-	link     = "Gallon",
+	link     = "Галон",
 	customary= 3,
     },
     ["acre feet"] = {
@@ -7016,7 +7016,7 @@ local all_units = {
 	utype    = "volume per unit area",
 	scale    = 0.0001,
 	default  = "USbu/acre",
-	link     = "Hectare",
+	link     = "Хектар",
     },
     ["m3/km2"] = {
 	per      = { "m3", "km2" },
