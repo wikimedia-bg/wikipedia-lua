@@ -14,8 +14,9 @@ local usub = ustring.sub
 -- Conversion data and message text are defined in separate modules.
 local config, maxsigfig
 local numdot = ','   -- must be '.' or ',' or a character which works in a regex
-local numsep = ' '   -- non-breaking space between groups
-local numsep_remove, numsep_remove2
+local numsep = '&nbsp;'   -- non-breaking space between groups
+local numsep_remove = '&#32;'
+local numsep_remove2 = '%s'
 local data_code, all_units
 local text_code
 local varname        -- can be a code to use variable names that depend on value
@@ -43,10 +44,10 @@ local function from_en(text)
 	-- without digit grouping (which is done just after calling this).
 	-- Return the translation of the string with numdot and digits in local language.
 	if numdot ~= '.' then
-		text = text:gsub('%.', numdot)
+		text = ustring.gsub(text, '%.', numdot)
 	end
 	if from_en_table then
-		text = text:gsub('%d', from_en_table)
+		text = ustring.gsub(text, '%d', from_en_table)
 	end
 	return text
 end
@@ -61,13 +62,13 @@ local function to_en(text)
 		text = ustring.gsub(text, '%d', to_en_table)
 	end
 	if numsep_remove then
-		text = text:gsub(numsep_remove, '')
+		text = ustring.gsub(text, numsep_remove, '')
 	end
 	if numsep_remove2 then
-		text = text:gsub(numsep_remove2, '')
+		text = ustring.gsub(text, numsep_remove2, '')
 	end
 	if numdot ~= '.' then
-		text = text:gsub(numdot, '.')
+		text = ustring.gsub(text, numdot, '.')
 	end
 	return text
 end
@@ -76,15 +77,17 @@ local function decimal_mark(text)
 	-- Return ',' if text probably is using comma for decimal mark, or has no decimal mark.
 	-- Return '.' if text probably is using dot for decimal mark.
 	-- Otherwise return nothing (decimal mark not known).
-	if not text:find('[.,]') then return ',' end
-	text = text:gsub('^%-', ''):gsub('%+%d+/%d+$', ''):gsub('[Ee]%-?%d+$', '')
+	if not ustring.find(text, '[.,]') then return ',' end
+	text = ustring.gsub(text, '^%-', '')
+	text = ustring.gsub(text, '%+%d+/%d+$', '')
+	text = ustring.gsub(text, '[Ee]%-?%d+$', '')
 	local decimal =
-		text:match('^0?([.,])%d+$') or
-		text:match('%d([.,])%d?%d?$') or
-		text:match('%d([.,])%d%d%d%d+$')
+		ustring.match(text, '^0?([.,])%d+$') or
+		ustring.match(text, '%d([.,])%d?%d?$') or
+		ustring.match(text, '%d([.,])%d%d%d%d+$')
 	if decimal then return decimal end
-	if text:match('%.%d+%.') then return ',' end
-	if text:match('%,%d+,') then return '.' end
+	if ustring.match(text, '%.%d+%.') then return ',' end
+	if ustring.match(text, '%,%d+,') then return '.' end
 end
 
 local add_warning, with_separator  -- forward declarations
@@ -98,19 +101,19 @@ local function to_en_with_check(text, parms)
 	end
 	if decimal_mark(text) == '.' then
 		local original = text
-		text = text:gsub(',', '')  -- for example, interpret "1,234.5" as an enwiki value
+		text = ustring.gsub(text, ',', '')  -- for example, interpret "1,234.5" as an enwiki value
 		if parms then
 			add_warning(parms, 0, 'cvt_enwiki_num', original, with_separator({}, text))
 		end
 	else
 		if numsep_remove then
-			text = text:gsub(numsep_remove, '')
+			text = ustring.gsub(text, numsep_remove, '')
 		end
 		if numsep_remove2 then
-			text = text:gsub(numsep_remove2, '')
+			text = ustring.gsub(text, numsep_remove2, '')
 		end
 		if numdot ~= '.' then
-			text = text:gsub(numdot, '.')
+			text = ustring.gsub(text, numdot, '.')
 		end
 	end
 	return text
