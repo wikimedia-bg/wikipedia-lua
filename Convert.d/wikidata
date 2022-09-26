@@ -280,7 +280,11 @@ local function input_from_text(tdata, parms, text, insert2)
 	-- Given string should be of form "<value><space><unit>" or
 	-- "<value1><space>ft<space><value2><space>in" for a special case (feet and inches).
 	-- Return true if values/units were extracted and inserted, or return nothing.
-	text = text:gsub('&nbsp;', ' '):gsub('%s+', ' ')
+	text = mw.ustirng.gsub(text, '%s+', ' ')
+	text = mw.ustirng.gsub(text, '&nbsp;', ' ')
+	text = mw.ustirng.gsub(text, '&#160;', ' ')
+	text = mw.ustirng.gsub(text, '&#32;', ' ')
+	text = mw.ustirng.gsub(text, '(%d)%s+(%d)', '%1%2')
 	local pos = text:find(' ', 1, true)
 	if pos then
 		-- Leave checking of value to convert which can handle fractions.
