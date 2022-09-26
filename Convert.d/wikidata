@@ -280,19 +280,20 @@ local function input_from_text(tdata, parms, text, insert2)
 	-- Given string should be of form "<value><space><unit>" or
 	-- "<value1><space>ft<space><value2><space>in" for a special case (feet and inches).
 	-- Return true if values/units were extracted and inserted, or return nothing.
-	text = mw.ustirng.gsub(text, '%s+', ' ')
-	text = mw.ustirng.gsub(text, '&nbsp;', ' ')
-	text = mw.ustirng.gsub(text, '&#160;', ' ')
-	text = mw.ustirng.gsub(text, '&#32;', ' ')
-	text = mw.ustirng.gsub(text, '(%d)%s+(%d)', '%1%2')
-	local pos = text:find(' ', 1, true)
+	text = mw.ustring.gsub(text, '&nbsp;', ' ')
+	text = mw.ustring.gsub(text, '&#160;', ' ')
+	text = mw.ustring.gsub(text, '&#32;', ' ')
+	text = mw.ustring.gsub(text, '%s+', ' ')
+	text = mw.ustring.gsub(text, '(%d)%s(%d)', '%1%2')
+	text = mw.ustring.gsub(text, '^%s+', '')
+	local pos = mw.ustring.find(text, ' ', 1, true)
 	if pos then
 		-- Leave checking of value to convert which can handle fractions.
-		local value = text:sub(1, pos - 1)
-		local uid = text:sub(pos + 1)
-		if uid:sub(1, 3) == 'ft ' and uid:sub(-3) == ' in' then
+		local value = mw.ustring.sub(text, 1, pos - 1)
+		local uid = mw.ustring.sub(text, pos + 1)
+		if mw.ustring.sub(uid, 1, 3) == 'ft ' and mw.ustring.sub(uid, -3) == ' in' then
 			-- Special case for enwiki to allow {{convert|input=5 ft 10+1/2 in}}
-			insert2(uid:sub(4, -4), 'in')
+			insert2(mw.ustring.sub(uid, 4, -4), 'in')
 			insert2(value, 'ft')
 		else
 			insert2(value, make_unit(tdata.wikidata_units, parms, uid) or uid)
