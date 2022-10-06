@@ -165,12 +165,13 @@ local TAXONOMICRANK = {
 	Q3238261 = { id = 35, name = 'подрод', ignore = true },
 	Q3181348 = { id = 36, name = 'секция', ignore = false },
 	Q3025161 = { id = 37, name = 'серия', ignore = false },
-	Q7432 = { id = 38, name = 'вид', ignore = false },
-	Q68947 = { id = 39, name = 'подвид', ignore = false },
-	Q767728 = { id = 40, name = 'вариетет', ignore = false },
-	Q713623 = { id = 41, name = 'клон', ignore = false },
-	Q855769 = { id = 42, name = 'щам', ignore = false },
-	HYBRID = { id = 43, name = 'хибрид', ignore = false }
+	Q21061732 = { id = 38, name = 'серия', ignore = false },
+	Q7432 = { id = 39, name = 'вид', ignore = false },
+	Q68947 = { id = 40, name = 'подвид', ignore = false },
+	Q767728 = { id = 41, name = 'вариетет', ignore = false },
+	Q713623 = { id = 42, name = 'клон', ignore = false },
+	Q855769 = { id = 43, name = 'щам', ignore = false },
+	HYBRID = { id = 44, name = 'хибрид', ignore = false }
 }
 
 local FOSSILSTAGES = {
