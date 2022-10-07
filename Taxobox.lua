@@ -164,8 +164,8 @@ local TAXONOMICRANK = {
 	Q34740 = { id = 34, name = 'род', ignore = false },
 	Q3238261 = { id = 35, name = 'подрод', ignore = true },
 	Q3181348 = { id = 36, name = 'секция', ignore = false },
-	Q3025161 = { id = 37, name = 'серия', ignore = false },
-	Q21061732 = { id = 38, name = 'серия', ignore = false },
+	Q3025161 = { id = 37, name = 'серия', ignore = false }, -- таксономичен ранг в ботаниката
+	Q21061732 = { id = 38, name = 'серия', ignore = false }, -- таксономичен ранг в зоологията
 	Q7432 = { id = 39, name = 'вид', ignore = false },
 	Q68947 = { id = 40, name = 'подвид', ignore = false },
 	Q767728 = { id = 41, name = 'вариетет', ignore = false },
