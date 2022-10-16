@@ -3,7 +3,7 @@
 
 local libUtil = require('libraryUtil')
 local checkType = libUtil.checkType
-local mTableTools = require('Модул:TableTools')
+local mTableTools = require('Module:TableTools')
 
 local p = {}
 
@@ -22,7 +22,7 @@ function p.makeListData(listType, args)
 	-- Classes
 	data.classes = {}
 	if listType == 'horizontal' or listType == 'horizontal_ordered' then
-		table.insert(data.classes, 'hlist')
+		table.insert(data.classes, 'hlist hlist-separated')
 	elseif listType == 'unbulleted' then
 		table.insert(data.classes, 'plainlist')
 	end
@@ -147,7 +147,7 @@ function p.renderList(data)
 end
 
 function p.renderTrackingCategories(args)
-	local isDeprecated = false -- Проследява отхвърлени параметри.
+	local isDeprecated = false -- Tracks deprecated parameters.
 	for k, v in pairs(args) do
 		k = tostring(k)
 		if k:find('^item_style%d+$') or k:find('^item_value%d+$') then
@@ -157,7 +157,7 @@ function p.renderTrackingCategories(args)
 	end
 	local ret = ''
 	if isDeprecated then
-		ret = ret .. '[[Категория:Списък на шаблони с отхвърлени (остарели) параметри]]'
+		ret = ret .. '[[Category:List templates with deprecated parameters]]'
 	end
 	return ret
 end
@@ -178,8 +178,18 @@ end
 
 for listType in pairs(listTypes) do
 	p[listType] = function (frame)
-		local mArguments = require('Модул:Arguments')
-		local origArgs = mArguments.getArgs(frame)
+		local mArguments = require('Module:Arguments')
+		local origArgs = mArguments.getArgs(frame, {
+			valueFunc = function (key, value)
+			if not value or not mw.ustring.find(value, '%S') then return nil end
+			if mw.ustring.find(value, '^%s*[%*#;:]') then
+				return value
+			else
+				return value:match('^%s*(.-)%s*$')
+			end
+			return nil
+		end
+		})
 		-- Copy all the arguments to a new table, for faster indexing.
 		local args = {}
 		for k, v in pairs(origArgs) do
