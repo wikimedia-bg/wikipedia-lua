@@ -3,7 +3,7 @@
 
 local libUtil = require('libraryUtil')
 local checkType = libUtil.checkType
-local mTableTools = require('Module:TableTools')
+local mTableTools = require('Модул:TableTools')
 
 local p = {}
 
@@ -147,7 +147,7 @@ function p.renderList(data)
 end
 
 function p.renderTrackingCategories(args)
-	local isDeprecated = false -- Tracks deprecated parameters.
+	local isDeprecated = false -- Проследява отхвърлени параметри.
 	for k, v in pairs(args) do
 		k = tostring(k)
 		if k:find('^item_style%d+$') or k:find('^item_value%d+$') then
@@ -157,7 +157,7 @@ function p.renderTrackingCategories(args)
 	end
 	local ret = ''
 	if isDeprecated then
-		ret = ret .. '[[Category:List templates with deprecated parameters]]'
+		ret = ret .. '[[Категория:Списък на шаблони с отхвърлени (остарели) параметри]]'
 	end
 	return ret
 end
@@ -178,7 +178,7 @@ end
 
 for listType in pairs(listTypes) do
 	p[listType] = function (frame)
-		local mArguments = require('Module:Arguments')
+		local mArguments = require('Модул:Arguments')
 		local origArgs = mArguments.getArgs(frame, {
 			valueFunc = function (key, value)
 			if not value or not mw.ustring.find(value, '%S') then return nil end
