@@ -382,10 +382,14 @@ end
 
 function relabel(link, newlabel)
 	if newlabel ~= '' then
-		if link:find("|") ~= nil then
-			link = link:gsub("|.*]]", "|" .. newlabel .. "]]")
+		if link:find("]]") ~= nil then
+			if link:find("|") ~= nil then
+				link = link:gsub("|.*]]", "|" .. newlabel .. "]]")
+			else
+				link = link:gsub("]]", "|" .. newlabel .. "]]")
+			end
 		else
-			link = link:gsub("]]", "|" .. newlabel .. "]]")
+			link = newlabel
 		end
 	end
 	return link
@@ -410,6 +414,7 @@ function p.lsc(frame)
 	end
 
     d = mw.text.trim(frame.args[2] or '')
+
     if d == '' then
       d = mw.text.trim(frame.args[5] or '')   -- tries with latest date
     end
