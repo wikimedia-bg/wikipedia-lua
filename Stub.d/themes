@@ -653,7 +653,7 @@ return {
 			{ 'музикален албум|албум', 'Gnome-dev-cdrom-audio.svg', 'музикални албуми' },
 			{ 'музикален инструмент', 'Saxophone-icon.svg', 'музикални инструменти' },
 			{ 'песен', 'Musical notes.svg', 'песни' },
-			{ 'опера', 'RongeTurandot.jpg' },
+			{ 'опера', 'RongeTurandot.jpg', 'опери' },
 			{ 'танц', 'Ballerina-icon.jpg', 'танци' },
 		{ 'театър', 'P culture.svg' },
 			{ 'пиеса', 'Comedy and tragedy masks.svg', 'пиеси' },
