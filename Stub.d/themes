@@ -527,6 +527,7 @@ return {
 				{ 'род|династия|семейство|фамилия', 'OOjs UI-like kinship-progressive-black.svg', 'родове' },
 				{ 'организация', 'Handshake (Workshop Cologne \'06).jpeg', 'организации' }, 
 					{ 'вид организация', 'Handshake (Workshop Cologne \'06).jpeg', 'видове организации' },
+					{ 'музикална група', 'Ballroom dance.png', 'музикални групи' },
 					{ 'отбор|спортен отбор', 'Crystal Clear app clicknrun.png', 'отбори' },
 						{ 'футболен отбор', 'Soccerball.svg', 'футболни отбори' },
 					{ 'ВМОРО', 'Flag of the IMARO.svg' },
