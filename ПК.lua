@@ -188,7 +188,7 @@ function p.top(frame, args, map)
 	end
 	local image = getContainerImage(args, map)
 	retval = string.format(
-		'%s[[File:%s|%spx|%s%s]]',
+		'%s[[File:%s|%spx|alt=%s%s]]',
 		retval,
 		image,
 		width,
@@ -269,9 +269,6 @@ local function markImageDiv(mark, marksize, label, link, alt, title)
 		:cssText('position:absolute;left:-' .. round(marksize / 2) .. 'px;top:-' .. round(marksize / 2) .. 'px;line-height:0')
 		:attr('title', title)
 	if marksize ~= 0 then
-		if label then
-			label = require('Модул:Delink')._delink(label)
-		end
 		builder:wikitext(string.format(
 			'[[File:%s|%dx%dpx|%s|link=%s%s]]',
 			mark,
