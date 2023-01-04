@@ -439,6 +439,15 @@ function p.snacLink( id )
 	return '[https://snaccooperative.org/ark:/99166/'..id..' '..id..']'..p.getCatForId( 'SNAC-ID' ) --no https yet (10/2018)
 end
 
+function p.strazhaLink( id )
+	--P11446's format regex: (parliaments|mps)/[a-z\d-]+ (e.g. mps/delyan-slavchev-peevski or parliaments/47)
+	if not string.match( id, '^parliaments/[a-z%d%-]+$' ) and
+	   not string.match( id, '^mps/[a-z%d%-]+$' ) then
+		return false
+	end
+	return '[https://www.strazha.bg/'..id..' '..id..']'..p.getCatForId( 'STRAZHA' )
+end
+
 function p.dblpLink( id )
 	--P2456's format regex: \d{2,3}/\d+(-\d+)?|[a-z]\/[a-zA-Z][0-9A-Za-z]*(-\d+)? (e.g. 123/123)
 	if not string.match( id, '^%d%d%d?/%d+$' ) and
@@ -840,6 +849,7 @@ p.conf = {
 	{ 'SELIBR', linkedLabel('LIBRIS', 'SELIBR'), 906, p.selibrLink },
 	{ 'SIKART', 'SIKART', 781, p.sikartLink },
 	{ 'SNAC-ID', 'SNAC', 3430, p.snacLink },
+	{ 'STRAZHA', 'Стража', 11446, p.strazhaLink },
 	{ 'SUDOC', linkedLabel('Система за университетска документация на Франция', 'SUDOC'), 269, p.sudocLink },
 	{ 'TA98', 'TA98', 1323, p.ta98Link },
 	{ 'TE', 'TE', 1693, p.teLink },
