@@ -569,7 +569,7 @@ return {
 			{ 'Нацистка Германия', 'Reichsadler.svg' },
 			{ 'Руската империя|Руска империя', 'Flag of Russia (1914-1917).svg' },
 			{ 'Османската империя|Османска империя', 'Flag of the Ottoman Empire (1453-1844).svg' },
-			{ 'Византия', 'Byzantine Palaiologos Eagle.svg' },
+			{ 'Византия|Византийска империя', 'Byzantine Palaiologos Eagle.svg' },
 			{ 'Съветския съюз|Съветски съюз|СССР', 'Flag of the Soviet Union.svg' },
 			{ 'исторически период|епоха|ера', 'P writing icon.svg', 'исторически периоди' },
 			{ 'историческо събитие|събитие', 'HSHistory.svg', 'събития' },
