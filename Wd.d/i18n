@@ -29,7 +29,7 @@ local p = {
 			["century"]       = ' век',
 			["million-years"] = ' милиони години',
 			["billion-years"] = ' милиарди години',
-			["year"]          = ' г.',
+			["year"]          = ' година',
 			["years"]         = ' години'
 		},
 		["julian-calendar"] = 'Приемане на григорианския календар',  -- linked page title
