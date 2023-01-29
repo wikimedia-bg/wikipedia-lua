@@ -2055,7 +2055,7 @@ function State:getReference(statement)
 				end
 			end
 			
-			value = table.concat(citeParams['default'], ", ")
+			value = table.concat(citeParams['default'], ". ")
 			
 			if value ~= "" then
 				value = value .. "." .. langCite
