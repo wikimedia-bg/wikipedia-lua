@@ -2016,7 +2016,7 @@ function State:getReference(statement)
 			
 			-- then add "retrieved"
 			if params[p.aliasesP.retrieved] then
-				citeParams['default'][#citeParams['default'] + 1] = 'Посетен на ' .. params[p.aliasesP.retrieved][1]:sub(1,-2)
+				citeParams['default'][#citeParams['default'] + 1] = 'Посетен на ' .. params[p.aliasesP.retrieved][1]
 			end
 			
 			-- combine "Archive URL" and "Archive date" into one if both are present
@@ -2063,6 +2063,7 @@ function State:getReference(statement)
 		end
 		
 		if value ~= "" then
+			value = value:gsub("%.%.", ".")
 			value = {value}  -- create one value object
 			
 			if not self.rawValue then
