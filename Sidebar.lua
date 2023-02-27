@@ -231,7 +231,7 @@ function p.sidebar(frame, args)
 		end
 	end
 
-	return tostring(root) .. (child and '[[Category:Pages using sidebar with the child parameter]]' or '')
+	return tostring(root)
 end
 
 function p.collapsible(frame)
