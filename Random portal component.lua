@@ -174,10 +174,10 @@ function p._nominate(args, frame)
 	ret[#ret + 1] = getHeader(frame, pages, expandArg(args, 'header'), args.headertemplate)
 	ret[#ret + 1] = getRandomSubpageContent(frame, pages)
 	ret[#ret + 1] = getFooter(frame, pages, string.format(
-		'[[/Nominate/%s|Suggest]] • [[%s|%s]] ',
+		'[[/Nominate/%s|Предложи]] • [[%s|%s]] ',
 		expandArg(args, 'subpage'),
 		pages.subpage,
-		args.footer or 'Archive'
+		args.footer or 'Архив'
 	))
 
 	return table.concat(ret, '\n') .. subPageTrackingCategories(pages, args.max, args.header)
