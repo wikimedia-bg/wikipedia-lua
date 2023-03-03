@@ -33,14 +33,14 @@ local function subPageTrackingCategories(pages, max, header)
 		availableSubPageCount = availableSubPageCount - 1
 	end
 	if availableSubPageCount < maxNum then 
-		retval = retval .. "[[Category:Random portal component with fewer available subpages than specified max]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с по-малко налични подстраници от зададения максимум]]"
 	else
 		-- Check for spurious subpages beyond end of alleged number range
 		while mw.title.new(pages.subpage .. '/' .. tostring(availableSubPageCount + 1)).exists do
 			availableSubPageCount = availableSubPageCount + 1
 		end
 		if availableSubPageCount > maxNum then 
-			retval = retval .. "[[Category:Random portal component with more available subpages than specified max]]"
+			retval = retval .. "[[Категория:Произволен портален компонент с повече налични подстраници от зададения максимум]]"
 		end
 	end
 
@@ -55,25 +55,25 @@ local function subPageTrackingCategories(pages, max, header)
 		subpageType = "image subpages"
 	end
 	if (availableSubPageCount < 2) then
-		retval = retval .. "[[Category:Random portal component with less than 2 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с по-малко от 2 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 5) then
-		retval = retval .. "[[Category:Random portal component with 2–5 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 2-5 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 10) then
-		retval = retval .. "[[Category:Random portal component with 6–10 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 6-10 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 15) then
-		retval = retval .. "[[Category:Random portal component with 11–15 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 11-15 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 20) then
-		retval = retval .. "[[Category:Random portal component with 16–20 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 16-20 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 25) then
-		retval = retval .. "[[Category:Random portal component with 21–25 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 21-25 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 30) then
-		retval = retval .. "[[Category:Random portal component with 26–30 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 26-30 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 40) then
-		retval = retval .. "[[Category:Random portal component with 31–40 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 31-40 налични " .. subpageType .. "]]"
 	elseif (availableSubPageCount <= 50) then
-		retval = retval .. "[[Category:Random portal component with 41–50 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с 41-50 налични " .. subpageType .. "]]"
 	else
-		retval = retval .. "[[Category:Random portal component with over 50 available " .. subpageType .. "]]"
+		retval = retval .. "[[Категория:Произволен портален компонент с повече от 50 налични " .. subpageType .. "]]"
 	end
 	return retval;
 end
@@ -117,7 +117,7 @@ local function tryExpandTemplate(frame, title, args)
 			title
 		)
 		if mw.title.getCurrentTitle().namespace == 100 then -- is in the portal namespace
-			msg = msg .. '[[Category:Portals needing attention]]'
+			msg = msg .. '[[Категория:Портали, изискващи внимание]]'
 		end
 		return msg
 	end
