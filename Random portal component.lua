@@ -103,7 +103,7 @@ local function getPages(args)
 		pages.random = pages.subpage .. '/' .. getRandomNumber(args.max)
 		tries = tries - 1
 	until tries < 1 or mw.title.new(pages.random).exists
-	pages.footer = 'Template:Box-footer'
+	pages.footer = 'Шаблон:Портал:Кутия-Край'
 	return pages
 end
 
