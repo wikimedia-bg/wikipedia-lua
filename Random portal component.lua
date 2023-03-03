@@ -12,7 +12,7 @@ local function subPageTrackingCategories(pages, max, header)
 	local thispagetitle = mw.title.getCurrentTitle().text
 
 	-- don't track DYK etc, only selected/featured articles, biogs etc
-	if ((string.find(header, "/[sS]elected") == -1) and (string.find(header, "/[fF]eatured") == -1)) then
+	if ((string.find(header, "/[иИ]збрани") == -1) and (string.find(header, "/[иИ]збрана") == -1)) then
 		return retval
 	end
 	-- no tracking unless we are in Portal namespace
