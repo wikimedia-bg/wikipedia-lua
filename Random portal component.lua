@@ -126,7 +126,7 @@ end
 local function getHeader(frame, pages, header, template)
 	return tryExpandTemplate(
 		frame,
-		template or pages.root .. '/box-header',
+		template or pages.root .. '/Кутия-заглавка',
 		{header, pages.random}
 	)
 end
