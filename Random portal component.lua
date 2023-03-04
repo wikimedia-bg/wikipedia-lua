@@ -103,7 +103,7 @@ local function getPages(args)
 		pages.random = pages.subpage .. '/' .. getRandomNumber(args.max)
 		tries = tries - 1
 	until tries < 1 or mw.title.new(pages.random).exists
-	pages.footer = 'Шаблон:Портал:Кутия-Край'
+	pages.footer = '/Box-footer'
 	return pages
 end
 
@@ -126,7 +126,7 @@ end
 local function getHeader(frame, pages, header, template)
 	return tryExpandTemplate(
 		frame,
-		template or pages.root .. '/Кутия-Заглавка',
+		template or pages.root .. '/Box-header',
 		{header, pages.random}
 	)
 end
