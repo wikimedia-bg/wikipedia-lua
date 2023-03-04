@@ -113,7 +113,7 @@ local function tryExpandTemplate(frame, title, args)
 		return result
 	else
 		local msg = string.format(
-			'<strong class="error">The page "[[%s]]" does not exist.</strong>',
+			'<strong class="error">Страницата "[[%s]]" не съществува.</strong>',
 			title
 		)
 		if mw.title.getCurrentTitle().namespace == 100 then -- is in the portal namespace
