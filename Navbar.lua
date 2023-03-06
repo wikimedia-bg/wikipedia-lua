@@ -17,13 +17,21 @@ function p._navbar(args)
 	end
 
 	local titleText = args[titleArg] or (':' .. mw.getCurrentFrame():getParent():getTitle())
-	local title = mw.title.new(mw.text.trim(titleText), 'Шаблон');
+	local title = mw.title.new(mw.text.trim(titleText), 'Шаблон')
 
 	if not title then
 		error('Грешно заглавие ' .. titleText)
 	end
 
-	local talkpage = title.talkPageTitle and title.talkPageTitle.fullText or '';
+	local talkpage, t_linkquery, t_color, t_tip
+	if title.talkPageTitle then
+		talkpage = title.talkPageTitle.fullText
+		if not title.talkPageTitle.protectionLevels.edit then
+			t_linkquery = {action = 'edit', redlink = '1'}
+			t_color = '#ba0000'
+			t_tip = ' (страницата не съществува)'
+		end
+	end
 
 	local div = mw.html.create():tag('div')
 	div
@@ -51,7 +59,7 @@ function p._navbar(args)
 				:wikitext('&#91; ')
 	end
 
-	local ul = div:tag('ul');
+	local ul = div:tag('ul')
 
 	ul
 		:tag('li')
@@ -63,16 +71,20 @@ function p._navbar(args)
 				:wikitext(args.mini and 'п' or 'преглед')
 				:done()
 			:wikitext(']]')
-			:done()
-		:tag('li')
-			:addClass('nv-talk')
-			:wikitext('[[' .. talkpage .. '|')
-			:tag(args.mini and 'abbr' or 'span')
-				:attr('title', 'Беседа на шаблона')
-				:cssText(args.fontstyle)
-				:wikitext(args.mini and 'б' or 'беседа')
-				:done()
-			:wikitext(']]');
+
+	if talkpage then
+		ul
+			:tag('li')
+				:addClass('nv-talk')
+				:wikitext('[' .. tostring(mw.uri.fullUrl(talkpage, t_linkquery)) .. ' ')
+				:tag(args.mini and 'abbr' or 'span')
+					:attr('title', 'Беседа на шаблона' .. (t_tip or ''))
+					:css('color', t_color)
+					:cssText(args.fontstyle)
+					:wikitext(args.mini and 'б' or 'беседа')
+					:done()
+				:wikitext(']')
+	end
 
 	if not args.noedit then
 		ul
@@ -84,7 +96,7 @@ function p._navbar(args)
 					:cssText(args.fontstyle)
 					:wikitext(args.mini and 'р' or 'редактиране')
 					:done()
-				:wikitext(']');
+				:wikitext(']')
 	end
 
 	if args.brackets then
