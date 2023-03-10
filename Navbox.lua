@@ -279,9 +279,9 @@ end
 function needsHorizontalLists()
 	if border == 'child' or border == 'subgroup'  or args.tracking == 'no' then return false end
 
-	local listClasses = {'plainlist', 'hlist', 'hlist hnum', 'hlist hwrap', 'hlist vcard', 'vcard hlist'}
-	for i, cls in ipairs(listClasses) do
-		if args.listclass == cls or args.bodyclass == cls then
+	local classes = (args.bodyclass or '') .. ' ' .. (args.listclass or '')
+	for cls in mw.ustring.gmatch(classes, '%S+') do
+		if cls == 'hlist' or cls == 'plainlist' then
 			return false
 		end
 	end
