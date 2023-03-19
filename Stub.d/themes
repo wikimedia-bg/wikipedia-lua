@@ -581,7 +581,7 @@ return {
 				{ 'криптовалута', 'Bitcoin Digital Currency Logo.png', 'криптовалути' },
 			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 			{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
-			{ 'счетоводство', 'Crystal kchart.png' },
+			{ 'счетоводство', 'Nuvola apps kchart.svg' },
 			{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
 				{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
 				{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
