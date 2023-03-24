@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- Unit tests for Scribunto.
 -------------------------------------------------------------------------------
-require('Module:No globals')
+require('strict')
 
 local DebugHelper = {}
 local ScribuntoUnit = {}
@@ -11,7 +11,7 @@ local ScribuntoUnit = {}
 local cfg = mw.loadData('Module:ScribuntoUnit/config')
 
 -------------------------------------------------------------------------------
--- Concatenates keys and values, ideal for displaying a template argument table.
+-- Concatenates keys and values, ideal for displaying a template or parser function argument table.
 -- @param keySeparator glue between key and value (defaults to " = ")
 -- @param separator glue between different key-value pairs (defaults to ", ")
 -- @example concatWithKeys({a = 1, b = 2, c = 3}, ' => ', ', ') => "a => 1, b => 2, c => 3"
@@ -303,9 +303,29 @@ function ScribuntoUnit:assertSameResult(text1, text2, message)
 end
 
 -------------------------------------------------------------------------------
+-- Checks that a parser function gives the expected output.
+-- @param message optional description of the test
+-- @example assertParserFunctionEquals("Hello world", "msg:concat", {"Hello", " world"})
+function ScribuntoUnit:assertParserFunctionEquals(expected, pfname, args, message)
+    local frame = self.frame
+    local actual = frame:callParserFunction{ name = pfname, args = args}
+    if expected ~= actual then
+        DebugHelper.raise({
+            ScribuntoUnit = true, 
+            text = string.format("Failed to assert that %s with args %s equals expected %s after preprocessing", 
+                                 DebugHelper.concatWithKeys(args), pfname, expected),
+            actual = actual,
+            actualRaw = pfname,
+            expected = expected,
+            message = message,
+        }, 2)
+    end
+end
+
+-------------------------------------------------------------------------------
 -- Checks that a template gives the expected output.
 -- @param message optional description of the test
--- @example assertTemplateEquals("Hello world", "concat", {"Hello", "world"})
+-- @example assertTemplateEquals("Hello world", "concat", {"Hello", " world"})
 function ScribuntoUnit:assertTemplateEquals(expected, template, args, message)
     local frame = self.frame
     local actual = frame:expandTemplate{ title = template, args = args}
@@ -352,6 +372,29 @@ function ScribuntoUnit:assertThrows(fn, expectedMessage, message)
             message = message
         }, 2)
     end
+end
+
+-------------------------------------------------------------------------------
+-- Checks whether a function doesn't throw an error
+-- @param fn the function to test
+-- @param message optional description of the test
+function ScribuntoUnit:assertDoesNotThrow(fn, message)
+	local succeeded, actualMessage = pcall(fn)
+	if succeeded then
+	    return
+	end
+	-- For strings, strip the line number added to the error message
+	actualMessage = type(actualMessage) == 'string' 
+		and string.match(actualMessage, 'Module:[^:]*:[0-9]*: (.*)')
+		or actualMessage
+	DebugHelper.raise({
+		ScribuntoUnit = true,
+		actual = actualMessage,
+		text = string.format('Expected no exception, but got exception with message %s',
+			tostring(actualMessage)
+		),
+		message = message
+	}, 2)
 end
 
 -------------------------------------------------------------------------------
