@@ -1,39 +1,47 @@
 local p = {}
 
-function p._entityid(_,id,alt)
-	-- backwards compatibility for deprecated _entityid function
-	return p._id(id,alt)
-end
+function p._id(idOrTitle, alt)
+	local function checkId(id)
+		if id and mw.wikibase.entityExists(id) then
+			return mw.wikibase.getEntity(id).id
+		end
+		return alt
+	end
 
-function p._id(id,alt)
-	if type(id) == 'string' then
-		id = mw.ustring.upper(mw.ustring.sub(id,1,1))..mw.ustring.sub(id,2)
-		if mw.ustring.match(id,'^Q%d+$') then
-			-- id is in the proper format for a Wikidata entity
-			if mw.wikibase.isValidEntityId(id) then
-				-- id is valid
-				id = mw.wikibase.getEntity(id)
-				if id then
-					-- entity exists
-					return id.id
-				end
-			end
+	if type(idOrTitle) == 'string' then
+		idOrTitle = mw.ustring.upper(mw.ustring.sub(idOrTitle, 1, 1)) .. mw.ustring.sub(idOrTitle, 2)
+		if mw.wikibase.isValidEntityId(idOrTitle) then
+			-- idOrTitle is in the proper format for a Wikidata entity ID
+			return checkId(idOrTitle)
 		else
-			id = mw.wikibase.getEntityIdForTitle(id)
-			if id then
-				-- id is a title that matches a Wikidata entity
-				local instanceOf = mw.wikibase.getBestStatements(id, 'P31')[1] --instance of
-				if instanceOf and instanceOf.mainsnak.datavalue.value.id ~= 'Q4167410' then
-					-- not disambiguation
-					return mw.wikibase.getEntity(id).id
-				elseif instanceOf == nil then
-					-- id is a title, but is missing an instance-of value
-					return mw.wikibase.getEntity(id).id
+			local eid = mw.wikibase.getEntityIdForTitle(idOrTitle)
+			if eid then
+				-- idOrTitle is a title that matches a Wikidata entity
+				local instanceOf = mw.wikibase.getBestStatements(eid, 'P31')
+				local notDisambiguation = true
+				for i = 1, #instanceOf do
+					local datavalue = instanceOf[i].mainsnak.datavalue
+					if datavalue and datavalue.value and datavalue.value.id == 'Q4167410' then
+						notDisambiguation = false
+					end
+				end
+				if notDisambiguation then
+					-- "instance of" doesn't contain "disambiguation page" value
+					return checkId(eid)
+				end
+			else
+				-- idOrTitle is a title, but no wikidata item exists for that title
+				local page = mw.title.new(idOrTitle)
+				if page then -- valid title
+					local rtarget = page.redirectTarget
+					if rtarget then	-- title is a Wikipedia redirect
+						return p._id(rtarget.fullText, alt)
+					end
 				end
 			end
 		end
 	end
-	return alt or nil
+	return alt
 end
 
 function p.entityid(frame)
