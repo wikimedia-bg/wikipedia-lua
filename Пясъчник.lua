@@ -576,9 +576,11 @@ function p.authorityControl(frame)
 		local title = nil
 		local item = nil
 		if currentOnce and not parentArgs['from' .. f] then
-			parentArgs['from' .. f] = currentItem and currentItem.id or currentTitle.text
-			title = currentTitle.text
 			currentOnce = false
+			parentArgs['from' .. f] = currentItem and currentItem.id or currentTitle.text
+			if parentArgs['from' .. f] == currentTitle.text then
+				title = currentTitle.text
+			end
 		end
 		if parentArgs['from' .. f] then
 			--Fetch Wikidata item
@@ -613,7 +615,7 @@ function p.authorityControl(frame)
 						if wikidataId then
 							if not val then
 								val = wikidataId
-								fromWikidata[label .. f] = true
+								fromWikidata[param .. f] = true
 							elseif val == '' then
 								tCats[3] = '[[Категория:Нормативен контрол с потиснати идентификатори]]'
 							elseif val ~= '' then
