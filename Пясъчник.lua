@@ -610,25 +610,23 @@ function p.authorityControl(frame)
 					local pattern = conf[i].pattern
 					local val = parentArgs[param .. f]
 					--Wikidata fallback if requested
-					if item then
-						local wikidataId = getIdFromWikidata(item, 'P' .. propId)
-						if wikidataId then
-							if not val then
-								val = wikidataId
-								fromWikidata[param .. f] = true
-							elseif val == '' then
-								tCats[3] = '[[Категория:Нормативен контрол с потиснати идентификатори]]'
-							elseif val ~= '' then
-								if val ~= wikidataId then
-									tCats[5] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори, различаващи се с тези от Уикиданни]]'
-								else
-									tCats[6] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори, идентични с тези от Уикиданни]]'
-								end
+					local wikidataId = item and getIdFromWikidata(item, 'P' .. propId)
+					if wikidataId then
+						if not val then
+							val = wikidataId
+							fromWikidata[param .. f] = true
+						elseif val == '' then
+							tCats[3] = '[[Категория:Нормативен контрол с потиснати идентификатори]]'
+						elseif val ~= '' then
+							if val ~= wikidataId then
+								tCats[5] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори, различаващи се с тези от Уикиданни]]'
+							else
+								tCats[6] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори, идентични с тези от Уикиданни]]'
 							end
-						else
-							if not nilOrEmpty(val) then
-								tCats[4] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори]]'
-							end
+						end
+					else
+						if not nilOrEmpty(val) then
+							tCats[4] = '[[Категория:Нормативен контрол с ръчно въведени идентификатори]]'
 						end
 					end
 
