@@ -647,7 +647,7 @@ function p.authorityControl(frame)
 							end
 						end
 
-						local rowItem = createRow(label, val, getLink(propId, val, label).text, param ~= 'worldcatid', validValue, editAtWikidata(fromWikidata[label .. f] and parentArgs['from' .. f], propId))
+						local rowItem = createRow(label, val, getLink(propId, val, label).text, param ~= 'worldcatid', validValue, editAtWikidata(fromWikidata[param .. f] and parentArgs['from' .. f], propId))
 						--skip wikispecies for current title/entity
 						if param == 'wikispecies' and (parentArgs['from' .. f] == mw.wikibase.getEntityIdForCurrentPage() or parentArgs['from' .. f] == currentTitle.text) then
 							rowItem = nil
