@@ -17,6 +17,7 @@ local conf = {
 	{ id = 'AAT', property = 1014, pattern = '300%d%d%d%d%d%d' },
 	{ id = 'ACM-DL', property = 864, pattern = '%d%d%d%d%d%d%d%d%d%d%d%d' },
 	{ id = 'BALaT', property = 3293, pattern = '%d+' },
+	{ id = 'BGCI', property = 5818, pattern = '%d+' },
 	{ id = 'BIBSYS', property = 1015, pattern = '[1-9]%d*' },
 	{ id = 'Bildindex', property = 2092, pattern = '%d+' },
 	{ id = 'BNE', property = 950, pattern = { 'XX%d%d%d%d%d?%d?%d?', 'a%d%d%d%d%d?%d?%d?', '[bM]im[ao]%d%d%d%d%d%d%d%d%d%d%d', '[bM]ise%d%d%d%d%d%d%d%d%d%d%d', 'bivi%d%d%d%d%d%d%d%d%d%d%d' } },
@@ -30,13 +31,19 @@ local conf = {
 	{ id = 'CONOR.BG', property = 8849, pattern = '%d+' },
 	{ id = 'DBLP', property = 2456, pattern = { '%d%d%d?/%d+', '%d%d%d?/%d+%-%d+', '[a-z]/[a-zA-Z][0-9A-Za-z]*', '[a-z]/[a-zA-Z][0-9A-Za-z]*%-%d+' } },
 	{ id = 'DSI', property = 2349, pattern = '[1-9]%d*' },
+	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
+	{ id = 'Emmy', property = 8381, pattern = '[a-z%d%-]+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'GND', property = 227, pattern = { '1[012]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
+	{ id = 'Google Scholar', property = 1960, pattern = rep('[A-Za-z%d%-_]', 12) },
+	{ id = 'Grammy', property = 7303, pattern = '%w[%w%-]+%/%d+' },
 	{ id = 'HDS', property = 902, pattern = '%d%d%d%d%d%d' },
 	{ id = 'IAAF', property = 1146, pattern = '%d+' },
 	{ id = 'ICIA', property = 1736, pattern = '%d+' },
+	{ id = 'ISIL', property = 791, pattern = '%D%D?%D?%D?%-[%w%-:/]' .. rep ('[%w%-:/]?', 10) },
 	{ id = 'ISNI', property = 213, pattern = '0000[%s%-]?%d%d%d%d[%s%-]?%d%d%d%d[%s%-]?%d%d%d[%dX]' },
+	{ id = 'J9U', label = 'NLI J9U', property = 8189, pattern = '98' .. rep('%d', 12) .. '5171' },
 	{ id = 'Joconde', property = 347, pattern = rep('[%-%dA-Za-z]', 11) },
 	{ id = 'Koninklijke', property = 1006, pattern = '%d%d%d%d%d%d%d%d[%dX]' },
 	{ id = 'KulturNav', property = 1248, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
@@ -65,11 +72,13 @@ local conf = {
 	{ id = 'OpenLibrary', label = 'Open Library', property = 648, pattern = 'OL[1-9]%d*[AMW]' },
 	{ id = 'ORCID', property = 496, pattern = '0000[%s%-]?000%d[%s%-]?%d%d%d%d[%s%-]?%d%d%d[%dX]' },
 	{ id = 'PIC', property = 2750, pattern = '[1-9]%d*' },
+	{ id = 'PLWABN', property = 7293, pattern = '98' .. rep('%d', 10) .. '5606' },
 	{ id = 'RID', label = 'Researcher', property = 1053, pattern = { '[A-Z][A-Z]?[A-Z]?%-%d%d%d%d%-19%d%d', '[A-Z][A-Z]?[A-Z]?%-%d%d%d%d%-20%d%d' } },
 	{ id = 'RKDartists', label = 'RKD', property = 650, pattern = '[1-9]%d?%d?%d?%d?%d?' },
 	{ id = 'RKDID', label = 'RKDimages', property = 350, pattern = '[1-9]%d?%d?%d?%d?%d?' },
 	{ id = 'RSL', property = 947, pattern = '%d%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'SBN', label = 'ICCU', property = 396, pattern = '%D%D[A-Z0-3]V%d%d%d%d%d%d' },
+	{ id = 'Scopus', property = 1153, pattern = '[1-9]%d%d%d%d%d%d%d%d%d%d?%d?' },
 	{ id = 'SELIBR', label = 'LIBRIS', property = 906, pattern = '[1-9]%d%d%d%d%d?' },
 	{ id = 'SIKART', property = 781, pattern = '%d%d%d%d%d%d%d%d?%d?' },
 	{ id = 'SNAC-ID', label = 'SNAC', property = 3430, pattern = '%d*[A-Za-z][%dA-Za-z]*' },
@@ -80,8 +89,9 @@ local conf = {
 	{ id = 'ULAN', property = 245, pattern = '500%d%d%d%d%d%d' },
 	{ id = 'USCongress', label = 'US Congress', property = 1157, pattern = '[A-Z]00[01]%d%d%d' },
 	{ id = 'VIAF', property = 214, pattern = { '[1-9]%d' .. rep('%d?', 7), '[1-9]%d?%d?%d?' .. rep('%d', 18) } },
-	{ id = 'WorldCat', label = 'WorldCat', property = 7859, pattern = { 'viaf%-%d+', 'lccn%-n[a-z]?[%d%-]+' , 'n[cps]%-.+' } },
-	{ id = 'WorldCat Entity', label = 'WorldCat', property = 10832, pattern = {'[a-zA-Z%d][a-zA-Z%d]' .. rep('[a-zA-Z%d]?', 26)} },
+	{ id = 'WorldCat Entities', label = 'WorldCat', property = 10832, pattern = {'[a-zA-Z%d][a-zA-Z%d]' .. rep('[a-zA-Z%d]?', 26)} },
+	{ id = 'WorldCat Identities', label = 'WorldCat', property = 7859, pattern = { 'viaf%-%d+', 'lccn%-n[a-z]?[%d%-]+' , 'n[cps]%-.+' } }, --deprecated as of March 2023; replaced by "WorldCat Entities"
+	{ id = 'ZBMATH', property = 1556, pattern = '[a-z][a-z%-%.%d]*' },
 	--TAXON IDS
 	{ id = 'ADW', property = 4024 },
 	{ id = 'AFD', property = 6039 },
@@ -652,8 +662,8 @@ function p.authorityControl(frame)
 						if param == 'wikispecies' and (parentArgs['from' .. f] == mw.wikibase.getEntityIdForCurrentPage() or parentArgs['from' .. f] == currentTitle.text) then
 							rowItem = nil
 						end
-						--skip worldcat entity if there is worldcat id
-						if param == 'worldcat entity' and (parentArgs['worldcat' .. f] or fromWikidata['worldcat' .. f]) then
+						--skip 'WorldCat Identities' if there is 'WorldCat Entities'
+						if param == 'worldcat identities' and (parentArgs['worldcat entities' .. f] or fromWikidata['worldcat entities' .. f]) then
 							rowItem = nil
 						end
 
