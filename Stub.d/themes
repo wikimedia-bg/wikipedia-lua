@@ -700,7 +700,7 @@ return {
 				{ 'порно актьор', 'Pink silhouette.svg', 'порно актьори' },
 				{ 'турски актьор', 'Turkey film clapperboard.svg', 'турски актьори' },
 			{ 'музикант|певец|певица|композитор|китарист', 'Musical notes.svg', 'музиканти' },
-			{ 'писател', 'Quill and ink-wikipedia.png', 'писатели' },
+			{ 'писател|сценарист', 'Quill and ink-wikipedia.png', 'писатели' },
 			{ 'режисьор', 'Filmreel-icon.svg', 'режисьори' },
 			{ 'танцьор', 'Ballerina-icon.jpg', 'танцьори' },
 			{ 'художник|фотограф', 'Vincent Willem van Gogh 107.jpg', 'художници' },
