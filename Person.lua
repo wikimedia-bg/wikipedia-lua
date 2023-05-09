@@ -395,8 +395,7 @@ function relabel(link, newlabel)
 	return link
 end
 
-function p.lsc(frame)
-	local location = frame.args[1]
+function lsc(location, defcountry, date, earliestdate, latestdate)
 	local s = ''
 	local d = ''
 
@@ -407,19 +406,19 @@ function p.lsc(frame)
 	local settlement = ''
 	local lstr = wd._label({ 'linked', location })
 	local sstr = ''
-	local cstr = frame.args[3] or ''
+	local cstr = defcountry or ''
 
 	if isCountry(location) then
 		return lstr
 	end
 
-    d = mw.text.trim(frame.args[2] or '')
+    d = mw.text.trim(date or '')
 
     if d == '' then
-      d = mw.text.trim(frame.args[5] or '')   -- tries with latest date
+      d = mw.text.trim(latestdate or '')   -- tries with latest date
     end
     if d == '' then
-      d = mw.text.trim(frame.args[4] or '')   -- tries with earliest date
+      d = mw.text.trim(earliestdate or '')   -- tries with earliest date
     end
 	if isSettlement(location, 1) then
 		if cstr == '' then
@@ -431,7 +430,7 @@ function p.lsc(frame)
 		end
 		lstr = relabel(lstr, wd._property({'linked', 'deprecated+', location, 'P1448', date=d}))
 	else
-		settlement = findSettlement(location, frame.args[2], 3)
+		settlement = findSettlement(location, date, 3)
 		if settlement ~= '' then
 			if cstr == '' then
 				country = wd._property({'raw', 'deprecated+', settlement, 'P17', date=d})
@@ -453,6 +452,10 @@ function p.lsc(frame)
 		end
 	end
 	return joinStrings({lstr, sstr, cstr}, ', ')
+end
+
+function p.lsc(frame)
+    return lsc(frame.args[1], frame.args[3], frame.args[2], frame.args[4], frame.args[5])
 end
 
 function p.birth_date(frame)
