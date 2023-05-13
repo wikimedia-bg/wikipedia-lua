@@ -2858,9 +2858,9 @@ local function citation0( config, args)
 		anchor_year, Embargo, error_message = dates(date_parameters_list, COinS_date);
 
 -- start temporary Julian / Gregorian calendar uncertainty categorization
-		if COinS_date.inter_cal_cat then
-			add_prop_cat ('jul_greg_uncertainty');
-		end
+--		if COinS_date.inter_cal_cat then
+--			add_prop_cat ('jul_greg_uncertainty');
+--		end
 -- end temporary Julian / Gregorian calendar uncertainty categorization
 
 		if is_set (Year) and is_set (Date) then									-- both |date= and |year= not normally needed; 
