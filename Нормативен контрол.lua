@@ -199,7 +199,7 @@ local databases = {
 	{ id = 'Phasmida Species File', property = 4855, pattern = '[1-9]%d*' }, ---[[]] DNE
 	{ id = 'PPE', property = 6061, pattern = '[a-z][a-z%-/]*[a-z]' }, ---[[Plant Parasites of Europe]] DNE
 	{ id = 'Plantarium', property = 3102, pattern = '%d+' }, ---[[]] DNE
-	{ id = 'PlantList', label = 'Plant List', property = 1070, pattern = '[gikrt][cflejr][cndwpo]-%d+' },
+	{ id = 'PlantList', label = 'Plant List', property = 1070, pattern = { 'gcc%-%d+', 'ifn%-%d+', 'ild%-%d+', 'kew%-%d+', 'rjp%-%d+', 'tro%-%d+' } },
 	{ id = 'PLANTS', property = 1772, pattern = '[A-Z][A-Z][A-Z][A-Z]?[A-Z]?%d?%d?%d?' },
 	{ id = 'Plazi', property = 1992, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
 	{ id = 'POWO', property = 5037, pattern = 'urn:lsid:ipni%.org:names:[1-9]%d?%d?%d?%d?%d?%d?%d?%-[1234]' },
