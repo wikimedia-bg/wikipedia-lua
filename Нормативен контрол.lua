@@ -15,7 +15,7 @@ local rep = mw.ustring.rep
 local databases = {
 	--COMMON
 	{ id = 'AAT', property = 1014, pattern = '300%d%d%d%d%d%d' },
-	{ id = 'ACM-DL', property = 864, pattern = '%d%d%d%d%d%d%d%d%d%d%d%d' },
+	{ id = 'ACM-DL', property = 864, pattern = '%d%d%d%d%d%d%d%d%d%d%d' },
 	{ id = 'BALaT', property = 3293, pattern = '%d+' },
 	{ id = 'BGCI', property = 5818, pattern = '%d+' },
 	{ id = 'BIBSYS', property = 1015, pattern = '[1-9]%d*' },
@@ -32,7 +32,7 @@ local databases = {
 	{ id = 'DBLP', property = 2456, pattern = { '%d%d%d?/%d+', '%d%d%d?/%d+%-%d+', '[a-z]/[a-zA-Z][0-9A-Za-z]*', '[a-z]/[a-zA-Z][0-9A-Za-z]*%-%d+' } },
 	{ id = 'DSI', property = 2349, pattern = '[1-9]%d*' },
 	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
-	{ id = 'Emmy', property = 8381, pattern = '[a-z%d%-]+' },
+	{ id = 'Emmy', property = 8381, pattern = '[%w%-]+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'GND', property = 227, pattern = { '1[012]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
@@ -108,7 +108,7 @@ local databases = {
 	{ id = 'APSA', property = 2809, pattern = { '%d[%d-]+', '%d[%d%-]-%b()' } }, ---[[Australasian Pollen and Spore Atlas]] DNE
 	{ id = 'Araneae', property = 3594, pattern = '[1-9]%d%d?%d?' }, ---[[]] DNE
 	{ id = 'ARKive', property = 2833, pattern = '[a-z][a-z%-]*' },
-	{ id = 'ASW', property = 5354, pattern = '[A-Za-z][A-Za-z/]*' },
+	{ id = 'ASW', property = 5354, pattern = '[A-Za-z][A-Za-z/%-]*' },
 	{ id = 'Avibase', property = 2026, pattern = rep('[A-Z%d]', 16) }, ---[[]] DNE
 	{ id = 'BacDive', property = 2946, pattern = '%d%d?%d?%d?%d?%d?' },
 	{ id = 'BAMONA', property = 3398, pattern = { 'species/[^%s/]+', 'taxonomy/[^%s/]+' } }, ---[[Butterflies and Moths of North America]] DNE
