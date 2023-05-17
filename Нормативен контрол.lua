@@ -32,7 +32,7 @@ local databases = {
 	{ id = 'DBLP', property = 2456, pattern = { '%d%d%d?/%d+', '%d%d%d?/%d+%-%d+', '[a-z]/[a-zA-Z][0-9A-Za-z]*', '[a-z]/[a-zA-Z][0-9A-Za-z]*%-%d+' } },
 	{ id = 'DSI', property = 2349, pattern = '[1-9]%d*' },
 	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
-	{ id = 'Emmy', property = 8381, pattern = '[%w%-]+' },
+	{ id = 'Emmy', property = 8381, pattern = '%S+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'GND', property = 227, pattern = { '1[012]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
@@ -105,11 +105,10 @@ local databases = {
 	{ id = 'APA', property = 6137, pattern = '[1-9]%d*' }, ---[[Alabama Plant Atlas]] DNE
 	{ id = 'APDB', property = 2036, pattern = '%d%d?%d?%d?%d?%d?' }, ---[[African Plant Database]] DNE
 	{ id = 'APNI', property = 5984, pattern = '[1-9]%d*' },
-	{ id = 'APSA', property = 2809, pattern = { '%d[%d-]+', '%d[%d%-]-%b()' } }, ---[[Australasian Pollen and Spore Atlas]] DNE
 	{ id = 'Araneae', property = 3594, pattern = '[1-9]%d%d?%d?' }, ---[[]] DNE
 	{ id = 'ARKive', property = 2833, pattern = '[a-z][a-z%-]*' },
-	{ id = 'ASW', property = 5354, pattern = '[A-Za-z][A-Za-z/%-]*' },
-	{ id = 'Avibase', property = 2026, pattern = rep('[A-Z%d]', 16) }, ---[[]] DNE
+	{ id = 'ASW', property = 5354, pattern = '[A-Za-z][A-Za-z/%-]*%d?%d?' },
+	{ id = 'Avibase', property = 2026, pattern = { rep('[A-Z%d]', 8), rep('[A-Z%d]', 16) } }, ---[[]] DNE
 	{ id = 'BacDive', property = 2946, pattern = '%d%d?%d?%d?%d?%d?' },
 	{ id = 'BAMONA', property = 3398, pattern = { 'species/[^%s/]+', 'taxonomy/[^%s/]+' } }, ---[[Butterflies and Moths of North America]] DNE
 	{ id = 'BHL', property = 687, pattern = '[1-9]%d*' },
@@ -125,7 +124,7 @@ local databases = {
 	{ id = 'CMS', property = 6033, pattern = { '[a-z][a-z%-]*', '[a-z][a-z%-]*%-%d' } },
 	{ id = 'CNPS', property = 4194, pattern = '[1-9]%d*' },
 	{ id = 'Cockroach Species File', property = 6052, pattern = '[1-9]%d*' }, ---[[]] DNE
-	{ id = 'CoL-Taiwan', property = 3088, pattern = '[1-9]%d%d%d%d%d' }, ---[[]] DNE
+	{ id = 'CoL-Taiwan', property = 3088, pattern = '.-%d+.-' }, ---[[]] DNE
 	{ id = 'Conifers', property = 1940 }, ---[[]] DNE
 	{ id = 'Coreoidea Species File', property = 6053, pattern = '[1-9]%d%d%d%d%d%d' }, ---[[]] DNE
 	{ id = 'CzechNDOP', property = 5263, pattern = '[1-9]%d*' }, ---closest match
@@ -151,7 +150,7 @@ local databases = {
 	{ id = 'FoAO', property = 3100, pattern = '%d+' },
 	{ id = 'FoC', property = 1747, pattern = '[1-9]%d%d%d%d%d?%d?%d?%d?%d?' },
 	{ id = 'FOIH', property = 4311, pattern = '[1-9]%d*' },
-	{ id = 'FoIO', property = 3795, pattern = { '[a-zA-Z%d%-]+', 'systematics/[a-zA-Z%d%-]+' } }, ---[[Flora of Israel Online]] DNE, he.wiki link interferes with display
+	{ id = 'FoIO', property = 3795, pattern = { '[a-zA-Z%d%-]+/?', 'systematics/[a-zA-Z%d%-]+/?' } }, ---[[Flora of Israel Online]] DNE, he.wiki link interferes with display
 	{ id = 'Fossilworks', property = 842, pattern = '[1-9]%d?%d?%d?%d?%d?' },
 	{ id = 'Fungorum', property = 1391, pattern = '[1-9]%d?%d?%d?%d?%d?' },
 	{ id = 'GBIF', property = 846, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?%d?' },
@@ -215,9 +214,8 @@ local databases = {
 	{ id = 'TAXREF', property = 3186, pattern = '%d+' }, ---[[]] DNE
 	{ id = 'TelaBotanica', property = 3105, pattern = '%d+' },
 	{ id = 'Titan', property = 4125, pattern = '%d+' }, ---[[]] DNE
-	{ id = 'Tree of Life', property = 5221, pattern = '[1-9]%d*' },
+	{ id = 'Tree of Life', property = 5221, pattern = { '[1-9]%d*', '%a+' } },
 	{ id = 'Tropicos', property = 960, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?%d?' },
-	{ id = 'TSA', property = 5397, pattern = '[1-9]%d?%d?%d?%d?' }, ---closest match
 	{ id = 'uBio', property = 4728, pattern = '[1-9]%d*' }, ---[[Universal Biological Indexer and Organizer]] DNE
 	{ id = 'VASCAN', property = 1745, pattern = '%d%d?%d?%d?%d?' }, ---[[Vascular Plants of Canada]] DNE
 	{ id = 'Verspreidingsatlas', property = 6142, pattern = '[A-Z]?%d+' }, ---[[]] DNE
