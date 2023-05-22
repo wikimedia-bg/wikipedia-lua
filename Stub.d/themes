@@ -623,7 +623,6 @@ return {
 			{ 'облекло', 'Signorina in viola.svg' },
 		{ 'кино', 'Movie template.gif' },
 			{ 'американско кино', 'United States film.png' },
-			{ 'британско кино', 'UK film clapperboard.svg' },
 			{ 'българско кино', 'Movie template.gif' },
 			{ 'италианско кино', 'Flag of Italy.svg' },
 			{ 'френско кино', 'Flag of France.svg' },
