@@ -780,7 +780,6 @@ local rawData = {
 		{
 			name = "Звучна венечна едноударна съгласна",
 			symbols = { "ɾ" },
-			article = "Alveolar tap",
 			audio = "Alveolar tap.ogg"
 		},
 		{
