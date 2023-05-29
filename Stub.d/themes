@@ -624,7 +624,6 @@ return {
 		{ 'кино', 'Movie template.gif' },
 			{ 'американско кино', 'United States film.png' },
 			{ 'българско кино', 'Movie template.gif' },
-			{ 'италианско кино', 'Flag of Italy.svg' },
 			{ 'телевизионен канал', 'Television icon.svg', 'телевизионни канали' },
 			{ 'сериал', 'Television icon.svg', 'сериали' },
 			{ 'телевизионно предаване', 'Television icon.svg', 'телевизионни предавания' },
