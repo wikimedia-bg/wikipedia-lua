@@ -372,7 +372,7 @@ function parseDate(dateStr, precision)
 	
 	if i then
 		-- year
-		parts[index] = tonumber(mw.ustring.gsub(dateStr:sub(ptr, i-1), "^\+(.+)$", "%1"), 10)  -- remove '+' sign (explicitly give base 10 to prevent error)
+		parts[index] = tonumber(mw.ustring.gsub(dateStr:sub(ptr, i-1), "^%+(.+)$", "%1"), 10)  -- remove '+' sign (explicitly give base 10 to prevent error)
 		
 		if parts[index] == -0 then
 			parts[index] = tonumber("0")  -- for some reason, 'parts[index] = 0' may actually store '-0', so parse from string instead
@@ -888,7 +888,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			
 			if not unitOnly then
 				-- get value and strip + signs from front
-				value = mw.ustring.gsub(datavalue['amount'], "^\+(.+)$", "%1")
+				value = mw.ustring.gsub(datavalue['amount'], "^%+(.+)$", "%1")
 				
 				if raw then
 					return value
@@ -951,8 +951,6 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 							else
 								linkSuffix = i18n['datetime']['suffixes']['century']
 							end
-							
-							suffix = i18n.getOrdinalSuffix(yRound, linkSuffix) .. linkSuffix
 						else
 							-- if not verbose, take the first year of the century/millennium
 							-- (e.g. 1901 for 20th century or 2001 for 3rd millennium)
@@ -965,8 +963,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 						
 						if not raw then
 							prefix = i18n['datetime']['prefixes']['decade-period']
-							suffix = i18n['datetime']['suffixes']['decade-period']
-							linkSuffix = suffix
+							linkSuffix = i18n['datetime']['suffixes']['decade-period']
 						end
 					end
 					
@@ -1083,20 +1080,55 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				end
 				
 				if ce then
-					suffix = suffix .. " " .. ce
-					linkSuffix = linkSuffix .. " " .. ce
+					suffix = suffix .. ' ' .. ce
+					linkSuffix = linkSuffix .. ' ' .. ce
 				end
 				
 				value = tostring(yRound)
-
+				
+				local romanNumerals = false
+				if not raw then
+					if precision == 8 and not raw then
+						local century, decade
+						if tonumber(value) > 99 then
+							century, decade = mw.ustring.match(value, '^(%d?%d)(%d0)$')
+						else
+							decade = value
+						end
+						century = (tonumber(century) or 0) + 1
+						decade = tonumber(decade)
+						if decade == 0 then
+							decade = 'началото'
+						else
+							decade = decade .. '-те години'
+						end
+						suffix = decade .. ' на ' .. mw.getCurrentFrame():expandTemplate{title = 'Римска цифра', args = {century}} .. ' век'
+						if ce then suffix = suffix .. ' ' .. ce end
+						romanNumerals = true
+					elseif precision == 7 or precision == 6 then
+						suffix = mw.getCurrentFrame():expandTemplate{title = 'Римска цифра', args = {value}} .. linkSuffix
+						romanNumerals = true
+					end
+				end
+	
 				if link then
 					if suffix == linkSuffix then
 						value = '[[' .. value .. suffix .. ']]'
+					elseif romanNumerals then
+						-- because of mass pages with old and incorrect format
+						-- to be removed when all the pages begin to follow proper naming format (e.g. "X век" rather than "10 век")
+						value = '[[' .. value .. linkSuffix .. '|' .. suffix .. ']]'
 					else
 						value = '[[' .. value .. linkSuffix .. '|' .. value .. ']]' .. suffix
 					end
 				else
-					value = value .. suffix
+					if romanNumerals then
+						-- very basic workaround so Module:Person can properly assign birth/death year categories with old and incorrect format
+						-- to be removed when all the categories begin to follow proper naming format (e.g. "Родени през X век" rather than "Родени през 10 век")
+						value = '<!-- ' .. value .. linkSuffix .. ' -->' .. suffix
+					else
+						value = value .. suffix
+					end
 				end
 				
 				if m then
