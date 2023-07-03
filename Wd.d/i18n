@@ -5,12 +5,12 @@ local aliasesP = mw.loadData((...):sub(1, (...):match('^.*()/') - 1).."/aliasesP
 
 local p = {
 	["errors"] = {
-		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни "$1".',
+		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни „$1“',
 		["missing-required-parameter"] = 'Не са дефинирани задължителни параметри, изисква се поне един',
-		["extra-required-parameter"]   = 'Параметър "$1" трябва да бъде дефиниран като незадължителен',
+		["extra-required-parameter"]   = 'Параметър „$1“ трябва да бъде дефиниран като незадължителен',
 		["no-function-specified"]      = 'Трябва да бъде посочена функция за извикване',  -- equal to the standard module error message
-		["main-called-twice"]          = 'Функцията "main" не може да бъде извикана два пъти',
-		["no-such-function"]           = 'Функцията "$1" не съществува'  -- equal to the standard module error message
+		["main-called-twice"]          = 'Функцията main не може да бъде извикана два пъти',
+		["no-such-function"]           = 'Функцията „$1“ не съществува'  -- equal to the standard module error message
 	},
 	["info"] = {
 		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
@@ -90,7 +90,7 @@ function p.getOrdinalSuffix(num, gen)
 	local gLetter = 'и'
 	
 	if gen == p['datetime']['suffixes']['millennium'] then
-		gLetter = 'o'
+		gLetter = 'о'
 	end
 	
 	if tostring(num):sub(-2,-2) == '1' then
