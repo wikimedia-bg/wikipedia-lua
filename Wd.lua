@@ -1088,7 +1088,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				
 				local romanNumerals = false
 				if not raw then
-					if precision == 8 and not raw then
+					if precision == 8 then
 						local century, decade
 						if tonumber(value) > 99 then
 							century, decade = mw.ustring.match(value, '^(%d?%d)(%d0)$')
