@@ -21,10 +21,10 @@ local p = {
 	},
 	["datetime"] = {
 		["prefixes"] = {
-			["decade-period"] = 'ок. '
+			["decade-period"] = ''
 		},
 		["suffixes"] = {
-			["decade-period"] = '',
+			["decade-period"] = '-те',
 			["millennium"]    = ' хилядолетие',
 			["century"]       = ' век',
 			["million-years"] = ' милиони години',
