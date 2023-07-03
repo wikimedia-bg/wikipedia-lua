@@ -49,6 +49,8 @@ end
 
 function Date:fromWikidata(eid, property)
 	local dateString = wd._property({eid, property})
+	dateString = mw.ustring.gsub(dateString, '<!%-%-%s*', '')
+	dateString = mw.ustring.gsub(dateString, '%-%->', '')
 
 	d = { _ = dateString, q = eid, p = property }
 	setmetatable(d, self)
@@ -68,26 +70,26 @@ function Date:fromWikidata(eid, property)
 		d.julian = true
 	end
 
-	local day, monthName, year = mw.ustring.match(dateString, "^(%d+) (%a+) (%d+)")
+	local day, monthName, year = mw.ustring.match(dateString, "^(%d+)%s+(%a+)%s+(%d+)")
 	if day and monthName and year then
 		return d:set(year, monthName, day)
 	end
-	monthName, year = mw.ustring.match(dateString, "^(%a+) (%d+)")
+	monthName, year = mw.ustring.match(dateString, "^(%a+)%s+(%d+)")
 	if monthName and year then
 		return d:set(year, monthName)
 	end
 
-	millennium = mw.ustring.match(dateString, "^(%d+).* хилядолетие")
+	millennium = mw.ustring.match(dateString, "^(%d+)%s+хилядолетие")
 	if millennium then
 		d.millennium = millennium
 		return d
 	end
-	century = mw.ustring.match(dateString, "^(%d+).* век")
+	century = mw.ustring.match(dateString, "^(%d+)%s+век")
 	if century then
 		d.century = century
 		return d
 	end
-	decade = mw.ustring.match(dateString, "^(%d+)-те")
+	decade = mw.ustring.match(dateString, "^(%d+)%-те")
 	if decade then
 		d.decade = decade
 		return d
