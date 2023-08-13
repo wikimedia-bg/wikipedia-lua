@@ -30,6 +30,7 @@ local databases = {
 	{ id = 'CiNii', property = 271, pattern = 'D[AB]%d%d%d%d%d%d%d[%dX]' },
 	{ id = 'CONOR.BG', property = 8849, pattern = '%d+' },
 	{ id = 'DBLP', property = 2456, pattern = { '%d%d%d?/%d+', '%d%d%d?/%d+%-%d+', '[a-z]/[a-zA-Z][0-9A-Za-z]*', '[a-z]/[a-zA-Z][0-9A-Za-z]*%-%d+' } },
+	{ id = 'Dimensions', property = 6178, pattern = '%d+.%d+' },
 	{ id = 'DSI', property = 2349, pattern = '[1-9]%d*' },
 	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
 	{ id = 'Emmy', property = 8381, pattern = '%S+' },
