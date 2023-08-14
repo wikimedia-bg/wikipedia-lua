@@ -1,4 +1,4 @@
-require('Module:No globals');
+require('strict');
 local data = mw.loadData ('Module:Footnotes/anchor id list/data');
 local whitelist = mw.loadData ('Module:Footnotes/whitelist');
 local Lang_obj = mw.language.getContentLanguage();								-- used by template_list_add() to uppercase first letter of template name TODO: better way to do that?
@@ -72,7 +72,8 @@ local alias_patterns_patent_date = {											-- normal lua patterns for cite p
 	'|%s*pubdate%s*=%s*',
 	}
 local patterns_date = {															-- normal lua patterns
-	'(%d%d%d%d–%d%d%d%d%l?)$',													-- YYYY–YYYY four-digit year range at end (Season YYYY–YYYY); with or without dab
+--	'(%d%d%d%d–%d%d%d%d%l?)$',													-- YYYY–YYYY four-digit year range at end (Season YYYY–YYYY); with or without dab
+	'(%d%d%d%d)%D+(%d%d%d%d%l?)$',												-- any range with four-digit years; with or without dab; not two captures
 	'^(%d%d%d%d–%d%d%l?)$',														-- YYYY–YY two-digit year range; with or without dab
 	'^(c%. %d%d%d%d?%l?)$',														-- three- or four-digit circa year; with or without dab
 	'(%d%d%d%d?%l?)$',															-- three- or four-digit year at end of date (dmy or mdy); with or without dab
@@ -156,7 +157,6 @@ also gets date from |<date alias>={{date|...}}
 ]]
 
 local function date_get (template, aliases)
-	local date;
 	local rvalue;
 
 	for _, pattern in ipairs (aliases) do										-- spin through the date alias patterns
@@ -185,8 +185,12 @@ local function date_get (template, aliases)
 
 			if rvalue then
 				for _, pattern in ipairs (patterns_date) do						-- spin through the recognized date formats
-					date = rvalue:match (pattern);								-- attempt to extract year portion according to the pattern
+--					date = rvalue:match (pattern);								-- attempt to extract year portion according to the pattern
+					local date, date2 = rvalue:match (pattern);					-- attempt to extract year portion according to the pattern; <date2> gets second year in any range
 					if date then
+						if date2 then											-- when a second year
+							date = table.concat ({date, '–', date2});			-- build a date range
+						end
 						return date;											-- matched so return;
 					end
 				end
