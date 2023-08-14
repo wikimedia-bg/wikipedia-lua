@@ -1,5 +1,15 @@
-require('strict');
-local getArgs = require ('Module:Arguments').getArgs;
+require('Module:No globals');
+
+local anchor_id_list_module = mw.loadData ('Module:Footnotes/anchor_id_list');
+local anchor_id_list = anchor_id_list_module.anchor_id_list;
+local article_whitelist = anchor_id_list_module.article_whitelist;
+local template_list = anchor_id_list_module.template_list;
+
+local whitelist_module = mw.loadData ('Module:Footnotes/whitelist');
+local whitelist = whitelist_module.whitelist;
+local special_patterns = whitelist_module.special_patterns;
+local DNB_special_patterns = whitelist_module.DNB_special_patterns;
+local DNB_template_names = whitelist_module.DNB_template_names;
 
 
 --[[--------------------------< A R G S _ D E F A U L T >------------------------------------------------------
@@ -17,8 +27,8 @@ local args_default = {
 	page = '',
 	pages = '',
 	location = '',
-	page_sep = ", p.&nbsp;",
-	pages_sep = ", pp.&nbsp;",
+	page_sep = ", с.&nbsp;",
+	pages_sep = ", с.&nbsp;",
 	ref = '',
 	template = 'harv',															-- if template name not provided in {{#invoke:}} use this
 	};
@@ -35,19 +45,9 @@ a template that wraps another template; 'multiple targets' error may not be supp
 
 local function target_check (anchor_id, args)
 	local namespace = mw.title.getCurrentTitle().namespace;
-	local anchor_id_list_module = mw.loadData ('Module:Footnotes/anchor_id_list');
-	local anchor_id_list = anchor_id_list_module.anchor_id_list;
-	local article_whitelist = anchor_id_list_module.article_whitelist;
-	local template_list = anchor_id_list_module.template_list;
-	
-	local whitelist_module = mw.loadData ('Module:Footnotes/whitelist');
-	local whitelist = whitelist_module.whitelist;
-	local special_patterns = whitelist_module.special_patterns;
-	local DNB_special_patterns = whitelist_module.DNB_special_patterns;
-	local DNB_template_names = whitelist_module.DNB_template_names;
 
 	if 10 == namespace then
-		return '';																-- automatic form of |no-tracking=yes; TODO: is this too broad?
+		return '';																-- automatic form of |template-doc-demo=true; TODO: is this too broad?
 	end
 
 	local tally = anchor_id_list[anchor_id];									-- nil when anchor_id not in list; else a tally
@@ -100,12 +100,11 @@ local function target_check (anchor_id, args)
 		end
 
 		msg = 'no target: ' .. anchor_id;										-- anchor_id not found
-		category = '[[Category:Harv and Sfn no-target errors]]';
+		category = '';
 
 	elseif 1 < tally then
 		msg = 'multiple targets (' .. tally .. '×): ' .. anchor_id;				-- more than one anchor_id in this article
-		category = 0 == namespace and '[[Category:Harv and Sfn multiple-target errors]]' or '';								-- only categorize in article space
-		return '<span class="error harv-error" style="display: inline; font-size:100%"> ' .. args.template .. ' error: ' .. msg .. ' ([[:Category:Harv and Sfn template errors|help]])</span>' .. category;
+		category = '';
 	end
 
 --	category = 0 == namespace and '[[Category:Harv and Sfn template errors]]' or '';	-- only categorize in article space
@@ -133,24 +132,24 @@ return true when param has a recognized form; false else
 
 ]]
 
-local patterns_date= {
-	'^%d%d%d%d?%l?$',
-	'^n%.d%.%l?$',
-	'^nd%l?$',
-	'^c%. %d%d%d%d?%l?$',
-	'^%d%d%d%d–%d%d%d%d%l?$',
-	'^%d%d%d%d–%d%d%l?$',
-	}
-
 local function is_year (param, args)
 	args.year = '';																-- used for harv error; 
 	
-	for _, pattern in ipairs (patterns_date) do
-		if mw.ustring.match (param, pattern) then
+	if mw.ustring.match (param, '^%d%d%d%d?%l?$') or
+		mw.ustring.match (param, '^n%.d%.%l?$') or
+		mw.ustring.match (param, '^nd%l?$') or
+		mw.ustring.match (param, '^c%. %d%d%d%d?%l?$') or
+		mw.ustring.match (param, '^%d%d%d%d–%d%d%d%d%l?$') or
+		mw.ustring.match (param, '^%d%d%d%d–%d%d%l?$') then
 			args.year = param;													-- used for harv error; 
 			return true;
-		end
 	end
+--	return mw.ustring.match (param, '^%d%d%d%d?%l?$') or
+--		mw.ustring.match (param, '^n%.d%.%l?$') or
+--		mw.ustring.match (param, '^nd%l?$') or
+--		mw.ustring.match (param, '^c%. %d%d%d%d?%l?$') or
+--		mw.ustring.match (param, '^%d%d%d%d–%d%d%d%d%l?$') or
+--		mw.ustring.match (param, '^%d%d%d%d–%d%d%l?$');
 end
 
 
@@ -233,71 +232,6 @@ local function core( args )
 end
 
 
---[[--------------------------< H Y P H E N _ T O _ D A S H >--------------------------------------------------
-
-Converts a hyphen to a dash under certain conditions.  The hyphen must separate
-like items; unlike items are returned unmodified.  These forms are modified:
-	letter - letter (A - B)
-	digit - digit (4-5)
-	digit separator digit - digit separator digit (4.1-4.5 or 4-1-4-5)
-	letterdigit - letterdigit (A1-A5) (an optional separator between letter and
-		digit is supported – a.1-a.5 or a-1-a-5)
-	digitletter - digitletter (5a - 5d) (an optional separator between letter and
-		digit is supported – 5.a-5.d or 5-a-5-d)
-
-any other forms are returned unmodified.
-
-str may be a comma- or semicolon-separated list
-
-This code copied from Module:Citation/CS1.  The only modification is to require Module:Citation/CS1/Utilities
-so that it has access to the functions is_set() and has_accept_as_written()
-
-]]
-
-local function hyphen_to_dash( str )
-	local utilities = require ('Module:Citation/CS1/Utilities');				-- only modification so that this function has access to is_set() and has_accept_as_written()
-
-	if not utilities.is_set (str) then
-		return str;
-	end
-
-	local accept; -- Boolean
-
-	str = str:gsub ('&[nm]dash;', {['&ndash;'] = '–', ['&mdash;'] = '—'});		-- replace &mdash; and &ndash; entities with their characters; semicolon mucks up the text.split
-	str = str:gsub ('&#45;', '-'); -- replace HTML numeric entity with hyphen character
-
-	str = str:gsub ('&nbsp;', ' '); -- replace &nbsp; entity with generic keyboard space character
-	
-	local out = {};
-	local list = mw.text.split (str, '%s*[,;]%s*');								-- split str at comma or semicolon separators if there are any
-
-	for _, item in ipairs (list) do												-- for each item in the list
-		item, accept = utilities.has_accept_as_written (item);					-- remove accept-this-as-written markup when it wraps all of item
-		if not accept and mw.ustring.match (item, '^%w*[%.%-]?%w+%s*[%-–—]%s*%w*[%.%-]?%w+$') then	-- if a hyphenated range or has endash or emdash separators
-			if item:match ('^%a+[%.%-]?%d+%s*%-%s*%a+[%.%-]?%d+$') or			-- letterdigit hyphen letterdigit (optional separator between letter and digit)
-				item:match ('^%d+[%.%-]?%a+%s*%-%s*%d+[%.%-]?%a+$') or			-- digitletter hyphen digitletter (optional separator between digit and letter)
-				item:match ('^%d+[%.%-]%d+%s*%-%s*%d+[%.%-]%d+$') or			-- digit separator digit hyphen digit separator digit
-				item:match ('^%d+%s*%-%s*%d+$') or								-- digit hyphen digit
-				item:match ('^%a+%s*%-%s*%a+$') then							-- letter hyphen letter
-					item = item:gsub ('(%w*[%.%-]?%w+)%s*%-%s*(%w*[%.%-]?%w+)', '%1–%2');	-- replace hyphen, remove extraneous space characters
-			else
-				item = mw.ustring.gsub (item, '%s*[–—]%s*', '–');				-- for endash or emdash separated ranges, replace em with en, remove extraneous whitespace
-			end
-		end
-		table.insert (out, item);												-- add the (possibly modified) item to the output table
-	end
-
-	local temp_str = '';														-- concatenate the output table into a comma separated string
-	temp_str, accept = utilities.has_accept_as_written (table.concat (out, ', ')); -- remove accept-this-as-written markup when it wraps all of concatenated out
-	if accept then
-		temp_str = utilities.has_accept_as_written (str);						-- when global markup removed, return original str; do it this way to suppress boolean second return value
-		return temp_str;
-	else
-		return temp_str;														-- else, return assembled temp_str
-	end
-end
-
-
 --[[--------------------------< A R G S  _ F E T C H >---------------------------------------------------------
 
 Because all of the templates share a common set of parameters, a single common function to fetch those parameters
@@ -319,26 +253,15 @@ local function args_fetch (frame, ps)
 	end
 	args.page = pframe.args.p or pframe.args.page or '';
 	args.pages = pframe.args.pp or pframe.args.pages or '';
-	args.pages = ('' ~= args.pages) and hyphen_to_dash (args.pages) or '';
 	args.location = pframe.args.loc or '';
 	args.ref = pframe.args.ref or pframe.args.Ref or '';
 	args.ignore = ('yes' == pframe.args['ignore-false-positive']) or ('yes' == pframe.args['ignore-err']);
-
+--	args.ignore = 'yes' == pframe.args['ignore-err'];
+	
 	for i, v in ipairs ({'P1', 'P2', 'P3', 'P4', 'P5'}) do						-- loop through the five positional parameters and trim if set else empty string
 		args[v] = (pframe.args[i] and mw.text.trim (pframe.args[i])) or '';
 	end
 
-	if args.P5 and not is_year (args.P5, args) then
-		local i = 6;															-- initialize the indexer to the sixth positional parameter
-		while pframe.args[i] do													-- in case there are too many authors loop through the authors looking for a year
-			local v = mw.text.trim (pframe.args[i]);							-- trim
-			if is_year (v, args) then											-- if a year
-				args.P5 = v;													-- overwrite whatever was in args.P5 with year
-				break;															-- and abandon the search
-			end
-			i = i + 1;															-- bump the indexer
-		end
-	end
 	return args;
 end
 
@@ -475,9 +398,9 @@ local function sfnm (frame)
 
 		args.page = pframe.args[table.concat ({n, 'p'})] or '';					-- insource locations for this source
 		args.pages = pframe.args[table.concat ({n, 'pp'})] or '';
-		args.pages = ('' ~= args.pages) and hyphen_to_dash (args.pages) or '';
 		args.location = pframe.args[table.concat ({n, 'loc'})] or '';
 		args.ignore = ('yes' == pframe.args[table.concat ({n, 'ignore-false-positive'})]) or ('yes' == pframe.args[table.concat ({n, 'ignore-err'})]);
+--		args.ignore = 'yes' == pframe.args[table.concat ({n, 'ignore-err'})];
 
 		table.insert (out, core (args));										-- save the rendering of this source
 		
@@ -512,39 +435,6 @@ local function sfnm (frame)
 end
 
 
---[[--------------------------< S F N R E F >------------------------------------------------------------------
-
-implements {{sfnref}}
-
-]]
-
-local function sfnref (frame)
-	local args = getArgs (frame);
-	local out = {};
-	
-	for i=1, 5 do																-- get the first five args if there are five args
-		if args[i] then
-			out[i] = args[i];
-		else
-			break;																-- less than 5 args break out
-		end
-	end
-	
-	if 5 == #out then															-- when we have seen five args there may bemore
-		local i = 6;															-- initialize the indexer to the sixth positional parameter
-		while args[i] do														-- in case there are too many authors loop through the authors looking for a year
-			if is_year (args[i], args) then										-- if a year
-				out[5] = args[i];												-- overwrite whatever was in args[5] with year
-				break;															-- and abandon the search
-			end
-			i = i + 1;															-- bump the indexer
-		end
-	end
-	
-	return mw.uri.anchorEncode ('CITEREF' .. table.concat (out));
-end
-
-
 --[[--------------------------< E X P O R T E D   F U N C T I O N S >------------------------------------------
 ]]
 
@@ -552,5 +442,4 @@ return {
 	harvard_citation = harvard_citation,
 	sfn = sfn,
 	sfnm = sfnm,
-	sfnref = sfnref,
 	};
