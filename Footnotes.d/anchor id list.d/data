@@ -1,7 +1,7 @@
 -- copied from Module:Ref info/data - maybe overkill here?
 -- for this application make lists from the redirect lists and force all template names first character uppercase
 
-require('Module:No globals');
+require('strict');
 
 --[[--------------------------< C S 1 _ T E M P L A T E _ P A T T E R N S >------------------------------------
 
