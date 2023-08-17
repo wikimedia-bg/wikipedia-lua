@@ -68,6 +68,7 @@ local databases = {
 	{ id = 'NKC', property = 691, pattern = '[a-z][a-z][a-z]?[a-z]?%d%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'NLA', property = 409, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'NLG', property = 3348, pattern = '[1-9]%d*' },
+	{ id = 'NS', label = 'Народно събрание', property = 11873, pattern = '[1-9]%d*' },
 	{ id = 'NSK', property = 1375, pattern = rep('%d', 9) },
 	{ id = 'OCLC', property = 243, pattern = '%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'OpenLibrary', label = 'Open Library', property = 648, pattern = 'OL[1-9]%d*[AMW]' },
