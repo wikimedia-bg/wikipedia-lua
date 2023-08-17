@@ -484,7 +484,7 @@ return {
 					{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 		{ 'информатика', 'Computer-blue.svg' },
 			{ 'софтуер', 'Crystal Clear app kpackage.png' },
-				{ 'уебсайт', 'Crystal Clear mimetype html.png', 'уебсайтове' },
+				{ 'уебсайт|сайт', 'Crystal Clear mimetype html.png', 'уебсайтове' },
 					{ 'Уикипедия', 'Wikipedia-logo-v2.svg' },
 		{ 'космически изследвания', 'Gas giants in the solar system.jpg' },
 			{ 'ракета|ракети', 'Shuttle.svg', 'ракетна техника и космически апарати' },
