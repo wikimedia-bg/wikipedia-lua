@@ -1,3 +1,12 @@
+local aliases = {
+	wikidata = 'www.wikidata',
+	meta = 'meta.wikimedia',
+	commons = 'commons.wikimedia',
+	foundation = 'foundation.wikimedia',
+	wikimania = 'wikimania.wikimedia',
+	wikitech = 'wikitech.wikimedia',
+}
+
 local function trimArg(arg, i)
 	arg = mw.text.trim(arg or '')
 	if arg == '' then
@@ -48,29 +57,52 @@ local function getIfLocal(site, action)
 end
 
 local function main(frame)
+	local metaWords = { active = true, closed = true, languages = true, }
 	local args = frame:getParent().args
-	local action = trimArg(args[1], 1)  -- activeusers, admins, articles, edits, files, pages, users, depth
+	local action = trimArg(args[1], 1)  -- activeusers, admins, articles, edits, files, pages, users, depth, active, closed, languages
 	if action:sub(1, 8) == 'numberof' then  -- numberofX is an alias for X
 		action = trimArg(action:sub(9), 1)
 	end
-	local site = trimArg(args[2], 2)  -- "af" or "af.wikipedia" or "af.wikiquote" etc., including "total"
-	if not site:find('.', 1, true) then
+	local wantMeta = metaWords[action]
+	local site = trimArg(args[2], 2)
+	site = aliases[site] or site
+	if not wantMeta and not site:find('.', 1, true) then
+		-- site is like "af" or "af.wikipedia" or "af.wikiquote" etc., including "total"
 		site = site .. '.wikipedia'
 	end
 	local wantComma = trimArg(args[3])  -- nil for no commas in output; "N" or anything nonblank inserts commas
-	local result = getIfLocal(site, action)
-	if not result then
-		local data = mw.loadData('Module:NUMBEROF/data')
-		local map = data.map
-		data = data.data
-		result = data[site]
-		if result then
-			result = getValue(result, action, map)
+	local result
+	if wantMeta then
+		local data = mw.loadData('Module:NUMBEROF/meta')
+		local nrActive = data.nrActive[site]
+		local nrClosed = data.nrClosed[site]
+		if nrActive or nrClosed then
+			-- If either is set, site is valid but there may not be an entry for both active and closed.
+			nrActive = nrActive or 0
+			nrClosed = nrClosed or 0
+			if action == 'active' then
+				result = nrActive
+			elseif action == 'closed' then
+				result = nrClosed
+			elseif action == 'languages' then
+				result = nrActive + nrClosed
+			end
+		end
+	else
+		result = getIfLocal(site, action)
+		if not result then
+			local data = mw.loadData('Module:NUMBEROF/data')
+			local map = data.map
+			data = data.data
+			result = data[site]
+			if result then
+				result = getValue(result, action, map)
+			end
 		end
 	end
 	if result then
 		if wantComma then
-			result = mw.getContentLanguage():formatNum(result)
+			result = mw.language.getContentLanguage():formatNum(result)
 		end
 		return result  -- number or formatted string
 	end
