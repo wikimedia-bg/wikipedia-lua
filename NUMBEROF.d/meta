@@ -1,0 +1,28 @@
+-- Return a table of statistics to be accessed once per page using mw.loadData.
+-- The table contains active and closed counts for each project.
+
+local function makeData()
+	local statistics = mw.ext.data.get('Wikipedia statistics/meta.tab') -- https://commons.wikimedia.org/wiki/Data:Wikipedia_statistics/meta.tab
+	local map = {}
+	for i, v in ipairs(statistics.schema.fields) do
+		map[v.name] = i  -- name is lowercase
+	end
+	local iProject = map.project
+	local iStatus = map.status
+	local nrActive = {}
+	local nrClosed = {}
+	for _, v in ipairs(statistics.data) do
+		local project = v[iProject]
+		if v[iStatus] == 'active' then
+			nrActive[project] = (nrActive[project] or 0) + 1
+		else
+			nrClosed[project] = (nrClosed[project] or 0) + 1
+		end
+	end
+	return {
+		nrActive = nrActive,
+		nrClosed = nrClosed,
+	}
+end
+
+return makeData()
