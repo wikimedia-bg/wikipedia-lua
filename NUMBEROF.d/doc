@@ -1,7 +1,9 @@
 {{#ifeq:{{SUBPAGENAME}}|sandbox||}}
-{{lua|Module:NUMBEROF/data|Module:NUMBEROF/rank|Module:NUMBEROF/other}}
-* The module implements {{tl|NUMBEROF}} and {{tl|Wikipedia rank by size}}.
-* The module uses [[commons:Data:Wikipedia statistics/data.tab]] for statistics and [[:c:Special:PrefixIndex?prefix=Wikipedia+statistics%2Frank%2F&namespace=486|commons:Data:Wikipedia statistics/rank/]] for rankings.
-** data.tab and /rank/*.tab are updated by bot multiple times a day
-* The module loads [[Module:NUMBEROF/data]], [[Module:NUMBEROF/rank]] and [[Module:NUMBEROF/other]] once per page [not per template invocation].
+{{lua|Module:NUMBEROF/data|Module:NUMBEROF/rank|Module:NUMBEROF/other|Module:NUMBEROF/meta|noprotcat=yes}}
+* Module:NUMBEROF implements templates {{tl|NUMBEROF}} and {{tl|Wikipedia rank by size}}.
+* It includes sub-modules [[Module:NUMBEROF/data]], [[Module:NUMBEROF/rank]], [[Module:NUMBEROF/other]] and [[Module:NUMBEROF/meta]] which are used once per page [not per template invocation]. These sub-modules pull data from Wikimedia Commons:
+** [[:c:Data:Wikipedia statistics/meta.tab]] for classification of wikis,
+** [[:c:Data:Wikipedia statistics/data.tab]] for statistics of all wikis,
+** [[:c:Special:PrefixIndex/Data:Wikipedia statistics/rank/|c:Data:Wikipedia statistics/rank/*.tab]] for rankings of languages in each project.
+** data.tab, meta.tag and rank/*.tab are updated by a bot multiple times each day.
 * The module was originally developed on Enwiki.
