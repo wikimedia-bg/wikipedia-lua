@@ -69,8 +69,7 @@ p.args = {
 local aliasesQ = {
 	percentage              = "Q11229",
 	prolepticJulianCalendar = "Q1985786",
-	citeWeb                 = "Q5637226",
-	citeQ                   = "Q22321052"
+	cite                    = "Q6925554",
 }
 
 local parameters = {
@@ -1891,216 +1890,116 @@ end
 
 -- level 2 hook
 function State:getReference(statement)
-	local key, citeWeb, citeQ, label
+	local cite = split(mw.wikibase.sitelink(aliasesQ.cite) or '', ':')[2]
 	local params = {}
-	local citeParams = {['web'] = {}, ['q'] = {}}
-	local citeMismatch = {}
-	local useCite = nil
-	local useParams = nil
-	local value = ""
+	local key = i18n['cite']
+	local authors = {}
+	local value = ''
 	local ref = {}
+	local text = mw.text
+	local version = 3 -- increment this each time the below logic is changed to avoid conflict errors
 	
-	local version = 1  -- increase this each time the below logic is changed to avoid conflict errors
-
 	if statement.snaks then
-		-- don't include "imported from", which is added by a bot
-		if statement.snaks[p.aliasesP.importedFrom] then
-			statement.snaks[p.aliasesP.importedFrom] = nil
-		end
-				
-		-- don't include "inferred from", which is added by a bot
-		if statement.snaks[p.aliasesP.inferredFrom] then
-			statement.snaks[p.aliasesP.inferredFrom] = nil
-		end
-		
-		-- don't include "type of reference"
-		if statement.snaks[p.aliasesP.typeOfReference] then
-			statement.snaks[p.aliasesP.typeOfReference] = nil
-		end
-		
-		-- don't include "image" to prevent littering
-		if statement.snaks[p.aliasesP.image] then
-			statement.snaks[p.aliasesP.image] = nil
-		end
-		
-		-- don't include "reference has role"
-		if statement.snaks['P6184'] then
-			statement.snaks['P6184'] = nil
-		end
-		
 		-- don't include "language" if it is equal to the local one
 		if self:getReferenceDetail(statement.snaks, p.aliasesP.language) == self.conf.langName then
 			statement.snaks[p.aliasesP.language] = nil
 		end
 		
-		-- retrieve all the parameters
-		for i in pairs(statement.snaks) do
-			label = ""
-			
-			-- multiple authors may be given
-			if i == p.aliasesP.author then
-				params[i] = self:getReferenceDetails(statement.snaks, i, false, self.linked, true)  -- link = true/false, anyLang = true
-			else
-				params[i] = {self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)}  -- link = true/false, anyLang = true
+		-- when there is no "title" but "subject named as" is present, use it as a title
+		if statement.snaks[p.aliasesP.subjectNamedAs] and not statement.snaks[p.aliasesP.title] then
+			if statement.snaks[p.aliasesP.subjectNamedAs][1] and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue.value then
+				params[key[p.aliasesP.title]] = statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue.value
 			end
-			
-			if i == p.aliasesP.language then
-				params[i] = {p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})}
-			end
-			
-			if #params[i] == 0 then
-				params[i] = nil
-			else
-				if statement.snaks[i][1].datatype == 'external-id' then
-					key = "external-id"
-					label = self.conf:getLabel(i)
-					
-					if label ~= "" then
-						label = label .. " "
-					end
-				else
-					key = i
-				end
-				
-				-- add the parameter to each matching type of citation
-				for j in pairs(citeParams) do
-					-- do so if there was no mismatch with a previous parameter
-					if not citeMismatch[j] then
-						-- check if this parameter is not mismatching itself
-						if i18n['cite'][j][key] then
-							-- continue if an option is available in the corresponding cite template
-							if i18n['cite'][j][key] ~= "" then
-								citeParams[j][i18n['cite'][j][key]] = label .. params[i][1]
-								
-								-- if there are multiple parameter values (authors), add those too
-								for k=2, #params[i] do
-									citeParams[j][i18n['cite'][j][key]..k] = label .. params[i][k]
-								end
-							end
-						else
-							citeMismatch[j] = true
+		end
+		
+		if statement.snaks[p.aliasesP.statedIn] then
+			-- "stated in" was given but "reference URL" and/or "title" was not
+			-- get "Wikidata property" properties from the item in "stated in"
+			-- if any of the returned properties of the external-id datatype is in statement.snaks
+			-- and title is present, generate a URL from it and use as "reference URL"
+			-- otherwise use the generated URL as "title" when both "reference URL" and "title" are missing
+			for pid in text.split(p._properties{p.flags.raw, p.aliasesP.wikidataProperty, [p.args.eid] = self.conf:getValue(statement.snaks[p.aliasesP.statedIn][1], true, false)}, ',%s+') do
+				if statement.snaks[pid] and statement.snaks[pid][1] and statement.snaks[pid][1].datatype == 'external-id' then
+					local link = self.conf:getValue(statement.snaks[pid][1], false, true) -- not raw, linked
+					if mw.ustring.match(link, '^%[%S+%s+.*%]$') then -- getValue returned an URL
+						if not (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]]) and not statement.snaks[p.aliasesP.referenceURL] then
+							params[key[p.aliasesP.title]] = link
+							break
+						elseif (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]]) and not statement.snaks[p.aliasesP.referenceURL] then
+							params[key[p.aliasesP.referenceURL]] = mw.ustring.gsub(link, '^%[(%S+)%s+.*%]$', '%1') -- the URL is in wiki markup, so strip the square brackets and the display text
+							break
 						end
 					end
 				end
 			end
 		end
 		
-		-- skip the whole ref if the URL matches that of wikipedia
-		if params[p.aliasesP.referenceURL] and string.match(params[p.aliasesP.referenceURL][1], 'wikipedia%.org') then
+		-- retrieve only those parameters that are useful in "cite" template
+		for i in pairs(statement.snaks) do
+			if (key[i] and not params[key[i]]) or i == p.aliasesP.authorNameString then
+				local val
+
+				-- multiple authors may be given
+				if i == p.aliasesP.author or i == p.aliasesP.authorNameString then
+					for k, v in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLang = true
+						if text.trim(v or '') ~= '' then
+							authors[#authors + 1] = text.trim(v)
+						end
+					end
+				elseif i == p.aliasesP.language then
+					val = p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})
+				else
+					val = self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)  -- link = true/false, anyLang = true
+				end
+
+				if text.trim(val or '') ~= '' then
+					params[key[i]] = val
+				end
+			end
+		end
+		
+		-- return an empty ref if the URL matches that of wikipedia
+		if mw.ustring.match(params[key[p.aliasesP.referenceURL]] or '', 'wikipedia%.org') then
 			return ref
 		end
 		
-		-- get title of general template for citing web references
-		citeWeb = split(mw.wikibase.sitelink(aliasesQ.citeWeb) or "", ":")[2]  -- split off namespace from front
-		
-		-- get title of template that expands stated-in references into citations
-		citeQ = split(mw.wikibase.sitelink(aliasesQ.citeQ) or "", ":")[2]  -- split off namespace from front
-		
-		-- (1) use the general template for citing web references if there is a match and if at least both "reference URL" and "title" are present
-		if citeWeb and not citeMismatch['web'] and citeParams['web'][i18n['cite']['web'][p.aliasesP.referenceURL]] and citeParams['web'][i18n['cite']['web'][p.aliasesP.title]] then
-			useCite = citeWeb
-			useParams = citeParams['web']
-			
-		-- (2) use the template that expands stated-in references into citations if there is a match and if at least "stated in" is present
-		elseif citeQ and not citeMismatch['q'] and citeParams['q'][i18n['cite']['q'][p.aliasesP.statedIn]] then
-			-- we need the raw "stated in" Q-identifier for the this template
-			citeParams['q'][i18n['cite']['q'][p.aliasesP.statedIn]] = self:getReferenceDetail(statement.snaks, p.aliasesP.statedIn, true)  -- raw = true
-			
-			useCite = citeQ
-			useParams = citeParams['q']
+		-- add authors to params
+		if #authors > 0 then
+			-- follow the logic of then "cite" template
+			if #authors < 4 then -- 3 or less
+				params[key[p.aliasesP.author]] = table.concat(authors, ', ', 1, #authors) -- get all in "author" param
+			else -- 4 or more authors
+				params[key[p.aliasesP.author]] = table.concat(authors, ', ', 1, 3) -- get the first three in "author" param
+				params[key['coauthors']] = table.concat(authors, ', ', 4, #authors) -- and get all the others in "coauthors" param
+			end
 		end
 		
-		if useCite and useParams then
+		-- if url is present and title is not, add the domain of the url as a title
+		if params[key[p.aliasesP.referenceURL]] and not params[key[p.aliasesP.title]] then
+			params[key[p.aliasesP.title]] = mw.ustring.gsub(params[key[p.aliasesP.referenceURL]], '^%a+://([^/]+).*', '%1')
+		end
+		
+		-- in order to produce a meaningful citation
+		-- both cite and at least one param from params (either "url", "title" or "stated in")
+		-- should evaluate to true
+		if cite and (params[key[p.aliasesP.referenceURL]] or params[key[p.aliasesP.title]] or params[key[p.aliasesP.statedIn]]) then
 			-- if this module is being substituted then build a regular template call, otherwise expand the template
 			if mw.isSubsting() then
-				for i, v in pairs(useParams) do
-					value = value .. "|" .. i .. "=" .. v
+				for k, v in pairs(params) do
+					value = value .. ' | ' .. k .. ' = ' .. v
 				end
-				
-				value = "{{" .. useCite .. value .. "}}"
+				value = '{{' .. cite .. value .. '}}'
 			else
-				value = mw.getCurrentFrame():expandTemplate{title=useCite, args=useParams}
-			end
-			
-		-- (3) else, do some default rendering of name-value pairs, but only if at least "stated in", "reference URL" or "title" is present
-		elseif params[p.aliasesP.statedIn] or params[p.aliasesP.referenceURL] or params[p.aliasesP.title] then
-			citeParams['default'] = {}
-			
-			-- start by adding authors up front
-			if params[p.aliasesP.author] and #params[p.aliasesP.author] > 0 then
-				citeParams['default'][#citeParams['default'] + 1] = table.concat(params[p.aliasesP.author], " & ")
-			end
-			
-			-- combine "reference URL" and "title" into one link if both are present
-			if params[p.aliasesP.referenceURL] and params[p.aliasesP.title] then
-				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.referenceURL][1] .. ' ' .. params[p.aliasesP.title][1] .. ']'
-			elseif params[p.aliasesP.referenceURL] then
-				local simpleUrl = mw.ustring.gsub(params[p.aliasesP.referenceURL][1], '^%a+://([^/]+).*', ' %1')
-				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.referenceURL][1] .. simpleUrl .. ']'
-			elseif params[p.aliasesP.title] then
-				citeParams['default'][#citeParams['default'] + 1] = params[p.aliasesP.title][1]
-			end
-			
-			-- then add "stated in"
-			if params[p.aliasesP.statedIn] then
-				citeParams['default'][#citeParams['default'] + 1] = params[p.aliasesP.statedIn][1]
-			end
-			
-			-- then add "retrieved"
-			if params[p.aliasesP.retrieved] then
-				citeParams['default'][#citeParams['default'] + 1] = 'Посетен на ' .. params[p.aliasesP.retrieved][1]
-			end
-			
-			-- combine "Archive URL" and "Archive date" into one if both are present
-			if params[p.aliasesP.archiveURL] and params[p.aliasesP.archiveDate] then
-				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.archiveURL][1] .. ' Архив] на оригинала от ' .. params[p.aliasesP.archiveDate][1]
-			elseif params[p.aliasesP.archiveURL] then
-				citeParams['default'][#citeParams['default'] + 1] = '[' .. params[p.aliasesP.archiveURL][1] .. ' Архив] на оригинала'
-			end
-			
-			-- and lastly "lang"
-			local langCite = ''
-			if params[p.aliasesP.language] then
-				if mw.isSubsting() then
-					langCite = ' <small style="color:#444">({{cite-lang|' .. params[p.aliasesP.language][1] .. '}})</small>'
-				else
-					langCite = ' <small style="color:#444">(' .. mw.getCurrentFrame():expandTemplate{title='cite-lang', args=params[p.aliasesP.language]} .. ')</small>'
-				end
-			end
-			
-			-- remove previously added parameters so that they won't be added a second time
-			params[p.aliasesP.language] = nil
-			params[p.aliasesP.author] = nil
-			params[p.aliasesP.referenceURL] = nil
-			params[p.aliasesP.title] = nil
-			params[p.aliasesP.retrieved] = nil
-			params[p.aliasesP.statedIn] = nil
-			params[p.aliasesP.archiveURL] = nil
-			params[p.aliasesP.archiveDate] = nil
-			
-			-- add the rest of the parameters
-			for i, v in pairs(params) do
-				i = self.conf:getLabel(i)
-				
-				if i ~= "" then
-					citeParams['default'][#citeParams['default'] + 1] = mw.language.getContentLanguage():ucfirst(i) .. ": " .. v[1]
-				end
-			end
-			
-			value = table.concat(citeParams['default'], ". ")
-			
-			if value ~= "" then
-				value = value .. "." .. langCite
+				value = mw.getCurrentFrame():expandTemplate{title=cite, args=params}
 			end
 		end
 		
 		if value ~= "" then
-			value = value:gsub("%.%.", ".")
 			value = {value}  -- create one value object
 			
 			if not self.rawValue then
 				-- this should become a <ref> tag, so safe the reference's hash for later
-				value.refHash = "wikidata-" .. statement.hash .. "-v" .. (tonumber(i18n['cite']['version']) + version)
+				value.refHash = "wikidata-" .. statement.hash .. "-v" .. (key['citeVersion'] + version)
 			end
 			
 			ref = {value}  -- wrap the value object in an array
