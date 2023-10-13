@@ -1918,7 +1918,7 @@ function State:getReference(statement)
 			-- if any of the returned properties of the external-id datatype is in statement.snaks
 			-- and title is present, generate a URL from it and use as "reference URL"
 			-- otherwise use the generated URL as "title" when both "reference URL" and "title" are missing
-			for pid in text.split(p._properties{p.flags.raw, p.aliasesP.wikidataProperty, [p.args.eid] = self.conf:getValue(statement.snaks[p.aliasesP.statedIn][1], true, false)}, ',%s+') do
+			for _, pid in pairs(text.split(p._properties{p.flags.raw, p.aliasesP.wikidataProperty, [p.args.eid] = self.conf:getValue(statement.snaks[p.aliasesP.statedIn][1], true, false)}, ',%s+')) do
 				if statement.snaks[pid] and statement.snaks[pid][1] and statement.snaks[pid][1].datatype == 'external-id' then
 					local link = self.conf:getValue(statement.snaks[pid][1], false, true) -- not raw, linked
 					if mw.ustring.match(link, '^%[%S+%s+.*%]$') then -- getValue returned an URL
@@ -1941,9 +1941,9 @@ function State:getReference(statement)
 
 				-- multiple authors may be given
 				if i == p.aliasesP.author or i == p.aliasesP.authorNameString then
-					for k, v in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLang = true
-						if text.trim(v or '') ~= '' then
-							authors[#authors + 1] = text.trim(v)
+					for _, author in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLang = true
+						if text.trim(author or '') ~= '' then
+							authors[#authors + 1] = text.trim(author)
 						end
 					end
 				elseif i == p.aliasesP.language then
