@@ -8,9 +8,9 @@ local p = {
 		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни „$1“',
 		["missing-required-parameter"] = 'Не са дефинирани задължителни параметри, изисква се поне един',
 		["extra-required-parameter"]   = 'Параметър „$1“ трябва да бъде дефиниран като незадължителен',
-		["no-function-specified"]      = 'Трябва да бъде посочена функция за извикване',  -- equal to the standard module error message
+		["no-function-specified"]      = 'Трябва да бъде посочена функция за извикване', -- equal to the standard module error message
 		["main-called-twice"]          = 'Функцията main не може да бъде извикана два пъти',
-		["no-such-function"]           = 'Функцията „$1“ не съществува'  -- equal to the standard module error message
+		["no-such-function"]           = 'Функцията „$1“ не съществува' -- equal to the standard module error message
 	},
 	["info"] = {
 		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
@@ -32,11 +32,11 @@ local p = {
 			["year"]          = ' г.',
 			["years"]         = ' години'
 		},
-		["julian-calendar"] = 'Приемане на григорианския календар',  -- linked page title
+		["julian-calendar"] = 'Приемане на григорианския календар', -- linked page title
 		["julian"]          = 'стар стил',
 		["BCE"]             = 'пр.н.е.',
 		["CE"]              = 'сл.н.е.',
-		["common-era"]      = 'Нова Ера'  -- linked page title
+		["common-era"]      = 'Нова Ера' -- linked page title
 	},
 	["coord"] = {
 		["latitude-north"] = "N",
@@ -49,40 +49,27 @@ local p = {
 		["separator"]      = ", "
 	},
 	["values"] = {
-		["unknown"] = "неизвестна",
+		["unknown"] = "неизв.",
 		["none"]    = "няма"
 	},
 	["cite"] = {
-		["version"] = "2",  -- increase this each time the below parameters are changed to avoid conflict errors
-		["web"] = {
-			-- <= left side: all allowed reference properties for *web page sources* per https://www.wikidata.org/wiki/Help:Sources
-			-- => right side: corresponding parameter names in (equivalent of) [[:en:Template:Cite web]] (if non-existent, keep empty i.e. "")
-			[aliasesP.statedIn]             = "work",
-			[aliasesP.referenceURL]         = "url",
-			[aliasesP.publicationDate]      = "date",
-			[aliasesP.retrieved]            = "accessdate",
-			[aliasesP.title]                = "title",
-			[aliasesP.archiveURL]           = "archiveurl",
-			[aliasesP.archiveDate]          = "archivedate",
-			[aliasesP.language]             = "lang",
-			[aliasesP.author]               = "author",  -- existence of author1, author2, author3, etc. is assumed
-			[aliasesP.publisher]            = "publisher",
-			[aliasesP.quote]                = "quote",
-			[aliasesP.pages]                = "pages"  -- extra option
-		},
-		["q"] = {
-			-- <= left side: all allowed reference properties for *sources other than web pages* per https://www.wikidata.org/wiki/Help:Sources
-			-- => right side: corresponding parameter names in (equivalent of) [[:en:Template:Cite Q]] (if non-existent, keep empty i.e. "")
-			[aliasesP.statedIn]                = "1",
-			[aliasesP.pages]                   = "pages",
-			[aliasesP.column]                  = "at",
-			[aliasesP.chapter]                 = "chapter",
-			[aliasesP.sectionVerseOrParagraph] = "section",
-			["external-id"]                    = "id",  -- used for any type of database property ID
-			[aliasesP.title]                   = "title",
-			[aliasesP.publicationDate]         = "date",
-			[aliasesP.retrieved]               = "access-date"
-		}
+		["citeVersion"]                 = 3, -- increment this each time the below parameters are changed to avoid conflict errors
+		["coauthors"]                   = "съавтори-част",
+		[aliasesP.author]               = "автор-част",
+		[aliasesP.title]                = "заглавие-част",
+		[aliasesP.referenceURL]         = "url-част",
+		[aliasesP.statedIn]             = "заглавие",
+		[aliasesP.chapter]              = "издание",
+		[aliasesP.volume]               = "том",
+		[aliasesP.publicationDate]      = "дата",
+		[aliasesP.retrieved]            = "достъп-дата",
+		[aliasesP.archiveURL]           = "архив-url",
+		[aliasesP.archiveDate]          = "архив-дата",
+		[aliasesP.language]             = "език",
+		[aliasesP.publisher]            = "издател",
+		[aliasesP.publishedIn]          = "място",
+		[aliasesP.quote]                = "цитат",
+		[aliasesP.pages]                = "страница",
 	}
 }
 
@@ -94,7 +81,7 @@ function p.getOrdinalSuffix(num, gen)
 	end
 	
 	if tostring(num):sub(-2,-2) == '1' then
-		return '-' .. gLetter	-- 10th, 11th, 12th, 13th, ... 19th
+		return '-' .. gLetter -- 10th, 11th, 12th, 13th, ... 19th
 	end
 	
 	num = tostring(num):sub(-1)
@@ -134,8 +121,7 @@ end
 function p.formatMultilanguageText(text, lang, code)
 	if text and lang and lang ~= code then
 		local dir = mw.language.new(lang):isRTL() and 'rtl' or 'ltr'
-		local attr = {['dir'] = dir, ['lang'] = lang, ['xml:lang'] = lang}
-		return mw.text.tag('span', attr, text)
+		return mw.text.tag('span', {['dir'] = dir, ['lang'] = lang}, text)
 	else
 		return nil
 	end
