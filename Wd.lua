@@ -1982,15 +1982,23 @@ function State:getReference(statement)
 		-- in order to produce a meaningful citation
 		-- both cite and at least one param from params (either "url", "title" or "stated in")
 		-- should evaluate to true
-		if cite and (params[key[p.aliasesP.referenceURL]] or params[key[p.aliasesP.title]] or params[key[p.aliasesP.statedIn]]) then
-			-- if this module is being substituted then build a regular template call, otherwise expand the template
-			if mw.isSubsting() then
-				for k, v in pairs(params) do
-					value = value .. ' | ' .. k .. ' = ' .. v
+		if cite then
+			-- iterate through table and find the number of entries
+			local count = 0
+			for _ in pairs(params) do count = count + 1 end
+			-- if only "url" and "title" are used, don't employ a template
+			if count == 2 and params[key[p.aliasesP.referenceURL]] and params[key[p.aliasesP.title]] then
+				value = '[' .. params[key[p.aliasesP.referenceURL]] .. ' ' .. params[key[p.aliasesP.title]] .. ']'
+			elseif (params[key[p.aliasesP.referenceURL]] or params[key[p.aliasesP.title]] or params[key[p.aliasesP.statedIn]]) then
+				-- if this module is being substituted then build a regular template call, otherwise expand the template
+				if mw.isSubsting() then
+					for k, v in pairs(params) do
+						value = value .. ' | ' .. k .. ' = ' .. v
+					end
+					value = '{{' .. cite .. value .. '}}'
+				else
+					value = mw.getCurrentFrame():expandTemplate{title=cite, args=params}
 				end
-				value = '{{' .. cite .. value .. '}}'
-			else
-				value = mw.getCurrentFrame():expandTemplate{title=cite, args=params}
 			end
 		end
 		
