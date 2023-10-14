@@ -1906,26 +1906,36 @@ function State:getReference(statement)
 		end
 		
 		-- when there is no "title" but "subject named as" is present, use it as a title
-		if statement.snaks[p.aliasesP.subjectNamedAs] and not statement.snaks[p.aliasesP.title] then
-			if statement.snaks[p.aliasesP.subjectNamedAs][1] and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue.value then
+		if statement.snaks[p.aliasesP.subjectNamedAs]
+		and not statement.snaks[p.aliasesP.title] then
+			if statement.snaks[p.aliasesP.subjectNamedAs][1]
+			and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue
+			and statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue.value then
 				params[key[p.aliasesP.title]] = statement.snaks[p.aliasesP.subjectNamedAs][1].datavalue.value
 			end
 		end
 		
-		if statement.snaks[p.aliasesP.statedIn] then
+		if statement.snaks[p.aliasesP.statedIn]
+		and statement.snaks[p.aliasesP.statedIn][1]
+		and statement.snaks[p.aliasesP.statedIn][1].datavalue
+		and statement.snaks[p.aliasesP.statedIn][1].datavalue.value then
 			-- "stated in" was given but "reference URL" and/or "title" was not
 			-- get "Wikidata property" properties from the item in "stated in"
 			-- if any of the returned properties of the external-id datatype is in statement.snaks
 			-- and title is present, generate a URL from it and use as "reference URL"
 			-- otherwise use the generated URL as "title" when both "reference URL" and "title" are missing
 			for _, pid in pairs(text.split(p._properties{p.flags.raw, p.aliasesP.wikidataProperty, [p.args.eid] = self.conf:getValue(statement.snaks[p.aliasesP.statedIn][1], true, false)}, ',%s+')) do
-				if mw.ustring.match(pid, '^[Pp]%d+$') and statement.snaks[pid] and statement.snaks[pid][1] and statement.snaks[pid][1].datatype == 'external-id' then
+				if statement.snaks[pid]
+				and statement.snaks[pid][1]
+				and statement.snaks[pid][1].datatype == 'external-id' then
 					local link = self.conf:getValue(statement.snaks[pid][1], false, true) -- not raw, linked
 					if mw.ustring.match(link, '^%[%S+%s+.*%]$') then -- getValue returned an URL
-						if not (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]]) and not statement.snaks[p.aliasesP.referenceURL] then
+						if not (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]])
+						and not statement.snaks[p.aliasesP.referenceURL] then
 							params[key[p.aliasesP.title]] = link
 							break
-						elseif (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]]) and not statement.snaks[p.aliasesP.referenceURL] then
+						elseif (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]])
+							and not statement.snaks[p.aliasesP.referenceURL] then
 							params[key[p.aliasesP.referenceURL]] = mw.ustring.gsub(link, '^%[(%S+)%s+.*%]$', '%1') -- the URL is in wiki markup, so strip the square brackets and the display text
 							break
 						end
@@ -1936,7 +1946,10 @@ function State:getReference(statement)
 		
 		-- retrieve only those parameters that are useful in "cite" template
 		for i in pairs(statement.snaks) do
-			if (key[i] and not params[key[i]]) or i == p.aliasesP.authorNameString then
+			if ((key[i] and not params[key[i]]) or i == p.aliasesP.authorNameString)
+			and statement.snaks[i][1]
+			and statement.snaks[i][1].datavalue
+			and statement.snaks[i][1].datavalue.value then
 				local val
 
 				-- multiple authors may be given
