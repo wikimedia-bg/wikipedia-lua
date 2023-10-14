@@ -1919,7 +1919,7 @@ function State:getReference(statement)
 			-- and title is present, generate a URL from it and use as "reference URL"
 			-- otherwise use the generated URL as "title" when both "reference URL" and "title" are missing
 			for _, pid in pairs(text.split(p._properties{p.flags.raw, p.aliasesP.wikidataProperty, [p.args.eid] = self.conf:getValue(statement.snaks[p.aliasesP.statedIn][1], true, false)}, ',%s+')) do
-				if statement.snaks[pid] and statement.snaks[pid][1] and statement.snaks[pid][1].datatype == 'external-id' then
+				if mw.ustring.match(pid, '^[Pp]%d+$') and statement.snaks[pid] and statement.snaks[pid][1] and statement.snaks[pid][1].datatype == 'external-id' then
 					local link = self.conf:getValue(statement.snaks[pid][1], false, true) -- not raw, linked
 					if mw.ustring.match(link, '^%[%S+%s+.*%]$') then -- getValue returned an URL
 						if not (statement.snaks[p.aliasesP.title] or params[key[p.aliasesP.title]]) and not statement.snaks[p.aliasesP.referenceURL] then
