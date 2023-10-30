@@ -715,7 +715,7 @@ return {
 		{ 'канадец', 'Canada people icon.png', 'канадци' },
 		{ 'руснак', 'Russia people icon.png', 'руснаци' },
 		{ 'северномакедонец|македонец', 'Republic-Macedonia-people-stub-icon.png', 'северномакедонци' },
-		{ 'французин', 'France people icon.png', 'французи' },
+		{ 'французин', 'France people  stub icon.svg', 'французи' },
 
 		-- други
 		{ 'благородник|аристократ', 'Coat of arms of Brabant.svg', 'благородници' },
