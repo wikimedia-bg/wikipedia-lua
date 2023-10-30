@@ -1476,12 +1476,12 @@ local rawData = {
 		-- VOWELS
 		-- Close vowels
 		{
-			name = "Close front unrounded vowel",
+			name = "Затворена предна незакръглена гласна",
 			symbols = { "i" },
 			audio = "Close front unrounded vowel.ogg"
 		},
 		{
-			name = "Close front rounded vowel",
+			name = "Затворена предна закръглена гласна",
 			symbols = { "y" },
 			audio = "Close front rounded vowel.ogg"
 		},
@@ -1495,12 +1495,12 @@ local rawData = {
 			symbols = { "y̫", "yʷ", "iʷ" },
 		},
 		{
-			name = "Close central unrounded vowel",
+			name = "Затворена средна незакръглена гласна",
 			symbols = { "ɨ", "ï" },
 			audio = "Close central unrounded vowel.ogg"
 		},
 		{
-			name = "Close central rounded vowel",
+			name = "Затворена средна закръглена гласна",
 			symbols = { "ʉ", "ü" },
 			audio = "Close central rounded vowel.ogg"
 		},
@@ -1514,12 +1514,12 @@ local rawData = {
 			symbols = { "ÿ", "ɨᵝ" },
 		},
 		{
-			name = "Close back unrounded vowel",
+			name = "Затворена задна незакръглена гласна",
 			symbols = { "ɯ" },
 			audio = "Close back unrounded vowel.ogg"
 		},
 		{
-			name = "Close back rounded vowel",
+			name = "Затворена задна закръглена гласна",
 			symbols = { "u" },
 			audio = "Close back rounded vowel.ogg"
 		},
@@ -1535,12 +1535,12 @@ local rawData = {
 		},
 		-- Near-close vowels
 		{
-			name = "Near-close near-front unrounded vowel",
+			name = "Ненапрегнато-затворена ненапрегнато-предна незакръглена гласна",
 			symbols = { "ɪ", "ɪ̟", "i̞", "e̝" },
 			audio = "Near-close near-front unrounded vowel.ogg"
 		},
 		{
-			name = "Near-close near-front rounded vowel",
+			name = "Ненапрегнато-затворена ненапрегнато-предна закръглена гласна",
 			symbols = { "ʏ", "y̞", "y˕", "ø̝" },
 			audio = "Near-close near-front rounded vowel.ogg"
 		},
@@ -1576,7 +1576,7 @@ local rawData = {
 			audio = "Near-close near-back unrounded vowel.ogg"
 		},
 		{
-			name = "Near-close near-back rounded vowel",
+			name = "Ненапрегнато-затворена ненапрегнато-задна закръглена гласна",
 			symbols = { "ʊ", "u̞", "o̝" },
 			audio = "Near-close near-back rounded vowel.ogg"
 		},
@@ -1591,12 +1591,12 @@ local rawData = {
 		},
 		-- Close-mid vowels
 		{
-			name = "Close-mid front unrounded vowel",
+			name = "Полузатворена предна незакръглена гласна",
 			symbols = { "e" },
 			audio = "Close-mid front unrounded vowel.ogg"
 		},
 		{
-			name = "Close-mid front rounded vowel",
+			name = "Полузатворена предна закръглена гласна",
 			symbols = { "ø" },
 			audio = "Close-mid front rounded vowel.ogg"
 		},
@@ -1610,12 +1610,12 @@ local rawData = {
 			symbols = { "ø̫", "øʷ", "eʷ" },
 		},
 		{
-			name = "Close-mid central unrounded vowel",
+			name = "Полузатворена средна незакръглена гласна",
 			symbols = { "ɘ", "ë", "ɤ̈" },
 			audio = "Close-mid central unrounded vowel.ogg"
 		},
 		{
-			name = "Close-mid central rounded vowel",
+			name = "Полузатворена средна закръглена гласна",
 			symbols = { "ɵ", "ö" },
 			audio = "Close-mid central rounded vowel.ogg"
 		},
@@ -1629,12 +1629,12 @@ local rawData = {
 			symbols = { "ø̈", "ɘᵝ" },
 		},
 		{
-			name = "Close-mid back unrounded vowel",
+			name = "Полузатворена задна незакръглена гласна",
 			symbols = { "ɤ" },
 			audio = "Close-mid back unrounded vowel.ogg"
 		},
 		{
-			name = "Close-mid back rounded vowel",
+			name = "Полузатворена задна закръглена гласна",
 			symbols = { "o" },
 			audio = "Close-mid back rounded vowel.ogg"
 		},
@@ -1667,7 +1667,7 @@ local rawData = {
 			symbols = { "ø̫˕", "œ̫˔", "ø̞ʷ", "œ̝ʷ", "e̞ʷ", "ɛ̝ʷ" },
 		},
 		{
-			name = "Mid central vowel",
+			name = "Шва",
 			symbols = { "ə" },
 			audio = "Mid-central vowel.ogg"
 		},
@@ -1692,12 +1692,12 @@ local rawData = {
 		},
 		-- Open-mid vowels
 		{
-			name = "Open-mid front unrounded vowel",
+			name = "Полуотворена предна незакръглена гласна",
 			symbols = { "ɛ" },
 			audio = "Open-mid front unrounded vowel.ogg"
 		},
 		{
-			name = "Open-mid front rounded vowel",
+			name = "Полуотворена предна закръглена гласна",
 			symbols = { "œ" },
 			audio = "Open-mid front rounded vowel.ogg"
 		},
@@ -1711,33 +1711,33 @@ local rawData = {
 			symbols = { "œ̫", "œʷ", "ɛʷ" },
 		},
 		{
-			name = "Open-mid central unrounded vowel",
+			name = "Полуотворена средна незакръглена гласна",
 			symbols = { "ɜ", "ɛ̈", "ʌ̈" },
 			audio = "Open-mid central unrounded vowel.ogg"
 		},
 		{
-			name = "Open-mid central rounded vowel",
+			name = "Полуотворена средна закръглена гласна",
 			symbols = { "ɞ" },
 			audio = "Open-mid central rounded vowel.ogg"
 		},
 		{
-			name = "Open-mid back unrounded vowel",
+			name = "Полуотворена задна незакръглена гласна",
 			symbols = { "ʌ" },
 			audio = "PR-open-mid back unrounded vowel2.ogg"
 		},
 		{
-			name = "Open-mid back rounded vowel",
+			name = "Полуотворена задна закръглена гласна",
 			symbols = { "ɔ" },
 			audio = "PR-open-mid back rounded vowel.ogg"
 		},
 		-- Near-open vowels
 		{
-			name = "Near-open front unrounded vowel",
+			name = "Ненапрегнато-отворена предна незакръглена гласна",
 			symbols = { "æ" },
 			audio = "Near-open front unrounded vowel.ogg"
 		},
 		{
-			name = "Near-open central vowel",
+			name = "Ненапрегнато-отворена средна гласна",
 			symbols = { "ɐ" },
 			audio = "PR-near-open central unrounded vowel.ogg"
 		},
@@ -1752,12 +1752,12 @@ local rawData = {
 		},
 		-- Open vowels
 		{
-			name = "Open front unrounded vowel",
+			name = "Отворена предна незакръглена гласна",
 			symbols = { "a", "æ̞" },
 			audio = "PR-open front unrounded vowel.ogg"
 		},
 		{
-			name = "Open front rounded vowel",
+			name = "Отворена предна закръглена гласна",
 			symbols = { "ɶ" },
 			audio = "Open front rounded vowel.ogg"
 		},
@@ -1772,12 +1772,12 @@ local rawData = {
 			audio = "Open central rounded vowel.ogg"
 		},
 		{
-			name = "Open back unrounded vowel",
+			name = "Отворена задна незакръглена гласна",
 			symbols = { "ɑ" },
 			audio = "Open back unrounded vowel.ogg"
 		},
 		{
-			name = "Open back rounded vowel",
+			name = "Отворена задна закръглена гласна",
 			symbols = { "ɒ" },
 			audio = "PR-open back rounded vowel.ogg"
 		},
