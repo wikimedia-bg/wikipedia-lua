@@ -972,13 +972,13 @@ local rendersnak = function(propval, args, linked, lpre, lpost, pre, post, uabbr
 		local scale
 		if sc == "a" then
 			-- automatic scaling
-			if amount > 1e15 then
+			if amount > 1e12 then
 				scale = 12
-			elseif amount > 1e12 then
-				scale = 9
 			elseif amount > 1e9 then
-				scale = 6
+				scale = 9
 			elseif amount > 1e6 then
+				scale = 6
+			elseif amount > 1e3 then
 				scale = 3
 			else
 				scale = 0
