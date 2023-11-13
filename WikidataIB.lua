@@ -73,10 +73,10 @@ local i18n =
 	["list separator"] = ", ",
 	["multipliers"] = {
 		[0]  = "",
-		[3]  = " thousand",
-		[6]  = " million",
-		[9]  = " billion",
-		[12] = " trillion",
+		[3]  = " хил.",
+		[6]  = " млн.",
+		[9]  = " млрд.",
+		[12] = " трлн.",
 	}
 }
 -- This allows an internationisation module to override the above table
