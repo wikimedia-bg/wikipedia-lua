@@ -1,7 +1,7 @@
 local p = {}
 
 function p.count(frame)
-    local title = frame.args.title
+    local title = frame.args[1]
     
     local articleText = mw.title.new(title):getContent()
     
