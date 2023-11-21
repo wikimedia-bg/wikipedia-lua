@@ -2,10 +2,10 @@ require('strict')
 local getArgs = require('Module:Arguments').getArgs
 
 local ageUtil = require('Module:Age utilities')
-local ageInYearsAndDays = ageUtil.ageInYearsAndDays
+local ageInYearsMonthsAndDays = ageUtil.ageInYearsMonthsAndDays
+local ageInYearsMonthsAndDaysFormat = ageUtil.ageInYearsMonthsAndDaysFormat
 local compareAges = ageUtil.compareAges
 local equalAges = ageUtil.equalAges
-local ageInYearsMonthsAndDaysFormat = ageUtil.ageInYearsMonthsAndDaysFormat
 local displayMax = 100 -- Display max 100 entries
 
 --local language = mw.language
@@ -45,8 +45,6 @@ function p.displaySortedTable(persons, frame)
 
 	local aliveColor = '#99FF99'
 	local deadColor = '#F9F9F9'
-	local dateNow = os.date('!*t')
-	local dateIsoNow = formatDateIso8061(dateNow.year, dateNow.month, dateNow.day)
 	local result = ''
 	local lastAge = nil
 	local rank, keyLast = 0, 0
@@ -144,7 +142,7 @@ local function decodeArgs(args)
 			person.dateBirth = decodeDate(strings[3]) -- Date of birth
 			if person.dateBirth ~= nil then
 				person.dateDeath = decodeDate(strings[4]) -- Date of death
-				person.age = ageInYearsAndDays(person.dateDeath or dateNow, person.dateBirth)
+				person.age = ageInYearsMonthsAndDays(person.dateDeath or dateNow, person.dateBirth)
 				person.nation = strings[5] or ''
 				-- For templates and/or html codes with semicolon
 				for k = 6, #strings do person.nation = person.nation .. ';' .. strings[k] or '' end
