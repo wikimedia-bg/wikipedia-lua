@@ -75,6 +75,7 @@ function p.ageInYearsMonthsAndDays(date2N, date1N)
     local age = {}
 
     age.years, age.months, age.days = diff:age('ymd')
+	age.d = diff:duration('d')
 
 	return age
 end
@@ -85,6 +86,10 @@ end
 
 -- Returns < 0 if ageA < ageB, 0 if ageA == ageB, > 0 if ageA > ageB
 function p.compareAges(ageA, ageB)
+	if ageA.d ~= nil then
+		if ageA.d < ageB.d then return -1 end
+		return (ageA.d > ageB.d and 1 or 0)
+	end
 	if ageA.years ~= ageB.years then
 		if ageA.years < ageB.years then return -1 end
 		return 1
