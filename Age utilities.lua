@@ -118,16 +118,21 @@ function p.ageInYearsAndDaysFormat(age)
 	return '<span data-sort-value="' .. tostring(1000 * age.years + age.days) .. '">' .. result .. '</span>'
 end
 
--- Returns a date as a sortable string with age in years, months and days ("x години, y месеца и z години")
+-- Returns a date as a sortable string with age in years, months and days ("x години, y месеца и z дни")
 function p.ageInYearsMonthsAndDaysFormat(age)
 	local result = ''
 	if (age.years > 0) then
-		result = tostring(age.years) .. ' ' .. (age.years == 1 and 'година' or 'година')
+		result = tostring(age.years) .. ' ' .. (age.years == 1 and 'година' or 'години')
 	end
-	if (age.months > 0) then 
-		result = result .. (age.years == 0 and '' or ', ') .. tostring(age.months) .. ' ' .. (age.months == 1 and 'месец' or 'месеца')
+	if (age.months > 0) then
+		if (age.years > 0) then
+			result = result .. (age.days > 0 and ', ' or ' и ')
+		end
+		result = result .. tostring(age.months) .. ' ' .. (age.months == 1 and 'месец' or 'месеца')
 	end
-	result = result .. ((age.years > 0 or age.months > 0) and ' и ' or '') .. tostring(age.days) .. ' ' .. (age.days == 1 and 'ден' or 'дни')
+	if not ((age.years > 0 or age.months > 0) and age.days == 0) then
+		result = result .. ((age.years > 0 or age.months > 0) and ' и ' or '') .. tostring(age.days) .. ' ' .. (age.days == 1 and 'ден' or 'дни')
+	end
 
 	return '<span data-sort-value="' .. tostring(100000 * age.years + 1000 * age.months + age.days) .. '">' .. result .. '</span>'
 end
