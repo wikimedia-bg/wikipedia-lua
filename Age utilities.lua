@@ -113,8 +113,8 @@ end
 
 -- Returns a date as a sortable string with age in years and days ("x години и y дни")
 function p.ageInYearsAndDaysFormat(age)
-	local result = tostring(age.years) .. ' ' .. (age.years == 1 and 'година' or 'година')
-		.. ', ' .. tostring(age.days) .. ' и ' .. (age.days == 1 and 'ден' or 'дни')
+	local result = tostring(age.years) .. ' ' .. (age.years == 1 and 'година' or 'години')
+		.. ' и ' .. tostring(age.days) .. ' ' .. (age.days == 1 and 'ден' or 'дни')
 	return '<span data-sort-value="' .. tostring(1000 * age.years + age.days) .. '">' .. result .. '</span>'
 end
 
