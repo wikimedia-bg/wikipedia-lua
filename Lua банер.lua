@@ -82,14 +82,14 @@ function p.renderTrackingCategories(args, modules, titleObj)
 			local category = args.category
 			if not category then
 				local categories = {
-					['Модул:String'] = 'Шаблони базирани на Lua модул String',
-					['Модул:Math'] = 'Шаблони базирани на Lua модул Math',
-					['Модул:BaseConvert'] = 'Шаблони базирани на Lua модул BaseConvert',
-					['Модул:Citation'] = 'Шаблони базирани на Lua модул Citation/CS1'
+					['Модул:String'] = 'Шаблони, базирани на Lua модул String',
+					['Модул:Math'] = 'Шаблони, базирани на Lua модул Math',
+					['Модул:BaseConvert'] = 'Шаблони, базирани на Lua модул BaseConvert',
+					['Модул:Citation'] = 'Шаблони, базирани на Lua модул Citation/CS1'
 				}
 				categories['Модул:Citation/CS1'] = categories['Модул:Citation']
 				category = modules[1] and categories[modules[1]]
-				category = category or 'Шаблони ползващи Lua'
+				category = category or 'Шаблони, ползващи Lua'
 			end	
 			cats[#cats + 1] = category
 			protCatName = "Templates using under-protected Lua modules"
