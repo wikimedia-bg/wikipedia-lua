@@ -827,6 +827,11 @@ local assembleoutput = function(out, args, entityID, propertyID)
 	-- before the output is collapsed.
 	-- Zero or not a number result in no collapsing (default becomes 0).
 	local collapse = tonumber(args.collapse) or 0
+	
+	-- quotes is a boolean passed to enable placing quotes around the returned values if they contain Cyrillic characters
+	-- if nothing or an empty string is passed set it false
+	-- if "false" or "no" or "0" is passed set it false
+	local quotes = parseParam(args.quotes, false)
 
 	-- if there's anything to return, then return a list
 	-- comma-separated by default, but may be specified by the sep parameter
@@ -837,6 +842,11 @@ local assembleoutput = function(out, args, entityID, propertyID)
 		-- if a pen icon is wanted add it the end of the last value
 		if not noic then
 			out[#out] = out[#out] .. createicon(args.langobj.code, entityID, propertyID)
+		end
+		if quotes then
+			if out:find("[А-я]") then
+				out = "„" .. out .. "“"
+			end
 		end
 		if list == "" then
 			strout = table.concat(out, separator)
