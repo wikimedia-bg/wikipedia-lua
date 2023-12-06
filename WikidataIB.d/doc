@@ -108,6 +108,11 @@ Examples of calls:
 | A locally supplied value that, if it is not empty, will be returned in preference to the value on Wikidata.
 | empty
 |-
+| parameterset
+| ps
+| A set of commonly used parameters. Instead of including some of the parameters below, use this for a predefined set.
+| 0
+|-
 | qid
 | 
 | The Q-number (entity-ID) of the entity that the property belongs to. If not supplied or empty, defaults to the associated Wikidata entry of the current page – uses [[:mw:Extension:Wikibase Client/Lua #mw.wikibase.getEntityIdForCurrentPage|mw.wikibase.getEntityIdForCurrentPage()]].
