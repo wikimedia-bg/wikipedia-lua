@@ -844,9 +844,9 @@ local assembleoutput = function(out, args, entityID, propertyID)
 			out[#out] = out[#out] .. createicon(args.langobj.code, entityID, propertyID)
 		end
 		if quotes then
-			for _, v in pairs(out) do
+			for k, v in ipairs(out) do
 				if v:find("[А-я]") then
-					v = "„" .. v .. "“"
+					out[k] = "„" .. v .. "“"
 				end
 			end
 		end
