@@ -283,6 +283,11 @@ Examples of calls:
 | A boolean which will suppress the trailing "edit at Wikidata" pen-icon. Useful for when the returned value is to be further processed. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
 | false
 |-
+| quotes
+| 
+| A boolean which enables placing quotes around values in Cyrillic according to the punctuation rules. Values <code>no</code>, <code>false</code> and <code>0</code> are all false; anything else is true.
+| false
+|-
 | list
 | 
 | The name of a template that the list of multiple values is then passed through. Examples include "hlist" and "ubl". Setting it to "prose" produces something like "1, 2, 3, and 4"
