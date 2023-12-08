@@ -2623,7 +2623,8 @@ end
 -- Dependencies: dateFormat()
 -------------------------------------------------------------------------------
 p.getWorkPeriod = function(frame)
-	local itemID = mw.text.trim(frame.args[1] or frame.args.qid or mw.wikibase.getEntityIdForCurrentPage())
+	local itemID = frame.args[1] or frame.args.qid or mw.wikibase.getEntityIdForCurrentPage()
+	if not itemID then return end
 	
 	local p2031 = mw.wikibase.getBestStatements(itemID, "P2031")
 	local p2032 = mw.wikibase.getBestStatements(itemID, "P2032")
