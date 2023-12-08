@@ -2615,6 +2615,47 @@ end
 
 
 -------------------------------------------------------------------------------
+-- getWorkPeriod has the qid of a Wikidata entity passed as |qid=
+-- (it defaults to the associated qid of the current article if omitted).
+-- This is an experimental feature that retrieves work period (start) and work period (end)
+-- from Wikidata. Commonly used in articles about musicians, painters, etc.
+-------------------------------------------------------------------------------
+-- Dependencies: dateFormat()
+-------------------------------------------------------------------------------
+p.getWorkPeriod = function(frame)
+	local itemID = mw.text.trim(frame.args[1] or frame.args.qid or mw.wikibase.getEntityIdForCurrentPage())
+	
+	local p2031 = mw.wikibase.getBestStatements(itemID, "P2031")
+	local p2032 = mw.wikibase.getBestStatements(itemID, "P2032")
+	
+	local work_period_start = {}
+	local work_period_end = {}
+	
+	for i = 1, #p2031 do
+		table.insert(work_period_start, dateFormat(p2031[i].mainsnak.datavalue.value.time, nil, "y"))
+	end
+	
+	for i = 1, #p2032 do
+		table.insert(work_period_end, dateFormat(p2032[i].mainsnak.datavalue.value.time, nil, "y"))
+	end
+	
+	local result = {}
+	
+	for i in ipairs(work_period_start) do
+		if work_period_end[i] then
+			table.insert(result, work_period_start[i] .. " – " .. work_period_end[i])
+		else
+			table.insert(result, "от " .. work_period_start[i] .. " г.")
+		end
+	end
+	
+	result = table.concat(result, "<br>")
+	
+	return result
+end
+
+
+-------------------------------------------------------------------------------
 -- pageId returns the page id (entity ID, Qnnn) of the current page
 -- returns nothing if the page is not connected to Wikidata
 -------------------------------------------------------------------------------
@@ -3251,6 +3292,7 @@ getLabel
 getAT
 getDescription
 getAliases
+getWorkPeriod
 pageId
 formatDate
 location
