@@ -845,7 +845,7 @@ local assembleoutput = function(out, args, entityID, propertyID)
 		end
 		if quotes then
 			for k, v in ipairs(out) do
-				if mw.ustring.find(v, "[А-Яа-я]") then
+				if mw.ustring.find(v, "[А-я]") then
 					out[k] = "„" .. v .. "“"
 				end
 			end
