@@ -845,7 +845,7 @@ local assembleoutput = function(out, args, entityID, propertyID)
 		end
 		if quotes then
 			for k, v in ipairs(out) do
-				if v:find("[А-я]") then
+				if mw.ustring.find(v, "[А-Яа-я]") then
 					out[k] = "„" .. v .. "“"
 				end
 			end
@@ -2633,11 +2633,15 @@ p.getWorkPeriod = function(frame)
 	local work_period_end = {}
 	
 	for i = 1, #p2031 do
-		table.insert(work_period_start, dateFormat(p2031[i].mainsnak.datavalue.value.time, nil, "y"))
+		if p2031[i].mainsnak and p2031[i].mainsnak.datavalue and p2031[i].mainsnak.datavalue.value then
+			table.insert(work_period_start, dateFormat(p2031[i].mainsnak.datavalue.value.time, nil, "y"))
+		end
 	end
 	
 	for i = 1, #p2032 do
-		table.insert(work_period_end, dateFormat(p2032[i].mainsnak.datavalue.value.time, nil, "y"))
+		if p2032[i].mainsnak and p2032[i].mainsnak.datavalue and p2032[i].mainsnak.datavalue.value then
+			table.insert(work_period_end, dateFormat(p2032[i].mainsnak.datavalue.value.time, nil, "y"))
+		end
 	end
 	
 	local result = {}
