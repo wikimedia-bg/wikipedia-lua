@@ -54,6 +54,7 @@ There are also these utility calls:
 # <code>getAllDescriptions</code> fetches the set of descriptions and formats it for display as wikitext
 # <code>getAliases</code> returns the aliases for the entity in the current or given language
 # <code>getAllAliases</code> fetches the set of aliases and formats it for display as wikitext
+# <code>getWorkPeriod</code> returns the work period (P2031 and P2032) specified for the given entity
 # <code>pageId</code> returns the connected Wikidata page id (entity-ID, Q-number) of the current page
 # <code>formatDate</code> takes a datetime of the usual format from mw.wikibase.entity:formatPropertyValues and formats it according to the df (date format) and bc parameters
 # <code>formatNumber</code> formats a number according to the supplied language code
