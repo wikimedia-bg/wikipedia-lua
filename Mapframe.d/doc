@@ -1,0 +1,28 @@
+{{Module rating |beta}}
+<!-- Please place categories where indicated at the bottom of this page and interwikis at Wikidata (see [[Wikipedia:Wikidata]]) -->
+{{Lua|Module:Transcluder}}
+
+This module is called by {{tlx|Maplink}}, see that template's documentation for usage instructions.
+
+== Usage ==
+;Standard usage:
+:Just use {{tl|Maplink}}, which passes its parameters to this module's {{mono|main}} function.
+;From another module:
+:# Import this module, e.g. <code><nowiki>local mf = require('Module:Mapframe')</nowiki></code>
+:# Pass a table of parameter names/values to the {{mono|_main}} function. See {{tl|Maplink}} documentation for parameter names and descriptions. E.g. <code><nowiki>local mapframe = mf._main(parameters)</nowiki></code>
+:# Preprocess {{mono|_main}}'s output before returning it, e.g. <code><nowiki>return frame:preprocess(mapframe)</nowiki></code>
+
+== Set up on another wiki ==
+# '''Create template and module:'''
+#* Import this module and its template to that wiki (or copy the code over, giving attribution in the edit summary). Optionally, give them a name that makes sense in that wiki's language
+#* On Wikidata, add them to the items {{wde|Q52554979}} and {{wde|Q27882107}}
+# '''Localise the module'''
+#* Edit the top bits of the module, between the comments <code>-- ##### Localisation (L10n) settings #####</code> and <code>-- #### End of L10n settings ####</code>, replacing values between <code>"</code> <code>"</code> symbols with local values (when necessary)
+# '''Add documentation'''
+#* to the template (e.g. by translating [[Template:Maplink/doc]], adjusting as necessary per any localisations made in the previous step)
+#* to the module (please transfer/translate these instructions so that wikimedians who read your wiki but not the English Wikipedia can also set up the module and template on another wiki).
+
+<includeonly>{{#ifeq:{{SUBPAGENAME}}|sandbox | |
+<!-- Categories below this line, please; interwikis at Wikidata -->
+
+}}</includeonly>
