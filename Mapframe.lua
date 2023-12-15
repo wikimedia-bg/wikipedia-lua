@@ -58,30 +58,28 @@ L10n.para = {
 -- Names of other templates this module can extract coordinates from
 L10n.template = {
 	coord     = { -- The coord template, as well as templates with output that contains {{coord}}
-		"Coord", "Coord/sandbox",
-		"NRHP row", "NRHP row/sandbox",
-		"WikidataCoord", "WikidataCoord/sandbox", "Wikidatacoord", "Wikidata coord"
+		"Coord"
 	}
 }
 
 -- Error messages
 L10n.error = {
-	badDisplayPara    = "Invalid display parameter",
-	noCoords	      = "Coordinates must be specified on Wikidata or in |" .. ( type(L10n.para.coord)== 'table' and L10n.para.coord[1] or L10n.para.coord ) .. "=",
-	wikidataCoords    = "Coordinates not found on Wikidata",
-	noCircleCoords    = "Circle centre coordinates must be specified, or available via Wikidata",
-	negativeRadius    = "Circle radius must be a positive number",
-	noRadius          = "Circle radius must be specified",
-	negativeEdges     = "Circle edges must be a positive number",
-	noSwitchPara      = "Found only one switch value in |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
-	oneSwitchLabel    = "Found only one label in |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
-	noSwitchLists     = "At least one parameter must have a SWITCH: list",
-	switchMismatches  = "All SWITCH: lists must have the same number of values",
+	badDisplayPara    = "Невалиден параметър display",
+	noCoords	      = "Трябва да бъдат зададени координати в Уикиданни или в |" .. ( type(L10n.para.coord)== 'table' and L10n.para.coord[1] or L10n.para.coord ) .. "=",
+	wikidataCoords    = "Не са открити координати в Уикиданни",
+	noCircleCoords    = "Координатите на центъра на кръга трябва да бъдат зададени или налични в Уикиданни",
+	negativeRadius    = "Радиусът на кръга трябва да бъде положително число",
+	noRadius          = "Трябва да бъде зададен радиус на кръга",
+	negativeEdges     = "Страните на кръга трябва да бъдет положително число",
+	noSwitchPara      = "Открита е само една switch стойност в |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
+	oneSwitchLabel    = "Открит е само един етикет в |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
+	noSwitchLists     = "Поне един параметър трябва да има SWITCH: list",
+	switchMismatches  = "Всички SWITCH: lists трябва да имат еднакъв брой стойности",
 
 	 -- "%s" and "%d" tokens will be replaced with strings and numbers when used
-	oneSwitchValue    = "Found only one switch value in |%s=",
-	fewerSwitchLabels = "Found %d switch values but only %d labels in |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
-	noNamedCoords     = "No named coordinates found in %s"
+	oneSwitchValue    = "Открита е само една switch стойност в |%s=",
+	fewerSwitchLabels = "Открити са %d switch стойности, но само %d етикета в |" .. ( type(L10n.para.switch)== 'table' and L10n.para.switch[1] or L10n.para.switch ) .. "=",
+	noNamedCoords     = "Не са открити именувани координати в %s"
 }
 
 -- Other strings
