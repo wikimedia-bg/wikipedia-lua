@@ -135,7 +135,7 @@ L10n.str = {
 -- Default values for parameters
 L10n.defaults = {
 	display		= L10n.str.inline,
-	text		= "Map",
+	text		= "Карта",
 	frameWidth	= "300",
 	frameHeight	= "200",
 	frameAlign  = "right",
