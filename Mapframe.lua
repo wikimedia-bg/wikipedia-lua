@@ -1075,7 +1075,7 @@ function p.multi(_args)
 		end
 		table.insert(switcher, {
 			map = p._main(mapframeArgs),
-			label = "Show "..label
+			label = "Към "..label
 		})
 	end
 	return make.switcherHtml(switcher, {
