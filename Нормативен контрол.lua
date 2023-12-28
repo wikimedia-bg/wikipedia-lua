@@ -36,7 +36,7 @@ local databases = {
 	{ id = 'Emmy', property = 8381, pattern = '%S+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
-	{ id = 'GND', property = 227, pattern = { '1[012]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
+	{ id = 'GND', property = 227, pattern = { '1[0123]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
 	{ id = 'Google Scholar', property = 1960, pattern = rep('[A-Za-z%d%-_]', 12) },
 	{ id = 'Grammy', property = 7303, pattern = '%w[%w%-]+%/%d+' },
 	{ id = 'HDS', property = 902, pattern = '%d%d%d%d%d%d' },
@@ -82,6 +82,7 @@ local databases = {
 	{ id = 'SBN', label = 'ICCU', property = 396, pattern = '%D%D[A-Z0-3]V%d%d%d%d%d%d' },
 	{ id = 'Scopus', property = 1153, pattern = '[1-9]%d%d%d%d%d%d%d%d%d%d?%d?' },
 	{ id = 'SELIBR', label = 'LIBRIS', property = 906, pattern = '[1-9]%d%d%d%d%d?' },
+		{ id = 'LIBRIS', property = 5587, pattern = rep('[a-z%d]', 12) .. '[a-z%d]*' }, --alternative to SELIBR
 	{ id = 'SIKART', property = 781, pattern = '%d%d%d%d%d%d%d%d?%d?' },
 	{ id = 'SNAC-ID', label = 'SNAC', property = 3430, pattern = '%d*[A-Za-z][%dA-Za-z]*' },
 	{ id = 'STRAZHA', label = 'Стража', property = 11446, pattern = { 'parl%-groups/[a-z%d-]+', 'parliaments/[a-z%d-]+', 'mps/[a-z%d-]+' } },
@@ -92,7 +93,7 @@ local databases = {
 	{ id = 'USCongress', label = 'US Congress', property = 1157, pattern = '[A-Z]00[01]%d%d%d' },
 	{ id = 'VIAF', property = 214, pattern = { '[1-9]%d' .. rep('%d?', 7), '[1-9]%d?%d?%d?' .. rep('%d', 18) } },
 	{ id = 'WorldCat Entities', label = 'WorldCat', property = 10832, pattern = {'[a-zA-Z%d][a-zA-Z%d]' .. rep('[a-zA-Z%d]?', 26)} },
-	{ id = 'WorldCat Identities', label = 'WorldCat', property = 7859, pattern = { 'viaf%-%d+', 'lccn%-n[a-z]?[%d%-]+' , 'n[cps]%-.+' } }, --deprecated as of March 2023; replaced by "WorldCat Entities"
+		{ id = 'WorldCat Identities', label = 'WorldCat', property = 7859, pattern = { 'viaf%-%d+', 'lccn%-n[a-z]?[%d%-]+' , 'n[cps]%-.+' } }, --deprecated as of March 2023; replaced by "WorldCat Entities"
 	{ id = 'ZBMATH', property = 1556, pattern = '[a-z][a-z%-%.%d]*' },
 
 	--TAXA
@@ -108,7 +109,6 @@ local databases = {
 	{ id = 'APDB', property = 2036, pattern = '%d%d?%d?%d?%d?%d?' }, ---[[African Plant Database]] DNE
 	{ id = 'APNI', property = 5984, pattern = '[1-9]%d*' },
 	{ id = 'Araneae', property = 3594, pattern = '[1-9]%d%d?%d?' }, ---[[]] DNE
-	{ id = 'ARKive', property = 2833, pattern = '[a-z][a-z%-]*' },
 	{ id = 'ASW', property = 5354, pattern = '[A-Za-z][A-Za-z/%-]*%d?%d?' },
 	{ id = 'Avibase', property = 2026, pattern = { rep('[A-Z%d]', 8), rep('[A-Z%d]', 16) } }, ---[[]] DNE
 	{ id = 'BacDive', property = 2946, pattern = '%d%d?%d?%d?%d?%d?' },
@@ -191,7 +191,7 @@ local databases = {
 	{ id = 'NTFlora', property = 5953, pattern = '[1-9]%d*' }, ---inconsistent property name/link
 	{ id = 'NZBO', property = 6048, pattern = '[a-z][a-z%-]*' }, ---[[New Zealand Birds Online]] DNE
 	{ id = 'NZOR', property = 2752, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' }, ---[[New Zealand Organisms Register]] DNE
-	{ id = 'Oiseaux', property = 6025, pattern = '[a-z][a-z.]*' }, ---closest match
+	{ id = 'Oiseaux', property = 6025, pattern = '[a-z][a-z.-]*' }, ---closest match
 	{ id = 'Orthoptera Species File', property = 6050, pattern = '[1-9]%d*' }, ---[[]] DNE
 	{ id = 'PalDat', property = 4122, pattern = '[A-Z][a-z]*%__?[a-z-]+' }, ---[[Palynological Database]] DNE
 	{ id = 'Panartic', label = 'Panartic Flora', property = 2434, pattern = '%d+[a-z]?' }, ---[[]] DNE
@@ -227,7 +227,7 @@ local databases = {
 	{ id = 'WCSP', property = 3591, pattern = '%d%d?%d?%d?%d?%d?%d?' },
 	{ id = 'WikiAves', property = 4664, pattern = '[^%s/%?]+' }, ---[[]] DNE
 	{ id = 'Wikispecies', label = 'Уикивидове', property = 'Wikispecies:$1' },
-	{ id = 'WiO', property = 6285, pattern = '[a-z][a-z_]*' }, ---[[Weeds in Ontario]] DNE
+	{ id = 'WiO', property = 6285, pattern = '[a-z][a-z-]*' }, ---[[Weeds in Ontario]] DNE
 	{ id = 'WisFlora', property = 6227, pattern = '[1-9]%d*' }, ---[[Flora of Wisconsin]] DNE
 	{ id = 'WoI', property = 3746, pattern = '[1-9]%d?%d?%d?' }, ---[[Wildflowers of Israel]] DNE
 	{ id = 'WoRMS', property = 850, pattern = '[1-9]%d?%d?%d?%d?%d?%d?' },
@@ -659,8 +659,13 @@ function p.main(frame)
 
 						local rowItem = nil
 						--skip item creation for WorldCat Identities if there is a WorldCat Entities entry/item
+						--or for LIBRIS if there is a SELIBR entry/item
 						--or for Wikispecies for the current title/eid
-						if not (param == 'worldcat identities' and (parentArgs['worldcat entities' .. f] or fromWikidata['worldcat entities' .. f]) or param == 'wikispecies' and (parentArgs['from' .. f] == mw.wikibase.getEntityIdForCurrentPage() or parentArgs['from' .. f] == currentTitle.text)) then
+						if not (
+							param == 'worldcat identities' and (parentArgs['worldcat entities' .. f] or fromWikidata['worldcat entities' .. f]) or
+							param == 'libris' and (parentArgs['selibr' .. f] or fromWikidata['selibr' .. f]) or
+							param == 'wikispecies' and (parentArgs['from' .. f] == mw.wikibase.getEntityIdForCurrentPage() or parentArgs['from' .. f] == currentTitle.text)
+						) then
 							rowItem = createItem(label, val, getLink(propId, val, label).text, param ~= 'worldcat identities' and param ~= 'wikispecies', validValue, editAtWikidata(fromWikidata[param .. f] and parentArgs['from' .. f], propId))
 						end
 						if rowItem then table.insert(elements, rowItem) end
