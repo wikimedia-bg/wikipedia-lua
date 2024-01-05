@@ -490,6 +490,7 @@ return {
 			{ 'ракета|ракети', 'Shuttle.svg', 'ракетна техника и космически апарати' },
 		{ 'математика', 'e-to-the-i-pi.svg' },
 			{ 'статистика', 'Bellcurve.svg' },
+		    { 'число', 'e-to-the-i-pi.svg', 'числа' },
 		{ 'етика', 'Sanzio_01_Plato_Aristotle.jpg' },
 		{ 'логика', 'logic.svg' },
 		{ 'науки за Земята', 'Terrestrial globe.svg' },
