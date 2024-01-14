@@ -15,8 +15,8 @@ function loadSubmodules(frame)
 		title = arg
 	end
 	
-	i18n = i18n or require(title .. "/i18n")
-	p.aliasesP = p.aliasesP or mw.loadData(title .. "/aliasesP")
+	i18n = i18n or require("Модул:Wd/i18n")
+	p.aliasesP = p.aliasesP or mw.loadData("Модул:Wd/aliasesP")
 end
 
 p.claimCommands = {
