@@ -2,6 +2,41 @@
 
 local p = {}
 local arg = ...
+
+p.aliasesP = {
+	coord                   = "P625",
+	unitSymbol              = "P5061",
+	-----------------------
+	image                   = "P18",
+	author                  = "P50",
+	publisher               = "P123",
+	statedIn                = "P248",
+	publicationPlace        = "P291",
+	pages                   = "P304",
+	language                = "P407",
+	volume                  = "P478",
+	hasPart                 = "P527",
+	publicationDate         = "P577",
+	startTime               = "P580",
+	endTime                 = "P582",
+	chapter                 = "P792",
+	retrieved               = "P813",
+	referenceURL            = "P854",
+	sectionVerseOrParagraph = "P958",
+	archiveURL              = "P1065",
+	publishedIn             = "P1433",
+	title                   = "P1476",
+	formatterURL            = "P1630",
+	quote                   = "P1683",
+	wikidataProperty        = "P1687",
+	subjectNamedAs          = "P1810",
+	shortName               = "P1813",
+	authorNameString        = "P2093",
+	definingFormula         = "P2534",
+	archiveDate             = "P2960",
+	column                  = "P3903",
+}
+
 local i18n = {
 	["errors"] = {
 		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни „$1“',
@@ -54,25 +89,25 @@ local i18n = {
 	["cite"] = {
 		["citeVersion"]                 = 3, -- increment this each time the below parameters are changed to avoid conflict errors
 		["coauthors"]                   = "съавтори-част",
-		[aliasesP.author]               = "автор-част",
-		[aliasesP.title]                = "заглавие-част",
-		[aliasesP.referenceURL]         = "url-част",
-		[aliasesP.statedIn]             = "заглавие",
-		[aliasesP.chapter]              = "издание",
-		[aliasesP.volume]               = "том",
-		[aliasesP.publicationDate]      = "дата",
-		[aliasesP.retrieved]            = "достъп-дата",
-		[aliasesP.archiveURL]           = "архив-url",
-		[aliasesP.archiveDate]          = "архив-дата",
-		[aliasesP.language]             = "език",
-		[aliasesP.publisher]            = "издател",
-		[aliasesP.publishedIn]          = "място",
-		[aliasesP.quote]                = "цитат",
-		[aliasesP.pages]                = "страница",
+		[p.aliasesP.author]               = "автор-част",
+		[p.aliasesP.title]                = "заглавие-част",
+		[p.aliasesP.referenceURL]         = "url-част",
+		[p.aliasesP.statedIn]             = "заглавие",
+		[p.aliasesP.chapter]              = "издание",
+		[p.aliasesP.volume]               = "том",
+		[p.aliasesP.publicationDate]      = "дата",
+		[p.aliasesP.retrieved]            = "достъп-дата",
+		[p.aliasesP.archiveURL]           = "архив-url",
+		[p.aliasesP.archiveDate]          = "архив-дата",
+		[p.aliasesP.language]             = "език",
+		[p.aliasesP.publisher]            = "издател",
+		[p.aliasesP.publishedIn]          = "място",
+		[p.aliasesP.quote]                = "цитат",
+		[p.aliasesP.pages]                = "страница",
 	}
 }
 
-function init.getOrdinalSuffix(num, gen)
+function i18n.getOrdinalSuffix(num, gen)
 	local gLetter = 'и'
 	
 	if gen == p['datetime']['suffixes']['millennium'] then
@@ -96,7 +131,7 @@ function init.getOrdinalSuffix(num, gen)
 	end
 end
 
-function init.addDelimiters(n)
+function i18n.addDelimiters(n)
 	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
 	local dec, num2, num3, rem = string.match(right, "^([,%.])(%d%d)(%d*)([^%d]*)$")
 	
@@ -117,7 +152,7 @@ function init.addDelimiters(n)
 	end
 end
 
-function init.formatMultilanguageText(text, lang, code)
+function i18n.formatMultilanguageText(text, lang, code)
 	if text and lang and lang ~= code then
 		local dir = mw.language.new(lang):isRTL() and 'rtl' or 'ltr'
 		return mw.text.tag('span', {['dir'] = dir, ['lang'] = lang}, text)
@@ -171,40 +206,6 @@ p.flags = {
 p.args = {
 	eid  = "eid",
 	date = "date"
-}
-
-p.aliasesP = {
-	coord                   = "P625",
-	unitSymbol              = "P5061",
-	-----------------------
-	image                   = "P18",
-	author                  = "P50",
-	publisher               = "P123",
-	statedIn                = "P248",
-	publicationPlace        = "P291",
-	pages                   = "P304",
-	language                = "P407",
-	volume                  = "P478",
-	hasPart                 = "P527",
-	publicationDate         = "P577",
-	startTime               = "P580",
-	endTime                 = "P582",
-	chapter                 = "P792",
-	retrieved               = "P813",
-	referenceURL            = "P854",
-	sectionVerseOrParagraph = "P958",
-	archiveURL              = "P1065",
-	publishedIn             = "P1433",
-	title                   = "P1476",
-	formatterURL            = "P1630",
-	quote                   = "P1683",
-	wikidataProperty        = "P1687",
-	subjectNamedAs          = "P1810",
-	shortName               = "P1813",
-	authorNameString        = "P2093",
-	definingFormula         = "P2534",
-	archiveDate             = "P2960",
-	column                  = "P3903",
 }
 
 local aliasesQ = {
