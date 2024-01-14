@@ -110,7 +110,7 @@ local i18n = {
 function i18n.getOrdinalSuffix(num, gen)
 	local gLetter = 'и'
 	
-	if gen == p['datetime']['suffixes']['millennium'] then
+	if gen == i18n['datetime']['suffixes']['millennium'] then
 		gLetter = 'о'
 	end
 	
@@ -144,7 +144,7 @@ function i18n.addDelimiters(n)
 	end
 	
 	if (left and num and right) and (#num > 3) then
-		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. p['numeric']['delimiter']):reverse()) .. right
+		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. i18n['numeric']['delimiter']):reverse()) .. right
 	elseif left and num and right then
 		return left .. num .. right
 	else
