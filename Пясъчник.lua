@@ -2,21 +2,128 @@
 
 local p = {}
 local arg = ...
-local i18n
+local i18n = {
+	["errors"] = {
+		["unknown-data-type"]          = 'Неизвестен или неподдържан тип данни „$1“',
+		["missing-required-parameter"] = 'Не са дефинирани задължителни параметри, изисква се поне един',
+		["extra-required-parameter"]   = 'Параметър „$1“ трябва да бъде дефиниран като незадължителен',
+		["no-function-specified"]      = 'Трябва да бъде посочена функция за извикване', -- equal to the standard module error message
+		["main-called-twice"]          = 'Функцията main не може да бъде извикана два пъти',
+		["no-such-function"]           = 'Функцията „$1“ не съществува' -- equal to the standard module error message
+	},
+	["info"] = {
+		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
+	},
+	["numeric"] = {
+		["decimal-mark"] = ',',
+		["delimiter"]    = ' '
+	},
+	["datetime"] = {
+		["prefixes"] = {
+			["decade-period"] = ''
+		},
+		["suffixes"] = {
+			["decade-period"] = '-те',
+			["millennium"]    = ' хилядолетие',
+			["century"]       = ' век',
+			["million-years"] = ' милиони години',
+			["billion-years"] = ' милиарди години',
+			["year"]          = ' г.',
+			["years"]         = ' години'
+		},
+		["julian-calendar"] = 'Приемане на григорианския календар', -- linked page title
+		["julian"]          = 'стар стил',
+		["BCE"]             = 'пр.н.е.',
+		["CE"]              = 'сл.н.е.',
+		["common-era"]      = 'Нова Ера' -- linked page title
+	},
+	["coord"] = {
+		["latitude-north"] = "N",
+		["latitude-south"] = "S",
+		["longitude-east"] = "E",
+		["longitude-west"] = "W",
+		["degrees"]        = "°",
+		["minutes"]        = "'",
+		["seconds"]        = '"',
+		["separator"]      = ", "
+	},
+	["values"] = {
+		["unknown"] = "неизв.",
+		["none"]    = "няма"
+	},
+	["cite"] = {
+		["citeVersion"]                 = 3, -- increment this each time the below parameters are changed to avoid conflict errors
+		["coauthors"]                   = "съавтори-част",
+		[aliasesP.author]               = "автор-част",
+		[aliasesP.title]                = "заглавие-част",
+		[aliasesP.referenceURL]         = "url-част",
+		[aliasesP.statedIn]             = "заглавие",
+		[aliasesP.chapter]              = "издание",
+		[aliasesP.volume]               = "том",
+		[aliasesP.publicationDate]      = "дата",
+		[aliasesP.retrieved]            = "достъп-дата",
+		[aliasesP.archiveURL]           = "архив-url",
+		[aliasesP.archiveDate]          = "архив-дата",
+		[aliasesP.language]             = "език",
+		[aliasesP.publisher]            = "издател",
+		[aliasesP.publishedIn]          = "място",
+		[aliasesP.quote]                = "цитат",
+		[aliasesP.pages]                = "страница",
+	}
+}
 
-function loadSubmodules(frame)
-	local title
+function init.getOrdinalSuffix(num, gen)
+	local gLetter = 'и'
 	
-	if frame then
-		-- current module invoked by page/template, get its title from frame
-		title = frame:getTitle()
-	else
-		-- current module included by other module, get its title from ...
-		title = arg
+	if gen == p['datetime']['suffixes']['millennium'] then
+		gLetter = 'о'
 	end
 	
-	i18n = i18n or require("Модул:Wd/i18n")
-	p.aliasesP = p.aliasesP or mw.loadData("Модул:Wd/aliasesP")
+	if tostring(num):sub(-2,-2) == '1' then
+		return '-' .. gLetter -- 10th, 11th, 12th, 13th, ... 19th
+	end
+	
+	num = tostring(num):sub(-1)
+	
+	if num == '1' then
+		return '-в' .. gLetter
+	elseif num == '2' then
+		return '-р' .. gLetter
+	elseif num == '3' or num == '4' then
+		return '-т' .. gLetter
+	else
+		return '-' .. gLetter
+	end
+end
+
+function init.addDelimiters(n)
+	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
+	local dec, num2, num3, rem = string.match(right, "^([,%.])(%d%d)(%d*)([^%d]*)$")
+	
+	if dec and num2 and num3 and rem then
+		num3 = '0.' .. num3
+		if tonumber(num3) >= 0.5 then
+			num2 = num2 + 1
+		end
+		right = dec .. num2 .. rem
+	end
+	
+	if (left and num and right) and (#num > 3) then
+		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. p['numeric']['delimiter']):reverse()) .. right
+	elseif left and num and right then
+		return left .. num .. right
+	else
+		return n
+	end
+end
+
+function init.formatMultilanguageText(text, lang, code)
+	if text and lang and lang ~= code then
+		local dir = mw.language.new(lang):isRTL() and 'rtl' or 'ltr'
+		return mw.text.tag('span', {['dir'] = dir, ['lang'] = lang}, text)
+	else
+		return nil
+	end
 end
 
 p.claimCommands = {
@@ -64,6 +171,40 @@ p.flags = {
 p.args = {
 	eid  = "eid",
 	date = "date"
+}
+
+p.aliasesP = {
+	coord                   = "P625",
+	unitSymbol              = "P5061",
+	-----------------------
+	image                   = "P18",
+	author                  = "P50",
+	publisher               = "P123",
+	statedIn                = "P248",
+	publicationPlace        = "P291",
+	pages                   = "P304",
+	language                = "P407",
+	volume                  = "P478",
+	hasPart                 = "P527",
+	publicationDate         = "P577",
+	startTime               = "P580",
+	endTime                 = "P582",
+	chapter                 = "P792",
+	retrieved               = "P813",
+	referenceURL            = "P854",
+	sectionVerseOrParagraph = "P958",
+	archiveURL              = "P1065",
+	publishedIn             = "P1433",
+	title                   = "P1476",
+	formatterURL            = "P1630",
+	quote                   = "P1683",
+	wikidataProperty        = "P1687",
+	subjectNamedAs          = "P1810",
+	shortName               = "P1813",
+	authorNameString        = "P2093",
+	definingFormula         = "P2534",
+	archiveDate             = "P2960",
+	column                  = "P3903",
 }
 
 local aliasesQ = {
@@ -2552,7 +2693,7 @@ function establishCommands(commandList, commandFunc)
 		local function wikitextWrapper(frame)
 			local args = copyTable(frame.args)
 			args.pointer = 1
-			loadSubmodules(frame)
+			--loadSubmodules(frame)
 			return commandFunc(args, commandName)
 		end
 		p[commandName] = wikitextWrapper
@@ -2560,7 +2701,7 @@ function establishCommands(commandList, commandFunc)
 		local function luaWrapper(args)
 			args = copyTable(args)
 			args.pointer = 1
-			loadSubmodules()
+			--loadSubmodules()
 			return commandFunc(args, commandName)
 		end
 		p["_" .. commandName] = luaWrapper	
@@ -2574,7 +2715,7 @@ establishCommands(p.generalCommands, generalCommand)
 function p.main(frame)
 	local f, args, i, v
 	
-	loadSubmodules(frame)
+	--loadSubmodules(frame)
 	
 	-- get the parent frame to take the arguments that were passed to the wrapper template
 	frame = frame:getParent() or frame
