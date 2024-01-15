@@ -744,14 +744,25 @@ function parseFormat(str)
 	return root, params
 end
 
-function sortOnRank(claims)
+function sortOnRank(claims, claimSingle)
 	local rankPos
 	local ranks = {{}, {}, {}, {}}  -- preferred, normal, deprecated, (default)
 	local sorted = {}
+	local onlyEntityIds = true
 	
 	for i, v in ipairs(claims) do
 		rankPos = rankTable[v.rank] or 4
 		ranks[rankPos][#ranks[rankPos] + 1] = v
+		if v.mainsnak.datavalue.type ~= 'wikibase-entityid' then
+			onlyEntityIds = false
+		end
+		if rankPos == 1 and claimSingle then
+			v.mainsnak.single = true
+		end
+	end
+	
+	if claimSingle and onlyEntityIds and #ranks[1] > 0 then
+		return ranks[1]
 	end
 	
 	sorted = ranks[1]
@@ -762,11 +773,10 @@ function sortOnRank(claims)
 end
 
 -- if id == nil then item connected to current page is used
-function Config:getLabel(id, raw, link, short)
+function Config:getLabel(id, raw, link, short, langCode)
 	local label = nil
 	local title = nil
 	local prefix= ""
-	local lang
 	
 	if not id then
 		id = mw.wikibase.getEntityIdForCurrentPage()
@@ -803,7 +813,7 @@ function Config:getLabel(id, raw, link, short)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, self.langCode)
+			label = mw.wikibase.getLabelByLang(id, langCode or self.langCode)
 		end
 	end
 	
@@ -1511,6 +1521,13 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			end
 			
 			label = self:getLabel(itemID, raw, link, short)
+			
+			if snak.single and label == "" then
+				label = self:getLabel(itemID, false, link, false, 'en')
+				if label == "" then
+					label = self:getLabel(itemID, true, link)
+				end
+			end
 			
 			if label == "" then
 				label = nil
@@ -2539,7 +2556,7 @@ function claimCommand(args, funcName)
 	end
 	
 	-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
-	claims = sortOnRank(claims)
+	claims = sortOnRank(claims, _.states[parameters.property].singleValue and not _.atDate and not _.flagPeriod and not _.flagRank)
 	
 	-- then iterate through the claims to collect values
 	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
