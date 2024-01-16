@@ -312,6 +312,8 @@ function Config.new()
 	
 	cfg.prefetchedRefs = nil
 	
+	cfg.tracking = false
+	
 	return cfg
 end
 
@@ -744,24 +746,17 @@ function parseFormat(str)
 	return root, params
 end
 
-function sortOnRank(claims, claimSingle)
+function sortOnRank(claims, noSpecificFlags)
 	local rankPos
 	local ranks = {{}, {}, {}, {}}  -- preferred, normal, deprecated, (default)
-	local sorted = {}
-	local onlyEntityIds = true
+	local sorted
 	
 	for i, v in ipairs(claims) do
 		rankPos = rankTable[v.rank] or 4
 		ranks[rankPos][#ranks[rankPos] + 1] = v
-		if v.mainsnak.datavalue.type ~= 'wikibase-entityid' then
-			onlyEntityIds = false
-		end
-		if rankPos == 1 and claimSingle then
-			v.mainsnak.single = true
-		end
 	end
 	
-	if claimSingle and onlyEntityIds and #ranks[1] > 0 then
+	if noSpecificFlags and #ranks[1] > 0 then
 		return ranks[1]
 	end
 	
@@ -773,7 +768,7 @@ function sortOnRank(claims, claimSingle)
 end
 
 -- if id == nil then item connected to current page is used
-function Config:getLabel(id, raw, link, short, langCode)
+function Config:getLabel(id, raw, link, short)
 	local label = nil
 	local title = nil
 	local prefix= ""
@@ -813,7 +808,7 @@ function Config:getLabel(id, raw, link, short, langCode)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, langCode or self.langCode)
+			label = mw.wikibase.getLabelByLang(id, self.langCode)
 		end
 	end
 	
@@ -1522,14 +1517,8 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			
 			label = self:getLabel(itemID, raw, link, short)
 			
-			if snak.single and label == "" then
-				label = self:getLabel(itemID, false, link, false, 'en')
-				if label == "" then
-					label = self:getLabel(itemID, true, link)
-				end
-			end
-			
 			if label == "" then
+				self.tracking = true
 				label = nil
 			end
 			
@@ -2556,7 +2545,7 @@ function claimCommand(args, funcName)
 	end
 	
 	-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
-	claims = sortOnRank(claims, _.states[parameters.property].singleValue and not _.atDate and not _.flagPeriod and not _.flagRank)
+	claims = sortOnRank(claims, not (_.flagRank or _.atDate or _.flagPeriod))
 	
 	-- then iterate through the claims to collect values
 	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
@@ -2565,7 +2554,11 @@ function claimCommand(args, funcName)
 	if _.editable and value ~= "" then
 		value = value .. _:getEditIcon()
 	end
-	
+
+	if value == '' and _.tracking then
+		value = value .. mw.text.nowiki(buildWikilink('Категория:Свойство, квалификатор или източник с посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'))
+	end
+
 	return value
 end
 
