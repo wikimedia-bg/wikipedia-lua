@@ -746,17 +746,22 @@ function parseFormat(str)
 	return root, params
 end
 
-function sortOnRank(claims, noSpecificFlags)
+function sortOnRank(claims, specialFlags)
 	local rankPos
 	local ranks = {{}, {}, {}, {}}  -- preferred, normal, deprecated, (default)
-	local sorted
+	local sorted, datatype
+	local acceptable = true
 	
 	for i, v in ipairs(claims) do
 		rankPos = rankTable[v.rank] or 4
 		ranks[rankPos][#ranks[rankPos] + 1] = v
+		datatype = v.mainsnak and v.mainsnak.datavalue and v.mainsnak.datavalue.type
+		if datatype == 'monolingualtext' then
+			acceptable = false
+		end
 	end
 	
-	if noSpecificFlags and #ranks[1] > 0 then
+	if #ranks[1] > 0 and acceptable and not specialFlags then
 		return ranks[1]
 	end
 	
@@ -2545,7 +2550,7 @@ function claimCommand(args, funcName)
 	end
 	
 	-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
-	claims = sortOnRank(claims, not (_.flagRank or _.atDate or _.flagPeriod))
+	claims = sortOnRank(claims, _.flagRank or _.atDate or _.flagPeriod)
 	
 	-- then iterate through the claims to collect values
 	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
@@ -2556,7 +2561,8 @@ function claimCommand(args, funcName)
 	end
 
 	if value == '' and _.tracking then
-		value = value .. mw.text.nowiki(buildWikilink('Категория:Свойство, квалификатор или източник с посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'))
+		mw.addWarning((_.states.qualifiersCount == 0 and _.states[parameters.reference] and 'Източник на свойство' or _.states.qualifiersCount > 0 and 'Квалификатор на свойство' or 'Свойство') .. ' #' .. _.propertyID .. ' съдържа посочен за стойност обект на Уикиданни, чийто етикет няма описание на български')
+		value = mw.text.nowiki(buildWikilink('Категория:Свойство, квалификатор или източник с посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'))
 	end
 
 	return value
