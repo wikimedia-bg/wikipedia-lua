@@ -20,19 +20,6 @@ local i18n = {
 	text = {
 		navbar_mini = false, -- for navbar pos 2 only
 		navbar_text = 'This diagram:', -- for navbar pos 2 only
-		legend_text = 'Legend',
-		legend = {
-			default = '[[Template:Railway line legend',
-			track = '[[Template:Railway track legend',
-			bus = '[[Template:Bus route legend',
-			road = '[[Template:Roads legend',
-			canal = '[[Template:Waterways legend',
-			water = '[[Template:Waterways legend',
-			waterway = '[[Template:Waterways legend',
-			foot = '[[Template:Trails legend',
-			footpath = '[[Template:Trails legend',
-			walkway = '[[Template:Trails legend'
-		}
 	},
 	html = {
 		["cell-icon-fmt"] = '<div style="%s">[[File:BSicon_%s.svg|x20px|link=%s|alt=|%s]]%s</div>',
