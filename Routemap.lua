@@ -20,6 +20,10 @@ local i18n = {
 	text = {
 		navbar_mini = false, -- for navbar pos 2 only
 		navbar_text = 'This diagram:', -- for navbar pos 2 only
+		legend_text = 'Легенда',
+		legend = {
+			default = '[[:en:Template:Railway line legend',
+		}
 	},
 	html = {
 		["cell-icon-fmt"] = '<div style="%s">[[File:BSicon_%s.svg|x20px|link=%s|alt=|%s]]%s</div>',
