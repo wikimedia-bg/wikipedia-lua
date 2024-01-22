@@ -4,10 +4,12 @@ local p = {}
 local arg = ...
 
 p.aliasesP = {
+	image                   = "P18",
+	appliesToPart           = "P518",
 	coord                   = "P625",
+	shortName               = "P1813",
 	unitSymbol              = "P5061",
 	-----------------------
-	image                   = "P18",
 	author                  = "P50",
 	publisher               = "P123",
 	statedIn                = "P248",
@@ -30,7 +32,6 @@ p.aliasesP = {
 	quote                   = "P1683",
 	wikidataProperty        = "P1687",
 	subjectNamedAs          = "P1810",
-	shortName               = "P1813",
 	authorNameString        = "P2093",
 	definingFormula         = "P2534",
 	archiveDate             = "P2960",
@@ -235,6 +236,11 @@ p.args = {
 
 local aliasesQ = {
 	percentage              = "Q11229",
+	degree                  = "Q28390",
+	permill                 = "Q181011",
+	singular                = "Q110786",
+	arcminute               = "Q209426",
+	arcsecond               = "Q829073",
 	prolepticJulianCalendar = "Q1985786",
 	cite                    = "Q6925554",
 }
@@ -868,7 +874,7 @@ end
 function Config:getUnitSymbol(id, raw, link, short)
 	local symbol = nil
 	local title = nil
-	local lang
+	local bool = true
 	
 	if not id then
 		id = mw.wikibase.getEntityIdForCurrentPage()
@@ -879,12 +885,24 @@ function Config:getUnitSymbol(id, raw, link, short)
 	end
 	
 	id = id:upper()  -- just to be sure
-
-	-- try unit symbol first
-	symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id})  -- get unit symbol
+	
+	-- if there is a short command, try short name first
+	if short then
+		symbol = p._property({p.aliasesP.shortName, [p.args.eid] = id}) -- get short symbol
+	end
+	
+	-- otherwise try unit symbol
+	if not symbol or symbol == '' then
+		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id}) -- get unit symbol in local language
+		if symbol == '' then
+			local mul = p._properties({p.flags.multilanguage, p.aliasesP.unitSymbol, [p.args.eid] = id})
+			symbol = mw.ustring.match(mul, '<span[^<>]-lang="mul"[^<>]*>(.-)</span>') -- get multilanguage unit symbol
+		end
+	end
 	
 	if symbol == "" then
 		symbol = nil
+		bool = false -- not a short name or a symbol
 	end
 	
 	-- get label
@@ -910,7 +928,7 @@ function Config:getUnitSymbol(id, raw, link, short)
 		end
 	end
 	
-	return symbol
+	return symbol, bool
 end
 
 function Config:getEditIcon()
@@ -985,27 +1003,29 @@ end
 function Config:convertUnit(unit, raw, link, short, unitOnly)
 	local space = " "
 	local label = ""
+	local bool
 	
 	if unit == "" or unit == "1" then
 		return nil
 	end
 	
-	if unitOnly then
-		space = ""
-	end
-	
 	itemID = parseWikidataURL(unit)
 	
 	if itemID then
-		if itemID == aliasesQ.percentage then
-			return "%"
-		else
-			label = self:getUnitSymbol(itemID, raw, link, short)
-			
-			if label ~= "" then
-				return space .. label
-			end
+		label, bool = self:getUnitSymbol(itemID, raw, link, short)
+		
+		if unitOnly
+		or itemID == aliasesQ.percentage
+		or itemID == aliasesQ.permill
+		or itemID == aliasesQ.degree
+		or itemID == aliasesQ.arcminute
+		or itemID == aliasesQ.arcsecond then
+			space = ''
+		elseif bool then
+			space = i18n['numeric']['delimiter']
 		end
+		
+		return space .. label
 	end
 	
 	return ""
