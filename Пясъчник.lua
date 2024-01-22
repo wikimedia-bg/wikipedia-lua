@@ -2615,7 +2615,7 @@ function claimCommand(args, funcName)
 		mw.addWarning(text)
 		local preprocess = mw.getCurrentFrame():preprocess('{{REVISIONID}}')
 		if preprocess == '' or preprocess == '-' then
-			value = text
+			value = text .. preprocess
 		end
 	end
 	
