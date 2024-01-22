@@ -2613,9 +2613,8 @@ function claimCommand(args, funcName)
 			mw.getCurrentFrame():getTitle() .. ': ' .. (_.states.qualifiersCount == 0 and _.states[parameters.reference] and 'Източник на свойство' or _.states.qualifiersCount > 0 and 'Квалификатор на свойство' or 'Свойство') .. ' #' .. _.propertyID .. ' съдържа посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'
 		)
 		mw.addWarning(text)
-		local preprocess = mw.getCurrentFrame():preprocess('{{REVISIONID}}')
-		if preprocess == '' or preprocess == '-' then
-			return text .. (_.editable and _:getEditIcon() or '')
+		if mw.getCurrentFrame():preprocess('{{REVISIONID}}') == '' then
+			value = text
 		end
 	end
 	
