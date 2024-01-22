@@ -173,7 +173,7 @@ function i18n.addDelimiters(n)
 		if tonumber(num) > 9999 then
 			num = string.reverse(num):gsub('%d%d%d', '%0 ' ):reverse()
 		end
-		return mw.ustring.gsub(left .. num .. right, ' ', i18n['numeric']['delimeter'])
+		return mw.ustring.gsub(left .. num .. right, ' ', i18n['numeric']['delimiter'])
 	end
 	return n
 end
