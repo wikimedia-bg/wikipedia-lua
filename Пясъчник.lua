@@ -2605,14 +2605,23 @@ function claimCommand(args, funcName)
 	-- then iterate through the claims to collect values
 	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
 	
+	-- warning on preview
+	if value == '' and _.tracking then
+		local text = mw.text.tag(
+			'span',
+			{ class = 'error', style = 'font-weight: normal; font-size: inherit' },
+			mw.getCurrentFrame():getTitle() .. ': ' .. (_.states.qualifiersCount == 0 and _.states[parameters.reference] and 'Източник на свойство' or _.states.qualifiersCount > 0 and 'Квалификатор на свойство' or 'Свойство') .. ' #' .. _.propertyID .. ' съдържа посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'
+		)
+		mw.addWarning(text)
+		local preprocess = mw.getCurrentFrame():preprocess('{{REVISIONID}}')
+		if preprocess == '' or preprocess == '-' then
+			value = text
+		end
+	end
+	
 	-- if desired, add a clickable icon that may be used to edit the returned values on Wikidata
 	if _.editable and value ~= "" then
 		value = value .. _:getEditIcon()
-	end
-
-	if value == '' and _.tracking then
-		mw.addWarning((_.states.qualifiersCount == 0 and _.states[parameters.reference] and 'Източник на свойство' or _.states.qualifiersCount > 0 and 'Квалификатор на свойство' or 'Свойство') .. ' #' .. _.propertyID .. ' съдържа посочен за стойност обект на Уикиданни, чийто етикет няма описание на български')
-		value = mw.text.nowiki(buildWikilink('Категория:Свойство, квалификатор или източник с посочен за стойност обект на Уикиданни, чийто етикет няма описание на български'))
 	end
 
 	return value
