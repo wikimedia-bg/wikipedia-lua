@@ -50,8 +50,12 @@ local i18n = {
 		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
 	},
 	["numeric"] = {
+		["10-power-4"]   = ' хил.',
+		["10-power-6"]   = ' млн.',
+		["10-power-9"]   = ' млрд.',
+		["10-power-12"]  = ' трлн.',
 		["decimal-mark"] = ',',
-		["delimiter"]    = ' '
+		["delimiter"]    = '&nbsp;'
 	},
 	["datetime"] = {
 		["prefixes"] = {
@@ -61,9 +65,9 @@ local i18n = {
 			["decade-period"] = '-те',
 			["millennium"]    = ' хилядолетие',
 			["century"]       = ' век',
-			["million-years"] = ' милиони години',
-			["billion-years"] = ' милиарди години',
-			["year"]          = ' г.',
+			["million-years"] = '&nbsp;млн. години',
+			["billion-years"] = '&nbsp;млрд. години',
+			["year"]          = '&nbsp;г.',
 			["years"]         = ' години'
 		},
 		["julian-calendar"] = 'Приемане на григорианския календар', -- linked page title
@@ -131,34 +135,55 @@ function i18n.getOrdinalSuffix(num, gen)
 	end
 end
 
+function i18n.toShortAmount(d)
+	local num = tonumber(d)
+	if not num then
+		return d
+	end
+	local suffix = ''
+	local sign = num < 0 and '-' or ''
+	num = math.abs(num)
+	if num/10^12 >= 1 then
+		num = num/10^12
+		suffix = i18n['numeric']['10-power-12']
+	elseif num/10^9 >= 1 then
+		num = num/10^9
+		suffix = i18n['numeric']['10-power-9']
+	elseif num/10^6 >= 1 then
+		num = num/10^6
+		suffix = i18n['numeric']['10-power-6']
+	elseif num/10^4 >= 1 then
+		num = num/10^4
+		suffix = i18n['numeric']['10-power-4']
+	end
+	return sign .. num .. suffix
+end
+
 function i18n.addDelimiters(n)
-	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
-	local dec, num2, num3, rem = string.match(right, "^([,%.])(%d%d)(%d*)([^%d]*)$")
-	
-	if dec and num2 and num3 and rem then
-		num3 = '0.' .. num3
-		if tonumber(num3) >= 0.5 then
-			num2 = num2 + 1
+	local left, num, right = mw.ustring.match(n, '^(%D*)(%d+)(.*)$')
+	if left and num and right then
+		local dec, num2, rem = mw.ustring.match(right, '^(%.)(%d+)(%D*)$')
+		if dec and num2 and rem then
+			num = num .. dec .. num2
+			right = rem
 		end
-		right = dec .. num2 .. rem
+		if tonumber(num) >= 1 then
+			num = tonumber(mw.ustring.format('%.2f', num))
+		end
+		if tonumber(num) > 9999 then
+			num = string.reverse(num):gsub('%d%d%d', '%0 ' ):reverse()
+		end
+		return mw.ustring.gsub(left .. num .. right, ' ', i18n['numeric']['delimeter'])
 	end
-	
-	if (left and num and right) and (#num > 3) then
-		return left .. (num:reverse():gsub("(%d%d%d)", "%1" .. i18n['numeric']['delimiter']):reverse()) .. right
-	elseif left and num and right then
-		return left .. num .. right
-	else
-		return n
-	end
+	return n
 end
 
 function i18n.formatMultilanguageText(text, lang, code)
 	if text and lang and lang ~= code then
 		local dir = mw.language.new(lang):isRTL() and 'rtl' or 'ltr'
 		return mw.text.tag('span', {['dir'] = dir, ['lang'] = lang}, text)
-	else
-		return nil
 	end
+	return nil
 end
 
 p.claimCommands = {
@@ -1045,11 +1070,16 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					return value
 				end
 				
-				-- replace decimal mark based on locale
-				value = replaceDecimalMark(value)
+				if short then
+					value = i18n.toShortAmount(value)
+				end
 				
 				-- add delimiters for readability
 				value = i18n.addDelimiters(value)
+				
+				-- replace decimal mark based on locale
+				-- also replace hyphen with minus sign
+				value = mw.ustring.gsub(replaceDecimalMark(value), '^%-(.+)$', '−%1')
 			end
 			
 			unit = self:convertUnit(datavalue['unit'], raw, link, short, unitOnly)
