@@ -2357,12 +2357,15 @@ function claimCommand(args, funcName)
 	-- if a "qualifier(s)" command and no "propert(y|ies)" command has been given, make the movable separator a semicolon
 	if _.states.qualifiersCount > 0 and not _.states[parameters.property] then
 		_.separators["sep"..parameters.separator][1] = {";"}
+		_.call = 'qual'
 	end
 	
 	-- if only "reference(s)" has been given, set the default separator to none (except when raw)
-	if _.states[parameters.reference] and not _.states[parameters.property] and _.states.qualifiersCount == 0
-	   and not _.states[parameters.reference].rawValue then
-		_.separators["sep"][1] = nil
+	if _.states[parameters.reference] and not _.states[parameters.property] and _.states.qualifiersCount == 0 then
+	   if not _.states[parameters.reference].rawValue then
+			_.separators["sep"][1] = nil
+	   end
+		_.call = 'ref'
 	end
 	
 	-- if exactly one "qualifier(s)" command has been given, make "sep%q" point to "sep%q1" to make them equivalent
@@ -2446,10 +2449,9 @@ function claimCommand(args, funcName)
 			'span',
 			{ class = 'error', style = 'font-weight: normal; font-size: inherit' },
 			mw.getCurrentFrame():getTitle() .. ': '
-			.. (_.states.qualifiersCount == 0
-				and _.states[parameters.reference]
+			.. (_.call == 'ref'
 				and 'Източник на свойство'
-				or _.states.qualifiersCount > 0
+				or _.call == 'qual'
 				and 'Квалификатор на свойство'
 				or 'Свойство')
 			.. ' #' .. _.propertyID .. _:getEditIcon()
