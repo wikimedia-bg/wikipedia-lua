@@ -67,9 +67,13 @@ p.args = {
 }
 
 local aliasesQ = {
-	percentage              = "Q11229",
-	prolepticJulianCalendar = "Q1985786",
+	arcminute               = "Q209426",
+	arcsecond               = "Q829073",
 	cite                    = "Q6925554",
+	degree                  = "Q28390",
+	percentage              = "Q11229",
+	permill                 = "Q181011",
+	prolepticJulianCalendar = "Q1985786",
 }
 
 local parameters = {
@@ -157,6 +161,8 @@ function Config.new()
 	cfg.editAtEnd = false
 	
 	cfg.inSitelinks = false
+	
+	cfg.tracking = false
 	
 	cfg.langCode = mw.language.getContentLanguage().code
 	cfg.langName = mw.language.fetchLanguageName(cfg.langCode, cfg.langCode)
@@ -602,17 +608,25 @@ function parseFormat(str)
 	return root, params
 end
 
-function sortOnRank(claims)
+function sortOnRank(claims, specialFlags)
 	local rankPos
 	local ranks = {{}, {}, {}, {}}  -- preferred, normal, deprecated, (default)
-	local sorted = {}
+	local acceptable = true
 	
 	for i, v in ipairs(claims) do
 		rankPos = rankTable[v.rank] or 4
 		ranks[rankPos][#ranks[rankPos] + 1] = v
+		if v.mainsnak and v.mainsnak.datavalue and v.mainsnak.datavalue.type == 'monolingualtext' then
+			acceptable = false -- multilanguage values are exception
+		end
 	end
 	
-	sorted = ranks[1]
+	-- return values of highest (best) rank when available and when no special flags were given
+	if #ranks[1] > 0 and not specialFlags and acceptable then
+		return ranks[1]
+	end
+	
+	local sorted = ranks[1]
 	sorted = mergeArrays(sorted, ranks[2])
 	sorted = mergeArrays(sorted, ranks[3])
 	
@@ -624,7 +638,6 @@ function Config:getLabel(id, raw, link, short)
 	local label = nil
 	local title = nil
 	local prefix= ""
-	local lang
 	
 	if not id then
 		id = mw.wikibase.getEntityIdForCurrentPage()
@@ -691,7 +704,7 @@ end
 function Config:getUnitSymbol(id, raw, link, short)
 	local symbol = nil
 	local title = nil
-	local lang
+	local bool = true
 	
 	if not id then
 		id = mw.wikibase.getEntityIdForCurrentPage()
@@ -702,12 +715,24 @@ function Config:getUnitSymbol(id, raw, link, short)
 	end
 	
 	id = id:upper()  -- just to be sure
-
-	-- try unit symbol first
-	symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id})  -- get unit symbol
+	
+	-- if there is a short command, try short name first
+	if short then
+		symbol = p._property({p.aliasesP.shortName, [p.args.eid] = id}) -- get short symbol
+	end
+	
+	-- otherwise try unit symbol
+	if not symbol or symbol == '' then
+		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id}) -- get unit symbol in local language
+		if symbol == '' then
+			local mul = p._properties({p.flags.multilanguage, p.aliasesP.unitSymbol, [p.args.eid] = id})
+			symbol = mw.ustring.match(mul, '<span[^<>]-lang="mul"[^<>]*>(.-)</span>') -- get multilanguage unit symbol
+		end
+	end
 	
 	if symbol == "" then
 		symbol = nil
+		bool = false -- not a short name or a symbol
 	end
 	
 	-- get label
@@ -733,13 +758,13 @@ function Config:getUnitSymbol(id, raw, link, short)
 		end
 	end
 	
-	return symbol
+	return symbol, bool
 end
 
 function Config:getEditIcon()
 	local value = ""
 	local prefix = ""
-	local front = " "
+	local front = ""
 	local back = ""
 	
 	if self.entityID:sub(1,1) == "P" then
@@ -808,27 +833,29 @@ end
 function Config:convertUnit(unit, raw, link, short, unitOnly)
 	local space = " "
 	local label = ""
+	local bool
 	
 	if unit == "" or unit == "1" then
 		return nil
 	end
 	
-	if unitOnly then
-		space = ""
-	end
-	
 	itemID = parseWikidataURL(unit)
 	
 	if itemID then
-		if itemID == aliasesQ.percentage then
-			return "%"
-		else
-			label = self:getUnitSymbol(itemID, raw, link, short)
-			
-			if label ~= "" then
-				return space .. label
-			end
+		label, bool = self:getUnitSymbol(itemID, raw, link, short)
+		
+		if unitOnly
+		or itemID == aliasesQ.percentage
+		or itemID == aliasesQ.permill
+		or itemID == aliasesQ.degree
+		or itemID == aliasesQ.arcminute
+		or itemID == aliasesQ.arcsecond then
+			space = ''
+		elseif bool then
+			space = i18n['numeric']['delimiter']
 		end
+		
+		return space .. label
 	end
 	
 	return ""
@@ -893,11 +920,16 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					return value
 				end
 				
-				-- replace decimal mark based on locale
-				value = replaceDecimalMark(value)
+				if short then
+					value = i18n.shortNotation(value)
+				end
 				
 				-- add delimiters for readability
 				value = i18n.addDelimiters(value)
+				
+				-- replace decimal mark based on locale
+				-- also replace hyphen with minus sign
+				value = mw.ustring.gsub(replaceDecimalMark(value), '^%-(.+)$', '−%1')
 			end
 			
 			unit = self:convertUnit(datavalue['unit'], raw, link, short, unitOnly)
@@ -1222,10 +1254,10 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				precision = 1 / 3600 -- precision not set (correctly), set to arcsecond
 			end
 			-- remove insignificant detail
-            -- feature disabled: a lot of entities in Wikidata have unreasonably high precision values; example: [[Бахово]]
---			latitude = math.floor(latitude / precision + 0.5) * precision
---			longitude = math.floor(longitude / precision + 0.5) * precision
-
+			-- feature disabled: a lot of entities in Wikidata have unreasonably high precision values; example: [[Бахово]]
+			-- latitude = math.floor(latitude / precision + 0.5) * precision
+			-- longitude = math.floor(longitude / precision + 0.5) * precision
+			
 			if lat_only then
 				return latitude
 			elseif lon_only then
@@ -1371,6 +1403,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 			label = self:getLabel(itemID, raw, link, short)
 			
 			if label == "" then
+				self.tracking = true
 				label = nil
 			end
 			
@@ -2397,7 +2430,7 @@ function claimCommand(args, funcName)
 	end
 	
 	-- first sort the claims on rank to pre-define the order of output (preferred first, then normal, then deprecated)
-	claims = sortOnRank(claims)
+	claims = sortOnRank(claims, _.flagRank or _.atDate or _.flagPeriod)
 	
 	-- then iterate through the claims to collect values
 	value = _:concatValues(_.states[parameters.property]:iterate(claims, hooks, State.claimMatches))  -- pass property state with level 1 hooks and matchHook
@@ -2405,6 +2438,23 @@ function claimCommand(args, funcName)
 	-- if desired, add a clickable icon that may be used to edit the returned values on Wikidata
 	if _.editable and value ~= "" then
 		value = value .. _:getEditIcon()
+	end
+	
+	-- warning on preview
+	if value == '' and _.tracking then
+		mw.addWarning(mw.text.tag(
+			'span',
+			{ class = 'error', style = 'font-weight: normal; font-size: inherit' },
+			mw.getCurrentFrame():getTitle() .. ': '
+			.. (_.states.qualifiersCount == 0
+				and _.states[parameters.reference]
+				and 'Източник на свойство'
+				or _.states.qualifiersCount > 0
+				and 'Квалификатор на свойство'
+				or 'Свойство')
+			.. ' #' .. _.propertyID .. _:getEditIcon()
+			.. ' съдържа посочен за стойност обект на Уикиданни, чийто етикет няма описание на български.'
+		))
 	end
 	
 	return value
@@ -2450,10 +2500,9 @@ function generalCommand(args, funcName)
 		if _.curState.linked and value then
 			value = buildWikilink(value)
 		end
- 	
 	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
-
+		
 		if _.entity and _.entity.descriptions and _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
 			value = _.entity.descriptions[_.langCode].value
 		end
