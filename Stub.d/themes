@@ -489,6 +489,7 @@ return {
 		{ 'космически изследвания', 'Gas giants in the solar system.jpg' },
 			{ 'ракета|ракети', 'Shuttle.svg', 'ракетна техника и космически апарати' },
 		{ 'математика', 'e-to-the-i-pi.svg' },
+		    { 'геометричен обект|фигура|тяло', 'Dodecahedron.svg', 'геометрични обекти' },
 			{ 'статистика', 'Bellcurve.svg' },
 		    { 'число', 'e-to-the-i-pi.svg', 'числа' },
 		{ 'етика', 'Sanzio_01_Plato_Aristotle.jpg' },
