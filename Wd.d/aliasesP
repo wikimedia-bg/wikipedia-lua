@@ -1,8 +1,9 @@
 return {
+	image                   = "P18",
 	coord                   = "P625",
+	shortName               = "P1813",
 	unitSymbol              = "P5061",
 	-----------------------
-	image                   = "P18",
 	author                  = "P50",
 	publisher               = "P123",
 	statedIn                = "P248",
@@ -25,7 +26,6 @@ return {
 	quote                   = "P1683",
 	wikidataProperty        = "P1687",
 	subjectNamedAs          = "P1810",
-	shortName               = "P1813",
 	authorNameString        = "P2093",
 	definingFormula         = "P2534",
 	archiveDate             = "P2960",
