@@ -16,10 +16,10 @@ local p = {
 		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
 	},
 	["numeric"] = {
-		["10-power-4"]   = ' хил.',
-		["10-power-6"]   = ' млн.',
-		["10-power-9"]   = ' млрд.',
-		["10-power-12"]  = ' трлн.',
+		["10^4"]   = ' хил.',
+		["10^6"]   = ' млн.',
+		["10^9"]   = ' млрд.',
+		["10^12"]  = ' трлн.',
 		["decimal-mark"] = ',',
 		["delimiter"]    = '&nbsp;'
 	},
@@ -101,57 +101,36 @@ function p.getOrdinalSuffix(num, gen)
 	end
 end
 
-function p.shortNotation(n)
-	local num = tonumber(n)
+function p.formatQuantity(value, short)
+	local num = tonumber(value)
 	
-	if not num then return n end
+	if not num then
+		-- not a proper number
+		return value
+	end
 	
 	local suffix = ''
-	local sign = num < 0 and '-' or ''
-	num = math.abs(num)
-	
-	if num/10^12 >= 1 then
-		num = num/10^12
-		suffix = p['numeric']['10-power-12']
-	elseif num/10^9 >= 1 then
-		num = num/10^9
-		suffix = p['numeric']['10-power-9']
-	elseif num/10^6 >= 1 then
-		num = num/10^6
-		suffix = p['numeric']['10-power-6']
-	elseif num/10^4 >= 1 then
-		num = num/10^4
-		suffix = p['numeric']['10-power-4']
+	if short then
+		if math.abs(num/10^12) >= 1 then
+			num = num/10^12
+			suffix = p['numeric']['10^12']
+		elseif math.abs(num/10^9) >= 1 then
+			num = num/10^9
+			suffix = p['numeric']['10^9']
+		elseif math.abs(num/10^6) >= 1 then
+			num = num/10^6
+			suffix = p['numeric']['10^6']
+		elseif math.abs(num/10^4) >= 1 then
+			num = num/10^4
+			suffix = p['numeric']['10^4']
+		end
+	end
+		
+	if math.abs(num) >= 1 then
+		num = tonumber(mw.ustring.format('%.3f', num)) -- round to 3 digits after decimal (1/1000)
 	end
 	
-	return sign .. num .. suffix
-end
-
-function p.addDelimiters(n)
-	local left, num, right = mw.ustring.match(n, '^(%D*)(%d+)(.*)$')
-	
-	if left and num and right then
-		local frac, rem = mw.ustring.match(right, '^(%.%d+)(%D*)$')
-		
-		if frac and rem then
-			num = num .. frac
-			right = rem
-		end
-		
-		num = tonumber(num)
-		
-		if num >= 1 then
-			num = tonumber(mw.ustring.format('%.2f', num)) -- round to 2 digits after decimal (1/100)
-		end
-		
-		if num > 9999 then
-			num = string.reverse(num):gsub('%d%d%d', '%0 ' ):reverse()
-		end
-		
-		return mw.ustring.gsub(left .. num .. right, ' ', p['numeric']['delimiter'])
-	end
-	
-	return n
+	return mw.ustring.gsub(mw.getContentLanguage():formatNum(num) .. suffix, '%s+', p['numeric']['delimiter'])
 end
 
 function p.formatMultilanguageText(text, lang, code)
