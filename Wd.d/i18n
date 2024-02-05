@@ -16,7 +16,6 @@ local p = {
 		["edit-on-wikidata"] = 'Редактиране в Уикиданни'
 	},
 	["numeric"] = {
-		["10^4"]   = ' хил.',
 		["10^6"]   = ' млн.',
 		["10^9"]   = ' млрд.',
 		["10^12"]  = ' трлн.',
@@ -120,9 +119,6 @@ function p.formatQuantity(value, short)
 		elseif math.abs(num/10^6) >= 1 then
 			num = num/10^6
 			suffix = p['numeric']['10^6']
-		elseif math.abs(num/10^4) >= 1 then
-			num = num/10^4
-			suffix = p['numeric']['10^4']
 		end
 	end
 		
