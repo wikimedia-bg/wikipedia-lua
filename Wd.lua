@@ -920,16 +920,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 					return value
 				end
 				
-				if short then
-					value = i18n.shortNotation(value)
-				end
-				
-				-- add delimiters for readability
-				value = i18n.addDelimiters(value)
-				
-				-- replace decimal mark based on locale
-				-- also replace hyphen with minus sign
-				value = mw.ustring.gsub(replaceDecimalMark(value), '^%-(.+)$', '−%1')
+				value = i18n.formatQuantity(value, short)
 			end
 			
 			unit = self:convertUnit(datavalue['unit'], raw, link, short, unitOnly)
