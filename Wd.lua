@@ -1968,6 +1968,11 @@ function State:getReference(statement)
 			end
 		end
 		
+		-- get fullworkURL if referenceURL is not yet available
+		if statement.snaks[p.aliasesP.fullworkURL] and not statement.snaks[p.aliasesP.referenceURL] then
+			statement.snaks[p.aliasesP.referenceURL] = statement.snaks[p.aliasesP.fullworkURL]
+		end
+		
 		-- retrieve only those parameters that are useful in "cite" template
 		for i in pairs(statement.snaks) do
 			if ((key[i] and not params[key[i]]) or i == p.aliasesP.authorNameString)
@@ -1975,7 +1980,7 @@ function State:getReference(statement)
 			and statement.snaks[i][1].datavalue
 			and statement.snaks[i][1].datavalue.value then
 				local val
-
+				
 				-- multiple authors may be given
 				if i == p.aliasesP.author or i == p.aliasesP.authorNameString then
 					for _, author in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLang = true
@@ -1988,7 +1993,7 @@ function State:getReference(statement)
 				else
 					val = self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)  -- link = true/false, anyLang = true
 				end
-
+				
 				if text.trim(val or '') ~= '' then
 					params[key[i]] = val
 				end
