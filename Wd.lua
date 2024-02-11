@@ -1968,7 +1968,7 @@ function State:getReference(statement)
 			end
 		end
 		
-		-- get fullworkURL if referenceURL is not yet available
+		-- to fullworkURL when referenceURL is not present
 		if statement.snaks[p.aliasesP.fullworkURL] and not statement.snaks[p.aliasesP.referenceURL] then
 			statement.snaks[p.aliasesP.referenceURL] = statement.snaks[p.aliasesP.fullworkURL]
 		end
