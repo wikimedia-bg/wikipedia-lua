@@ -18,6 +18,7 @@ return {
 	chapter                 = "P792",
 	retrieved               = "P813",
 	referenceURL            = "P854",
+	fullworkURL             = "P953",
 	sectionVerseOrParagraph = "P958",
 	archiveURL              = "P1065",
 	publishedIn             = "P1433",
