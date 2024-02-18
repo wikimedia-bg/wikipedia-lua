@@ -97,7 +97,7 @@ local function addRow(rowArgs)
 	rowArgs.data_a = fixInput(rowArgs.data_a)
 	rowArgs.data_b = fixInput(rowArgs.data_b)
 	rowArgs.data_c = fixInput(rowArgs.data_c)
-	if rowArgs.header and (mw.ustring.lower(rowArgs.header) ~= '_blank_' or mw.ustring.lower(rowArgs.header) ~= '_empty_' or mw.ustring.lower(rowArgs.header) ~= '_none_') then
+	if rowArgs.header and mw.ustring.lower(rowArgs.header) ~= '_blank_' and mw.ustring.lower(rowArgs.header) ~= '_empty_' and mw.ustring.lower(rowArgs.header) ~= '_none_' then
 		root
 			:tag('tr')
 				:addClass(noMobileHRRow(rowArgs.header))
