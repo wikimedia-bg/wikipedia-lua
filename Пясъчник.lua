@@ -1,22 +1,22 @@
 -- This module implements {{Infobox}}
-
 local p = {}
-
 local args = {}
 local origArgs
 local root
+local colspan = 12
 
 local function addNewline(str)
 	if str then
-		-- Add newline when a string begins (or ends) with:
-		-- wikilists; wikitables; wikihorizontal rules
-		str = mw.ustring.gsub(str, '([\r\n][%*#;:][^\r\n]*)$', '%1\n')
-		str = mw.ustring.gsub(str, '^([%*#;:][^\r\n]*)$', '%1\n')
+		-- Add newline when a string begins and ends with
+		-- wikilists
 		str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
+		str = mw.ustring.gsub(str, '(\n[%*#;:][^\r\n]*)$', '%1\n')
+		-- wikitables
 		str = mw.ustring.gsub(str, '^(%{%|)', '\n%1')
-		str = mw.ustring.gsub(str, '^([\r\n]%|%})%s*$', '%1\n')
-		str = mw.ustring.gsub(str, '([\r\n]%-%-%-%-+)%s*$', '%1\n')
+		str = mw.ustring.gsub(str, '(\n%|%})$', '%1\n')
+		-- wikihorizontal rules
 		str = mw.ustring.gsub(str, '^(%-%-%-%-+)', '\n%1')
+		str = mw.ustring.gsub(str, '(\n%-%-%-%-+)$', '%1\n')
 	end
 	return str
 end
@@ -40,11 +40,11 @@ local function cleanInfobox(str)
 		-- and no other content precedes it/follows it
 		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*(<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>)', '%1')
 		str = mw.ustring.gsub(str, '(</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>)%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '%1')
-		-- Remove rows with empty subboxes
-		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*<[Tt][Aa][Bb][Ll][Ee][^<>]-infobox[^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
+		-- Remove an empty table/infobox
+		str = mw.ustring.gsub(str, '<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>', '')
+		-- Remove empty single cell rows
+		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
 	until str == last
-	-- Remove an empty infobox
-	str = mw.ustring.gsub(str, '^%s*<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*$', '')
 	return str
 end
 
@@ -64,13 +64,13 @@ local function union(t1, t2)
 	return ret
 end
 
-local function getArgNums(prefix)
+local function getArgNums(prefix, suffix)
 	-- Returns a table containing the numbers of the arguments that exist
 	-- for the specified prefix. For example, if the prefix was 'data', and
 	-- 'data1', 'data2', and 'data5' exist, it would return {1, 2, 5}.
 	local nums = {}
 	for k, v in pairs(args) do
-		local num = tostring(k):match('^' .. prefix .. '([1-9]%d*)$')
+		local num = tostring(k):match('^' .. prefix .. '([1-9]%d*)' .. (suffix or '') .. '$')
 		if num then table.insert(nums, tonumber(num)) end
 	end
 	table.sort(nums)
@@ -80,7 +80,7 @@ end
 local function addRow(rowArgs)
 	-- Adds a row to the infobox, with either a header cell
 	-- or a label/data cell combination.
-	if rowArgs.header then
+	if rowArgs.header and (mw.ustring.lower(rowArgs.header) ~= '_blank_' or mw.ustring.lower(rowArgs.header) ~= '_empty_') then
 		root
 			:tag('tr')
 				:addClass(noMobileHRRow(rowArgs.header))
@@ -88,7 +88,8 @@ local function addRow(rowArgs)
 				:cssText(rowArgs.rowstyle)
 				:attr('id', rowArgs.rowid)
 				:tag('th')
-					:attr('colspan', 2)
+					:attr('colspan', colspan)
+					:attr('scope', 'colgroup')
 					:attr('id', rowArgs.headerid)
 					:addClass(rowArgs.class)
 					:addClass(args.headerclass)
@@ -97,17 +98,24 @@ local function addRow(rowArgs)
 					:cssText(rowArgs.headerstyle)
 					:wikitext(addNewline(rowArgs.header))
 					:done()
-	elseif rowArgs.data then
+	elseif rowArgs.data or rowArgs.data_b or rowArgs.data_c then
+		local cells = 4
+		if not rowArgs.label then cells = cells - 1 end
+		if not rowArgs.data then cells = cells - 1 end
+		if not rowArgs.data_b then cells = cells - 1 end
+		if not rowArgs.data_c then cells = cells - 1 end
 		local row = root:tag('tr')
 		if rowArgs.label == nil or noMobileHRRow(rowArgs.label) == 'nomobile' then
 			row:addClass(noMobileHRRow(rowArgs.data))
 		end
-		row:addClass(rowArgs.rowclass)
-		row:cssText(rowArgs.rowstyle)
-		row:attr('id', rowArgs.rowid)
+		row
+			:addClass(rowArgs.rowclass)
+			:cssText(rowArgs.rowstyle)
+			:attr('id', rowArgs.rowid)
 		if rowArgs.label then
 			row
 				:tag('th')
+					:attr('colspan', colspan/cells)
 					:attr('scope', 'row')
 					:attr('id', rowArgs.labelid)
 					:css('text-align', 'left')
@@ -116,16 +124,42 @@ local function addRow(rowArgs)
 					:wikitext(addNewline(rowArgs.label))
 					:done()
 		end
-		local dataCell = row:tag('td')
-		dataCell
-			:attr('colspan', not rowArgs.label and 2 or nil)
-			:attr('id', rowArgs.dataid)
-			:addClass(rowArgs.class)
-			:css('text-align', not rowArgs.label and 'center' or nil)
-			:cssText(rowArgs.datastyle)
-			:cssText(rowArgs.datastylenum)
-			:wikitext(addNewline(rowArgs.data))
-			:done()
+		if rowArgs.data then
+			row
+				:tag('td')
+					:attr('colspan', colspan/cells)
+					:attr('id', rowArgs.dataid)
+					:addClass(rowArgs.class)
+					:css('text-align', not (rowArgs.label or rowArgs.data_b or rowArgs.data_c) and 'center' or nil)
+					:cssText(rowArgs.datastyle)
+					:cssText(rowArgs.datastylenum)
+					:wikitext(addNewline(rowArgs.data))
+					:done()
+		end
+		if rowArgs.data_b then
+			row
+				:tag('td')
+					:attr('colspan', colspan/cells)
+					:attr('id', rowArgs.dataid_b)
+					:addClass(rowArgs.class_b)
+					:css('text-align', not (rowArgs.label or rowArgs.data or rowArgs.data_c) and 'center' or nil)
+					:cssText(rowArgs.datastyle_b)
+					:cssText(rowArgs.datastylenum_b)
+					:wikitext(addNewline(rowArgs.data_b))
+					:done()
+		end
+		if rowArgs.data_c then
+			row
+				:tag('td')
+					:attr('colspan', colspan/cells)
+					:attr('id', rowArgs.dataid_c)
+					:addClass(rowArgs.class_c)
+					:css('text-align', not (rowArgs.label or rowArgs.data or rowArgs.data_b) and 'center' or nil)
+					:cssText(rowArgs.datastyle_c)
+					:cssText(rowArgs.datastylenum_c)
+					:wikitext(addNewline(rowArgs.data_c))
+					:done()
+		end
 	end
 end
 
@@ -145,7 +179,7 @@ local function renderAboveRow()
 	root
 		:tag('tr')
 			:tag('th')
-				:attr('colspan', 2)
+				:attr('colspan', colspan)
 				:addClass(args.aboveclass)
 				:css('text-align', 'center')
 				:css('font-size', '125%')
@@ -188,7 +222,7 @@ local function renderBelowRow()
 	root
 		:tag('tr')
 			:tag('td')
-				:attr('colspan', '2')
+				:attr('colspan', colspan)
 				:addClass(args.belowclass)
 				:css('text-align', 'center')
 				:cssText(args.belowstyle)
@@ -253,7 +287,8 @@ local function preprocessRows()
 				args['header' .. tostring(lastheader)] = nil
 			end
 			lastheader = num
-		elseif args['data' .. tostring(num)] and mw.ustring.match(args['data' .. tostring(num)], '^%S') then
+		elseif (args['data' .. tostring(num)] or args['data' .. tostring(num) .. 'a'] or args['data' .. tostring(num) .. 'b'] or args['data' .. tostring(num) .. 'c'])
+		and mw.ustring.match(args['data' .. tostring(num)] or args['data' .. tostring(num) .. 'a'] or args['data' .. tostring(num) .. 'b'] or args['data' .. tostring(num) .. 'c'], '%S') then
 			lastheader = nil
 		end
 	end
@@ -269,20 +304,30 @@ local function renderRows()
 	table.sort(rownums)
 	for k, num in ipairs(rownums) do
 		addRow({
-			header = args['header' .. tostring(num)],
-			headerstyle = args['headerstyle' .. tostring(num)],
-			label = args['label' .. tostring(num)],
-			labelstyle = args['labelstyle' .. tostring(num)],
-			data = args['data' .. tostring(num)],
-			datastyle = args.datastyle,
-			datastylenum = args['datastyle' .. tostring(num)],
-			class = args['class' .. tostring(num)],
+			rowid = args['rowid' .. tostring(num)],
 			rowclass = args['rowclass' .. tostring(num)],
 			rowstyle = args['rowstyle' .. tostring(num)],
-			dataid = args['dataid' .. tostring(num)],
-			labelid = args['labelid' .. tostring(num)],
+			header = args['header' .. tostring(num)],
 			headerid = args['headerid' .. tostring(num)],
-			rowid = args['rowid' .. tostring(num)]
+			headerstyle = args['headerstyle' .. tostring(num)],
+			label = args['label' .. tostring(num)],
+			labelid = args['labelid' .. tostring(num)],
+			labelstyle = args['labelstyle' .. tostring(num)],
+			data = args['data' .. tostring(num)] or args['data' .. tostring(num) .. 'a'],
+			data_b = args['data' .. tostring(num) .. 'b'],
+			data_c = args['data' .. tostring(num) .. 'c'],
+			dataid = args['dataid' .. tostring(num)] or args['dataid' .. tostring(num) .. 'a'],
+			dataid_b = args['dataid' .. tostring(num) .. 'b'],
+			dataid_c = args['dataid' .. tostring(num) .. 'c'],
+			datastyle = args.datastyle or args.datastylea,
+			datastyle_b = args.datastyle or args.datastyleb,
+			datastyle_c = args.datastyle or args.datastylec,
+			datastylenum = args['datastyle' .. tostring(num)] or args['datastyle' .. tostring(num) .. 'a'],
+			datastylenum_b = args['datastyle' .. tostring(num) .. 'b'],
+			datastylenum_c = args['datastyle' .. tostring(num) .. 'c'],
+			class = args['class' .. tostring(num)] or args['class' .. tostring(num) .. 'a'],
+			class_b = args['class' .. tostring(num) .. 'b'],
+			class_c = args['class' .. tostring(num) .. 'c']
 		})
 	end
 end
@@ -293,7 +338,7 @@ local function renderNavBar()
 	root
 		:tag('tr')
 			:tag('td')
-				:attr('colspan', '2')
+				:attr('colspan', colspan)
 				:css('text-align', 'right')
 				:wikitext(mw.getCurrentFrame():expandTemplate({
 					title = 'navbar',
@@ -304,19 +349,9 @@ end
 local function renderItalicTitle()
 	local italicTitle = args['italic title'] and mw.ustring.lower(args['italic title'])
 	if italicTitle == '' or italicTitle == 'force' or italicTitle == 'yes' then
-		root:wikitext(mw.getCurrentFrame():expandTemplate({title = 'italic title'}))
+		return mw.getCurrentFrame():expandTemplate({title = 'italic title'})
 	end
-end
-
-local function renderTrackingCategories()
-	if args.decat ~= 'yes' then
-		if #(getArgNums('data')) == 0 and mw.title.getCurrentTitle().namespace == 0 then
-			root:wikitext('[[Category:Articles which use infobox templates with no data rows]]')
-		end
-		if args.child == 'yes' and args.title then
-			root:wikitext('[[Category:Pages which use embedded infobox templates with the title parameter]]')
-		end
-	end
+	return ''
 end
 
 local function _infobox()
@@ -341,19 +376,16 @@ local function _infobox()
 					:css('float', 'none')
 					:css('background-color', 'transparent')
 			else
-				root
-					:css('width', '22em')
+				root:css('width', '22em')
 			end
-		root
-			:cssText(args.bodystyle)
+		root:cssText(args.bodystyle)
 
 		renderTitle()
 		renderAboveRow()
 	else
 		root = mw.html.create()
-
-		root
-			:wikitext(args.title)
+		
+		root:wikitext(args.title)
 	end
 
 	renderSubheaders()
@@ -362,10 +394,8 @@ local function _infobox()
 	renderRows()
 	renderBelowRow()
 	renderNavBar()
-	renderItalicTitle()
-	-- renderTrackingCategories()
 
-	return cleanInfobox(tostring(root))
+	return cleanInfobox(tostring(root)) .. renderItalicTitle()
 end
 
 local function preprocessSingleArg(argName)
@@ -391,7 +421,7 @@ local function preprocessArgs(prefixTable, step)
 	end
 
 	-- Get arguments without a number suffix, and check for bad input.
-	for i,v in ipairs(prefixTable) do
+	for i, v in ipairs(prefixTable) do
 		if type(v) ~= 'table' or type(v.prefix) ~= "string" or (v.depend and type(v.depend) ~= 'table') then
 			error('Invalid input detected to preprocessArgs prefix table', 2)
 		end
@@ -410,22 +440,25 @@ local function preprocessArgs(prefixTable, step)
 	-- Get arguments with number suffixes.
 	local a = 1 -- Counter variable.
 	local moreArgumentsExist = true
-	while moreArgumentsExist == true do
+	while moreArgumentsExist do
 		moreArgumentsExist = false
 		for i = a, a + step - 1 do
-			for j,v in ipairs(prefixTable) do
-				local prefixArgName = v.prefix .. tostring(i)
-				if origArgs[prefixArgName] then
-					moreArgumentsExist = true -- Do another loop if any arguments are found, even blank ones.
-					preprocessSingleArg(prefixArgName)
-				end
-				-- Process the depend table if the prefix argument is present and not blank, or
-				-- we are processing "prefix1" and "prefix" is present and not blank, and
-				-- if the depend table is present.
-				if v.depend and (args[prefixArgName] or (i == 1 and args[v.prefix])) then
-					for j,dependValue in ipairs(v.depend) do
-						local dependArgName = dependValue .. tostring(i)
-						preprocessSingleArg(dependArgName)
+			for j, v in ipairs(prefixTable) do
+				v.suffix = v.suffix or {''}
+				for k = 1, #v.suffix do
+					local prefixArgName = v.prefix .. tostring(i) .. (v.suffix[k])
+					if origArgs[prefixArgName] then
+						moreArgumentsExist = true -- Do another loop if any arguments are found, even blank ones.
+						preprocessSingleArg(prefixArgName)
+					end
+					-- Process the depend table if the prefix argument is present and not blank, or
+					-- we are processing "prefix1" and "prefix" is present and not blank, and
+					-- if the depend table is present.
+					if v.depend and (args[prefixArgName] or (i == 1 and args[v.prefix])) then
+						for l, dependValue in ipairs(v.depend) do
+							local dependArgName = dependValue .. tostring(i)
+							preprocessSingleArg(dependArgName)
+						end
 					end
 				end
 			end
@@ -474,15 +507,15 @@ function p.infobox(frame)
 	preprocessArgs({
 		{prefix = 'header'},
 		{prefix = 'headerstyle'},
-		{prefix = 'data', depend = {'label'}},
-		{prefix = 'labelstyle'},
-		{prefix = 'datastyle'},
+		{prefix = 'headerid'},
+		{prefix = 'data', suffix = {'', 'a', 'b', 'c'}, depend = {'label'}},
+		{prefix = 'dataid', suffix = {'', 'a', 'b', 'c'}, depend = {'label'}},
+		{prefix = 'datastyle', suffix = {'', 'a', 'b', 'c'}, depend = {'label'}},
+		{prefix = 'class', suffix = {'', 'a', 'b', 'c'}, depend = {'label'}},
 		{prefix = 'rowclass'},
 		{prefix = 'rowstyle'},
-		{prefix = 'class'},
-		{prefix = 'dataid'},
+		{prefix = 'labelstyle'},
 		{prefix = 'labelid'},
-		{prefix = 'headerid'},
 		{prefix = 'rowid'}
 	}, 100)
 	preprocessSingleArg('headerclass')
