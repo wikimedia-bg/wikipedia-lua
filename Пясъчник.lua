@@ -21,7 +21,7 @@ local function fixInput(str)
 		-- remove categories from cells
 		-- add them in a separate table
 		str = mw.ustring.gsub(str, '(%[%[([^%[%]]-):[^%[%]]+%]%])', function (m, subm)
-			subm = mw.trim.text(mw.ustring.lower(subm))
+			subm = mw.text.trim(mw.ustring.lower(subm))
 			if subm ~= 'категория' and subm ~= 'category' then return m end
 			table.insert(cats, m)
 			return ''
