@@ -3,11 +3,32 @@ local p = {}
 local args = {}
 local origArgs
 local root
-local cats = {}
+local cat = {
+	isAdded = {},
+	add = {}
+}
 local colspan = 12
 
-local function fixInput(str)
+local function formatInput(str)
 	if str then
+		-- Remove categories from data cells
+		-- Add them in a separate table to be concatenated outside of the infobox
+		str = mw.ustring.gsub(str, '(%[%[([^%[%]]-):[^%[%]]+%]%])', function (m, subm)
+			subm = mw.text.trim(mw.ustring.lower(subm))
+			if subm == 'категория' or subm == 'category' then
+				if not cat.isAdded[m] then
+					cat.isAdded[m] = true
+					table.insert(cat.add, m)
+				end
+				return ''
+			end
+			return m
+		end)
+		if mw.ustring.match(str, '^%s*$') then
+			-- Data input is empty or contains only whitespace characters;
+			-- no point to continue, so return nothing
+			return nil
+		end
 		-- Add newline when a string begins and ends with
 		-- wikilists
 		str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
@@ -18,15 +39,6 @@ local function fixInput(str)
 		-- wikihorizontal rules
 		str = mw.ustring.gsub(str, '^(%-%-%-%-+)', '\n%1')
 		str = mw.ustring.gsub(str, '(\n%-%-%-%-+)$', '%1\n')
-		-- remove categories from cells
-		-- add them in a separate table
-		str = mw.ustring.gsub(str, '(%[%[([^%[%]]-):[^%[%]]+%]%])', function (m, subm)
-			subm = mw.text.trim(mw.ustring.lower(subm))
-			if subm ~= 'категория' and subm ~= 'category' then return m end
-			table.insert(cats, m)
-			return ''
-		end)
-		if mw.ustring.match(str, '^%s*$') then str = nil end
 	end
 	return str
 end
@@ -92,11 +104,11 @@ end
 local function addRow(rowArgs)
 	-- Adds a row to the infobox, with either a header cell
 	-- or a label/data cell combination.
-	rowArgs.header = fixInput(rowArgs.header)
-	rowArgs.label = fixInput(rowArgs.label)
-	rowArgs.data_a = fixInput(rowArgs.data_a)
-	rowArgs.data_b = fixInput(rowArgs.data_b)
-	rowArgs.data_c = fixInput(rowArgs.data_c)
+	rowArgs.header = formatInput(rowArgs.header)
+	rowArgs.label = formatInput(rowArgs.label)
+	rowArgs.data_a = formatInput(rowArgs.data_a)
+	rowArgs.data_b = formatInput(rowArgs.data_b)
+	rowArgs.data_c = formatInput(rowArgs.data_c)
 	if rowArgs.header and mw.ustring.lower(rowArgs.header) ~= '_blank_' and mw.ustring.lower(rowArgs.header) ~= '_empty_' and mw.ustring.lower(rowArgs.header) ~= '_none_' then
 		root
 			:tag('tr')
@@ -174,7 +186,7 @@ local function addRow(rowArgs)
 end
 
 local function renderTitle()
-	args.title = fixInput(args.title)
+	args.title = formatInput(args.title)
 	if not args.title then return end
 
 	root
@@ -185,7 +197,7 @@ local function renderTitle()
 end
 
 local function renderAboveRow()
-	args.above = fixInput(args.above)
+	args.above = formatInput(args.above)
 	if not args.above then return end
 
 	root
@@ -229,7 +241,7 @@ local function renderBelowRow()
 	if not (args.child or args.subbox) then
 		args.below = args.below or commonsBelow() -- Get commons only when an infobox doesn't have subbox/child params
 	end
-	args.below = fixInput(args.below)
+	args.below = formatInput(args.below)
 	if not args.below then return end
 
 	root
@@ -271,7 +283,7 @@ local function renderImages()
 	end
 	local imagenums = getArgNums('image')
 	for k, num in ipairs(imagenums) do
-		local caption = fixInput(args['caption' .. num])
+		local caption = formatInput(args['caption' .. num])
 		local data = mw.html.create():wikitext(args['image' .. num])
 		if caption then
 			data
@@ -294,12 +306,12 @@ local function preprocessRows()
 	table.sort(rownums)
 	local lastheader
 	for k, num in ipairs(rownums) do
-		if args['header' .. num] then
+		if formatInput(args['header' .. num]) then
 			if lastheader then
 				args['header' .. lastheader] = nil
 			end
 			lastheader = num
-		elseif args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c'] then
+		elseif formatInput(args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c']) then
 			lastheader = nil
 		end
 	end
@@ -372,12 +384,13 @@ local function _infobox()
 			if args.subbox == 'yes' then
 				root
 					:css('padding', '0')
-					:css('border', 'none')
-					:css('margin', '-3px')
+					:css('margin', '-0.4em 0')
+					:css('border', '0')
+					:css('border-spacing', '0 0.4em')
 					:css('width', 'auto')
 					:css('min-width', '100%')
 					:css('font-size', '100%')
-					:css('clear', 'none')
+					:css('clear', 'both')
 					:css('float', 'none')
 					:css('background-color', 'transparent')
 			else
@@ -400,7 +413,7 @@ local function _infobox()
 	renderBelowRow()
 	renderNavBar()
 
-	return cleanInfobox(tostring(root)) .. renderItalicTitle() .. table.concat(cats)
+	return cleanInfobox(tostring(root)) .. renderItalicTitle() .. table.concat(cat.add)
 end
 
 local function preprocessSingleArg(argName)
