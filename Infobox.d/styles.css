@@ -1,0 +1,59 @@
+/*
+* Тази стилова страница съдържа само малка част от стиловите правила за инфокутиите.
+* Останалата част от правилата са в МедияУики:Common.css – все още
+* има шаблони, които не ползват модул/шаблон „Инфокутия“ и разчитат на тях.
+* За евентуално преместване тук, след като се мигрира изцяло към „Инфокутия“.
+*/
+.infobox-title,
+.infobox-above,
+.infobox-subheader,
+.infobox-image,
+.infobox-header,
+.infobox-data-only,
+.infobox-below {
+	text-align: center;
+}
+
+.infobox-above {
+	font-size: 125%;
+	font-weight: bold;
+}
+
+.infobox-label,
+.infobox-data {
+	text-align: left;
+}
+
+.infobox-navbar {
+	text-align: right;
+}
+
+.infobox .navbar {
+	font-size: 100%;
+}
+
+.infobox-italic-title {
+	display: none;
+}
+
+.infobox-subbox {
+	padding: 0;
+	margin: -5px 0;
+	border: 0;
+	border-spacing: 0 5px;
+	width: auto;
+	min-width: 100%;
+	font-size: 100%;
+	clear: none;
+	float: none;
+	background-color: transparent;
+}
+
+/*
+* Зануляване на padding-а в мобилната версия за редовете, съдържащи само други
+* вложени инфокутии, за да се постигне максимално близък изглед с настолната версия
+*/
+body.skin-minerva .infobox th.onlysubbox,
+body.skin-minerva .infobox td.onlysubbox {
+	padding: 0 !important;
+}
