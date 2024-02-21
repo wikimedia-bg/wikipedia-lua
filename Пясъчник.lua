@@ -216,7 +216,7 @@ local function preprocessRows()
 				args['header' .. lastheader] = nil
 			end
 			lastheader = num
-		elseif args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c'] then
+		elseif not (args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c']) then
 			lastheader = nil
 		end
 	end
