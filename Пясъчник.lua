@@ -1,45 +1,45 @@
--- This module implements {{Infobox}}
+-- This module implements {{Infobox}} and {{Infobox3col}}
 local p = {}
 local args = {}
 local origArgs
 local root
-local cat = {
-	isAdded = {},
-	add = {}
-}
-local colspan = 12
+local colspan = 2
+local cat = { present = {}, ins = {} }
 
 local function formatInput(str)
-	if str then
-		-- Remove categories from data cells
-		-- Add them in a separate table to be concatenated outside of the infobox
-		str = mw.ustring.gsub(str, '(%[%[([^%[%]]-):[^%[%]]+%]%])', function (m, subm)
-			subm = mw.text.trim(mw.ustring.lower(subm))
-			if subm == 'категория' or subm == 'category' then
-				if not cat.isAdded[m] then
-					cat.isAdded[m] = true
-					table.insert(cat.add, m)
-				end
-				return ''
+	-- Remove categories from data cells
+	-- Add them in a separate table to be concatenated outside of the infobox
+	str = mw.ustring.gsub(str, '(%[%[([^%[%]]-):[^%[%]]+%]%])', function (m, subm)
+		subm = mw.text.trim(mw.ustring.lower(subm))
+		if subm == 'категория' or subm == 'category' then
+			if not cat.present[m] then
+				cat.present[m] = true
+				table.insert(cat.ins, m)
 			end
-			return m
-		end)
-		if mw.ustring.match(str, '^%s*$') then
-			-- Data input is empty or contains only whitespace characters;
-			-- no point to continue, so return nothing
-			return nil
+			return ''
 		end
-		-- Add newline when a string begins and ends with
-		-- wikilists
-		str = mw.ustring.gsub(str, '^([%*#;:])', '\n%1')
-		str = mw.ustring.gsub(str, '(\n[%*#;:][^\r\n]*)$', '%1\n')
-		-- wikitables
-		str = mw.ustring.gsub(str, '^(%{%|)', '\n%1')
-		str = mw.ustring.gsub(str, '(\n%|%})$', '%1\n')
-		-- wikihorizontal rules
-		str = mw.ustring.gsub(str, '^(%-%-%-%-+)', '\n%1')
-		str = mw.ustring.gsub(str, '(\n%-%-%-%-+)$', '%1\n')
+		return m
+	end)
+	-- Remove an empty table or subbox
+	str = mw.ustring.gsub(str, '<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>', '')
+	
+	if mw.ustring.match(str, '^%s*$') then
+		-- Input is empty or contains only whitespace characters;
+		-- no point to continue, so return nothing
+		return nil
 	end
+	
+	-- Add newline when a string begins and ends with
+	-- wikilists
+	str = mw.ustring.gsub(str, '^%s*([*#;:])', '\n%1')
+	str = mw.ustring.gsub(str, '(\n[*#;:][^\n]*)%s*$', '%1\n')
+	-- wikitables
+	str = mw.ustring.gsub(str, '^%s*({|)', '\n%1')
+	str = mw.ustring.gsub(str, '(\n|})%s*$', '%1\n')
+	-- wikihorizontal rules
+	str = mw.ustring.gsub(str, '^%s*(%-%-%-%-+)', '\n%1')
+	str = mw.ustring.gsub(str, '(\n%-%-%-%-+)%s*$', '%1\n')
+	
 	return str
 end
 
@@ -53,21 +53,22 @@ local function cleanInfobox(str)
 		-- and no other content precedes it/follows it
 		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*(<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>)', '%1')
 		str = mw.ustring.gsub(str, '(</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>)%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '%1')
-		-- Remove an empty table/infobox
-		str = mw.ustring.gsub(str, '<[Tt][Aa][Bb][Ll][Ee][^<>]*>%s*</[Tt][Aa][Bb][Ll][Ee]%s*>', '')
-		-- Remove empty cell rows
-		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
-		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
-		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
-		str = mw.ustring.gsub(str, '<[Tt][Rr][^<>]*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*<[Tt][DdHh][^<>]*>%s*</[Tt][DdHh]%s*>%s*</[Tt][Rr]%s*>', '')
-	until str == last
+	until last == str
 	return str
 end
 
 local function noMobileHRRow(str)
 	-- Add class 'nomobile' when a row contains only horizontal rule
-	if str and (mw.ustring.match(str, '^%s*%-%-%-%-+%s*$') or mw.ustring.match(str, '^%s*<[Hh][Rr][^<>]*>%s*$')) then
+	if mw.ustring.match(str or '', '^%s*%-%-%-%-+%s*$') or mw.ustring.match(str or '', '^%s*<[Hh][Rr][^<>]*>%s*$') then
 		return 'nomobile'
+	end
+	return nil
+end
+
+local function addSubboxClass(str)
+	-- Add class 'has-subbox' when string
+	if mw.ustring.match(str or '', '^%s*<[Tt][Aa][Bb][Ll][Ee][^<>]-["%s]infobox%-subbox["%s][^<>]*>.*</[Tt][Aa][Bb][Ll][Ee]%s*>%s*$') then
+		return 'onlysubbox'
 	end
 	return nil
 end
@@ -101,116 +102,257 @@ local function getArgNums(prefix, suffix)
 	return nums
 end
 
+local function renderTitle()
+	if not args.title then return end
+
+	root:tag('caption')
+		:addClass('infobox-title')
+		:addClass(addSubboxClass(args.title))
+		:addClass(args.titleclass)
+		:cssText(args.titlestyle)
+		:wikitext(args.title)
+		:done()
+end
+
+local function renderAboveRow()
+	if not args.above then return end
+
+	root:tag('tr')
+		:tag('td')
+			:attr('colspan', colspan)
+			:addClass('infobox-above')
+			:addClass(addSubboxClass(args.above))
+			:addClass(args.aboveclass)
+			:cssText(args.abovestyle)
+			:wikitext(args.above)
+			:done()
+end
+
+local function addSubheaderRow(subheaderArgs)
+	if not subheaderArgs.data then return end
+	
+	root:tag('tr')
+		:addClass(subheaderArgs.rowclass)
+		:tag('td')
+			:attr('colspan', colspan)
+			:addClass('infobox-subheader')
+			:addClass(addSubboxClass(subheaderArgs.data))
+			:addClass(subheaderArgs.class)
+			:cssText(subheaderArgs.datastyle)
+			:cssText(subheaderArgs.datastylenum)
+			:wikitext(subheaderArgs.data)
+			:done()
+end
+
+local function renderSubheaders()
+	if args.subheader and not args.subheader1 then
+		args.subheader1 = args.subheader
+		args.subheaderrowclass1 = args.subheaderrowclass
+	end
+	local subheadernums = getArgNums('subheader')
+	for k, num in ipairs(subheadernums) do
+		addSubheaderRow({
+			rowclass = args['subheaderrowclass' .. num],
+			data = args['subheader' .. num],
+			datastyle = args.subheaderstyle,
+			datastylenum = args['subheaderstyle' .. num],
+			class = args.subheaderclass,
+		})
+	end
+end
+
+local function addImageRow(imageArgs)
+	if not imageArgs.data then return end
+
+	root:tag('tr')
+		:addClass(imageArgs.rowclass)
+		:tag('td')
+			:attr('colspan', colspan)
+			:addClass('infobox-image')
+			:addClass(addSubboxClass(imageArgs.data))
+			:addClass(imageArgs.class)
+			:cssText(imageArgs.datastyle)
+			:cssText(imageArgs.datastylenum)
+			:wikitext(imageArgs.data)
+			:done()
+end
+
+local function renderImages()
+	if args.image and not args.image1 then
+		args.image1 = args.image
+	end
+	if args.caption and not args.caption1 then
+		args.caption1 = args.caption
+	end
+	local imagenums = getArgNums('image')
+	for k, num in ipairs(imagenums) do
+		local caption = args['caption' .. num]
+		local data = mw.html.create():wikitext(args['image' .. num])
+		if caption then
+			data:tag('div')
+				:cssText(args.captionstyle)
+				:wikitext(caption)
+				:done()
+		end
+		addImageRow({
+			rowclass = args['imagerowclass' .. num],
+			data = tostring(data),
+			datastyle = args.imagestyle,
+			datastylenum = args['imagestyle' .. num],
+			class = args.imageclass,
+		})
+	end
+end
+
+local function preprocessRows()
+	if not args.autoheaders then return end
+
+	local rownums = union(getArgNums('header'), getArgNums('data'))
+	table.sort(rownums)
+	local lastheader
+	for k, num in ipairs(rownums) do
+		if args['header' .. num] then
+			if lastheader then
+				args['header' .. lastheader] = nil
+			end
+			lastheader = num
+		elseif args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c'] then
+			lastheader = nil
+		end
+	end
+	if lastheader then
+		args['header' .. lastheader] = nil
+	end
+end
+
 local function addRow(rowArgs)
 	-- Adds a row to the infobox, with either a header cell
 	-- or a label/data cell combination.
-	rowArgs.header = formatInput(rowArgs.header)
-	rowArgs.label = formatInput(rowArgs.label)
-	rowArgs.data_a = formatInput(rowArgs.data_a)
-	rowArgs.data_b = formatInput(rowArgs.data_b)
-	rowArgs.data_c = formatInput(rowArgs.data_c)
-	if rowArgs.header and mw.ustring.lower(rowArgs.header) ~= '_blank_' and mw.ustring.lower(rowArgs.header) ~= '_empty_' and mw.ustring.lower(rowArgs.header) ~= '_none_' then
-		root
-			:tag('tr')
-				:addClass(noMobileHRRow(rowArgs.header))
-				:addClass(rowArgs.rowclass)
-				:cssText(rowArgs.rowstyle)
-				:tag('th')
-					:attr('colspan', colspan)
-					:attr('scope', 'colgroup')
-					:addClass(rowArgs.class)
-					:addClass(args.headerclass)
-					:css('text-align', 'center')
-					:cssText(args.headerstyle)
-					:cssText(rowArgs.headerstyle)
-					:wikitext(rowArgs.header)
-					:done()
-	elseif rowArgs.data_a or rowArgs.data_b or rowArgs.data_c then
-		local cells = 4
-		if not rowArgs.label then cells = cells - 1 end
-		if not rowArgs.data_a then cells = cells - 1 end
-		if not rowArgs.data_b then cells = cells - 1 end
-		if not rowArgs.data_c then cells = cells - 1 end
-		local row = root:tag('tr')
-		if cells == 1 then
-			row:addClass(noMobileHRRow(rowArgs.data_a or rowArgs.data_b or rowArgs.data_c))
-		end
-		row
+	if rowArgs.header
+	and mw.ustring.lower(rowArgs.header) ~= '_blank_'
+	and mw.ustring.lower(rowArgs.header) ~= '_empty_'
+	and mw.ustring.lower(rowArgs.header) ~= '_none_' then
+		root:tag('tr')
+			:addClass(noMobileHRRow(rowArgs.header))
 			:addClass(rowArgs.rowclass)
 			:cssText(rowArgs.rowstyle)
+			:tag('th')
+				:attr('colspan', colspan)
+				:attr('scope', 'colgroup')
+				:addClass('infobox-header')
+				:addClass(addSubboxClass(rowArgs.header))
+				:addClass(rowArgs.class)
+				:addClass(args.headerclass)
+				:cssText(args.headerstyle)
+				:cssText(rowArgs.headerstyle)
+				:wikitext(rowArgs.header)
+				:done()
+	elseif rowArgs.data then
+		local row = root:tag('tr')
+		if not rowArgs.label or noMobileHRRow(rowArgs.label) then
+			row:addClass(noMobileHRRow(rowArgs.data))
+		end
+		row:addClass(rowArgs.rowclass)
+		row:cssText(rowArgs.rowstyle)
+		local span = colspan
 		if rowArgs.label then
-			row
-				:tag('th')
-					:attr('colspan', colspan/cells)
-					:attr('scope', 'row')
-					:css('text-align', 'left')
-					:cssText(args.labelstyle)
-					:cssText(rowArgs.labelstyle)
-					:wikitext(rowArgs.label)
-					:done()
+			span = span - 1
+			row:tag('th')
+				:attr('scope', 'row')
+				:addClass('infobox-label')
+				:addClass(addSubboxClass(rowArgs.label))
+				:cssText(args.labelstyle)
+				:cssText(rowArgs.labelstyle)
+				:wikitext(rowArgs.label)
+				:done()
 		end
-		if rowArgs.data_a then
-			row
-				:tag('td')
-					:attr('colspan', colspan/cells)
-					:addClass(rowArgs.class_a)
-					:css('text-align', not (rowArgs.label or rowArgs.data_b or rowArgs.data_c) and 'center' or nil)
-					:cssText(rowArgs.datastyle_a)
-					:cssText(rowArgs.datastylenum_a)
-					:wikitext(rowArgs.data_a)
-					:done()
+		row:tag('td')
+			:attr('colspan', span > 1 and span or nil)
+			:addClass(rowArgs.label and 'infobox-data' or 'infobox-data-only')
+			:addClass(addSubboxClass(rowArgs.data))
+			:addClass(rowArgs.class)
+			:cssText(rowArgs.datastyle)
+			:cssText(rowArgs.datastylenum)
+			:wikitext(rowArgs.data)
+			:done()
+	elseif rowArgs.data_a then
+		local row = root:tag('tr')
+		row:addClass(rowArgs.rowclass)
+		row:cssText(rowArgs.rowstyle)
+		row:tag('th')
+			:attr('scope', 'row')
+			:addClass('infobox-label')
+			:addClass(addSubboxClass(rowArgs.label))
+			:cssText(args.labelstyle)
+			:cssText(rowArgs.labelstyle)
+			:wikitext(rowArgs.label)
+			:done()
+		row:tag('td')
+				:addClass('infobox-data')
+				:addClass(addSubboxClass(rowArgs.data_a))
+				:addClass(rowArgs.class_a)
+				:cssText(rowArgs.datastyle_a)
+				:cssText(rowArgs.datastylenum_a)
+				:wikitext(rowArgs.data_a)
+				:done()
+		if args.render_b then
+			row:tag('td')
+				:addClass('infobox-data')
+				:addClass(addSubboxClass(rowArgs.data_b))
+				:addClass(rowArgs.class_b)
+				:cssText(rowArgs.datastyle_b)
+				:cssText(rowArgs.datastylenum_b)
+				:wikitext(rowArgs.data_b)
+				:done()
 		end
-		if rowArgs.data_b then
-			row
-				:tag('td')
-					:attr('colspan', colspan/cells)
-					:addClass(rowArgs.class_b)
-					:css('text-align', not (rowArgs.label or rowArgs.data_a or rowArgs.data_c) and 'center' or nil)
-					:cssText(rowArgs.datastyle_b)
-					:cssText(rowArgs.datastylenum_b)
-					:wikitext(rowArgs.data_b)
-					:done()
-		end
-		if rowArgs.data_c then
-			row
-				:tag('td')
-					:attr('colspan', colspan/cells)
-					:addClass(rowArgs.class_c)
-					:css('text-align', not (rowArgs.label or rowArgs.data_a or rowArgs.data_b) and 'center' or nil)
-					:cssText(rowArgs.datastyle_c)
-					:cssText(rowArgs.datastylenum_c)
-					:wikitext(rowArgs.data_c)
-					:done()
+		if args.render_c then
+			row:tag('td')
+				:addClass('infobox-data')
+				:addClass(addSubboxClass(rowArgs.data_c))
+				:addClass(rowArgs.class_c)
+				:cssText(rowArgs.datastyle_c)
+				:cssText(rowArgs.datastylenum_c)
+				:wikitext(rowArgs.data_c)
+				:done()
 		end
 	end
 end
 
-local function renderTitle()
-	args.title = formatInput(args.title)
-	if not args.title then return end
-
-	root
-		:tag('caption')
-			:addClass(args.titleclass)
-			:cssText(args.titlestyle)
-			:wikitext(args.title)
-end
-
-local function renderAboveRow()
-	args.above = formatInput(args.above)
-	if not args.above then return end
-
-	root
-		:tag('tr')
-			:tag('th')
-				:attr('colspan', colspan)
-				:addClass(args.aboveclass)
-				:css('text-align', 'center')
-				:css('font-size', '125%')
-				:css('font-weight', 'bold')
-				:cssText(args.abovestyle)
-				:wikitext(args.above)
-				:done()
+local function renderRows()
+	-- Gets the union of the header and data argument numbers,
+	-- and renders them all in order using addRow.
+	local rownums = union(getArgNums('header'), getArgNums('data', '[abc]?'))
+	table.sort(rownums)
+	local title = mw.title.getCurrentTitle()
+	for k, num in ipairs(rownums) do
+		if title.namespace == 3 and args['header' .. num] and (args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c']) then
+			mw.addWarning("Едновременна употреба на ''header'' и ''data'' с числова наставка '''" .. num .. "'''.")
+		end
+		addRow({
+			rowclass = args['rowclass' .. num],
+			rowstyle = args['rowstyle' .. num],
+			header = args['header' .. num],
+			headerstyle = args['headerstyle' .. num],
+			label = args['label' .. num],
+			labelstyle = args['labelstyle' .. num],
+			data = args['data' .. num],
+			datastyle = args.datastyle,
+			datastylenum = args['datastyle' .. num],
+			class = args['class' .. num],
+			data_a = args['data' .. num .. 'a'],
+			datastyle_a = args.datastylea,
+			datastylenum_a = args['datastyle' .. num .. 'a'] or args['datastyle' .. num],
+			class_a = args['class' .. num .. 'a'],
+			data_b = args['data' .. num .. 'b'],
+			datastyle_b = args.datastyleb,
+			datastylenum_b = args['datastyle' .. num .. 'b'] or args['datastyle' .. num],
+			class_b = args['class' .. num .. 'b'],
+			data_c = args['data' .. num .. 'c'],
+			datastyle_c = args.datastylec,
+			datastylenum_c = args['datastyle' .. num .. 'c'] or args['datastyle' .. num],
+			class_c = args['class' .. num .. 'c']
+		})
+	end
 end
 
 local function commonsBelow()
@@ -239,188 +381,103 @@ end
 
 local function renderBelowRow()
 	if not (args.child or args.subbox) then
+		if not args.below and not args.belowstyle then
+			args.belowstyle = args.headerstyle or args.abovestyle
+		end
 		args.below = args.below or commonsBelow() -- Get commons only when an infobox doesn't have subbox/child params
 	end
-	args.below = formatInput(args.below)
 	if not args.below then return end
 
-	root
-		:tag('tr')
-			:tag('td')
-				:attr('colspan', colspan)
-				:addClass(args.belowclass)
-				:css('text-align', 'center')
-				:cssText(args.belowstyle)
-				:wikitext(args.below)
-				:done()
-end
-
-local function renderSubheaders()
-	if args.subheader then
-		args.subheader1 = args.subheader
-	end
-	if args.subheaderrowclass then
-		args.subheaderrowclass1 = args.subheaderrowclass
-	end
-	local subheadernums = getArgNums('subheader')
-	for k, num in ipairs(subheadernums) do
-		addRow({
-			rowclass = args['subheaderrowclass' .. num],
-			data_a = args['subheader' .. num],
-			datastyle_a = args.subheaderstyle,
-			datastylenum_a = args['subheaderstyle' .. num],
-			class_a = args.subheaderclass,
-		})
-	end
-end
-
-local function renderImages()
-	if args.image then
-		args.image1 = args.image
-	end
-	if args.caption then
-		args.caption1 = args.caption
-	end
-	local imagenums = getArgNums('image')
-	for k, num in ipairs(imagenums) do
-		local caption = formatInput(args['caption' .. num])
-		local data = mw.html.create():wikitext(args['image' .. num])
-		if caption then
-			data
-				:tag('div')
-					:cssText(args.captionstyle)
-					:wikitext(caption)
-		end
-		addRow({
-			rowclass = args['imagerowclass' .. num],
-			data_a = tostring(data),
-			datastyle_a = args.imagestyle,
-		})
-	end
-end
-
-local function preprocessRows()
-	if not args.autoheaders then return end
-
-	local rownums = union(getArgNums('header'), getArgNums('data'))
-	table.sort(rownums)
-	local lastheader
-	for k, num in ipairs(rownums) do
-		if formatInput(args['header' .. num]) then
-			if lastheader then
-				args['header' .. lastheader] = nil
-			end
-			lastheader = num
-		elseif formatInput(args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c']) then
-			lastheader = nil
-		end
-	end
-	if lastheader then
-		args['header' .. lastheader] = nil
-	end
-end
-
-local function renderRows()
-	-- Gets the union of the header and data argument numbers,
-	-- and renders them all in order using addRow.
-	local rownums = union(getArgNums('header'), getArgNums('data', '[abc]?'))
-	table.sort(rownums)
-	for k, num in ipairs(rownums) do
-		addRow({
-			rowclass = args['rowclass' .. num],
-			rowstyle = args['rowstyle' .. num],
-			header = args['header' .. num],
-			headerstyle = args['headerstyle' .. num],
-			label = args['label' .. num],
-			labelstyle = args['labelstyle' .. num],
-			data_a = args['data' .. num] or args['data' .. num .. 'a'],
-			data_b = args['data' .. num .. 'b'],
-			data_c = args['data' .. num .. 'c'],
-			datastyle_a = args.datastyle or args.datastylea,
-			datastyle_b = args.datastyle or args.datastyleb,
-			datastyle_c = args.datastyle or args.datastylec,
-			datastylenum_a = args['datastyle' .. num] or args['datastyle' .. num .. 'a'],
-			datastylenum_b = args['datastyle' .. num .. 'b'],
-			datastylenum_c = args['datastyle' .. num .. 'c'],
-			class_a = args['class' .. num] or args['class' .. num .. 'a'],
-			class_b = args['class' .. num .. 'b'],
-			class_c = args['class' .. num .. 'c']
-		})
-	end
+	root:tag('tr')
+		:tag('td')
+			:attr('colspan', colspan)
+			:addClass('infobox-below')
+			:addClass(addSubboxClass(args.below))
+			:addClass(args.belowclass)
+			:cssText(args.belowstyle)
+			:wikitext(args.below)
+			:done()
 end
 
 local function renderNavBar()
 	if not args.name then return end
 
-	root
-		:tag('tr')
-			:tag('td')
-				:attr('colspan', colspan)
-				:css('text-align', 'right')
-				:wikitext(mw.getCurrentFrame():expandTemplate({
-					title = 'navbar',
-					args = { args.name, mini = 1 }
-				}))
+	root:tag('tr')
+		:tag('td')
+			:attr('colspan', colspan)
+			:addClass('infobox-navbar')
+			:wikitext(mw.getCurrentFrame():expandTemplate{ title = 'navbar', args = {args.name, mini = 1}})
+			:done()
 end
 
 local function renderItalicTitle()
+	if args.child == 'yes' or args.subbox == 'subbox' or args.subbox == 'child-3cols' then return end
+	
 	local italicTitle = args['italic title'] and mw.ustring.lower(args['italic title'])
 	if italicTitle == '' or italicTitle == 'force' or italicTitle == 'yes' then
-		return mw.getCurrentFrame():expandTemplate({title = 'italic title'})
+		root:tag('tr')
+			:addClass('infobox-italic-title')
+			:tag('td')
+				:attr('colspan', colspan)
+				:wikitext(mw.getCurrentFrame():expandTemplate{title = 'italic title'})
+				:done()
 	end
-	return ''
+end
+
+local function loadTemplateStyles()
+	if args.child or args.subbox then return '' end
+	
+	return mw.getCurrentFrame():extensionTag{
+		name = 'templatestyles',
+		args = { src = 'Модул:Infobox/styles.css' }
+	}
 end
 
 local function _infobox()
 	-- Specify the overall layout of the infobox, with special settings
-	-- if the infobox is used as a 'child' inside another infobox.
+	-- if the infobox is used as a 'child' inside another infobox.'
 	if args.child ~= 'yes' then
 		root = mw.html.create('table')
-
-		root
-			:addClass('infobox infobox-lua')
-			:addClass(args.bodyclass)
-
-			if args.subbox == 'yes' then
-				root
-					:css('padding', '0')
-					:css('margin', '-0.4em 0')
-					:css('border', '0')
-					:css('border-spacing', '0 0.4em')
-					:css('width', 'auto')
-					:css('min-width', '100%')
-					:css('font-size', '100%')
-					:css('clear', 'both')
-					:css('float', 'none')
-					:css('background-color', 'transparent')
-			else
-				root:css('width', '22em')
-			end
+		root:addClass('infobox')
+		if args.subbox == 'yes' or args.subbox == 'child-3cols' then
+			root:addClass('infobox-subbox')
+		else
+			root:addClass('infobox-lua')
+		end
+		root:addClass(args.bodyclass)
 		root:cssText(args.bodystyle)
-
-		renderTitle()
-		renderAboveRow()
+		if args.subbox ~= 'child-3cols' then
+			renderTitle()
+			renderAboveRow()
+		end
 	else
 		root = mw.html.create()
-		
 		root:wikitext(args.title)
 	end
-
+	
 	renderSubheaders()
 	renderImages()
 	preprocessRows()
 	renderRows()
 	renderBelowRow()
 	renderNavBar()
+	renderItalicTitle()
 
-	return cleanInfobox(tostring(root)) .. renderItalicTitle() .. table.concat(cat.add)
+	return loadTemplateStyles() .. cleanInfobox(tostring(root)) .. table.concat(cat.ins)
 end
 
-local function preprocessSingleArg(argName)
+local function preprocessSingleArg(argName, prefix)
 	-- If the argument exists and isn't blank, add it to the argument table.
 	-- Blank arguments are treated as nil to match the behaviour of ParserFunctions.
 	if origArgs[argName] and origArgs[argName] ~= '' then
-		args[argName] = origArgs[argName]
+		prefix = prefix or argName
+		if prefix == 'title' or prefix == 'above' or prefix == 'subheader'
+		or prefix == 'image' or prefix == 'caption' or prefix == 'header'
+		or prefix == 'label' or prefix == 'data' or prefix == 'below' then
+			args[argName] = formatInput(origArgs[argName])
+		else
+			args[argName] = origArgs[argName]
+		end
 	end
 end
 
@@ -431,6 +488,7 @@ local function preprocessArgs(prefixTable, step)
 	-- two possible fields, a "prefix" string and a "depend" table. The function always parses
 	-- parameters containing the "prefix" string, but only parses parameters in the "depend"
 	-- table if the prefix parameter is present and non-blank.
+	
 	if type(prefixTable) ~= 'table' then
 		error("Non-table value detected for the prefix table", 2)
 	end
@@ -440,7 +498,7 @@ local function preprocessArgs(prefixTable, step)
 
 	-- Get arguments without a number suffix, and check for bad input.
 	for i, v in ipairs(prefixTable) do
-		if type(v) ~= 'table' or type(v.prefix) ~= "string" or (v.depend and type(v.depend) ~= 'table') then
+		if type(v) ~= 'table' or type(v.prefix) ~= "string" or (v.depend and type(v.depend) ~= 'table') or (v.suffix and type(v.suffix) ~= 'table') then
 			error('Invalid input detected to preprocessArgs prefix table', 2)
 		end
 		preprocessSingleArg(v.prefix)
@@ -456,9 +514,9 @@ local function preprocessArgs(prefixTable, step)
 	end
 
 	-- Get arguments with number suffixes.
+	local moreArgumentsExist
 	local a = 1 -- Counter variable.
-	local moreArgumentsExist = true
-	while moreArgumentsExist do
+	repeat
 		moreArgumentsExist = false
 		for i = a, a + step - 1 do
 			for j, v in ipairs(prefixTable) do
@@ -467,33 +525,32 @@ local function preprocessArgs(prefixTable, step)
 					local prefixArgName = v.prefix .. i .. v.suffix[k]
 					if origArgs[prefixArgName] then
 						moreArgumentsExist = true -- Do another loop if any arguments are found, even blank ones.
-						preprocessSingleArg(prefixArgName)
+						preprocessSingleArg(prefixArgName, v.prefix)
+						if v.prefix == 'data' and args[prefixArgName] then
+							if not args.render_b and v.suffix[k] == 'b' then
+								args.render_b = true
+							elseif not args.render_c and v.suffix[k] == 'c' then
+								args.render_c = true
+							end
+						end
 					end
 					-- Process the depend table if the prefix argument is present and not blank, or
 					-- we are processing "prefix1" and "prefix" is present and not blank, and
 					-- if the depend table is present.
 					if v.depend and (args[prefixArgName] or (i == 1 and args[v.prefix])) then
 						for l, dependValue in ipairs(v.depend) do
-							local dependArgName = dependValue .. i
-							preprocessSingleArg(dependArgName)
+							local dependArgName = dependValue .. i .. v.suffix[k]
+							preprocessSingleArg(dependArgName, dependValue)
 						end
 					end
 				end
 			end
 		end
 		a = a + step
-	end
+	until not moreArgumentsExist
 end
 
-function p.infobox(frame)
-	-- If called via #invoke, use the args passed into the invoking template.
-	-- Otherwise, for testing purposes, assume args are being passed directly in.
-	if frame == mw.getCurrentFrame() then
-		origArgs = frame:getParent().args
-	else
-		origArgs = frame
-	end
-
+local function parseCommonParameters()
 	-- Parse the data parameters in the same order that the old {{infobox}} did, so that
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
@@ -512,38 +569,74 @@ function p.infobox(frame)
 	preprocessSingleArg('abovestyle')
 	preprocessArgs({
 		{prefix = 'subheader', depend = {'subheaderstyle', 'subheaderrowclass'}}
-	}, 10)
+	}, 5)
 	preprocessSingleArg('subheaderstyle')
 	preprocessSingleArg('subheaderclass')
 	preprocessSingleArg('image')
 	preprocessSingleArg('caption')
 	preprocessArgs({
-		{prefix = 'image', depend = {'caption', 'imagerowclass'}}
-	}, 10)
+		{prefix = 'image', depend = {'caption', 'imagestyle', 'imagerowclass'}}
+	}, 5)
 	preprocessSingleArg('captionstyle')
 	preprocessSingleArg('imagestyle')
 	preprocessSingleArg('imageclass')
-	preprocessArgs({
-		{prefix = 'rowclass'},
-		{prefix = 'rowstyle'},
-		{prefix = 'header'},
-		{prefix = 'headerstyle'},
-		{prefix = 'labelstyle'},
-		{prefix = 'data', suffix = {'', 'a', 'b', 'c'}, depend = {'label'}},
-		{prefix = 'datastyle', suffix = {'', 'a', 'b', 'c'}},
-		{prefix = 'class', suffix = {'', 'a', 'b', 'c'}},
-	}, 100)
 	preprocessSingleArg('headerclass')
 	preprocessSingleArg('headerstyle')
 	preprocessSingleArg('labelstyle')
-	preprocessSingleArg('datastyle')
-	preprocessSingleArg('datastylea')
-	preprocessSingleArg('datastyleb')
-	preprocessSingleArg('datastylec')
 	preprocessSingleArg('below')
 	preprocessSingleArg('belowclass')
 	preprocessSingleArg('belowstyle')
 	preprocessSingleArg('name')
+end
+
+function p.infobox(frame)
+	-- If called via #invoke, use the args passed into the invoking template.
+	-- Otherwise, for testing purposes, assume args are being passed directly in.
+	if frame == mw.getCurrentFrame() then
+		origArgs = frame:getParent().args
+	else
+		origArgs = frame
+	end
+	
+	parseCommonParameters()
+	preprocessArgs({
+		{prefix = 'header', depend = {'headerstyle'}},
+		{prefix = 'label', depend = {'labelstyle'}},
+		{prefix = 'data', depend = {'datastyle', 'class'}},
+		{prefix = 'rowclass'},
+		{prefix = 'rowstyle'}
+	}, 25)
+	preprocessSingleArg('datastyle')
+	
+	return _infobox()
+end
+
+function p.infobox3col(frame)
+	-- If called via #invoke, use the args passed into the invoking template.
+	-- Otherwise, for testing purposes, assume args are being passed directly in.
+	if frame == mw.getCurrentFrame() then
+		origArgs = frame:getParent().args
+	else
+		origArgs = frame
+	end
+	
+	parseCommonParameters()
+	if args.child == 'yes' then
+		args.subbox = 'child-3cols'
+		args.child = nil
+	end
+	preprocessArgs({
+		{prefix = 'header', depend = {'headerstyle'}},
+		{prefix = 'label', depend = {'labelstyle'}},
+		{prefix = 'data', depend = {'datastyle', 'class'}, suffix = {'', 'a', 'b', 'c'}},
+		{prefix = 'rowclass'},
+		{prefix = 'rowstyle'},
+	}, 25)
+	preprocessSingleArg('datastyle')
+	preprocessSingleArg('datastylea')
+	preprocessSingleArg('datastyleb')
+	preprocessSingleArg('datastylec')
+	colspan = colspan + (args.render_b and 1 or 0) + (args.render_c and 1 or 0)
 
 	return _infobox()
 end
