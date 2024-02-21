@@ -207,7 +207,7 @@ end
 local function preprocessRows()
 	if not args.autoheaders then return end
 
-	local rownums = union(getArgNums('header'), getArgNums('data'))
+	local rownums = union(getArgNums('header'), getArgNums('data', '[abc]?'))
 	table.sort(rownums)
 	local lastheader
 	for k, num in ipairs(rownums) do
@@ -216,7 +216,7 @@ local function preprocessRows()
 				args['header' .. lastheader] = nil
 			end
 			lastheader = num
-		elseif not (args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c']) then
+		elseif args['data' .. num] or args['data' .. num .. 'a'] or args['data' .. num .. 'b'] or args['data' .. num .. 'c'] then
 			lastheader = nil
 		end
 	end
