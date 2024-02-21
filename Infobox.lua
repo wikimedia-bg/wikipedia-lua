@@ -609,7 +609,7 @@ function p.infobox(frame)
 	return _infobox()
 end
 
-function p.infobox3col(frame)
+function p.infobox3cols(frame)
 	-- If called via #invoke, use the args passed into the invoking template.
 	-- Otherwise, for testing purposes, assume args are being passed directly in.
 	if frame == mw.getCurrentFrame() then
