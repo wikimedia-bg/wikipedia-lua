@@ -546,7 +546,15 @@ local function preprocessArgs(prefixTable, step)
 	until not moreArgumentsExist
 end
 
-local function parseCommonParameters()
+local function parseArgs(frame, version)
+	-- If called via #invoke, use the args passed into the invoking template.
+	-- Otherwise, for testing purposes, assume args are being passed directly in.
+	if frame == mw.getCurrentFrame() then
+		origArgs = frame:getParent().args
+	else
+		origArgs = frame
+	end
+
 	-- Parse the data parameters in the same order that the old {{infobox}} did, so that
 	-- references etc. will display in the expected places. Parameters that depend on
 	-- another parameter are only processed if that parameter is present, to avoid
@@ -576,9 +584,32 @@ local function parseCommonParameters()
 	preprocessSingleArg('captionstyle')
 	preprocessSingleArg('imagestyle')
 	preprocessSingleArg('imageclass')
+	if version == 'infobox' then
+		preprocessArgs({
+			{prefix = 'header', depend = {'headerstyle'}},
+			{prefix = 'label', depend = {'labelstyle'}},
+			{prefix = 'data', depend = {'datastyle', 'class'}},
+			{prefix = 'rowclass'},
+			{prefix = 'rowstyle'}
+		}, 50)
+	elseif version == 'infobox3cols' then
+		preprocessArgs({
+			{prefix = 'header', depend = {'headerstyle'}},
+			{prefix = 'label', depend = {'labelstyle'}},
+			{prefix = 'data', depend = {'datastyle', 'class'}, suffix = {'', 'a', 'b', 'c'}},
+			{prefix = 'rowclass'},
+			{prefix = 'rowstyle'},
+		}, 50)
+	end
 	preprocessSingleArg('headerclass')
 	preprocessSingleArg('headerstyle')
 	preprocessSingleArg('labelstyle')
+	preprocessSingleArg('datastyle')
+	if version == 'infobox3cols' then
+		preprocessSingleArg('datastylea')
+		preprocessSingleArg('datastyleb')
+		preprocessSingleArg('datastylec')
+	end
 	preprocessSingleArg('below')
 	preprocessSingleArg('belowclass')
 	preprocessSingleArg('belowstyle')
@@ -586,54 +617,17 @@ local function parseCommonParameters()
 end
 
 function p.infobox(frame)
-	-- If called via #invoke, use the args passed into the invoking template.
-	-- Otherwise, for testing purposes, assume args are being passed directly in.
-	if frame == mw.getCurrentFrame() then
-		origArgs = frame:getParent().args
-	else
-		origArgs = frame
-	end
-
-	parseCommonParameters()
-	preprocessArgs({
-		{prefix = 'header', depend = {'headerstyle'}},
-		{prefix = 'label', depend = {'labelstyle'}},
-		{prefix = 'data', depend = {'datastyle', 'class'}},
-		{prefix = 'rowclass'},
-		{prefix = 'rowstyle'}
-	}, 50)
-	preprocessSingleArg('datastyle')
-
+	parseArgs(frame, 'infobox')
 	return _infobox()
 end
 
 function p.infobox3cols(frame)
-	-- If called via #invoke, use the args passed into the invoking template.
-	-- Otherwise, for testing purposes, assume args are being passed directly in.
-	if frame == mw.getCurrentFrame() then
-		origArgs = frame:getParent().args
-	else
-		origArgs = frame
-	end
-
-	parseCommonParameters()
+	parseArgs(frame, 'infobox3cols')
 	if args.child == 'yes' then
 		args.subbox = 'yes'
 		args.child = nil
 	end
-	preprocessArgs({
-		{prefix = 'header', depend = {'headerstyle'}},
-		{prefix = 'label', depend = {'labelstyle'}},
-		{prefix = 'data', depend = {'datastyle', 'class'}, suffix = {'', 'a', 'b', 'c'}},
-		{prefix = 'rowclass'},
-		{prefix = 'rowstyle'},
-	}, 50)
-	preprocessSingleArg('datastyle')
-	preprocessSingleArg('datastylea')
-	preprocessSingleArg('datastyleb')
-	preprocessSingleArg('datastylec')
 	colspan = colspan + (args.render_b and 1 or 0) + (args.render_c and 1 or 0)
-
 	return _infobox()
 end
 
