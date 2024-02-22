@@ -410,7 +410,7 @@ local function renderNavBar()
 end
 
 local function renderItalicTitle()
-	if args.child == 'yes' or args.subbox == 'subbox' or args.subbox == 'child-3cols' then return end
+	if args.child == 'yes' or args.subbox == 'yes' then return end
 
 	local italicTitle = args['italic title'] and mw.ustring.lower(args['italic title'])
 	if italicTitle == '' or italicTitle == 'force' or italicTitle == 'yes' then
@@ -424,7 +424,7 @@ local function renderItalicTitle()
 end
 
 local function loadTemplateStyles()
-	if args.child or args.subbox then return '' end
+	if args.child == 'yes' or args.subbox == 'yes' then return '' end
 
 	return mw.getCurrentFrame():extensionTag{
 		name = 'templatestyles',
@@ -438,17 +438,15 @@ local function _infobox()
 	if args.child ~= 'yes' then
 		root = mw.html.create('table')
 		root:addClass('infobox')
-		if args.subbox == 'yes' or args.subbox == 'child-3cols' then
+		if args.subbox == 'yes' then
 			root:addClass('infobox-subbox')
 		else
 			root:addClass('infobox-lua')
 		end
 		root:addClass(args.bodyclass)
 		root:cssText(args.bodystyle)
-		if args.subbox ~= 'child-3cols' then
-			renderTitle()
-			renderAboveRow()
-		end
+		renderTitle()
+		renderAboveRow()
 	else
 		root = mw.html.create()
 		root:wikitext(args.title)
@@ -567,14 +565,14 @@ local function parseCommonParameters()
 	preprocessSingleArg('abovestyle')
 	preprocessArgs({
 		{prefix = 'subheader', depend = {'subheaderstyle', 'subheaderrowclass'}}
-	}, 5)
+	}, 10)
 	preprocessSingleArg('subheaderstyle')
 	preprocessSingleArg('subheaderclass')
 	preprocessSingleArg('image')
 	preprocessSingleArg('caption')
 	preprocessArgs({
 		{prefix = 'image', depend = {'caption', 'imagestyle', 'imagerowclass'}}
-	}, 5)
+	}, 10)
 	preprocessSingleArg('captionstyle')
 	preprocessSingleArg('imagestyle')
 	preprocessSingleArg('imageclass')
@@ -603,7 +601,7 @@ function p.infobox(frame)
 		{prefix = 'data', depend = {'datastyle', 'class'}},
 		{prefix = 'rowclass'},
 		{prefix = 'rowstyle'}
-	}, 25)
+	}, 50)
 	preprocessSingleArg('datastyle')
 
 	return _infobox()
@@ -620,7 +618,7 @@ function p.infobox3cols(frame)
 
 	parseCommonParameters()
 	if args.child == 'yes' then
-		args.subbox = 'child-3cols'
+		args.subbox = 'yes'
 		args.child = nil
 	end
 	preprocessArgs({
@@ -629,7 +627,7 @@ function p.infobox3cols(frame)
 		{prefix = 'data', depend = {'datastyle', 'class'}, suffix = {'', 'a', 'b', 'c'}},
 		{prefix = 'rowclass'},
 		{prefix = 'rowstyle'},
-	}, 25)
+	}, 50)
 	preprocessSingleArg('datastyle')
 	preprocessSingleArg('datastylea')
 	preprocessSingleArg('datastyleb')
