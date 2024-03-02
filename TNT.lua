@@ -49,7 +49,7 @@ function p.msg(frame)
 		elseif k == 2 then
 			id = mw.text.trim(v)
 		elseif type(k) == 'number' then
-			table.insert(params, mw.text.trim(v))
+			params[k - 2] = mw.text.trim(v)
 		elseif k == 'lang' and v ~= '_' then
 			lang = mw.text.trim(v)
 		end
@@ -95,39 +95,52 @@ function p.getTemplateData(dataset)
 	-- TODO: add '_' parameter once lua starts reindexing properly for "all" languages
 	local data = loadData(dataset)
 	local names = {}
-	for _, field in pairs(data.schema.fields) do
+	for _, field in ipairs(data.schema.fields) do
 		table.insert(names, field.name)
 	end
 
+	local numOnly = true
 	local params = {}
 	local paramOrder = {}
-	for _, row in pairs(data.data) do
+	for _, row in ipairs(data.data) do
 		local newVal = {}
 		local name = nil
-		for pos, val in pairs(row) do
-			local columnName = names[pos]
+		for pos, columnName in ipairs(names) do
 			if columnName == 'name' then
-				name = val
+				name = row[pos]
 			else
-				newVal[columnName] = val
+				newVal[columnName] = row[pos]
 			end
 		end
 		if name then
+			if (
+				(type(name) ~= "number")
+				and (
+					(type(name) ~= "string")
+					or not string.match(name, "^%d+$")
+				)
+			) then
+				numOnly = false
+			end
 			params[name] = newVal
 			table.insert(paramOrder, name)
 		end
 	end
 
 	-- Work around json encoding treating {"1":{...}} as an [{...}]
-	params['zzz123']=''
+	if numOnly then
+		params['zzz123']=''
+	end
 
 	local json = mw.text.jsonEncode({
 		params=params,
 		paramOrder=paramOrder,
-		description=data.description
+		description=data.description,
 	})
 
-	json = string.gsub(json,'"zzz123":"",?', "")
+	if numOnly then
+		json = string.gsub(json,'"zzz123":"",?', "")
+	end
 
 	return json
 end
@@ -156,7 +169,9 @@ loadData = function(dataset, lang)
 
 	-- Give helpful error to thirdparties who try and copy this module.
 	if not mw.ext or not mw.ext.data or not mw.ext.data.get then
-		error('Missing JsonConfig extension; Cannot load https://commons.wikimedia.org/wiki/Data:' .. dataset)
+		error(string.format([['''Missing JsonConfig extension, or not properly configured;
+Cannot load https://commons.wikimedia.org/wiki/Data:%s.
+See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_templates''']], dataset))
 	end
 
 	local data = mw.ext.data.get(dataset, lang)
