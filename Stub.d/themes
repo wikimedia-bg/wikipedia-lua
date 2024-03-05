@@ -459,7 +459,7 @@ return {
 						{ 'птици', 'Ruddy-turnstone-icon.png' },
 					{ 'протист|протисти', 'Cronoflagelado2.svg', 'протисти' },
 					{ 'растение|растения', 'Dahlia redoute.JPG', 'растения' },
-				{ 'прокариот|прокариоти|археи', 'Prokaryote cell diagram.svg', 'прокариоти' },
+				{ 'прокариот|прокариоти|археи|бактерии', 'Prokaryote cell diagram.svg', 'прокариоти' },
 			{ 'ботаника', 'Leaf.png' },
 				{ 'алгология', 'Algae Graphic.svg' },
 			{ 'физиология', 'Semipermeable membrane (svg).svg' },
