@@ -19,7 +19,7 @@ local i18n = {
 	},
 	text = {
 		navbar_mini = false, -- for navbar pos 2 only
-		navbar_text = 'This diagram:', -- for navbar pos 2 only
+		navbar_text = 'Тази кутия:', -- for navbar pos 2 only
 		legend_text = 'Легенда',
 		legend = {
 			default = '[[:en:Template:Railway line legend',
