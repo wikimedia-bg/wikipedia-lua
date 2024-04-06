@@ -3,9 +3,12 @@ local p = {}
 
 function p.main(frame)
 	local args = frame.args
-	local offset = args[1] + 0 or 0
-	local year = args[2] + 0 or os.date('%Y')
-	local linked = args[3] + 0 or 1
+	local offset = args[1] or 0
+	offset = offset + 0
+	local year = args[2] or os.date('%Y')
+	year = year + 0
+	local linked = args[3] or 1
+	linked = linked + 1
 
 	local dates =
 	{
