@@ -110,7 +110,7 @@ local function textWrap(code, dir, text, title)
 
 	title = trimText(title)
 	if title ~= '' then
-		root = mw.html.create('span'):attr('title', title)
+		root = mw.html.create('span'):attr('title', 'текст на ' .. title)
 	else
 		root = mw.html.create()
 	end
@@ -274,7 +274,7 @@ function p.cite(frame)
 
 	local name = locale_names[code] or mw.language.fetchLanguageName(code, 'bg')
 	if not name or name == '' then
-		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“')
+		return errorMessage('Неразпознат езиков код <code>' .. code ..'</code>')
 	end
 
 	return 'на ' .. name
