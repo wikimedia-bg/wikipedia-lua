@@ -99,9 +99,8 @@ local function charSet(...)
 	return result
 end
 
-local function textWrap(code, dir, text)
-	local mark = dir ~= 'ltr' and '&lrm;' or ''
-	local root = mw.html.create('span')
+local function textWrap(code, dir, text, title)
+	local root
 	local regex = '^[%A'
 		.. charSet('0000-007F', '0080-00FF', '0100-017F', '0180-024F', '2C60-2C7F', 'A720-A7FF', 'AB30-AB6F', '10780-107BF', '1DF00-1DFFF', '1E00-1EFF', '0250-02AF' , '1D00-1D7F', '1D80-1DBF') -- латиница (без Latin Ligatures и Fullwidth Latin Letters)
 		.. charSet('0400-04FF', '0500-052F', '2DE0-2DFF', 'A640-A69F', '1C80-1C8F') -- кирилица
@@ -109,13 +108,20 @@ local function textWrap(code, dir, text)
 		.. charSet('0300-036F', '1AB0-1AFF', '1DC0-1DFF') -- Combining Diacritical Marks, CDM Extended, CDM Supplement
 		.. ']+$' -- край на променливата regex; обхватите на символите са взети от https://unicode.org/charts/
 
-	root:attr('lang', code)
-	root:attr('dir', dir)
-	root:css('font-style', mw.ustring.match(text, regex) and 'italic' or 'normal') -- добавя курсив, само ако текстът е изцяло от горепосочените писмени системи или други неазбучни символи
-	root:wikitext(text)
-	root:done()
+	title = trimText(title)
+	if title ~= '' then
+		root = mw.html.create('span'):attr('title', title)
+	else
+		root = mw.html.create()
+	end
+	root:tag('span')
+			:attr('lang', code)
+			:attr('dir', dir)
+			:css('font-style', mw.ustring.match(text, regex) and 'italic' or 'normal') -- добавя курсив, само ако текстът е изцяло от горепосочените писмени системи или други неазбучни символи
+			:wikitext(text)
+			:done()
 
-	return tostring(root) .. mark
+	return tostring(root)
 end
 
 --[=[===========================================================================
@@ -290,12 +296,11 @@ function p.main(frame)
 	local name = locale_names[code] or mw.language.fetchLanguageName(code, 'bg')
 
 	if not name or name == '' then
-		return errorMessage('Неразпознат езиков код „<samp>' .. code ..'</samp>“', ns == 0 and '[[Категория:Страници с грешки]]')
+		return errorMessage('Неразпознат езиков код <code>' .. code ..'</code>', ns == 0 and '[[Категория:Страници с грешки]]')
 	end
 
-	local success, dir = pcall(function()
-		return mw.language.new(code):getDir() -- ресурсоемка анализираща функция
-	end)
+	-- ресурсоемка анализираща функция
+	local success, dir = pcall(function() return mw.language.new(code):getDir() end)
 	if not success then
 		dir = 'auto' -- при прехвърляне на лимита на ресурсоемките анализиращи функции
 	end
@@ -318,6 +323,48 @@ function p.main(frame)
 	end
 
 	return str
+end
+
+--[=[===========================================================================
+================================== {{LANG2}} ===================================
+=============================================================================]=]
+
+function p.main2(frame)
+	local args = frame:getParent().args
+	local code = mw.ustring.lower(trimText(args[1]))
+	local words = {}
+
+	if code == '' then
+		return ns == 0 and errorMessage('Празен първи позиционен параметър', '[[Категория:Страници с грешки]]') or ''
+	end
+
+	local name = locale_names[code] or mw.language.fetchLanguageName(code, 'bg')
+
+	if not name or name == '' then
+		return errorMessage('Неразпознат езиков код <code>' .. code ..'</code>', ns == 0 and '[[Категория:Страници с грешки]]')
+	end
+
+	 -- ресурсоемка анализираща функция
+	local success, dir = pcall(function() return mw.language.new(code):getDir() end)
+	if not success then
+		dir = 'auto' -- при прехвърляне на лимита на ресурсоемките анализиращи функции
+	end
+
+	for k, v in pairs(args) do
+		k = tonumber(k)
+		if type(k) == 'number' and k > 1 then
+			v = trimText(v)
+			if v ~= '' then
+				table.insert(words, textWrap(code, dir, v, name))
+			end
+		end
+	end
+
+	if #words > 0 then
+		return mw.text.listToText(words, ', ', ' или ')
+	else
+		return str
+	end
 end
 
 return p
