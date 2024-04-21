@@ -453,6 +453,9 @@ function lsc(location, defcountry, date, earliestdate, latestdate)
 			end
 		end
 	end
+	if lstr == sstr then sstr = '' end
+	if lstr == cstr then cstr = '' end
+	if sstr == cstr then cstr = '' end
 	return joinStrings({lstr, sstr, cstr}, ', ')
 end
 
