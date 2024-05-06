@@ -24,9 +24,7 @@ local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_n
 
 --[[ Помощна функция, замества {{coord/display/title}} ]]
 local function displaytitle(s, notes)
-	local l = "[[Географска координатна система|Координати]]: " .. s
-	local co = '<span id="coordinates">' .. l .. notes .. '</span>';
-	return '<span style="font-size: small;">' .. co .. '</span>';
+	return '<div id="coordinates" class="coordinates-title plainlinksneverexpand nomobile noprint">[[Географска координатна система|Координати]]: ' .. s .. notes .. '</div>'
 end
 
 --[[ Помощна функция, замества {{coord/display/inline}} ]]
