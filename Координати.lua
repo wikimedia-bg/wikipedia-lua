@@ -24,9 +24,11 @@ local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_n
 
 --[[ Помощна функция, замества {{coord/display/title}} ]]
 local function displaytitle(s, notes)
-	return '<div id="coordinates" class="nomobile noprint">'
-		.. '[[Географска координатна система|Координати]]: ' .. s .. notes
-		.. '</div>'
+	return mw.getCurrentFrame():extensionTag{
+		name = 'indicator',
+		args = { name = 'coordinates' },
+		content = '<span id="coordinates">[[Географска координатна система|Координати]]: ' .. s .. notes .. '</span>'
+	}
 end
 
 --[[ Помощна функция, замества {{coord/display/inline}} ]]
