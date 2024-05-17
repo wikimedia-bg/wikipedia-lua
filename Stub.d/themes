@@ -465,7 +465,6 @@ return {
 			{ 'ботаника', 'Leaf.png' },
 				{ 'алгология', 'Algae Graphic.svg' },
 			{ 'физиология', 'Semipermeable membrane (svg).svg' },
-				{ 'размножаване', 'ChromosomeArt.jpg' },
 		{ 'медицина|здраве', 'Medistub.svg' },
 			{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
 			{ 'заболяване|болест', 'Esculaap4.svg', 'заболявания' },
