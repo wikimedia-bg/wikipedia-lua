@@ -465,7 +465,6 @@ return {
 		{ 'медицина|здраве', 'Medistub.svg' },
 			{ 'дентална медицина', 'Lower wisdom tooth.jpg' },
 			{ 'заболяване|болест', 'Esculaap4.svg', 'заболявания' },
-			{ 'неврология', 'Neuro-stub.png' },
 			{ 'психология', 'Greek uc psi icon.svg' },
 			{ 'фармакология', 'Emoji u1f48a.svg' },
 				{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
