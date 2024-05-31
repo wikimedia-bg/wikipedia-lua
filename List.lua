@@ -1,3 +1,6 @@
+-- This module outputs different kinds of lists. At the moment, bulleted,
+-- unbulleted, horizontal, ordered, and horizontal ordered lists are supported.
+
 local libUtil = require('libraryUtil')
 local checkType = libUtil.checkType
 local mTableTools = require('Модул:TableTools')
@@ -16,19 +19,12 @@ function p.makeListData(listType, args)
 	-- Constructs a data table to be passed to p.renderList.
 	local data = {}
 
-	-- Classes and TemplateStyles
+	-- Classes
 	data.classes = {}
-	data.templatestyles = ''
 	if listType == 'horizontal' or listType == 'horizontal_ordered' then
-		table.insert(data.classes, 'hlist')
-		data.templatestyles = mw.getCurrentFrame():extensionTag{
-			name = 'templatestyles', args = { src = 'Hlist/styles.css' }
-		}
+		table.insert(data.classes, 'hlist hlist-separated')
 	elseif listType == 'unbulleted' then
 		table.insert(data.classes, 'plainlist')
-		data.templatestyles = mw.getCurrentFrame():extensionTag{
-			name = 'templatestyles', args = { src = 'Plainlist/styles.css' }
-		}
 	end
 	table.insert(data.classes, args.class)
 
@@ -90,7 +86,7 @@ function p.makeListData(listType, args)
 	-- to be easier to understand for non-coders.
 	data.itemStyle = args.item_style or args.li_style
 	data.items = {}
-	for _, num in ipairs(mTableTools.numKeys(args)) do
+	for i, num in ipairs(mTableTools.numKeys(args)) do
 		local item = {}
 		item.content = args[num]
 		item.style = args['item' .. tostring(num) .. '_style']
@@ -113,7 +109,7 @@ function p.renderList(data)
 	
 	-- Render the main div tag.
 	local root = mw.html.create('div')
-	for _, class in ipairs(data.classes or {}) do
+	for i, class in ipairs(data.classes or {}) do
 		root:addClass(class)
 	end
 	root:css{['margin-left'] = data.marginLeft}
@@ -134,7 +130,7 @@ function p.renderList(data)
 	end
 
 	-- Render the list items
-	for _, t in ipairs(data.items or {}) do
+	for i, t in ipairs(data.items or {}) do
 		local item = list:tag('li')
 		if data.itemStyle then
 			item:cssText(data.itemStyle)
@@ -147,7 +143,7 @@ function p.renderList(data)
 			:wikitext(t.content)
 	end
 
-	return data.templatestyles .. tostring(root)
+	return tostring(root)
 end
 
 function p.renderTrackingCategories(args)
@@ -161,7 +157,7 @@ function p.renderTrackingCategories(args)
 	end
 	local ret = ''
 	if isDeprecated then
-		ret = ret .. '[[Категория:Списък на шаблони с отхвърлени параметри]]'
+		ret = ret .. '[[Категория:Списък на шаблони с отхвърлени (остарели) параметри]]'
 	end
 	return ret
 end
@@ -184,7 +180,6 @@ for listType in pairs(listTypes) do
 	p[listType] = function (frame)
 		local mArguments = require('Модул:Arguments')
 		local origArgs = mArguments.getArgs(frame, {
-			frameOnly = ((frame and frame.args and frame.args.frameonly or '') ~= ''),
 			valueFunc = function (key, value)
 			if not value or not mw.ustring.find(value, '%S') then return nil end
 			if mw.ustring.find(value, '^%s*[%*#;:]') then
