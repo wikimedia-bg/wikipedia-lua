@@ -1,5 +1,6 @@
 return {
 	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
+		{ 'биохимично вещество', 'AlphaHelixSection (yellow).svg' },
 	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
 		{ 'биологичен процес', '74 Poleno.svg', 'биологични процеси' },
 	{ 'свойство', 'Hoejde.png', 'свойства' },
