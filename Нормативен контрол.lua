@@ -33,6 +33,7 @@ local databases = {
 	{ id = 'Dimensions', property = 6178, pattern = '%d+.%d+' },
 	{ id = 'DSI', property = 2349, pattern = '[1-9]%d*' },
 	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
+	{ id = 'EIK', label='ЕИК', property = 8894, pattern = '%d%d%d%d%d%d%d%d%d' },
 	{ id = 'Emmy', property = 8381, pattern = '%S+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
