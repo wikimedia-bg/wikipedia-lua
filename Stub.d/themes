@@ -1,6 +1,7 @@
 return {
 	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
 		{ 'биохимично вещество', 'AlphaHelixSection (yellow).svg', 'биохимични вещества' },
+				{ 'лекарство|антибиотик', 'Capsule, gélule.svg', 'лекарства' },
 	{ 'процес|дейност', 'Noun Project process icon 2796062.svg', 'процеси' },
 		{ 'биологичен процес', '74 Poleno.svg', 'биологични процеси' },
 	{ 'свойство', 'Hoejde.png', 'свойства' },
@@ -465,7 +466,6 @@ return {
 			{ 'заболяване|болест', 'Esculaap4.svg', 'заболявания' },
 			{ 'психология', 'Greek uc psi icon.svg' },
 			{ 'фармакология', 'Emoji u1f48a.svg' },
-				{ 'антибиотик', 'Capsule, gélule.svg', 'антибиотици' },
 		{ 'информатика', 'Computer-blue.svg' },
 			{ 'софтуер', 'Crystal Clear app kpackage.png' },
 				{ 'уебсайт|сайт', 'Crystal Clear mimetype html.png', 'уебсайтове' },
