@@ -1241,8 +1241,9 @@ local function getTaxobox(itemId)
 						end
 					end
 					local ref = string.format('%s. // %s. International Union for Conservation of Nature.%s <small>(на английски)</small>', link, redListLink, refDate)
-
-					taxobox.status = taxobox.status .. mw.getCurrentFrame():extensionTag('ref', ref)
+					if taxobox.status then
+						taxobox.status = taxobox.status .. mw.getCurrentFrame():extensionTag('ref', ref)
+					end
 				end
 			end
 		end
