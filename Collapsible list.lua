@@ -1,3 +1,5 @@
+-- This module implements {{collapsible list}}.
+
 local p = {}
 
 local function getListItem( data )
@@ -38,13 +40,6 @@ local function formatAttributes( attrType, ... )
     return mw.ustring.format( ' %s="%s"', attrType, table.concat( t, ' ' ) )
 end
 
--- TODO: use Module:List. Since the update for this comment is routine,
--- this is blocked without a consensus discussion by
--- [[MediaWiki_talk:Common.css/Archive_15#plainlist_+_hlist_indentation]]
--- if we decide hlist in plainlist in this template isn't an issue, we can use
--- module:list directly
--- [https://en.wikipedia.org/w/index.php?title=Module:Collapsible_list/sandbox&oldid=1130172480]
--- is an implementation (that will code rot slightly I expect)
 local function buildList( args )
     -- Get the list items.
     local listItems = {}
@@ -56,65 +51,38 @@ local function buildList( args )
         return ''
     end
     listItems = table.concat( listItems )
-
-	-- hack around mw-collapsible show/hide jumpiness by looking for text-alignment
-	-- by setting a margin if centered
-	local textAlignmentCentered = 'text%-align%s*:%s*center'
-	local centeredTitle = (args.title_style and args.title_style:lower():match(textAlignmentCentered)
-		or args.titlestyle and args.titlestyle:lower():match(textAlignmentCentered))
-	local centeredTitleSpacing
-	if centeredTitle then
-		centeredTitleSpacing = 'margin: 0 4em'
-	else
-		centeredTitleSpacing = ''
-	end
-
+    
     -- Get class, style and title data.
-    local collapsibleContainerClass = formatAttributes(
-    	'class',
-    	'collapsible-list',
-    	'mw-collapsible',
-    	not args.expand and 'mw-collapsed'
-    )
-    local collapsibleContainerStyle = formatAttributes(
+    local div1class = formatAttributes( 'class', 'mw-collapsible', not args.expand and 'mw-collapsed' )
+    local div1style = formatAttributes(
         'style',
-         -- mostly work around .infobox-full-data defaulting to centered
-        'text-align: left;',
         args.frame_style,
-        args.framestyle
+        args.framestyle,
+        not ( args.frame_style or args.framestyle ) and 'border: none; padding: 0;'
     )
-    local collapsibleTitleStyle = formatAttributes(
+    local div2class = formatAttributes( 'class', '' )
+    local div2style = formatAttributes(
         'style',
-        'line-height: 1.6em; font-weight: bold;',
+        'font-size: 105%;',
         args.title_style,
-        args.titlestyle
-    )
-    local jumpyTitleStyle = formatAttributes(
-        'style',
-        centeredTitleSpacing
+        args.titlestyle,
+        not ( args.title_style or args.titlestyle ) and 'background: transparent; text-align: left;'
     )
     local title = args.title or 'Списък'
     local ulclass = formatAttributes( 'class', 'mw-collapsible-content', args.hlist and 'hlist' )
     local ulstyle = formatAttributes( 
         'style',
-        'margin-top: 0; margin-bottom: 0; line-height: inherit;',
-        not args.bullets and 'list-style: none; margin-left: 0;',
+        not args.bullets and 'list-style: none none; margin-left: 0;',
         args.list_style,
-        args.liststyle
+        args.liststyle,
+        not ( args.list_style or args.liststyle ) and 'text-align: left;',
+        'font-size: 105%; margin-top: 0; margin-bottom: 0; line-height: inherit;'
     )
-    
-    local hlist_templatestyles = ''
-    if args.hlist then
-    	hlist_templatestyles = mw.getCurrentFrame():extensionTag{
-    		name = 'templatestyles', args = { src = 'Hlist/styles.css' }
-    	}
-    end
     
     -- Build the list.
     return mw.ustring.format( 
-        '%s<div%s%s>\n<div%s><div%s>%s</div></div>\n<ul%s%s>%s</ul>\n</div>',
-        hlist_templatestyles, collapsibleContainerClass, collapsibleContainerStyle,
-        collapsibleTitleStyle, jumpyTitleStyle, title, ulclass, ulstyle, listItems
+        '<div%s%s>\n<div%s%s>%s</div>\n<ul%s%s>%s</ul>\n</div>',
+        div1class, div1style, div2class, div2style, title, ulclass, ulstyle, listItems
     )
 end
 
