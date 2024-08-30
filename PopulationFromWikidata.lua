@@ -28,7 +28,7 @@ function p.Greece(frame)
 			local timeValue = qualifier.datavalue.value.time
 
 			if timeValue:sub(2, 5) == year then
-				return claim.mainsnak.datavalue.value["amount"]
+				return tonumber(claim.mainsnak.datavalue.value["amount"])
 			end
 		end
 	end
