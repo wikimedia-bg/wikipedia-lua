@@ -2,7 +2,7 @@ require('strict')
 
 local p = {}
 
-local cells = mw.loadData('Module:Tree chart/data')
+local cells = mw.loadData('Модул:Tree chart/data')
 
 function p._main(cell_args)
 	local ret = mw.html.create()
@@ -30,7 +30,7 @@ function p._main(cell_args)
 end
 
 function p.main(frame)
-	local args = require('Module:Arguments').getArgs(frame, {wrappers = 'Template:Tree chart', trim = false, removeBlanks = false})
+	local args = require('Модул:Arguments').getArgs(frame, {wrappers = 'Шаблон:Tree chart', trim = false, removeBlanks = false})
 	local cell_args = {
 		colspan = args.colspan,
 		rowspan = args.rowspan,
