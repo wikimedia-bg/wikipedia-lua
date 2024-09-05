@@ -1,6 +1,9 @@
--- This module may be used to compare the arguments passed to the parent
--- with a list of arguments, returning a specified result if an argument is
--- not on the list
+-- Модулът може да се използва за сравняване на аргументите подадени на родителя
+-- with a list of arguments, връщайки определен резултат, ако аргументът не е в списъка
+-- 
+
+require ('strict');
+
 local p = {}
 
 local function trim(s)
@@ -12,7 +15,7 @@ local function isnotempty(s)
 end
 
 local function clean(text)
-	-- Return text cleaned for display and truncated if too long.
+	-- Връщаният текст е почистен и изрязан, ако е твърде дълъг.
 	-- Strip markers are replaced with dummy text representing the original wikitext.
 	local pos, truncated
 	local function truncate(text)
@@ -34,20 +37,22 @@ local function clean(text)
 	return table.concat(parts)
 end
 
-function p.check (frame)
-	local args = frame.args
-	local pargs = frame:getParent().args
-	local ignoreblank = isnotempty(args['ignoreblank'])
-	local showblankpos = isnotempty(args['showblankpositional'])
-	local knownargs = {}
-	local unknown = args['unknown'] or 'Found _VALUE_, '
-	local preview = args['preview']
+function p._check(args, pargs)
+	if type(args) ~= "table" or type(pargs) ~= "table" then
+		-- TODO: error handling
+		return
+	end
+					 
+						   
+								
 
-	local values = {}
-	local res = {}
-	local regexps = {}
+				  
+			   
+				   
 
 	-- create the list of known args, regular expressions, and the return string
+	local knownargs = {}
+	local regexps = {}
 	for k, v in pairs(args) do
 		if type(k) == 'number' then
 			v = trim(v)
@@ -56,13 +61,16 @@ function p.check (frame)
 			table.insert(regexps, '^' .. v .. '$')
 		end
 	end
-	if isnotempty(preview) then
-		preview = '<div class="hatnote" style="color:red"><strong>Warning:</strong> ' .. preview .. ' (this message is shown only in preview).</div>'
-	elseif preview == nil then
-		preview = unknown
-	end
+							
+																											
+						   
+				   
+	
 
 	-- loop over the parent args, and make sure they are on the list
+	local ignoreblank = isnotempty(args['ignoreblank'])
+	local showblankpos = isnotempty(args['showblankpositional'])
+	local values = {}
 	for k, v in pairs(pargs) do
 		if type(k) == 'string' and knownargs[k] == nil then
 			local knownflag = false
@@ -75,32 +83,54 @@ function p.check (frame)
 			if not knownflag and ( not ignoreblank or isnotempty(v) )  then
 				table.insert(values, clean(k))
 			end
-		elseif type(k) == 'number' and
-			knownargs[tostring(k)] == nil and
-			( showblankpos or isnotempty(v) )
-		then
-			table.insert(values, k .. ' = ' .. clean(v))
+		elseif type(k) == 'number' and knownargs[tostring(k)] == nil then
+			local knownflag = false
+			for _, regexp in ipairs(regexps) do
+				if mw.ustring.match(tostring(k), regexp) then
+					knownflag = true
+					break
+				end
+			end
+			if not knownflag and ( showblankpos or isnotempty(v) ) then
+	  
+				table.insert(values, k .. ' = ' .. clean(v))
+			end
 		end
 	end
 
 	-- add results to the output tables
+	local res = {}
 	if #values > 0 then
-		if frame:preprocess( "{{REVISIONID}}" ) == "" then
-			unknown = preview
+		local unknown_text = args['unknown'] or 'Found _VALUE_, '
+
+		if mw.getCurrentFrame():preprocess( "{{REVISIONID}}" ) == "" then
+			local preview_text = args['preview']
+			if isnotempty(preview_text) then
+				preview_text = require('Module:If preview')._warning({preview_text})
+			elseif preview_text == nil then
+				preview_text = unknown_text
+			end
+			unknown_text = preview_text
 		end
 		for _, v in pairs(values) do
-			if v == '' then
-				-- Fix odd bug for | = which gets stripped to the empty string and
-				-- breaks category links
-				v = ' '
-			end
+				  
+			-- Fix odd bug for | = which gets stripped to the empty string and
+			-- breaks category links
+			if v == '' then v = ' ' end
+
 			-- avoid error with v = 'example%2' ("invalid capture index")
-			local r =  unknown:gsub('_VALUE_', {_VALUE_ = v})
+			local r = unknown_text:gsub('_VALUE_', {_VALUE_ = v})
 			table.insert(res, r)
 		end
 	end
 
 	return table.concat(res)
+end
+
+function p.check(frame)
+	local args = frame.args
+	local pargs = frame:getParent().args
+	return p._check(args, pargs)
 end
 
 return p
