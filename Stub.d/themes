@@ -646,7 +646,7 @@ return {
 		-- по занятие
 		{ 'архитект', 'Corinthian_capital.png', 'архитекти' },
 		{ 'бизнесмен', 'Nuvola apps kchart.svg', 'бизнесмени' },
-		{ 'военен', 'Army-personnel-icon.png', 'военни личности' },
+		{ 'военен|офицер|генерал', 'Army-personnel-icon.png', 'военни личности' },
 		{ 'журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG', 'журналисти' },
 		{ 'измислен герой|персонаж|герой|литературен герой|филмов герой', 'Cib-staticman (CoreUI Icons v1.0.0).svg', 'измислени герои' },
 		{ 'изследовател', 'Marco Polo portrait.jpg', 'изследователи' },
