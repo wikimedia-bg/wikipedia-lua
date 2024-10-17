@@ -558,7 +558,6 @@ return {
 			{ 'парична единица|валута|криптовалута', 'Gold Currency Symbols.svg', 'парични единици' },
 			{ 'предприятие|компания|фирма', 'Factory 1.png', 'предприятия' },
 			{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
-			{ 'счетоводство', 'Nuvola apps kchart.svg' },
 			{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
 				{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
 				{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
