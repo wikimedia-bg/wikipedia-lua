@@ -73,7 +73,7 @@ local databases = {
 	{ id = 'NSK', property = 1375, pattern = rep('%d', 9) },
 	{ id = 'OCLC', property = 243, pattern = '%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'OpenLibrary', label = 'Open Library', property = 648, pattern = 'OL[1-9]%d*[AMW]' },
-	{ id = 'ORCID', property = 496, pattern = '0000%-?000%d%-?%d%d%d%d%-?%d%d%d[%dX]' },
+	{ id = 'ORCID', property = 496, pattern = '%d%d%d%d%-%d%d%d%d%-%d%d%d%d%-%d%d%d[%dX]' },
 	{ id = 'PIC', property = 2750, pattern = '[1-9]%d*' },
 	{ id = 'PLWABN', property = 7293, pattern = '98' .. rep('%d', 10) .. '5606' },
 	{ id = 'RID', label = 'Researcher', property = 1053, pattern = { '[A-Z][A-Z]?[A-Z]?%-%d%d%d%d%-19%d%d', '[A-Z][A-Z]?[A-Z]?%-%d%d%d%d%-20%d%d' } },
@@ -136,7 +136,7 @@ local databases = {
 	{ id = 'Dyntaxa', property = 1939, pattern = '%d%d?%d?%d?%d?%d?%d?' }, ---[[]] DNE
 	{ id = 'eBird', property = 3444, pattern = { '[a-z%-][a-z%-][a-z%-]?[a-z%-]?[a-z%-]?[a-z%-]?%d?%d?', '[xy]00%d%d%d' } },
 	{ id = 'Ecocrop', property = 4753, pattern = '%d+' }, ---[[]] DNE
-	{ id = 'ECOS', property = 6030, pattern = '[1-9]%d*' }, ---[[Environmental Conservation Online System]] DNE
+	{ id = 'ECOS', property = 6030 }, ---[[Environmental Conservation Online System]] DNE
 	{ id = 'EEO', property = 6043, pattern = '[a-z][a-z%-]*' }, ---[[Espèces Envahissantes Outre-mer]] DNE
 	{ id = 'EoL', property = 830, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'EPPO', property = 3031, pattern = rep('[A-Z%d]', 5) .. '[A-Z%d]?' },
@@ -149,7 +149,7 @@ local databases = {
 	{ id = 'FloraCatalana', property = 5179, pattern = 'VTax[1-9]%d?%d?%d?' }, ---[[]] DNE
 	{ id = 'FloraWeb', property = 6094, pattern = '[1-9]%d*' }, ---[[]] DNE
 	{ id = 'FLOW', property = 6096, pattern = '[1-9]%d*' }, ---[[Fulgoromorpha Lists On the Web]] DNE
-	{ id = 'FNA', property = 1727, pattern = '[1-9]%d%d%d%d%d?%d?%d?%d?%d?' },
+	{ id = 'FNA', property = 1727 },
 	{ id = 'FoAO', property = 3100, pattern = '%d+' },
 	{ id = 'FoC', property = 1747, pattern = '[1-9]%d%d%d%d%d?%d?%d?%d?%d?' },
 	{ id = 'FOIH', property = 4311, pattern = '[1-9]%d*' },
