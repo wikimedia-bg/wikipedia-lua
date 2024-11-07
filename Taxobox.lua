@@ -681,7 +681,7 @@ end
 
 local function getStatus(status)
 	if status then
-		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|200px|%s', status, status)) .. '<br/>'
+		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|240px|%s|class=skin-invert-image', status, status)) .. '<br/>'
 		local category = ''
 		if status == 'LC' then
 			result = result .. to.link('Незастрашен вид|Незастрашен')
