@@ -198,7 +198,7 @@ local FOSSILSTAGES = {
 	{ age = 2.588, name = 'претиглий', grade = 1, link = 'Претиглий|Пт', color = '#0FD236' },
 	
 	-- Неоген
-	{ age = 3.6, name = 'пиячензий', grade = 1, link = 'Плиоцен|Плц', color = '#00ED01' },
+	{ age = 3.6, name = 'пиаченций', grade = 1, link = 'Плиоцен|Плц', color = '#00ED01' },
 	{ age = 5.332, name = 'занклий' },
 	{ age = 7.246, name = 'месиний' },
 	{ age = 11.608, name = 'тортоний' },
