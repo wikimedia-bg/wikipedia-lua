@@ -11,21 +11,12 @@ local function queryWikidata()
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
     ]]
+
     local url = 'https://query.wikidata.org/sparql'
-    local headers = {
-        ["Accept"] = "application/json"
-    }
+    local response = mw.ext.data:getWikidataEntities(query)
 
-    local response = mw.ext.http.query({
-        url = url,
-        method = 'POST',
-        headers = headers,
-        body = "query=" .. mw.uri.encode(query),
-        contenttype = 'application/x-www-form-urlencoded'
-    })
-
-    if response and response.status == 200 then
-        return mw.text.jsonDecode(response.body)
+    if response and response.success then
+        return mw.text.jsonDecode(response.json)
     end
 
     return nil
