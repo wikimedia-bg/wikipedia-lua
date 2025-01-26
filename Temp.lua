@@ -16,9 +16,12 @@ local function queryWikidata()
         ["Accept"] = "application/json"
     }
 
-    local response = mw.http.post(url, {
+    local response = mw.ext.http.query({
+        url = url,
+        method = 'POST',
         headers = headers,
-        body = "query=" .. mw.uri.encode(query)
+        body = "query=" .. mw.uri.encode(query),
+        contenttype = 'application/x-www-form-urlencoded'
     })
 
     if response and response.status == 200 then
