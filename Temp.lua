@@ -12,18 +12,19 @@ local function queryWikidata()
         }
     ]]
 
-    local url = 'https://query.wikidata.org/sparql'
+    local url = 'https://query.wikidata.org/sparql?query=' .. mw.uri.encode(query)
     local headers = {
         ["Accept"] = "application/json"
     }
 
-    local response = mw.sparql.query(url, {
-        headers = headers,
-        body = "query=" .. mw.uri.encode(query)
+    local response = mw.ext.externalData.getJSON({
+        url = url,
+        method = 'GET',
+        headers = headers
     })
 
     if response and response.status == 200 then
-        return mw.text.jsonDecode(response.body)
+        return response.data
     end
 
     return nil
