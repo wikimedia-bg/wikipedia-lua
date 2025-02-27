@@ -49,14 +49,14 @@ function sk.is_slovak(args)
 	if stun_lau == nil or stun_lau == "" then
 		stun_lau=sk.get_stun_lua()
 		if stun_lau == nill then
-			return "0"
+			return ""
 		end
 	end
 	
 	if string.sub(stun_lau, 1, 2) == "SK" then
 		return "1"
 	end
-	return "0"
+	return ""
 end
 
 function sk.localised_number(number)
