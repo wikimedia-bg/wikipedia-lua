@@ -200,7 +200,7 @@ function sk.population_table(args)
 					break
 				end
 			end
-			head=head.."<th>"..years[year_index]..".</th>"
+			head=head.."<th>"..years[year_index].."</th>"
 			break
 		end
 	end
@@ -229,7 +229,7 @@ function sk.population_table(args)
 				-- check the first item with delta = 1
 				if year_index+1 < count_years_stop then
 					if (years[year_index]-years[year_index+1]) == -1 then
-						one_step_year=one_step_year.."<th>"..years[year_index]..".</th>"
+						one_step_year=one_step_year.."<th>"..years[year_index].."</th>"
 						one_step_values=one_step_values.."<td>"..sk.localised_number(item[i]).."</td>"
 						one_step_progress=one_step_progress.."<td></td>"
 						break
@@ -239,7 +239,7 @@ function sk.population_table(args)
 				-- check the second item with delta = 1
 				if year_index > 1 then
 					if (years[year_index]-years[year_index-1]) == 1 then
-						one_step_year=one_step_year.."<th>"..years[year_index]..".</th>"
+						one_step_year=one_step_year.."<th>"..years[year_index].."</th>"
 						one_step_values=one_step_values.."<td>"..sk.localised_number(item[i]).."</td>"
 						one_step_progress=one_step_progress.."<td>"..sk.delta_progress(item[i-1], item[i]).."</td>"
 						
