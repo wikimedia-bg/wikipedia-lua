@@ -1,0 +1,43 @@
+== About ==
+Get statistic data about Slovak municipalities.
+
+This template is a sibling of [[Шаблон:SK]].
+
+This template use the data from CC-BY database.
+
+Original first author: [[:m:User:Dušan Kreheľ|Dušan Kreheľ]].
+
+== Parameters ==
+=== First paramer ===
+{| class="wikitable" style="text-align:center"
+!Meaning!!Parameter!!Code!!Code output
+|-
+|Population||p||<nowiki>{{#invoke:SK|sk|p|SK0417524395}}</nowiki>||{{#invoke:SK|sk|p|SK0417524395}}
+|-
+|Population<br>(source URL)||P||<nowiki>{{#invoke:SK|sk|P|SK0417524395}}</nowiki>||{{#invoke:SK|sk|P|SK0417524395}}
+|-
+|Area||a||<nowiki>{{#invoke:SK|sk|a|SK0417524395}}</nowiki>||{{#invoke:SK|sk|a|SK0417524395}}
+|-
+|Area<br>(source URL)||A||<nowiki>{{#invoke:SK|sk|A|SK0417524395}}</nowiki>||{{#invoke:SK|sk|A|SK0417524395}}
+|-
+|Population density<br><small>(as population/area)</small>||d||<nowiki>{{#invoke:SK|sk|d}}</nowiki>||{{#invoke:SK|sk|d|SK0417524395}}
+|-
+|Data year||y||<nowiki>{{#invoke:SK|sk|y}}</nowiki>||{{#invoke:SK|sk|y}}
+|-
+|Last acces||l||<nowiki>{{#invoke:SK|sk|l}}</nowiki>||{{#invoke:SK|sk|l}}
+|-
+|Last update||u||<nowiki>{{#invoke:SK|sk|u}}</nowiki>||{{#invoke:SK|sk|u}}
+|-
+|Is slovak municipality<br><small>(none support %i)</small>||i||<nowiki>{{#invoke:SK|sk|i|SK0417524395}}</nowiki>||{{#invoke:SK|sk|i|SK0417524395}}
+|}
+
+You can used both the format string like ''printf()'' with parameters from table.
+
+{| class="wikitable" style="text-align:center"
+|'''Code:'''||<nowiki>{{#invoke:SK|sk|%p (source: %P)|SK0417524395}}</nowiki>
+|-
+|'''Output:'''||{{#invoke:SK|sk|%p (source: %P|SK0417524395}}
+|}
+
+=== Second parameter ===
+It is a STUN or LAU code for place sup-place (ex. ''SK0417524395''). If none, then code is automatic based on the actual page.
