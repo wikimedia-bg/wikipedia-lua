@@ -1,5 +1,8 @@
 local sk = {}
 
+sk.error_place="Непознато място."
+sk.error_code="Неизвестен код."
+
 function sk.get_stun_lua()
 	local place_info
 	local stun_lau
@@ -104,7 +107,12 @@ function sk.localised_number(number)
 end
 
 function sk.delta_progress(count_a, count_b) -- count_a < count_b
+	if count_a == 0 or count_b == 0 then
+		return "–"
+	end
+	
 	local value
+	
 	value=tostring(count_b/(count_a/100)-100)
 	if string.sub(value, 1, 1) == "-" then
 		value_string=string.sub(value, 2)
@@ -129,7 +137,7 @@ function sk.get_line_data(data, stun_lau)
 	end
 	
 	if item == nil then
-		error("Непознато място.")
+		error(sk.error_place)
 	end
 	
 	return item
@@ -212,7 +220,7 @@ function sk.population_table(args)
 	-- values
 	item=sk.get_line_data(data, stun_lau)
 	if item == nil then
-		error("Непознато място.")
+		error(sk.error_place)
 	end
 	-- get values
 	content=""
@@ -314,6 +322,15 @@ function sk.sk(args)
 			return ""
 		end
 	end
+	
+	if style == "e" then
+		i_start, i_end=string.find(stun_lau, "_")
+		if i_start == nil then
+			return stun_lau
+		else
+			return ""
+		end
+	end
 
 	-- select date line
 	if string.len(stun_lau) == 12 then
@@ -328,7 +345,7 @@ function sk.sk(args)
 		item=sk.get_line_data(data, stun_lau)
 		
 		if item == nil then
-			error("Непознато място.")
+			error(sk.error_place)
 		end
 	end
 	
@@ -375,7 +392,7 @@ function sk.sk(args)
 		if style == "y" then return year end
 		if style == "l" then return last_acces end
 		if style == "u" then return last_update end
-		error('Неизвестен код.')
+		error(sk.error_code)
 	else
 		Output=style
 		Output=string.gsub(Output, "%%p", sk.localised_number(item[2]))
