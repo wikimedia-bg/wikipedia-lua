@@ -310,17 +310,17 @@ function sk.sk(args)
 	local url_area
 	local year
 	
-	if style == "i" then
-		local parameters={args={args.args[2]}}
-		return sk.is_slovak(parameters)
-	end
-	
 	-- select date line
 	if stun_lau == nil or stun_lau == "" then
 		stun_lau=sk.get_stun_lua()
 		if stun_lau == nill then
 			return ""
 		end
+	end
+	
+	if style == "i" then
+		local parameters={args={stun_lau}}
+		return sk.is_slovak(parameters)
 	end
 	
 	if style == "e" then
