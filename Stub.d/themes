@@ -558,7 +558,6 @@ return {
 			{ 'международни отношения', 'Society.png' },
 			{ 'парична единица|валута|криптовалута', 'Gold Currency Symbols.svg', 'парични единици' },
 			{ 'предприятие|компания|фирма|авиокомпания', 'Factory 1.png', 'предприятия' },
-			{ 'пчеларство', 'Wappen Frankfurt-Bockenheim.png' },
 			{ 'транспорт', 'Swedish road sign 11 13 12.svg' },
 				{ 'път|пътища', 'CH-Hinweissignal-Autobahn.svg', 'пътища' },
 				{ 'автомобил', 'Red Gallardo icon.png', 'автомобили' },
