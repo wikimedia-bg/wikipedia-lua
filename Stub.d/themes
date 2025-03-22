@@ -639,7 +639,7 @@ return {
 			{ 'пиеса', 'Comedy and tragedy masks.svg', 'пиеси' },
 	
 	-- МЪНИЧЕТА ЗА ХОРА
-	{ 'човек|личност', 'Crystal Clear app Login Manager.png', 'хора' },
+	{ 'човек|личност', 'Crystal Clear app Login Manager.svg', 'хора' },
 		-- по занятие
 		{ 'архитект', 'Corinthian_capital.png', 'архитекти' },
 		{ 'бизнесмен', 'Nuvola apps kchart.svg', 'бизнесмени' },
