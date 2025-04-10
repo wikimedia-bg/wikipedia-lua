@@ -34,13 +34,15 @@ local function ordinal(n)
     local last_digit = n % 10
     local last_two_digits = n % 100
     if last_digit == 1 and last_two_digits ~= 11 then
-        return n .. 'st'
+        return n .. 'ви'
     elseif last_digit == 2 and last_two_digits ~= 12 then
-        return n .. 'nd'
-    elseif last_digit == 3 and last_two_digits ~= 13 then
-        return n .. 'rd'
+        return n .. 'ри'
+    elseif last_digit == 7 and last_two_digits ~= 17 then
+        return n .. 'ми'
+    elseif last_digit == 8 and last_two_digits ~= 18 then
+    	return n .. 'ми'
     else
-        return n .. 'th'
+        return n .. 'ти'
     end
 end
 
@@ -71,7 +73,7 @@ local function cleanScore(score)
     score = score:gsub('<sup.->.-</sup>', '')
 
     -- Convert dashes to a standard format
-    score = score:gsub('[–—―‒−]+', '-')
+    score = score:gsub('[–—―‒−]+', ':')
 
     -- Strip all characters except numbers, dashes and parentheses
     return score:gsub('[^0-9%-()]+', '')
