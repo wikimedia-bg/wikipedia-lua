@@ -696,9 +696,9 @@ function p.main(frame)
                 if args.leg_prefix then
                     legHeading = yesno(args.leg_prefix) and ('Мач ' .. leg) or (args.leg_prefix .. ' ' .. leg)
                 elseif args.leg_suffix and not yesno(args.leg_suffix) then
-                    legHeading = ordinalbg(leg) .. ' ' .. args.leg_suffix
+                    legHeading = ordinalbg[leg] .. ' ' .. args.leg_suffix
                 else
-                    legHeading = ordinalbg(leg) .. ' мач'
+                    legHeading = ordinalbg[leg] .. ' мач'
                 end
             end
 
