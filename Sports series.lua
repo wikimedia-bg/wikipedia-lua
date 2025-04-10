@@ -590,7 +590,7 @@ function p.main(frame)
     end
 
     -- Process flag parameter to determine flag template and variant
-    local flagTemplate = 'fbaicon'
+    local flagTemplate = 'флагче'
     local flagSize = args.flag_size
     if showFlags then
         if args.flag and args.flag ~= '' and not flagYesno then
@@ -599,7 +599,7 @@ function p.main(frame)
                 flagTemplate = 'flag icon'
             end
         end
-
+        
         if flagSize and not flagSize:match('px$') then
             flagSize = flagSize .. 'px'
         end
