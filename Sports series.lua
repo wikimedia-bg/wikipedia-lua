@@ -70,9 +70,6 @@ local function cleanScore(score)
     -- Remove superscript tags and their contents
     score = score:gsub('<sup.->.-</sup>', '')
 
-    -- Convert dashes to a standard format
-    score = score:gsub('[–—―‒−]+', '-')
-
     -- Strip all characters except numbers, dashes and parentheses
     return score:gsub('[^0-9%-()]+', '')
 end
@@ -328,12 +325,7 @@ local function format_and_extract_score(s, addSpan)
     end
 
     -- Format dashes
-    format_dash('%s*([%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
-    format_dash('%s*([%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
-    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
-    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
-    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
-    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
+    format_dash('%s*([%d%.]+)%s*:%s*([%d%.]+)')
 
     -- Extract end text
     local supStart = s:find('<sup')
