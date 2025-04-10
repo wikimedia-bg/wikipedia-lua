@@ -2,7 +2,7 @@
 -- See documentation for details
 
 local p = {}
-local ordinalbg = {'Първи','Втори','Трети','Четвърти','Пети','Шести','Седми','Осми','Девети','Десети'}
+local ordinalbg = {'1<sup>-ви</sup>','2<sup>-ри</sup>','3<sup>-ти</sup>','4<sup>-ти</sup>','5<sup>-ти</sup>','6<sup>-ти</sup>','7<sup>-ми</sup>','8<sup>-ми</sup>','9<sup>-ти</sup>','10<sup>-ти</sup>'}
 
 -- Function to parse and expand a template with given parameters
 local function expandTemplate(frame, templateName, params)
@@ -323,8 +323,8 @@ local function format_and_extract_score(s, addSpan)
     end
 
     local function format_dash(pattern)
-        s = mw.ustring.gsub(s, '^' .. pattern, '%1–%2')
-        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1–%2')
+        s = mw.ustring.gsub(s, '^' .. pattern, '%1:%2')
+        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1:%2')
     end
 
     -- Format dashes
@@ -385,13 +385,13 @@ local function format_and_extract_score(s, addSpan)
     -- Format winning notes in brackets (only if endText is not empty)
     if endText ~= "" then
         if addSpan then
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
-            endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '<span class="nowrap">([[След добавено време|сдв]])</span>')
+            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Дд]%.?[Уу]?%.?[Зз]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
+            endText = mw.ustring.gsub(endText, '%([Сс]%.?[Дд]%.?[Вв]%.?%)', '<span class="nowrap">([[След добавено време|сдв]])</span>')
         else
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '%1 [[дузпа|д.]])')
-            endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '([[След добавено време|сдв]])')
+            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Дд]%.?[Уу]?%.?[Зз]?%.?%)', '%1 [[дузпа|д.]])')
+            endText = mw.ustring.gsub(endText, '%([Сс]%.?[Дд]%.?[Вв]%.?%)', '([[След добавено време|сдв]])')
         end
-        endText = mw.ustring.gsub(endText, '%([Aa]%.?[Gg]?%.?[Rr]?%.?%)', '(гчт)')
+        endText = mw.ustring.gsub(endText, '%([Гг]%.?[Чч]?%.?[Тт]?%.?%)', '(гчт)')
     end
 
     return scoreMatch, endText
@@ -683,7 +683,7 @@ function p.main(frame)
     local defaultTeam1 = isHA and 'Домакин' or 'Отбор 1'
     local defaultTeam2 = isHA and 'Гост' or 'Отбор 2'
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team1'] or defaultTeam1)
-    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ резултат<span class="sr-only"> Tooltip Aggregate score</span>')
+    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ резултат')
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team2'] or defaultTeam2)
 
     -- Add columns for each leg if applicable
