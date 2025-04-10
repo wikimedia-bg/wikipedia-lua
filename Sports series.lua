@@ -273,7 +273,7 @@ local function checkSmallText(str)
     end
 
     -- Convert dashes to a standard format
-    str = str:gsub('[–—―‒−]+', '-')
+    str = str:gsub('[–—―‒−:]+', '-')
 
     -- Remove opening and closing HTML tags
     str = str:gsub("</?%w+[^>]*>", "")
@@ -429,9 +429,9 @@ local function cleanAndGenerateLinks(team1, team2, score, isSecondLeg)
         if linkScore then
             local link
             if isSecondLeg then
-                link = "[[#" .. team2 .. " v " .. team1 .. "|" .. linkScore .. "]]"
+                link = "[[#" .. team2 .. " — " .. team1 .. "|" .. linkScore .. "]]"
             else
-                link = "[[#" .. team1 .. " v " .. team2 .. "|" .. linkScore .. "]]"
+                link = "[[#" .. team1 .. " — " .. team2 .. "|" .. linkScore .. "]]"
             end
             
             return link .. score:sub(#linkScore + 1)
