@@ -2,7 +2,7 @@
 -- See documentation for details
 
 local p = {}
-local ordinalbg = {'1<sup>-ви</sup>','2<sup>-ри</sup>','3<sup>-ти</sup>','4<sup>-ти</sup>','5<sup>-ти</sup>','6<sup>-ти</sup>','7<sup>-ми</sup>','8<sup>-ми</sup>','9<sup>-ти</sup>','10<sup>-ти</sup>'}
+local ordinalbg = {'Първи','Втори','Трети','Четвърти','Пети','Шести','Седми','Осми','Девети','Десети'}
 
 -- Function to parse and expand a template with given parameters
 local function expandTemplate(frame, templateName, params)
