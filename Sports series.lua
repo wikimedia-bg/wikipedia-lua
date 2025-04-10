@@ -34,15 +34,13 @@ local function ordinal(n)
     local last_digit = n % 10
     local last_two_digits = n % 100
     if last_digit == 1 and last_two_digits ~= 11 then
-        return n .. 'ви'
+        return n .. 'st'
     elseif last_digit == 2 and last_two_digits ~= 12 then
-        return n .. 'ри'
-    elseif last_digit == 7 and last_two_digits ~= 17 then
-        return n .. 'ми'
-    elseif last_digit == 8 and last_two_digits ~= 18 then
-    	return n .. 'ми'
+        return n .. 'nd'
+    elseif last_digit == 3 and last_two_digits ~= 13 then
+        return n .. 'rd'
     else
-        return n .. 'ти'
+        return n .. 'th'
     end
 end
 
