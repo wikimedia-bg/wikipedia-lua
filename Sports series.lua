@@ -685,7 +685,7 @@ function p.main(frame)
     local defaultTeam1 = isHA and 'Домакин' or 'Отбор 1'
     local defaultTeam2 = isHA and 'Гост' or 'Отбор 2'
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team1'] or defaultTeam1)
-    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ резултат')
+    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ<br />резултат')
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team2'] or defaultTeam2)
 
     -- Add columns for each leg if applicable
