@@ -73,7 +73,7 @@ local function cleanScore(score)
     score = score:gsub('<sup.->.-</sup>', '')
 
     -- Convert dashes to a standard format
-    score = score:gsub('[–—―‒−]+', ':')
+    score = score:gsub('[–—―‒−]+', '-')
 
     -- Strip all characters except numbers, dashes and parentheses
     return score:gsub('[^0-9%-()]+', '')
@@ -275,7 +275,7 @@ local function checkSmallText(str)
     end
 
     -- Convert dashes to a standard format
-    str = str:gsub('[–—―‒−:]+', ':')
+    str = str:gsub('[–—―‒−]+', '-')
 
     -- Remove opening and closing HTML tags
     str = str:gsub("</?%w+[^>]*>", "")
@@ -330,10 +330,10 @@ local function format_and_extract_score(s, addSpan)
     end
 
     -- Format dashes
-    format_dash('%s*([%d%.]+)%s*[–—―‒−%-:]%s*([%d%.]+)')
+    format_dash('%s*([%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
     format_dash('%s*([%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
-    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*[–—―‒−%-:]%s*([%d%.]+)')
-    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*[–—―‒−%-:]%s*([%d%.]+)')
+    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
+    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
     format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
     format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
 
@@ -387,13 +387,13 @@ local function format_and_extract_score(s, addSpan)
     -- Format winning notes in brackets (only if endText is not empty)
     if endText ~= "" then
         if addSpan then
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Дд]%.?[Уу]?%.?[Зз]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
-            endText = mw.ustring.gsub(endText, '%([Сс]%.?[Дд]%.?[Вв]%.?%)', '<span class="nowrap">([[След добавено време|сдв]])</span>')
+            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
+            endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '<span class="nowrap">([[След добавено време|сдв]])</span>')
         else
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Дд]%.?[Уу]?%.?[Зз]?%.?%)', '%1 [[дузпа|д.]])')
-            endText = mw.ustring.gsub(endText, '%([Сс]%.?[Дд]%.?[Вв]%.?%)', '([[След добавено време|сдв]])')
+            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '%1 [[дузпа|д.]])')
+            endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '([[След добавено време|сдв]])')
         end
-        endText = mw.ustring.gsub(endText, '%([Гг]%.?[Чч]?%.?[Тт]?%.?%)', '(гчт)')
+        endText = mw.ustring.gsub(endText, '%([Aa]%.?[Gg]?%.?[Rr]?%.?%)', '(гчт)')
     end
 
     return scoreMatch, endText
