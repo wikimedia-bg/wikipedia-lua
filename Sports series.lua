@@ -259,7 +259,7 @@ local function checkSmallText(str)
     str = str:gsub('<sup.->.-</sup>', '')
 
     -- Check for walkover-related strings (never shown in small text)
-    if str:lower():match("без игра") or str:lower():match("—") or str:lower():match("-") then
+    if str:lower():match("walkover") or str:lower():match("w%.o%.") or str:lower():match("w/o") or str:lower():match("bye") then
         return false
     end
 
