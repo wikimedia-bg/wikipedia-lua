@@ -69,6 +69,9 @@ local function cleanScore(score)
 
     -- Remove superscript tags and their contents
     score = score:gsub('<sup.->.-</sup>', '')
+    
+    -- Convert dashes to a standard format
+    score = score:gsub('[–—―‒−]+', '-')
 
     -- Strip all characters except numbers, dashes and parentheses
     return score:gsub('[^0-9%-()]+', '')
@@ -289,6 +292,7 @@ local function checkSmallText(str)
     end
 end
 
+
 -- Function to rewrite anchor links in a string
 local function rewriteAnchorLinks(str, baselink, currentPageTitle)
     if not str or str == "" then
@@ -320,12 +324,17 @@ local function format_and_extract_score(s, addSpan)
     end
 
     local function format_dash(pattern)
-        s = mw.ustring.gsub(s, '^' .. pattern, '%1:%2')
-        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1:%2')
+        s = mw.ustring.gsub(s, '^' .. pattern, '%1–%2')
+        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1–%2')
     end
 
     -- Format dashes
-    format_dash('%s*([%d%.]+)%s*:%s*([%d%.]+)')
+    format_dash('%s*([%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
+    format_dash('%s*([%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
+    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
+    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*[–—―‒−%-]%s*([%d%.]+)')
+    format_dash('%s*(%[%[[^%[%]]*%|[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
+    format_dash('%s*(%[[^%[%]%s]*%s+[%d%.]+)%s*&[MmNn][Dd][Aa][Ss][Hh];%s*([%d%.]+)')
 
     -- Extract end text
     local supStart = s:find('<sup')
