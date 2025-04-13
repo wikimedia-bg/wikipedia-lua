@@ -273,7 +273,7 @@ local function checkSmallText(str)
     end
 
     -- Convert dashes to a standard format
-    str = str:gsub('[–—―‒−]+', '-')
+    str = str:gsub('[–—―‒−%-]+', ':')
 
     -- Remove opening and closing HTML tags
     str = str:gsub("</?%w+[^>]*>", "")
@@ -285,7 +285,7 @@ local function checkSmallText(str)
     str = str:gsub("%s+", "")
 
     -- Check if the string matches only a scoreline
-    if str:match("^%d+-%d+$") then
+    if str:match("^%d+:%d+$") then
         return false
     else
         return true
