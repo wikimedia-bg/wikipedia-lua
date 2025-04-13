@@ -386,10 +386,10 @@ local function format_and_extract_score(s, addSpan)
     -- Format winning notes in brackets (only if endText is not empty)
     if endText ~= "" then
         if addSpan then
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
+            endText = mw.ustring.gsub(endText, '(%(%d+:*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '<span class="nowrap">%1 [[дузпа|д.]])</span>')
             endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '<span class="nowrap">([[След добавено време|сдв]])</span>')
         else
-            endText = mw.ustring.gsub(endText, '(%(%d+%s*–%s*%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '%1 [[дузпа|д.]])')
+            endText = mw.ustring.gsub(endText, '(%(%d+:%d+)%s*[Pp]%.?[EeSs]?%.?[NnOo]?%.?%)', '%1 [[дузпа|д.]])')
             endText = mw.ustring.gsub(endText, '%([Aa]%.?[Ee]%.?[Tt]%.?%)', '([[След добавено време|сдв]])')
         end
         endText = mw.ustring.gsub(endText, '%([Aa]%.?[Gg]?%.?[Rr]?%.?%)', '(гчт)')
