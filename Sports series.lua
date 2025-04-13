@@ -71,7 +71,7 @@ local function cleanScore(score)
     score = score:gsub('<sup.->.-</sup>', '')
     
     -- Convert dashes to a standard format
-    score = score:gsub('[–—―‒−]+', '-')
+    score = score:gsub('[–—―‒−%-]+', ':')
 
     -- Strip all characters except numbers, dashes and parentheses
     return score:gsub('[^0-9%-()]+', '')
@@ -139,12 +139,12 @@ local function determineWinner(cleanAggregate, team1, team2, boldWinner, colorWi
 
     -- Regular winner determination logic if manual bolding or coloring is not conclusive
     if not team1Winner and not team2Winner and not isDraw and not skipAutoWinner and (boldWinner or colorWinner or isFBRStyle) then
-        local parenthetical = cleanAggregate:match('%((%d+%-+%d+)%)')
-        local outsideParenthetical = cleanAggregate:match('^(%d+%-+%d+)')
+        local parenthetical = cleanAggregate:match('%((%d+:%d+)%)')
+        local outsideParenthetical = cleanAggregate:match('^(%d+:%d+)')
         if parenthetical then -- Prioritize checking score inside parenthetical
-            score1, score2 = parenthetical:match('(%d+)%-+(%d+)')
+            score1, score2 = parenthetical:match('(%d+):(%d+)')
         elseif outsideParenthetical then
-            score1, score2 = outsideParenthetical:match('(%d+)%-+(%d+)')
+            score1, score2 = outsideParenthetical:match('(%d+):(%d+)')
         end
 
         if score1 and score2 then
@@ -159,8 +159,8 @@ local function determineWinner(cleanAggregate, team1, team2, boldWinner, colorWi
                 -- Apply away goals rule
                 local cleanLeg1 = cleanScore(leg1Score):gsub('[()]', '')
                 local cleanLeg2 = cleanScore(leg2Score):gsub('[()]', '')
-                local _, team2AwayGoals = cleanLeg1:match('(%d+)%-+(%d+)')
-                local team1AwayGoals = cleanLeg2:match('(%d+)%-+(%d+)')
+                local _, team2AwayGoals = cleanLeg1:match('(%d+):(%d+)')
+                local team1AwayGoals = cleanLeg2:match('(%d+):(%d+)')
 
                 if team1AwayGoals and team2AwayGoals then
                     team1AwayGoals, team2AwayGoals = tonumber(team1AwayGoals), tonumber(team2AwayGoals)
@@ -324,8 +324,8 @@ local function format_and_extract_score(s, addSpan)
     end
 
     local function format_dash(pattern)
-        s = mw.ustring.gsub(s, '^' .. pattern, '%1–%2')
-        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1–%2')
+        s = mw.ustring.gsub(s, '^' .. pattern, '%1:%2')
+        s = mw.ustring.gsub(s, '%(' .. pattern, '(%1:%2')
     end
 
     -- Format dashes
