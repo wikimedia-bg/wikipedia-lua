@@ -142,9 +142,9 @@ local function determineWinner(cleanAggregate, team1, team2, boldWinner, colorWi
         local parenthetical = cleanAggregate:match('%((%d+:%d+)%)')
         local outsideParenthetical = cleanAggregate:match('^(%d+:%d+)')
         if parenthetical then -- Prioritize checking score inside parenthetical
-            score1, score2 = parenthetical:match('(%d+):(%d+)')
+            score1, score2 = parenthetical:match('((%d+):(%d+))')
         elseif outsideParenthetical then
-            score1, score2 = outsideParenthetical:match('(%d+):(%d+)')
+            score1, score2 = outsideParenthetical:match('%d+:%d+')
         end
 
         if score1 and score2 then
@@ -541,8 +541,8 @@ end
 
 -- Main function that processes input and returns the wikitable
 function p.main(frame)
-    local args = require('Module:Arguments').getArgs(frame, {trim = true})
-    local yesno = require('Module:Yesno')
+    local args = require('Модул:Arguments').getArgs(frame, {trim = true})
+    local yesno = require('Модул:Yesno')
 
     -- Check for section transclusion
     local tsection = frame:getParent().args['transcludesection'] or frame:getParent().args['section'] or ''
@@ -559,7 +559,7 @@ function p.main(frame)
     	args = { src = 'Screen reader-only/styles.css' }
     } .. frame:extensionTag{
         name = 'templatestyles',
-        args = { src = 'Module:Sports series/styles.css' }
+        args = { src = 'Модул:Sports series/styles.css' }
     }
     root:wikitext(templatestyles)
 
@@ -684,7 +684,7 @@ function p.main(frame)
     local defaultTeam1 = isHA and 'Домакин' or 'Отбор 1'
     local defaultTeam2 = isHA and 'Гост' or 'Отбор 2'
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team1'] or defaultTeam1)
-    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ<br />резултат')
+    header:tag('th'):attr('scope', 'col'):css('width', scoreWidth):wikitext(args['aggregate'] or legs == 0 and 'Резултат' or 'Общ резултат')
     header:tag('th'):attr('scope', 'col'):css('width', teamWidth):wikitext(args['team2'] or defaultTeam2)
 
     -- Add columns for each leg if applicable
