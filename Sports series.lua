@@ -142,9 +142,9 @@ local function determineWinner(cleanAggregate, team1, team2, boldWinner, colorWi
         local parenthetical = cleanAggregate:match('%((%d+:%d+)%)')
         local outsideParenthetical = cleanAggregate:match('^(%d+:%d+)')
         if parenthetical then -- Prioritize checking score inside parenthetical
-            score1, score2 = parenthetical:match('((%d+):(%d+))')
+            score1, score2 = parenthetical:match('%((%d+):(%d+)%)')
         elseif outsideParenthetical then
-            score1, score2 = outsideParenthetical:match('%d+:%d+')
+            score1, score2 = outsideParenthetical:match('^(%d+:%d+)')
         end
 
         if score1 and score2 then
