@@ -1,0 +1,578 @@
+local a = {}
+
+local categories = {
+	ignored_parameters = 'Category:Pages using sports table with ignored parameters',
+	missing_results = 'Category:Pages using sports table with missing results',
+	missing_teams = 'Category:Pages using sports table with missing teams',
+	orphaned_match_notes = 'Category:Pages using sports table with orphaned match notes',
+	orphaned_names = 'Category:Pages using sports table with orphaned names',
+	orphaned_notes = 'Category:Pages using sports table with orphaned notes',
+	orphaned_results = 'Category:Pages using sports table with orphaned results',
+	possible_incorrect_winpoints = 'Category:Pages using sports table with possible incorrect winpoints',
+	possibly_ignored_parameters = 'Category:Pages using sports table with possibly ignored parameters',
+	unknown_parameters = 'Category:Pages using sports table with unknown parameters'
+}
+
+local good_args = {
+	['away_goals_header'] = 1,
+	['bonus_header'] = 1,
+	['class_rules'] = 1,
+	['draw_header'] = 1,
+	['drawpoints'] = 1,
+	['float'] = 1,
+	['for_against_style'] = 1,
+	['GB_team'] = 1,
+	['goalpoints'] = 1,
+	['group_header'] = 1,
+	['hide_footer'] = 1,
+	['hide_for_against_columns'] = 1,
+	['hide_played'] = 1,
+	['hide_results'] = 1,
+	['highest_pos'] = 1,
+	['legs'] = 1,
+	['loss_before_draw'] = 1,
+	['loss_before_tie'] = 1,
+	['losspoints'] = 1,
+	['lowest_pos'] = 1,
+	['matches_style'] = 1,
+	['matches_text'] = 1,
+	['match_col_width'] = 1,
+	['note_header_res'] = 1,
+	['only_pld_pts'] = 1,
+	['only_totals'] = 1,
+	['only_fa_totals'] = 1,
+	['pct_style'] = 1,
+	['pld_header'] = 1,
+	['postitle'] = 1,
+	['perc_first'] = 1,
+	['pts_first'] = 1,
+	['ranking_style'] = 1,
+	['res_col_header'] = 1,
+	['result_prefix'] = 1,
+	['rwpoints'] = 1,
+	['rw_header'] = 1,
+	['section'] = 1,
+	['short_style'] = 1,
+	['show_GB'] = 1,
+	['show_away_goals'] = 1,
+	['show_bonus_points'] = 1,
+	['show_class_rules'] = 1,
+	['show_draw'] = 1,
+	['show_groups'] = 1,
+	['show_limit'] = 1,
+	['show_matches'] = 1,
+	['show_positions'] = 1,
+	['show_rw'] = 1,
+	['show_status'] = 1,
+	['show_totals'] = 1,
+	['solid_cell'] = 1,
+	['sortable_table'] = 1,
+	['source'] = 1,
+	['start_date'] = 1,
+	['stack_footer'] = 1,
+	['status_order'] = 1,
+	['status_pos'] = 1,
+	['style'] = 1,
+	['table_header'] = 1,
+	['table_header_source'] = 1,
+	['team_header'] = 1,
+	['team_order'] = 1,
+	['team_order_start'] = 1,
+	['teamwidth'] = 1,
+	['title'] = 1,
+	['title_source'] = 1,
+	['transcludesection'] = 1,
+	['update'] = 1,
+	['use_against_percentage'] = 1,
+	['use_goal_average'] = 1,
+	['use_goal_diff'] = 1,
+	['use_goal_percentage'] = 1,
+	['use_goal_ratio'] = 1,
+	['use_goals_scored'] = 1,
+	['use_point_percentage'] = 1,
+	['use_goals_per_match'] = 1,
+	['use_points_per_match'] = 1,
+	['use_tie'] = 1,
+	['winpoints'] = 1,
+}
+
+local good_args_HA = {
+	['ha_side'] = 1,
+	['hdrawpoints'] = 1,
+	['adrawpoints'] = 1,
+	['hlosspoints'] = 1,
+	['alosspoints'] = 1,
+	['hwinpoints'] = 1,
+	['awinpoints'] = 1
+}
+
+local good_args_PKOT = {
+	['showOTloss'] = 1,
+	['showOTwin'] = 1,
+	['showPKloss'] = 1,
+	['showSOloss'] = 1,
+	['showPKwin'] = 1,
+	['showSOwin'] = 1,
+	['show_tiebr'] = 1,
+	['PKlosspoints'] = 1,
+	['SOlosspoints'] = 1,
+	['OTlosspoints'] = 1,
+	['PKwinpoints'] = 1,
+	['SOwinpoints'] = 1,
+	['OTwinpoints'] = 1,
+	['PKloss_after_loss'] = 1,
+	['SOloss_after_loss'] = 1,
+	['OTloss_after_loss'] = 1,
+	['tiebr_header'] = 1,
+}
+
+local good_args_BDT = {
+	['drawpoints'] = 0,
+	['game_for_against_style'] = 1,
+	['point_for_against_style'] = 1
+}
+
+local good_args_VB = {
+	['winpoints'] = 0,
+	['losspoints'] = 0,
+	['drawpoints'] = 0,
+	['bwinpoints'] = 1,
+	['blosspoints'] = 1,
+	['swinpoints'] = 1,
+	['slosspoints'] = 1,
+	['win3points'] = 1,
+	['loss3points'] = 1,
+	['win4points'] = 1,
+	['loss4points'] = 1,
+	['win5points'] = 1,
+	['loss5points'] = 1,
+	['show_sets'] = 1,
+	['show_setpoints'] = 1,
+	['setpoints_before_sets'] = 1,
+	['best_of'] = 1
+}
+
+local ignored_args = {
+	['date'] = 1,
+	['ptsfirst'] = 1
+}
+
+local col_names = {
+	['adjust_points'] = 1,
+	['away_goals'] = 1,
+	['draw'] = 1,
+	['loss'] = 1,
+	['gf'] = 1,
+	['ga'] = 1,
+	['group'] = 1,
+	['pf'] = 1,
+	['pa'] = 1,
+	['matches'] = 1,
+	['pos'] = 1,
+	['rw'] = 1,
+	['short'] = 1,
+	['startpoints'] = 1,
+	['status'] = 1,
+	['win'] = 1,
+}
+
+local col_names_HA = {
+	['draw'] = 0,
+	['loss'] = 0,
+	['gf'] = 0,
+	['ga'] = 0,
+	['pf'] = 0,
+	['pa'] = 0,
+	['rw'] = 0,
+	['hdraw'] = 1,
+	['adraw'] = 1,
+	['hloss'] = 1,
+	['aloss'] = 1,
+	['hwin'] = 1,
+	['awin'] = 1,
+	['hga'] = 1,
+	['aga'] = 1,
+	['hgf'] = 1,
+	['agf'] = 1,
+	['hpa'] = 1,
+	['apa'] = 1,
+	['hpf'] = 1,
+	['apf'] = 1,
+}
+
+local col_names_PKOT = {
+	['PKloss'] = 1,
+	['SOloss'] = 1,
+	['OTloss'] = 1,
+	['PKwin'] = 1,
+	['SOwin'] = 1,
+	['OTwin'] = 1,
+	['tiebr'] = 1
+}
+
+local col_names_BDT = {
+	['win'] = 1,
+	['loss'] = 1,
+	['mf'] = 1,
+	['ma'] = 1,
+	['gf'] = 1,
+	['ga'] = 1,
+	['pf'] = 1,
+	['pa'] = 1
+}
+
+local col_names_VB = {
+	['win'] = 0,
+	['loss'] = 0,
+	['draw'] = 0,
+	['bwin'] = 1,
+	['swin'] = 1,
+	['bloss'] = 1,
+	['sloss'] = 1,
+	['sw'] = 1,
+	['sl'] = 1,
+	['spw'] = 1,
+	['spl'] = 1,
+	['win3s'] = 1,
+	['loss3s'] = 1,
+	['win4s'] = 1,
+	['loss4s'] = 1,
+	['win5s'] = 1,
+	['loss5s'] = 1,
+}
+
+local tracked_styles = {
+	['football'] = 'WDL',
+	['WDL'] = 'WDL',
+	['WL'] = 'WDL',
+	['WDLHA'] = 'HA',
+	['WDL OT'] = 'PKOT',
+	['WLHA'] = 'HA',
+	['WL OT'] = 'PKOT',
+	['WL PK'] = 'PKOT',
+	['WL OTL tiebreak'] = 'PKOT',
+	['Volleyball'] = 'VB',
+	['Badminton team'] = 'BDT'
+}
+
+local warn = {}
+local track = {}
+
+local function get_tracking_category(category, value)
+	return '[[' .. category .. '|' .. value .. ']]'
+end
+
+local function validate_table_values(args, category, bad_char, is_track)
+	for _, v in ipairs(args) do
+		v = mw.ustring.gsub(v, bad_char, '?')
+		if v == '' then
+			v = ' '
+		end
+		if is_track then
+			table.insert(track, get_tracking_category(category, v))
+		else
+			table.insert(warn, get_tracking_category(category, v))
+		end
+	end
+end
+
+function a.check(targs, pargs)
+	local teams = {}
+	local missing_teams = {}
+	local results = {}
+	local missing_results = {}
+	local orphaned_match_notes = {}
+	local orphaned_results = {}
+	local orphaned_names = {}
+	local orphaned_notes = {}
+	local ignored = {}
+	local possibly_ignored = {}
+	local unknown = {}
+	
+	local mstyle = mw.ustring.gsub(targs['style'] or '', '[%s_][%s_]*', ' ')
+	mstyle = tracked_styles[mstyle]
+	
+	if mstyle == nil then
+		return warn, track
+	end
+	
+	if mstyle == 'HA' then
+		for k, v in pairs(good_args_HA) do
+			good_args[k] = v ~= 0 and v or nil
+		end
+		for k, v in pairs(col_names_HA) do
+			col_names[k] = v ~= 0 and v or nil
+		end
+		if targs['only_fa_totals'] then
+			col_names['pf'] = 1
+			col_names['gf'] = 1
+			col_names['pa'] = 1
+			col_names['ga'] = 1
+		end
+	end
+	
+	if mstyle == 'PKOT' then
+		for k, v in pairs(good_args_PKOT) do
+			good_args[k] = v ~= 0 and v or nil
+		end
+		for k, v in pairs(col_names_PKOT) do
+			col_names[k] = v ~= 0 and v or nil
+		end
+	end
+	
+	if mstyle == 'BDT' then
+		for k, v in pairs(good_args_BDT) do
+			good_args[k] = v ~= 0 and v or nil
+		end
+		for k, v in pairs(col_names_BDT) do
+			col_names[k] = v ~= 0 and v or nil
+		end
+	end
+	
+	if mstyle == 'VB' then
+		for k, v in pairs(good_args_VB) do
+			good_args[k] = v ~= 0 and v or nil
+		end
+		for k, v in pairs(col_names_VB) do
+			col_names[k] = v ~= 0 and v or nil
+		end
+	end
+	
+	-- Alternative syntax for team list
+	if targs['team_order'] and targs['team_order'] ~= '' then
+		local tlist = mw.text.split(targs['team_order'], '%s*[;,]%s*')
+		for k, tname in ipairs(tlist) do
+			if tname ~= '' then
+				targs['team' .. k] = tname
+			end
+		end
+	end
+	
+	-- Limited tracking if we are only showing part of the table
+	if targs['showteam'] then
+		local top_pos = tonumber(targs['highest_pos']) or 1
+		local bottom_pos = tonumber(targs['lowest_pos']) or 0
+		local N = top_pos - 1
+		while targs['team' .. N + 1] ~= nil and (bottom_pos < top_pos or N < bottom_pos) do
+			N = N + 1
+			teams[targs['team' .. N]] = 1
+			if teams[targs['showteam']] then
+				return warn, track
+			end
+		end
+	end
+
+	-- Step 1: Generate a team and result list
+	for k,v in pairs(targs) do
+		if type(k) == 'string' then
+			if k:find('^team%d%d*$') then
+				teams[v] = 1
+				targs[k] = ''
+				if targs['name_' .. v] then
+					-- Great!
+					targs['name_' .. v] = ''
+				else
+					table.insert(missing_teams, v)
+				end
+				if targs['note_' .. v] then
+					targs['note_' .. v] = ''
+				end
+				if targs['hth_' .. v] then
+					local multiref = 1
+					local hth_local_table = mw.text.split(targs['hth_' .. v], '%s*,%s*')
+					if (#hth_local_table > 1) then
+						for _, hth_loc in ipairs(hth_local_table) do
+							multiref = multiref * (targs['hth_' .. hth_loc] and 1 or 0)
+						end
+					else
+						multiref = 0
+					end
+					if multiref > 0 then
+						for _, hth_loc in ipairs(hth_local_table) do
+							targs['hth_' .. hth_loc] = ''
+						end
+					elseif targs['hth_' .. targs['hth_' .. v]] then
+						targs['hth_' .. targs['hth_' .. v]] = ''
+					end
+					targs['hth_' .. v] = ''
+				end
+			elseif k:find('^result%d%d*$') or k:find('^.*_result%d%d*$') then
+				local pre = mw.ustring.gsub(k, '^(.*)result%d%d*$', '%1')
+				results[v] = 1
+				targs[k] = ''
+				if targs[pre .. 'col_' .. v] or targs[pre .. 'text_' .. v] or targs[pre .. 'note_res_' .. v] then
+					-- Great!
+					if targs[pre .. 'col_' .. v] then
+						targs[pre .. 'col_' .. v] = ''
+					end
+					if targs[pre .. 'text_' .. v] then
+						targs[pre .. 'text_' .. v] = ''
+					end
+					if targs[pre .. 'note_res_' .. v] then
+						local multiref = 1
+						local note_res_local_table = mw.text.split(targs[pre .. 'note_res_' .. v], '%s*,%s*')
+						if (#note_res_local_table > 1) then
+							for _, note_res_loc in ipairs(note_res_local_table) do
+								multiref = multiref * (targs[pre .. 'note_res_' .. note_res_loc] and 1 or 0)
+							end
+						else
+							multiref = 0
+						end
+						if multiref > 0 then
+							for _, note_res_loc in ipairs(note_res_local_table) do
+								targs[pre .. 'note_res_' .. note_res_loc] = ''
+							end
+						elseif targs[pre .. 'note_res_' .. targs[pre .. 'note_res_' ..  v]] then
+							targs[pre .. 'note_res_' ..  targs[pre .. 'note_res_' ..  v]] = ''
+						end
+						targs[pre .. 'note_res_' .. v] = ''
+					end
+					if targs[pre .. 'res_col_header'] then
+						targs[pre .. 'res_col_header'] = ''
+					end
+				else
+					table.insert(missing_results, v)
+				end
+			elseif k:find('^match[%d]*_.*_.*_note$') then
+				local m = mw.ustring.gsub(k, '^(match[%d]*_.*_.*)_note$', '%1')
+				targs[k] = ''
+				if targs[m] then
+					if targs['note_' .. v] then
+						targs['note_' .. v] = ''
+					end
+					-- Great!
+				else
+					table.insert(orphaned_match_notes, m)
+				end
+			end
+		end
+	end
+
+	local possible_missing_winpoints = 0
+	for k,v in pairs(targs) do
+		if v and v ~= '' then
+			local found_arg = 0
+			if type(k) == 'string' then
+				if k:find('^adjust_points_') then
+					local p = mw.ustring.gsub(k, '^adjust_points_', '')
+					if (tonumber(v) or 0) ~= 0 then
+						local pdiff = (tonumber(targs['win_' .. p] or 0) or 0) + tonumber(v)
+						if pdiff == 0 then
+							possible_missing_winpoints = possible_missing_winpoints + 1
+						else
+							possible_missing_winpoints = possible_missing_winpoints - 1
+						end
+					end
+				end
+				if found_arg == 0 and (good_args[k] or k:find('^split[%d][%d]*$')) then
+					-- Great!
+					found_arg = 1
+				end
+				if found_arg == 0 and k == 'showteam' then
+					-- Great!
+					found_arg = 1
+					if teams[v] ~= 1 then
+						table.insert(missing_teams, v)
+					end
+				end
+				if found_arg == 0 and (ignored_args[k] or k:find('^att_')) then
+					found_arg = 1
+					table.insert(ignored, k)
+				end
+				if found_arg == 0 and k:find('^[A-Za-z3-5]*_.*$') then
+					local p = mw.ustring.gsub(k, '^([A-Za-z3-5]*)_.*$', '%1')
+					if col_names[p] then
+						-- Great!
+						found_arg = 1
+					end
+				end
+				if found_arg == 0 and k:find('^[A-Za-z]*_[A-Za-z]*_.*$') then
+					local p = mw.ustring.gsub(k, '^([A-Za-z]*_[A-Za-z]*)_.*$', '%1')
+					if col_names[p] then
+						-- Great!
+						found_arg = 1
+					end
+				end
+
+				if found_arg == 0 and k:find('^match[%d]*_.*_.*$') then
+					local t1 = mw.ustring.gsub(k, '^match[%d]*_(.*)_(.*)$', '%1')
+					local t2 = mw.ustring.gsub(k, '^match[%d]*_(.*)_(.*)$', '%2')
+					found_arg = 1
+					if teams[t1] == nil or teams[t2] == nil then
+						if teams[t1] == nil then
+							table.insert(missing_teams, t1)
+						end
+						if teams[t2] == nil then
+							table.insert(missing_teams, t2)
+						end
+					end
+				end
+				if found_arg == 0 and k:find('^result_.*_.*$') then
+					local t1 = mw.ustring.gsub(k, '^result[%d]*_(.*)_(.*)$', '%1')
+					local t2 = mw.ustring.gsub(k, '^result[%d]*_(.*)_(.*)$', '%2')
+					found_arg = 1
+					if teams[t1] == nil or teams[t2] == nil then
+						if teams[t1] == nil then
+							table.insert(missing_teams, t1)
+						end
+						if teams[t2] == nil then
+							table.insert(missing_teams, t2)
+						end
+					end
+				end
+				if found_arg == 0 and (k:find('^name_') or k:find('^short_')) then
+					found_arg = 1
+					table.insert(orphaned_names, k)
+				end
+				if found_arg == 0 and (k:find('^note_') or k:find('^hth_')) then
+					found_arg = 1
+					if (k == 'hth_ABC' and v == 'H2H note') then
+						table.insert(warn, get_tracking_category(categories.ignored_parameters , 'hth_ABC'))
+					elseif (k == 'note_ABC' and v == 'Team note') then
+						table.insert(warn, get_tracking_category(categories.ignored_parameters , 'note_ABC'))
+					elseif (k == 'note_res_AAA' and v == 'Result note') then
+						table.insert(warn, get_tracking_category(categories.ignored_parameters , 'note_res_AAA'))
+					else
+						table.insert(orphaned_notes, k)
+					end
+				end
+				if found_arg == 0 and (k:find('^col_') or k:find('^text_')) then
+					found_arg = 1
+					table.insert(orphaned_results, k)
+				end
+			end
+			if found_arg == 0 then
+				if pargs[k] and pargs[k] ~= '' then
+					if tonumber(k) then
+						k = k .. ' = ' .. v
+					end
+					table.insert(possibly_ignored, k)
+				else
+					if tonumber(k) then
+						k = k .. ' = ' .. v
+					end
+					table.insert(unknown, k)
+				end
+			end
+		end
+	end
+
+	local bad_char = '[^A-Za-z0-9_%(%)%- ]'
+	validate_table_values(unknown, categories.unknown_parameters, bad_char, false)
+	validate_table_values(missing_teams, categories.missing_teams, bad_char, false)
+	validate_table_values(missing_results, categories.missing_results, bad_char, false)
+	validate_table_values(orphaned_results, categories.orphaned_results, bad_char, false)
+	validate_table_values(orphaned_names, categories.orphaned_names, '[^A-Za-z0-9_ ]', false)
+	validate_table_values(orphaned_notes, categories.orphaned_notes, bad_char, false)
+	validate_table_values(orphaned_match_notes, categories.orphaned_match_notes, bad_char, false)
+	validate_table_values(ignored, categories.ignored_parameters, bad_char, false)
+	validate_table_values(possibly_ignored, categories.possibly_ignored_parameters, bad_char, true)
+
+	if possible_missing_winpoints > 1 then
+		table.insert(track, get_tracking_category(categories.possible_incorrect_winpoints, possible_missing_winpoints))
+	end
+	
+	return warn, track
+end
+
+return a
