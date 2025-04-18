@@ -1,0 +1,110 @@
+-- Subfunctions for this module that are called from the style modules
+local ppp = {}
+
+function ppp.colhead(ttt,width,text)
+	-- For individual column headers
+	local head_string
+	if width=='auto' then
+		head_string = '! scope="col" |'..text..'\n'
+	else
+		head_string = '! scope="col" width='..width..'|'..text..'\n'
+	end
+
+	ttt.count = ttt.count+1
+	table.insert(ttt.tab_text,head_string)
+	
+	return ttt
+end
+
+function ppp.hth(frame,Args,full_table,hth_id_list,hth_local,notes_exist,team_list,team_code_ii,ii_start,ii_end,rand_val)
+	-- For head-to-head notes
+	local hth_string, hth_local_num, hth_id, k, hth_loc = '', nil, nil, nil, nil
+	
+	-- Check whether there is a head-to-head note or not, if so get text ready for it the same way as for the notes
+	if hth_local and full_table then
+		-- Set global check for notes to true
+		notes_exist = true
+		
+		-- Split the hth_local into a table if all the entries are valid
+		local multiref = 1
+		local hth_local_table = mw.text.split(hth_local, '%s*,%s*')
+		if (#hth_local_table > 1) then
+			for k, hth_loc in ipairs(hth_local_table) do
+				multiref = multiref * (Args['hth_' .. hth_loc] and 1 or 0)
+			end
+		else
+			multiref = 0
+		end
+
+		-- Split failed, so make a single entry table with hth_local inside
+		if multiref < 1 then
+			hth_local_table = { hth_local }
+		end
+
+		for k,hth_loc in ipairs(hth_local_table) do
+			if not Args['hth_'..hth_loc] then
+				-- Option 1
+				-- Now define the identifier for this
+				hth_id = '"table_hth_'..team_code_ii..rand_val..'"' -- Add random end for unique ID if more tables are present on article (which might otherwise share an ID)
+				hth_id_list[team_code_ii] = hth_id
+				-- Call refn template
+				hth_string = hth_string .. frame:expandTemplate{ title = 'efn', args = { group='lower-alpha',  name=hth_id, hth_loc} }
+			else 
+				-- Option 2
+				hth_local_num = team_list[hth_loc] or -1
+				if hth_id_list[hth_loc] or ((hth_local_num >= ii_start) and (hth_local_num <= ii_end)) then
+					-- Option 2a
+					hth_id = '"table_hth_'..hth_loc..rand_val..'"'
+					hth_string = hth_string .. frame:extensionTag{ name = 'ref', args = { group = 'lower-alpha', name = hth_id} }
+				else
+					-- Option 2b
+					hth_id = '"table_hth_'..hth_loc..rand_val..'"' -- Add random end for unique ID
+					hth_id_list[hth_loc] = hth_id
+					-- Call refn template
+					hth_string = hth_string .. frame:expandTemplate{ title = 'efn', args = { group='lower-alpha',  name=hth_id, Args['hth_'..hth_loc]} }
+				end
+			end
+		end
+	end
+	
+	return {str=hth_string, list=hth_id_list, notes_exist=notes_exist}
+end
+
+function ppp.status(Args, status_code)
+	-- Declare status options
+	-- ------------------------------------------------------------
+	-- NOTE: If you add to status_code, also add to status_called and status_letters!!
+	-- Or functionality will be compromised
+	-- ------------------------------------------------------------
+	local status_called = {}
+	local status_letters = (Args['status_order'] or '') .. 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	if type(status_code) ~= 'table' then status_code = {} end
+	if #status_code < 1 then
+		status_code = {	A='Класира се за следващия кръг', C='Шампион', D='Дисквалифициран', 
+		E='Елиминиран', G='Гост', H='Домакин', O='Победител от плейофа', P='Промоция', Q='Класира се за съответната фаза',
+		R='Отпада', T='Класира се, но не е сигурен за съответната фаза'}
+	end
+	
+	-- Status position (before or after read and default)
+	local stat_pos_val = string.lower(Args['status_pos'] or '')
+	local status_position = 'after' 	-- Default location
+	if stat_pos_val=='before' then
+		status_position = 'before'
+	elseif stat_pos_val=='after' then
+		status_position = 'after'
+	end
+	-- Read in custom status options
+	for l in mw.text.gsplit(status_letters, '') do
+		status_called[l] = false
+		status_code[l] = status_code[l] or '?'
+		status_letters = mw.ustring.gsub(status_letters, '(' .. l ..'.-)' .. l, '%1')
+
+		if Args['status_text_' .. l] then
+			status_code[l] = Args['status_text_' .. l]
+		end
+	 end
+	
+	return {code=status_code, called=status_called, letters=status_letters, position=status_position}
+end
+
+return ppp
