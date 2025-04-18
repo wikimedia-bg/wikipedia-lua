@@ -1,0 +1,62 @@
+local tc = {}
+
+function tc.check(Args, team_list, ii_start, ii_end)
+	local warn = {}
+	
+	local wtotal, dtotal, ltotal = 0,0,0
+	local hwtotal, hdtotal, hltotal = 0,0,0
+	local awtotal, adtotal, altotal = 0,0,0
+	local pkwtotal, pkltotal, otwtotal, otltotal = 0,0,0,0
+	local gftotal, gatotal = 0,0
+	
+	for ii = ii_start, ii_end do
+		-- First get code
+		local team_code_ii = team_list[ii]
+		if team_code_ii ~= 'SPORTS_TABLE_TOTAL' then
+		-- Now tabulate values
+			wtotal = wtotal + (tonumber(Args['win_'..team_code_ii]) or 0)
+			dtotal = dtotal + (tonumber(Args['draw_'..team_code_ii]) or 0)
+			ltotal = ltotal + (tonumber(Args['loss_'..team_code_ii]) or 0)
+			hwtotal = hwtotal + (tonumber(Args['hwin_'..team_code_ii]) or 0)
+			hdtotal = hdtotal + (tonumber(Args['hdraw_'..team_code_ii]) or 0)
+			hltotal = hltotal + (tonumber(Args['hloss_'..team_code_ii]) or 0)
+			awtotal = awtotal + (tonumber(Args['awin_'..team_code_ii]) or 0)
+			adtotal = adtotal + (tonumber(Args['adraw_'..team_code_ii]) or 0)
+			altotal = altotal + (tonumber(Args['aloss_'..team_code_ii]) or 0)
+			pkwtotal = pkwtotal + (tonumber(Args['PKwin_'..team_code_ii]) or 0)
+			pkltotal = pkltotal + (tonumber(Args['PKloss_'..team_code_ii]) or 0)
+			otwtotal = otwtotal + (tonumber(Args['OTwin_'..team_code_ii]) or 0)
+			otltotal = otltotal + (tonumber(Args['OTloss_'..team_code_ii]) or 0)
+			gftotal = gftotal + (tonumber(Args['gf_'..team_code_ii]) or 0) + (tonumber(Args['pf_'..team_code_ii]) or 0)
+			gatotal = gatotal + (tonumber(Args['ga_'..team_code_ii]) or 0) + (tonumber(Args['pa_'..team_code_ii]) or 0)
+		end
+	end
+	if wtotal ~= ltotal then
+		table.insert(warn, wtotal .. ' total wins != ' .. ltotal .. ' total losses')
+	end
+	if hwtotal ~= altotal then
+		table.insert(warn, hwtotal .. ' total hwins != ' .. altotal .. ' total alosses')
+	end
+	if awtotal ~= hltotal then
+		table.insert(warn, awtotal .. ' total awins != ' .. hltotal .. ' total hlosses')
+	end
+	if (2*math.floor(dtotal/2)) ~= dtotal then
+		table.insert(warn, dtotal .. ' total draws is an odd number')
+	end
+	if hdtotal ~= adtotal then
+		table.insert(warn, hdtotal .. ' total hdraw != ' .. adtotal .. ' total adraw')
+	end
+	if pkwtotal ~= pkltotal then
+		table.insert(warn, pkwtotal .. ' total PKwins != ' .. pkltotal .. ' total PKlosses')
+	end
+	if otwtotal ~= otltotal then
+		table.insert(warn, otwtotal .. ' total OTwins != ' .. otltotal .. ' total OTlosses')
+	end
+	if gftotal ~= gatotal then
+		table.insert(warn, gftotal .. ' total for != ' .. gatotal .. ' total against')
+	end
+	
+	return warn
+end
+
+return tc
