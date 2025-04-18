@@ -1,0 +1,605 @@
+-- Style for football tables
+local pp = {}
+
+function pp.header(t,Args,p_sub,pos_label,group_col,VTE_text,full_table,results_header_txt)
+	-- Load relevant modules
+	local yesno = require('Module:Yesno')
+	
+	-- Create table header
+	-- Pre stuff
+	local team_width = Args['teamwidth'] or '190'
+	local sort_text = yesno(Args['sortable_table'] or 'no') and ' sortable' or ''
+	local show_played = not yesno(Args['hide_played'] or 'no')
+	local rounds_won = yesno(Args['show_rw'] or Args['rounds_won'] or 'no')
+	table.insert(t,'{| class="wikitable'..sort_text..'" style="text-align:center;"\n')            			-- Open table
+	-- Table title
+	if Args['title'] or Args['table_header'] then
+		table.insert(t,'|+ ' .. (Args['title'] or Args['table_header']) .. '\n')
+	end
+	-- Custom header options
+	local played_head_text = Args['pld_header'] or '<abbr title="Мачове">М</abbr>'
+	local draw_head_text = Args['draw_header'] 
+		or (yesno(Args['use_tie'] or 'no') and '<abbr title="Равенства">Р</abbr>') or '<abbr title="Равенства">Р</abbr>'
+	local group_head_text = Args['group_header'] or '<abbr title="Група">Гр</abbr>'
+	local team_head_text = Args['team_header'] or 'Отбор'
+	local away_goals_head_text = Args['away_goals_header'] or '<abbr title="Голове на чужд терен">ГЧТ</abbr>'
+	local bonus_head_text = Args['bonus_header'] or '<abbr title="Бонус точки">БТ</abbr>'
+	local rw_head_text = Args['rw_header'] or '<abbr title="Спечелени кръгове">СК</abbr>'
+	local loss_first = Args['loss_before_draw'] or Args['loss_before_tie'] or false
+	-- What to rank the teams by
+	local ranking_style = string.lower(Args['ranking_style'] or 'pts')
+	local show_points, show_wperc, show_perc, show_ppg = false, false, false, false
+	if ranking_style=='w' or ranking_style=='win' or ranking_style=='wins' or ranking_style=='none' then
+		-- Based on wins
+	elseif ranking_style=='wperc' or ranking_style=='win percentage' or ranking_style=='wpct' then
+		show_wperc = true
+	elseif ranking_style=='perc' or ranking_style=='percentage' or ranking_style=='%' then
+		-- Based on percentage
+		show_perc = true
+	elseif ranking_style=='ppg' or ranking_style=='points per game' or ranking_style=='ptspergame' then
+		-- Based on points per game
+		show_ppg = true
+	elseif ranking_style=='percpts' or ranking_style=='%pts' then
+		-- Based on percentage and points
+		show_perc = true
+		show_points = true
+	elseif ranking_style=='ppgpts' then
+		-- Based on ppg and points
+		show_ppg = true
+		show_points = true
+	else
+		-- Based on points
+		show_points = true
+	end
+	local pts_perc_first = yesno((show_points and Args['pts_first']) or (show_perc and Args['perc_first']) or 'no')
+	local show_away_goals = yesno(Args['show_away_goals'] or 'no')
+	local show_bonus_points = yesno(Args['show_bonus_points'] or 'no')
+	local show_win = yesno(Args['show_win'] or 'yes')
+	local show_draw = yesno(Args['show_draw'] or 'yes')
+	local show_loss = yesno(Args['show_loss'] or 'yes')
+	-- Use points instead of goals for/against
+	local for_against_style = Args['for_against_style'] 	or 'goals'
+	local fa_letter, fa_word_sing, fa_word_plur
+	local hide_for_against = false
+	-- First convert to lower case if it is a string
+	for_against_style = string.lower(for_against_style)
+	if for_against_style=='g' or for_against_style=='goal' or for_against_style=='goals' then
+		fa_letter = 'Г'
+		fa_word_sing = 'Гол'
+		fa_word_plur = 'Голове'
+	elseif for_against_style=='f' or for_against_style=='frame' or for_against_style=='frames' then
+		fa_letter = 'Ф'
+		fa_word_sing = 'Фрейм'
+		fa_word_plur = 'Фреймове'
+	elseif for_against_style=='m' or for_against_style=='match' or for_against_style=='matches' then
+		fa_letter = 'М'
+		fa_word_sing = 'Мач'
+		fa_word_plur = 'Мачове'
+	elseif for_against_style=='game' or for_against_style=='games' then
+		fa_letter = 'И'
+		fa_word_sing = 'Игра'
+		fa_word_plur = 'Игри'
+	elseif for_against_style=='p' or for_against_style=='point' or for_against_style=='points' then
+		fa_letter = 'Т'
+		fa_word_sing = 'Точка'
+		fa_word_plur = 'Точки'
+    elseif for_against_style=='s' or for_against_style=='set' or for_against_style=='sets' then
+        fa_letter = 'С'
+        fa_word_sing = 'Сет'
+        fa_word_plur = 'Сетове'		
+    elseif for_against_style=='r' or for_against_style=='run' or for_against_style=='runs' then
+        fa_letter = 'Р'
+        fa_word_sing = 'Рън'
+        fa_word_plur = 'Рънове'	
+    elseif for_against_style=='l' or for_against_style=='leg' or for_against_style=='legs' then
+        fa_letter = 'К'
+        fa_word_sing = 'Кръг'
+        fa_word_plur = 'Кръгове'
+	elseif for_against_style=='none' then
+		hide_for_against = true
+	else
+		fa_letter = 'Г'
+		fa_word_sing = 'Гол'
+		fa_word_plur = 'Голове'
+	end
+	-- Whether to use goal ratio (goal average) instead
+	local do_ratio = yesno(Args['use_goal_ratio'] or 'no')
+	local do_average = yesno(Args['use_goal_average'] or 'no')
+
+	-- Whether to use goal percentage instead
+	local do_percentage = yesno(Args['use_goal_percentage'] or Args['use_against_percentage'] or Args['use_point_percentage'] or 'no')
+	
+	local do_point_for_avg = yesno(Args['use_goals_per_match'] or Args['use_points_per_match'] or 'no')
+	
+	-- Whether to suppress the GR/GA/G% column entirely
+	local do_difference = yesno(Args['use_goal_diff'] or 'yes')
+
+	-- Use games behind header
+	local show_GB = yesno(Args['show_GB'] or 'no')
+	
+	-- Initialize
+	local tt = {}
+	tt.count = 0 		-- Up by one after every call
+	tt.tab_text = t		-- Actual text
+	-- Actual headers
+	if pos_label ~= nil then
+		tt = p_sub.colhead(tt,28,pos_label)									-- Position col
+	end
+	-- Add group header
+	if full_table and group_col then
+		tt = p_sub.colhead(tt,28,group_head_text)			-- Group col
+	end
+	tt = p_sub.colhead(tt,team_width,team_head_text..VTE_text)				-- Team col
+	if pts_perc_first then
+		if show_points then
+			tt = p_sub.colhead(tt,28,'<abbr title="Точки">Точки</abbr>')					-- Points col
+		end
+		if show_perc then
+			tt = p_sub.colhead(tt,36,'<abbr title="Процент победи">П%</abbr>')			-- Win percentage col
+		end
+		if show_ppg then
+			tt = p_sub.colhead(tt,36,'<abbr title="Точки на мач">ТМ</abbr>')		-- Points per game col
+		end
+	end
+	if show_played then
+		tt = p_sub.colhead(tt,28,played_head_text)							-- Matches played col
+	end
+	if full_table then
+		if show_win then
+			tt = p_sub.colhead(tt,28,'<abbr title="Победи">П</abbr>')			-- Win col
+		end
+		if loss_first then
+			if show_loss then
+				tt = p_sub.colhead(tt,28,'<abbr title="Загуби">З</abbr>')		-- Loss col
+			end
+			if show_draw then
+				tt = p_sub.colhead(tt,28,draw_head_text)					-- Draw col
+			end
+		else
+			if show_draw then
+				tt = p_sub.colhead(tt,28,draw_head_text)					-- Draw col
+			end
+			if show_loss then
+				tt = p_sub.colhead(tt,28,'<abbr title="Загуби">З</abbr>')		-- Loss col
+			end
+		end
+		if rounds_won then
+			tt = p_sub.colhead(tt,28,rw_head_text)  -- Rounds won
+		end
+		if not hide_for_against then
+			if not yesno(Args['hide_for_against_columns'] or 'no') then
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_plur..' за">'..fa_letter..'З</abbr>')		-- For col
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_plur..' срещу">'..fa_letter..'С</abbr>')	-- Against col
+			end
+			if do_ratio or do_average then
+				local ratio_word = do_ratio and ' ratio' or ' average'
+				local ratio_letter = do_ratio and 'R' or 'Av'
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_sing..ratio_word..'">'..fa_letter..ratio_letter..'</abbr>')	-- Ratio col
+			elseif do_percentage then
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_sing..' процент">П%</abbr>')			-- Percentage col
+			elseif do_point_for_avg then
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_plur..' на мач">'..fa_letter..'М</abbr>')	-- Points per match
+			elseif do_difference then
+				tt = p_sub.colhead(tt,28,'<abbr title="'..fa_word_sing..' разлика">'..fa_letter..'Р</abbr>')	-- Difference col
+			end
+		end
+	end
+	if show_away_goals then
+		tt = p_sub.colhead(tt,28,away_goals_head_text)		-- Away goals col
+	end
+	if show_bonus_points then
+		tt = p_sub.colhead(tt,28,bonus_head_text)			-- Bonus points col
+	end
+	if not pts_perc_first then
+		if show_points then
+			tt = p_sub.colhead(tt,28,'<abbr title="Точки">Т</abbr>')					-- Points col
+		end
+		if show_perc then
+			tt = p_sub.colhead(tt,36,'<abbr title="Процент победи">П%</abbr>')			-- Win percentage col
+		elseif show_wperc then
+			tt = p_sub.colhead(tt,36,'<abbr title="Процент победи">ПП%</abbr>')			-- Win percentage col
+		end
+		if show_ppg then
+			tt = p_sub.colhead(tt,36,'<abbr title="Точки на мач">ТМ</abbr>')		-- Points per game col
+		end
+	end
+	if full_table then
+		if show_GB then -- Games behind header
+			tt = p_sub.colhead(tt,28,'<abbr title="Брой победи изоставане">ПИ</abbr>')
+		end
+		tt.count = tt.count+1
+		table.insert(tt.tab_text,results_header_txt)
+	end
+
+	return tt
+end
+
+-- Numeric alignment
+local function num_align(num, digits)
+	if tonumber(digits) and tonumber(num) then
+		local n = tonumber(num)
+		digits = tonumber(digits)
+		if digits == 1 then
+			if n >= 0 and n < 10 then
+				return '<span style="visibility:hidden;color:transparent;">0</span>' .. num
+			end
+		elseif digits == 2 then
+			if n >= 0 and n < 10 then
+				return '<span style="visibility:hidden;color:transparent;">00</span>' .. num
+			elseif n >= 10 and n < 100 then
+				return '<span style="visibility:hidden;color:transparent;">0</span>' .. num
+			end
+		end
+	end
+	return num
+end
+
+function pp.row(frame,t,Args,p_sub,notes_exist,hth_id_list,full_table,rand_val,team_list,team_code_ii,ii_start,ii_end,ii_fw,bg_col,N_teams,ii,ii_show)
+	-- Build the inner parts of individual rows
+	
+	-- Sub-module usage
+	local mm = require('Module:Math')
+	local yesno = require('Module:Yesno')
+
+	-- Get custom/default options for in table
+	local show_win = yesno(Args['show_win'] or 'yes')
+	local show_draw = yesno(Args['show_draw'] or 'yes')
+	local show_loss = yesno(Args['show_loss'] or 'yes')
+	local win_points = tonumber(Args['winpoints'])				or (show_draw and 3 or 2)
+	local draw_points = tonumber(Args['drawpoints'])			or (show_draw and 1 or 0)
+	local loss_points = tonumber(Args['losspoints'])			or (show_draw and 0 or 1)
+	local rw_points = tonumber(Args['rwpoints'])				or 1
+	local digits = Args['digitpad']
+	
+	local total_row_name = 'SPORTS_TABLE_TOTAL'
+	-- Add to tallies if enabled
+	if yesno(Args['show_totals'] or 'no') and (team_code_ii ~= total_row_name) then
+		for k,v in ipairs({'win', 'draw', 'loss', 'gf', 'ga', 'adjust_points', 'startpoints'}) do
+			Args[v .. '_' .. total_row_name] = 
+				(tonumber(Args[v .. '_' .. total_row_name]) or 0) 
+				+ (tonumber(Args[v .. '_' .. team_code_ii]) or 0)
+		end
+	end
+
+	-- Order of draws and losses --
+	local loss_first = Args['loss_before_draw'] or Args['loss_before_tie'] or false	
+
+	-- Optional rounds won
+	local rounds_won = yesno(Args['show_rw'] or Args['rounds_won'] or 'no')
+	
+	-- Get some input
+	local wins = tonumber(Args['win_'..team_code_ii])			or 0
+	local draws = tonumber(Args['draw_'..team_code_ii]) 		or 0
+	local losses = tonumber(Args['loss_'..team_code_ii])		or 0
+	local rw = tonumber(Args['rw_'..team_code_ii])		or 0
+	local gfor = tonumber(Args['gf_'..team_code_ii] or Args['pf_'..team_code_ii] or '0') or '?'
+	local gaig = tonumber(Args['ga_'..team_code_ii] or Args['pa_'..team_code_ii] or '0') or '?'
+	local s_pts = (tonumber(Args['adjust_points_'..team_code_ii]) or 0) + (tonumber(Args['startpoints_'..team_code_ii]) or 0)
+	local hth_local = yesno(Args['show_hth'] or 'yes') and Args['hth_'..team_code_ii] or nil
+	local ranking_style = string.lower(Args['ranking_style'] or 'pts')
+	local pct_style = string.lower(Args['pct_style'] or 'ratio')
+
+	-- Then calculate some values
+	local matches = wins + draws + losses
+	local points = win_points*wins + draw_points*draws + loss_points*losses + rw_points*rw + s_pts
+	
+	if Args['goalpoints'] and tonumber(Args['gf_'..team_code_ii] or Args['pf_'..team_code_ii]) then
+		points = points + (tonumber(Args['goalpoints']) or 1)*tonumber(Args['gf_'..team_code_ii] or Args['pf_'..team_code_ii])
+	end
+	
+	local matches_text = matches
+	if tonumber(Args['win_'..team_code_ii]) == nil or tonumber(Args['draw_'..team_code_ii]) == nil or tonumber(Args['loss_'..team_code_ii]) == nil then
+		matches = tonumber(Args['matches_'..team_code_ii]) or matches
+		matches_text = Args['matches_'..team_code_ii] or matches
+	end
+	
+	local win_perc = ''
+	local ppg = ''
+	if tonumber(matches) == nil or matches == 0 then 
+		-- Escape for zero matches
+		win_perc = '&mdash;'
+		ppg = '&mdash;'
+	else
+		--Some sports use draw as well
+		win_perc = (pct_style == 'ratio') and
+			mm._precision_format((2*wins + draws  + s_pts) / (2*matches), 3) or
+			mm._precision_format(100*(2*wins + draws  + s_pts) / (2*matches), 2)
+			-- Allow win_perc to be altered due to point deductions/additions
+		ppg = mm._precision_format(points / matches, 2)
+		if (losses > 0 or draws > 0) and pct_style == 'ratio' then
+			-- Drop the leading zero (from the string)
+			win_perc = string.sub(win_perc,2,string.len(win_perc))
+		end
+	end
+	if ranking_style=='wperc' or ranking_style=='win percentage' or ranking_style=='wpct' then
+		if matches == 0 then
+			win_perc = '&mdash;'
+		else
+			win_perc = mm._precision_format(100 * wins / matches, 2)
+		end
+	end
+
+	-- Show for/against
+	local for_against_style = Args['for_against_style'] 	or 'goals'
+	local hide_for_against = false
+	for_against_style = string.lower(for_against_style)
+	if for_against_style=='none' then
+		hide_for_against = true
+	end
+
+	-- Comparison of for against
+	local gcomp = nil
+	-- Whether to use goal ratio (goal average) or goal percentage instead
+	local skip_sign
+	if yesno(Args['use_goal_ratio'] or 'no') or yesno(Args['use_goal_average'] or 'no') then
+		-- Now it is the goal ratio/goal average
+		if (gfor == '?') or (gaig == '?') or gaig == 0 then
+			gcomp = '&mdash;'
+		else
+			gcomp = mm._precision_format(gfor / gaig, 3)
+		end
+	elseif yesno(Args['use_goal_percentage'] or 'no') then
+		-- Now it is the percentage
+		if (gfor == '?') or (gaig == '?') or gaig == 0 then
+			gcomp = '&mdash;'
+		else
+			gcomp = mm._precision_format(100 * gfor / gaig , 1)
+		end
+	elseif yesno(Args['use_against_percentage'] or 'no') then
+		-- Now it is the percentage
+		if (gfor == '?') or (gaig == '?') or gfor == 0 then
+			gcomp = '&mdash;'
+		else
+			gcomp = mm._precision_format(100 * gaig / gfor , 1)
+		end
+	elseif yesno(Args['use_point_percentage'] or 'no') then
+		-- Now it is the point percentage
+		if (gfor == '?') or (gaig == '?') or (gfor + gaig) <= 0 then
+			gcomp = '&mdash;'
+		else
+			gcomp = mm._precision_format(100 * gfor / (gfor + gaig) , 2)
+		end
+	elseif yesno(Args['use_goals_per_match'] or Args['use_points_per_match'] or 'no') then
+		-- Now it is the point for average
+		if (gfor == '?') or matches <= 0 then
+			gcomp = '&mdash;'
+		else
+			gcomp = mm._precision_format(gfor / matches , 1)
+		end
+	elseif yesno(Args['use_goal_diff'] or 'yes') then
+		-- It's goal difference
+		if (gfor == '?') or (gaig == '?') then
+			gcomp = '&mdash;'
+		else
+			gcomp = gfor - gaig
+			-- Formatting with signs
+			if gcomp>0 then
+				gcomp='+'..num_align(gcomp,digits)
+			elseif gcomp < 0 then
+				gcomp='&minus;'..-num_align(gcomp,digits)
+			end
+		end
+	end
+	-- Use actual values if gfor or gaig is not numeric
+	if (gfor == '?') then gfor = Args['gf_'..team_code_ii] or Args['pf_'..team_code_ii] or '' end
+	if (gaig == '?') then gaig = Args['ga_'..team_code_ii] or Args['pa_'..team_code_ii] or '' end
+
+	-- Show games behind
+	local show_GB = yesno(Args['show_GB'] or 'no')
+	local GB_text = '&mdash;'
+	if show_GB then
+		local GB_team_no = tonumber(Args['GB_team']) or 1
+		if ii == GB_team_no then
+			-- Do nothing, it's vs this team
+		else
+			local wins_GB = tonumber(Args['win_'..team_list[GB_team_no]])		or 0
+			local losses_GB = tonumber(Args['loss_'..team_list[GB_team_no]])	or 0
+			local GB_num = (wins_GB-wins+losses-losses_GB)/2
+			-- Display options
+			if GB_num >0 then
+				-- Indicates trailing GB_team
+				GB_text = num_align(GB_num,digits)
+			elseif GB_num == 0 then
+				-- Equal, do nothing to get dash
+			else 
+				-- Ahead of GB team, should be noted by plus (instead of minus that comes from formula)
+				GB_text = '+'..num_align(-GB_num,digits)
+			end
+		end
+	end
+	
+	-- Some local vars	
+	local hth_string
+	local tt_return = p_sub.hth(frame,Args,full_table,hth_id_list,hth_local,notes_exist,team_list,team_code_ii,ii_start,ii_end,rand_val)
+	hth_string = tt_return.str
+	hth_id_list = tt_return.list
+	notes_exist = tt_return.notes_exist
+	
+	-- What to rank the teams by
+	local rank_points, rank_perc, rank_wperc, rank_ppg = false, false, false, false
+	local win_fw, win_string
+	
+	if ranking_style=='w' or ranking_style=='win' or ranking_style=='wins' then
+		-- Based on wins
+		win_fw = 'font-weight: bold;'
+		win_string = hth_string
+	elseif ranking_style=='perc' or ranking_style=='percentage' or ranking_style=='%' then
+		-- Based on percentage
+		rank_perc = true
+		win_fw=ii_fw
+		win_string = ''
+	elseif ranking_style=='wperc' or ranking_style=='win percentage' or ranking_style=='%w' then
+		-- Based on percentage
+		rank_wperc = true
+		win_fw=ii_fw
+		win_string = ''
+	elseif ranking_style=='ppg' or ranking_style=='points per game' or ranking_style=='ptspergame' then
+		-- Based on points per game
+		rank_ppg = true
+		win_fw=ii_fw
+		win_string = ''
+	elseif ranking_style=='percpts' or ranking_style=='%pts' then
+		-- Based on percentage and points
+		rank_perc = true
+		rank_points = true
+		win_fw=ii_fw
+		win_string = ''
+	elseif ranking_style=='ppgpts'  then
+		-- Based on ppg and points
+		rank_ppg = true
+		rank_points = true
+		win_fw=ii_fw
+		win_string = ''
+	elseif ranking_style=='none' then
+		win_fw=ii_fw
+		win_string = ''
+	else
+		-- Based on points
+		rank_points = true
+		win_fw=ii_fw
+		win_string = ''
+	end
+	local show_played = not yesno(Args['hide_played'] or 'no')
+	local show_away_goals = yesno(Args['show_away_goals'] or 'no')
+	local show_bonus_points = yesno(Args['show_bonus_points'] or 'no')
+	local pts_perc_first = yesno((rank_points and Args['pts_first']) or ((rank_perc or rank_wperc) and Args['perc_first']) or 'no')
+	-- Row building
+	if (tonumber(Args['adjust_points_'..team_code_ii]) and tonumber(Args['startpoints_'..team_code_ii])) then
+		table.insert(t,'[[Category:Pages using sports table with both adjust and startpoints]]\n')
+	end
+	if pts_perc_first then
+		if rank_points then
+			-- Add &minus; for negative point totals
+			if points<0 then
+				table.insert(t,'| style="font-weight: bold;'..bg_col..'" | &minus;'..num_align(-points,digits)..hth_string..'\n')
+			else
+				table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..num_align(points,digits)..hth_string..'\n')
+			end
+		end
+		if rank_perc then
+			table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..win_perc..hth_string..'\n')
+		elseif rank_wperc then
+			table.insert(t,'| style="font-weight: bold;text-align:right;'..bg_col..'" | '..win_perc..hth_string..'\n')
+		end
+		if rank_ppg then
+			table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..ppg..hth_string..'\n')
+		end
+	end
+	if show_played then
+		table.insert(t,'| style="'..ii_fw..bg_col..'" |'..matches_text..'\n') 		-- Played
+	end
+	if full_table then
+		-- Use actual values if wins, draws, and losses are not numeric
+		if (wins == 0 and draws == 0 and losses == 0) then
+			local function numorval(s)
+				return s and ((s == '' and 0) or tonumber(s) or s) or 0
+			end
+			wins = numorval(Args['win_'..team_code_ii])
+			draws = numorval(Args['draw_'..team_code_ii])
+			losses = numorval(Args['loss_'..team_code_ii])
+		end
+		if show_win then
+			table.insert(t,'| style="'..win_fw..bg_col..'" |'..num_align(wins,digits)..win_string..'\n') 	-- Won
+		end
+		
+		if loss_first then
+			if show_loss then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(losses,digits)..'\n') -- Lost
+			end
+			if show_draw then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(draws,digits)..'\n') 	-- Drawn
+			end
+		else
+			if show_draw then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(draws,digits)..'\n') 	-- Drawn
+			end
+			if show_loss then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(losses,digits)..'\n') -- Lost
+			end
+		end
+		if rounds_won then
+			if tonumber(Args['rw_' .. team_code_ii] or 0) == nil then
+				rw = Args['rw_' .. team_code_ii] or ''
+			end
+			table.insert(t,'| style="'..ii_fw..bg_col..'" |'..rw..'\n')         -- Rounds won
+		end
+		if not hide_for_against then
+			if not yesno(Args['hide_for_against_columns'] or 'no') then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(gfor,digits)..'\n') 		-- GF
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..num_align(gaig,digits)..'\n')		-- GA
+			end
+			if gcomp then
+				table.insert(t,'| style="'..ii_fw..bg_col..'" |'..gcomp..'\n')      -- Goal comparison
+			end
+		end
+		
+	end
+	if show_away_goals then
+		table.insert(t,'| style="'..bg_col..'" | '..(Args['away_goals_'..team_code_ii] or '')..'\n')
+	end
+	if show_bonus_points then
+		if s_pts < 0 then
+			table.insert(t,'| style="'..bg_col..'" | &minus;'..num_align(-s_pts,digits)..'\n')
+		else
+			table.insert(t,'| style="'..bg_col..'" | '..num_align(s_pts,digits)..'\n')
+		end
+	end
+	if not pts_perc_first then
+		if rank_points then
+			-- Add &minus; for negative point totals
+			if points<0 then
+				table.insert(t,'| style="font-weight: bold;'..bg_col..'" | &minus;'..num_align(-points,digits)..hth_string..'\n')
+			else
+				table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..num_align(points,digits)..hth_string..'\n')
+			end
+		end
+		if rank_perc then
+			table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..win_perc..hth_string..'\n')
+		elseif rank_wperc then
+			table.insert(t,'| style="font-weight: bold;text-align:right;'..bg_col..'" | '..win_perc..hth_string..'\n')
+		end
+		if rank_ppg then
+			table.insert(t,'| style="font-weight: bold;'..bg_col..'" | '..ppg..hth_string..'\n')
+		end
+	end
+	if show_GB then
+		table.insert(t,'| style="'..ii_fw..bg_col..'" |'..GB_text..'\n')  -- GB
+	end
+	return {t=t, notes_exist=notes_exist, hth_id_list=hth_id_list}
+end
+
+function pp.status(Args)
+	-- Declare status options
+	-- ------------------------------------------------------------
+	-- NOTE: If you add to status_code, also add to status_called and status_letters!!
+	-- Or functionality will be compromised
+	-- ------------------------------------------------------------
+	local status_code, status_called = {}, {}
+	status_code = {	A='Advance to a further round', C='Champions', D='Disqualified', 
+		E='Eliminated', G='Guests', H='Hosts', O='Play-off winners', P='Promoted', Q='Qualified for the phase indicated',
+		R='Relegated', T='Qualified, but not yet for the particular phase indicated'}
+	local status_letters = (Args['status_order'] or '') .. 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	
+	-- Status position (before or after read and default)
+	local stat_pos_val = string.lower(Args['status_pos'] or '')
+	local status_position = 'after' 	-- Default location
+	if stat_pos_val=='before' then
+		status_position = 'before'
+	elseif stat_pos_val=='after' then
+		status_position = 'after'
+	end
+	-- Read in custom status options
+	for l in mw.text.gsplit(status_letters, '') do
+		status_called[l] = false
+		status_code[l] = status_code[l] or '?'
+		status_letters = mw.ustring.gsub(status_letters, '(' .. l ..'.-)' .. l, '%1')
+
+		if Args['status_text_' .. l] then
+			status_code[l] = Args['status_text_' .. l]
+		end
+	 end
+	
+	return {code=status_code, called=status_called, letters=status_letters, position=status_position}
+end
+
+return pp
