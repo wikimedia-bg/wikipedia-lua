@@ -37,6 +37,7 @@ return {
 		{ 'Кипър', 'Flag of Cyprus.svg|border' },
 		{ 'Киргизстан', 'Flag of Kyrgyzstan.svg' },
 		{ 'Китай|китаец|китайци', 'Flag of China.svg' },
+			{ 'Тибет', 'Flag of Tibet.svg' },
 			{ 'Хонконг', 'Flag of Hong Kong.svg' },
 		{ 'Кувейт', 'Flag of Kuwait.svg' },
 		{ 'Лаос', 'Flag of Laos.svg' },
