@@ -1,0 +1,29 @@
+-- Style for plain played points tables
+local pp = {}
+
+local pmod = require('Module:Sports table/WDL')
+function pp.header(t,Args,p_sub,pos_label,group_col,VTE_text,full_table,results_header_txt)
+	Args['show_win'] = Args['show_win'] or 'no'
+	Args['show_draw'] = Args['show_draw'] or 'no'
+	Args['show_loss'] = Args['show_loss'] or 'no'
+	Args['for_against_style'] = Args['for_against_style'] or 'none'
+	return pmod.header(t,Args,p_sub,pos_label,group_col,VTE_text,full_table,results_header_txt)
+end
+ 
+function pp.row(frame,t,Args,p_sub,notes_exist,hth_id_list,full_table,rand_val,team_list,team_code_ii,ii_start,ii_end,ii_fw,bg_col,N_teams,ii,ii_show)
+	Args['show_win'] = Args['show_win'] or 'no'
+	Args['show_draw'] = Args['show_draw'] or 'no'
+	Args['show_loss'] = Args['show_loss'] or 'no'
+	Args['for_against_style'] = Args['for_against_style'] or 'none'
+	return pmod.row(frame,t,Args,p_sub,notes_exist,hth_id_list,full_table,rand_val,team_list,team_code_ii,ii_start,ii_end,ii_fw,bg_col,N_teams,ii,ii_show)
+end
+ 
+function pp.status(Args)
+	Args['show_win'] = Args['show_win'] or 'no'
+	Args['show_draw'] = Args['show_draw'] or 'no'
+	Args['show_loss'] = Args['show_loss'] or 'no'
+	Args['for_against_style'] = Args['for_against_style'] or 'none'
+	return pmod.status(Args)
+end
+
+return pp
