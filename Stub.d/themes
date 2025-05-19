@@ -570,6 +570,8 @@ return {
 	
 	-- МЪНИЧЕТА ЗА ИЗКУСТВО, КУЛТУРА И РЕЛИГИЯ
 	{ 'култура', 'Art template.gif' },
+		{ 'измислен герой|персонаж|герой|литературен герой|филмов герой', 'Cib-staticman (CoreUI Icons v1.0.0).svg', 'измислени герои' },
+			{ 'митично същество|бог|божество', 'Dragon (9369) - The Noun Project.svg', 'митични същества' },
 		{ 'празник', 'Calendar icon.svg', 'празници' },
 		{ 'религия', 'P religion world.svg' },
 			{ 'будизъм', 'Dharma Wheel.svg' },
@@ -644,7 +646,6 @@ return {
 		{ 'бизнесмен', 'Nuvola apps kchart.svg', 'бизнесмени' },
 		{ 'военен|офицер|генерал', 'Army-personnel-icon.png', 'военни личности' },
 		{ 'журналист', 'Trondhjems Adresseavis 17. mai 1905 - framside.JPG', 'журналисти' },
-		{ 'измислен герой|персонаж|герой|литературен герой|филмов герой', 'Cib-staticman (CoreUI Icons v1.0.0).svg', 'измислени герои' },
 		{ 'изследовател', 'Marco Polo portrait.jpg', 'изследователи' },
 		{ 'инженер', 'Engineering.png', 'инженери' },
 		{ 'космонавт', 'Astronaut-EVA edit3.png', 'космонавти' },
