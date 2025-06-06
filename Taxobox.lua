@@ -1230,7 +1230,7 @@ local function getTaxobox(itemId)
 				local iucnTaxonId = iucnIdClaim[1].mainsnak.datavalue.value
 				if iucnTaxonId then
 					local taxonName = LATINNAME .. (AUTHORITY and string.format(' (%s)', AUTHORITY) or '')
-					local link = string.format('[https://apiv3.iucnredlist.org/api/v3/taxonredirect/%s %s]', iucnTaxonId, taxonName)
+					local link = string.format('[https://www.iucnredlist.org/details/%s/0 %s]', iucnTaxonId, taxonName)
 					local redListLink = '[[Международен съюз за защита на природата|IUCN]] [[Червен списък на световнозастрашените видове|Red List of Threatened Species]]'
 					local refDate = ''
 					if iucnClaim[1].references then
