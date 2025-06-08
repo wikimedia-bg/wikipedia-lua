@@ -936,7 +936,15 @@ local function getExternalParameters(args, taxobox)
 			taxobox.statusBg = taxobox.statusBg .. statusBgRef
 		end
 		
-		table.insert(CATEGORIES, 'Червена книга на България')
+		if COLOR == COLORMAP['ANIMALIA'] then
+			table.insert(CATEGORIES, 'Животни в Червената книга на България')
+		elseif COLOR == COLORMAP['PLANTAE'] then
+			table.insert(CATEGORIES, 'Растения в Червената книга на България')
+		elseif COLOR == COLORMAP['FUNGI'] then
+			table.insert(CATEGORIES, 'Гъби в Червената книга на България')
+		else
+			table.insert(CATEGORIES, 'Червена книга на България')
+		end
 	end
 	
 	-- IMAGE AND CAPTION
