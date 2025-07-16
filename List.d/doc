@@ -50,7 +50,8 @@
 | {{tlx|unbulleted list}}
 |-
 | <code>horizontal</code>
-| Horizontal bulleted lists| {{#invoke:list|horizontal|First item|Second item|Third item}}
+| Horizontal bulleted lists
+| {{#invoke:list|horizontal|First item|Second item|Third item}}
 | {{tlx|hlist}}
 |-
 | <code>ordered</code>
