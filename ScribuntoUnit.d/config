@@ -29,7 +29,7 @@ cfg.shortResultsFormat = "success: %d, error: %d, skipped: %d"
 
 -- Category added to pages that fail one or more tests. Set to nil to disable
 -- categorisation of pages that fail one or more tests.
-cfg.failureCategory = "[[Category:ScribuntoUnit failed tests]]"
+cfg.failureCategory = "[[Category:Failed Lua testcases using Module:ScribuntoUnit]]"
 
 -- Finally, return the configuration table.
 return cfg -- Do not edit this line.
