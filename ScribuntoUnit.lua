@@ -103,6 +103,14 @@ function ScribuntoUnit:markTestSkipped()
 end
 
 -------------------------------------------------------------------------------
+-- Unconditionally fail a test
+-- @param message optional description of the test
+-- 
+function ScribuntoUnit:fail(message)
+    DebugHelper.raise({ScribuntoUnit = true, text = "Test failed", message = message}, 2)
+end
+
+-------------------------------------------------------------------------------
 -- Checks that the input is true
 -- @param message optional description of the test
 -- 
@@ -188,10 +196,8 @@ end
 -- @example assertEquals(4, add(2,2), "2+2 should be 4")
 -- 
 function ScribuntoUnit:assertEquals(expected, actual, message)
-
 	if type(expected) == 'number' and type(actual) == 'number' then
         self:assertWithinDelta(expected, actual, 1e-8, message)
-
 	elseif expected ~= actual then
         DebugHelper.raise({
             ScribuntoUnit = true, 
@@ -201,14 +207,32 @@ function ScribuntoUnit:assertEquals(expected, actual, message)
             message = message,
         }, 2)
     end
-
 end
 
 -------------------------------------------------------------------------------
--- Checks that 'actual' is within 'delta' of 'expected'.
+-- Checks that an input does not have the expected value.
 -- @param message optional description of the test
--- @example assertEquals(1/3, 9/3, "9/3 should be 1/3", 0.000001)
-function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
+-- @example assertNotEquals(5, add(2,2), "2+2 should not be 5")
+-- 
+function ScribuntoUnit:assertNotEquals(expected, actual, message)
+	if type(expected) == 'number' and type(actual) == 'number' then
+        self:assertNotWithinDelta(expected, actual, 1e-8, message)
+	elseif expected == actual then
+        DebugHelper.raise({
+            ScribuntoUnit = true, 
+            text = string.format("Failed to assert that %s does not equal expected %s", tostring(actual), tostring(expected)), 
+            actual = actual,
+            expected = expected,
+            message = message,
+        }, 2)
+    end
+end
+
+-------------------------------------------------------------------------------
+-- Validates that both the expected and actual values are numbers
+-- @param message optional description of the test
+-- 
+local function validateNumbers(expected, actual, message)
     if type(expected) ~= "number" then
         DebugHelper.raise({
             ScribuntoUnit = true,
@@ -216,7 +240,7 @@ function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 3)
     end
     if type(actual) ~= "number" then
         DebugHelper.raise({
@@ -225,14 +249,41 @@ function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 3)
     end
+end
+
+-------------------------------------------------------------------------------
+-- Checks that 'actual' is within 'delta' of 'expected'.
+-- @param message optional description of the test
+-- @example assertWithinDelta(1/3, 3/9, 0.000001, "3/9 should be 1/3")
+function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
+    validateNumbers(expected, actual, message)
     local diff = expected - actual
     if diff < 0 then diff = - diff end  -- instead of importing math.abs
     if diff > delta then
         DebugHelper.raise({
             ScribuntoUnit = true, 
             text = string.format("Failed to assert that %f is within %f of expected %f", actual, delta, expected), 
+            actual = actual,
+            expected = expected,
+            message = message,
+        }, 2)
+    end
+end
+
+-------------------------------------------------------------------------------
+-- Checks that 'actual' is not within 'delta' of 'expected'.
+-- @param message optional description of the test
+-- @example assertNotWithinDelta(1/3, 2/3, 0.000001, "1/3 should not be 2/3")
+function ScribuntoUnit:assertNotWithinDelta(expected, actual, delta, message)
+    validateNumbers(expected, actual, message)
+    local diff = expected - actual
+    if diff < 0 then diff = - diff end  -- instead of importing math.abs
+    if diff <= delta then
+        DebugHelper.raise({
+            ScribuntoUnit = true, 
+            text = string.format("Failed to assert that %f is not within %f of expected %f", actual, delta, expected), 
             actual = actual,
             expected = expected,
             message = message,
@@ -403,7 +454,18 @@ end
 -- 
 function ScribuntoUnit:new(o)
     o = o or {}
-    setmetatable(o, {__index = self})
+    o._tests = {}
+    setmetatable(o, {
+    	__index = self,
+    	__newindex = function (t, k, v)
+    		if type(k) == "string" and k:find('^test') and type(v) == "function" then
+    			-- Store test functions in the order they were defined
+    			table.insert(o._tests, {name = k, test = v})
+    		else
+    			rawset(t, k, v)
+    		end
+    	end
+    })
     o.run = function(frame) return self:run(o, frame) end
     return o
 end
@@ -438,7 +500,7 @@ function ScribuntoUnit:runTest(suite, name, test)
         table.insert(self.results, {name = name, skipped = true})
     else
         self.failureCount = self.failureCount + 1
-        local message = details.source
+        local message = details.source or ""
         if details.message then
             message = message .. details.message .. "\n"
         end
@@ -452,16 +514,8 @@ end
 -- 
 function ScribuntoUnit:runSuite(suite, frame)
     self:init(frame)
-	local names = {}
-    for name in pairs(suite) do
-        if name:find('^test') then
-			table.insert(names, name)
-        end
-    end
-	table.sort(names) -- Put tests in alphabetical order.
-	for i, name in ipairs(names) do
-		local func = suite[name]
-		self:runTest(suite, name, func)
+	for i, testDetails in ipairs(suite._tests) do
+		self:runTest(suite, testDetails.name, testDetails.test)
 	end
     return {
         successCount = self.successCount,
@@ -548,12 +602,12 @@ function ScribuntoUnit:displayResultsAsTable(testData)
             	if result.testname then
             		name = name .. ' / ' .. result.testname
             	end
-                text = text .. name .. '\n| ' .. mw.text.nowiki(tostring(result.expected)) .. '\n| ' .. mw.text.nowiki(tostring(result.actual)) .. '\n'
+                text = text .. mw.text.nowiki(name) .. '\n| ' .. mw.text.nowiki(tostring(result.expected)) .. '\n| ' .. mw.text.nowiki(tostring(result.actual)) .. '\n'
             else
-                text = text .. result.name .. '\n| ' .. ' colspan="2" | ' .. mw.text.nowiki(result.message) .. '\n'
+                text = text .. mw.text.nowiki(result.name) .. '\n| ' .. ' colspan="2" | ' .. mw.text.nowiki(result.message) .. '\n'
             end
         else
-            text = text .. '| ' .. successIcon .. '\n| ' .. result.name .. '\n|\n|\n'
+            text = text .. '| ' .. successIcon .. '\n| ' .. mw.text.nowiki(result.name) .. '\n|\n|\n'
         end
     end
     text = text .. '|}\n'
