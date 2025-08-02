@@ -6,7 +6,7 @@ local function getListItem( data )
     if not type( data ) == 'string' then
         return ''
     end
-    return mw.ustring.format( '<li style="line-height: inherit; margin: 0">%s</li>', data )
+    return mw.ustring.format( '\n<li style="line-height: inherit; margin: 0">%s</li>', data )
 end
 
 -- Returns an array containing the keys of all positional arguments
