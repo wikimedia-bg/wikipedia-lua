@@ -532,7 +532,6 @@ return {
 				{ 'политика', 'Society.png' },
 					{ 'ЛГБТ', 'Gay flag.svg' },
                     { 'партия', 'Political_template.svg', 'партии' },
-					{ 'политология', 'Society.png' },
 					{ 'право', 'Scale of justice 2.svg' },
 					{ 'военно дело|военна', 'Distintivo avanzamento merito di guerra ufficiali superiori (forze armate italiane).svg' },
 						{ 'артилерия', 'P military green.png' },
