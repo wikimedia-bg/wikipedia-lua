@@ -5,6 +5,50 @@ sk.error_code="Неизвестен код."
 sk.decimal_separator=","
 sk.thousands_separator=" "
 
+function sk.table_list(args)
+	local places=args.args[1]
+	local items=mw.text.split(places,";", true)
+	local output=""
+	local data=false
+	local data_sup=false
+	local custom_text=false
+	local label
+	local lau
+	local record
+	local population
+	local lang=mw.language.getContentLanguage()
+	
+	for i,item in ipairs(items) do
+		label=""
+		
+		custom_text=string.find(item, "::")
+		if custom_text then
+			label=string.sub(item, custom_text+2)
+			lau=string.sub(item, 1, custom_text-1)
+		end
+		
+		
+		if string.len(lau) == 12 then
+			if not data then
+				data=mw.ext.data.get("Statistics of Slovak municipalities.tab")
+			end
+			record=sk.get_line_data(data, lau)
+		else
+			if not data_sup then
+				data_sup=mw.ext.data.get("Statistics of Slovak supmunicipalities.tab")
+			end
+			record=sk.get_line_data(data_sup, lau)
+		end
+		
+		population=record[2]
+		area=record[3]
+		
+		output=output.."<tr><td>"..label.."</td><td>"..sk.localised_number(area).."</td><td>"..lang:formatNum(population).."</td></tr>\n"
+	end
+	
+	return output
+end
+
 function sk.get_nuts_lua()
 	local place_info
 	local nuts_lau
