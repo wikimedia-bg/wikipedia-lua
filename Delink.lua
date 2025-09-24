@@ -168,7 +168,7 @@ function p._delink(args)
         text = text:gsub("[ \t]+", " ") -- Remove extra tabs and spaces.
     end
     if args.escapesquarebrackets == 'yes' and args.urls ~= "no" and args.wikilinks ~= "no" then
-    	-- Replace sqaure brackets with html entities when full delinking is on
+    	-- Replace square brackets with html entities when full delinking is on
     	-- and escapesquarebrackets option is set to 'yes'.
     	-- This will prevent external links to appear broken when there
     	-- is opening and/or closing square bracket in the link text
