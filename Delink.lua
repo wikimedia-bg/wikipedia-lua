@@ -167,6 +167,13 @@ function p._delink(args)
         text = mw.ustring.gsub(text, "([^\n \t][ \t]*)\n([ \t]*[^\n \t])", "%1 %2")
         text = text:gsub("[ \t]+", " ") -- Remove extra tabs and spaces.
     end
+    if args.escapesquarebrackets == 'yes' and args.urls ~= "no" and args.wikilinks ~= "no" then
+    	-- Replace sqaure brackets with html entities when full delinking is on
+    	-- and escapesquarebrackets option is set to 'yes'.
+    	-- This will prevent external links to appear broken when there
+    	-- is opening and/or closing square bracket in the link text
+        text = mw.ustring.gsub(text, '[%[%]]', function(m) return m == '[' and '&#91;' or '&#93;' end)
+    end
     return text
 end
 
