@@ -7,7 +7,7 @@ local p = {}
 -- Vertical alignment is set to "sub". The generated file link is disabled.
 local pref = '[[File:Cyrillic' .. ' '
 local suff1 = ' ' .. 'Lazov.svg|x'
-local suff2 = 'px|sub|link=]]'
+local suff2 = 'px|sub|link=|class=skin-invert-image]]'
 
 -- Default vertical size of the SVG letters, in pixels ([[File:...|xNpx|...]]).
 local vsize_def = '20'
