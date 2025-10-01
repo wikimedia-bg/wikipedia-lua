@@ -101,7 +101,7 @@ function renderNavBar(titleCell)
 		titleCell.wikitext(Navbar.navbar({
 			args.name,
 			mini = 1,
-			fontstyle = (args.basestyle or '') .. ';' .. (args.titlestyle or '') ..  ';background:none transparent;border:none;'
+			fontstyle = 'border:none;' .. (args.basestyle or '')
 		}))
 	end
 
@@ -317,8 +317,6 @@ function renderMainTable()
 	else -- regular navobx - bodystyle and style will be applied to the wrapper table
 		tbl
 			.addClass('navbox-inner')
-			.css('background', 'transparent')
-			.css('color', 'inherit')
 	end
 	tbl.cssText(args.innerstyle)
 
