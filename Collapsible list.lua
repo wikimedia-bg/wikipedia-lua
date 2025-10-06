@@ -66,7 +66,7 @@ local function buildList( args )
         'font-size: 105%;',
         args.title_style,
         args.titlestyle,
-        not ( args.title_style or args.titlestyle ) and 'background: transparent; text-align: left;'
+        not ( args.title_style or args.titlestyle ) and 'text-align: left;'
     )
     local title = args.title or 'Списък'
     local ulclass = formatAttributes( 'class', 'mw-collapsible-content', args.hlist and 'hlist' )
