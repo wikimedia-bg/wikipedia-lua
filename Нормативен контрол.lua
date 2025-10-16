@@ -61,6 +61,7 @@ local databases = {
 	{ id = 'MBrg', property = 436, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
 	{ id = 'MBs', property = 1407, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
 	{ id = 'MBw', property = 435, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
+	{ id = 'MEP directory ID', property = 1186, pattern = '[1-9]%d?%d?%d?%d?%d?' },
 	{ id = 'MGP', property = 549, pattern = '%d%d?%d?%d?%d?%d?' },
 	{ id = 'NARA', property = 1225, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'NCL', property = 1048, pattern = '%d+' },
