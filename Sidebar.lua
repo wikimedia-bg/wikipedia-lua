@@ -39,7 +39,7 @@ function p.sidebar(frame, args)
 	root = root:tag('table')
 	if not child then
 		root 
-			:addClass('vertical-navbox')
+			:addClass('notheme vertical-navbox')
 			:addClass(args.wraplinks ~= 'true' and 'nowraplinks' or nil)
 			:addClass(args.bodyclass or args.class)
 			:css('float', args.float or 'right')
