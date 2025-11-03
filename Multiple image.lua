@@ -289,8 +289,8 @@ function p.render( frame )
 
 	return frame:extensionTag {name = 'templatestyles', args = {src = 'Multiple image/styles.css', wrapper = ".tmulti"}}
 		.. renderMultipleImages( frame )
-		.. (autoscaledimages and '[[Category:Pages using multiple image with auto scaled images]]' or '')
-		.. (nonautoscaledimages and '[[Category:Pages using multiple image with manual scaled images]]' or '')
+		.. (autoscaledimages and '[[Категория:Страници, изполващи Шаблон:Няколко картинки с автоматично оразмерени изображения]]' or '')
+		.. (nonautoscaledimages and '[[Категория:Страници, изполващи Шаблон:Няколко картинки с ръчно оразмерени изображения]]' or '')
 end
 
 return p
