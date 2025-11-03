@@ -208,7 +208,7 @@ local function renderMultipleImages(frame)
 		-- The body has a min-width of 100, which needs to be taken into account on specific widths
 		bodywidth = math.max( 100, bodywidth - 8);
 
-		local bg = pargs['background color'] or ''
+		local bg = pargs['background color'] ~= '' and pargs['background color'] or nil
 		-- create the array of images
 		local root = mw.html.create('div')
 		root:addClass('thumb')
@@ -227,9 +227,7 @@ local function renderMultipleImages(frame)
 		div:addClass('thumbinner')
 		div:css('width', tostring(bodywidth) .. 'px')
 			:css('max-width', tostring(bodywidth) .. 'px')
-		if( bg ~= '' ) then
-			div:css('background-color', bg)
-		end
+			:css('background-color', bg)
 		if( border == 'infobox' or border == 'none') then
 			div:css('border', 'none')
 		end
@@ -240,7 +238,7 @@ local function renderMultipleImages(frame)
 				:tag('div')
 					:addClass('theader')
 					:css('text-align', pargs['header_align'] or 'center')
-					:css('background-color', pargs['header_background'] or 'transparent')
+					:css('background-color', pargs['header_background'] ~= '' and pargs['header_background'] or nil)
 					:wikitext(header)
 		end
 		-- loop through the images
@@ -251,10 +249,9 @@ local function renderMultipleImages(frame)
 				k = k + 1
 				if( k <= imagecount ) then
 					local imagediv = rowdiv:tag('div')
-					imagediv:addClass('tsingle')
-					if bg ~= '' then
-						imagediv:css('background-color', bg);
-					end
+					imagediv
+						:addClass('tsingle')
+						:css('background-color', bg)
 					if ((imagegap > 1) and (j < perrow[r])) then
 						imagediv:css('margin-right', tostring(imagegap) .. 'px')
 					end
@@ -278,7 +275,7 @@ local function renderMultipleImages(frame)
 				:tag('div')
 					:addClass('thumbcaption' .. (falign == 'center' and '-center' or ''))
 					:css('text-align', (falign ~= 'left') and falign or nil)
-					:css('background-color', pargs['footer_background'] or 'transparent')
+					:css('background-color', pargs['footer_background'] ~= '' and args['footer_background'] or nil)
 					:wikitext(footer)
 		end
 		return tostring(root)
