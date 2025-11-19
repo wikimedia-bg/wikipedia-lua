@@ -97,14 +97,12 @@ local databases = {
 	{ id = 'USCongress', label = 'US Congress', property = 1157, pattern = '[A-Z]00[01]%d%d%d' },
 	{ id = 'VIAF', property = 214, pattern = { '[1-9]%d' .. rep('%d?', 7), '[1-9]%d?%d?%d?' .. rep('%d', 18) } },
 	{ id = 'WorldCat Entities', label = 'WorldCat', property = 10832, pattern = {'[a-zA-Z%d][a-zA-Z%d]' .. rep('[a-zA-Z%d]?', 26)} },
-		{ id = 'WorldCat Identities', label = 'WorldCat', property = 7859, pattern = { 'viaf%-%d+', 'lccn%-n[a-z]?[%d%-]+' , 'n[cps]%-.+' } }, --deprecated as of March 2023; replaced by "WorldCat Entities"
 	{ id = 'ZBMATH', property = 1556, pattern = '[a-z][a-z%-%.%d]*' },
 
 	--TAXA
 	{ id = 'ADW', property = 4024 },
 	{ id = 'AFD', property = 6039 },
 	{ id = 'AfroMoths', property = 6093, pattern = rep('[A-Z%d]', 8) }, ---[[AfroMoths]] DNE
-	{ id = 'AlgaeBase', property = 1348 },
 	{ id = 'AmphibiaWeb', property = 5036, pattern = '[1-9]%d*' },
 	{ id = 'AntWeb', property = 5299, pattern = { '[A-Z][a-z]+', '[A-Z][a-z]+ [a-z]+', '[A-Z][a-z]+ [a-z]+ [a-z]+' } },
 	{ id = 'AoI', property = 5003, pattern = '%d+' }, ---[[Amphibians of India]] DNE
@@ -662,15 +660,13 @@ function p.main(frame)
 						end
 
 						local rowItem = nil
-						--skip item creation for WorldCat Identities if there is a WorldCat Entities entry/item
-						--or for LIBRIS if there is a SELIBR entry/item
+						--skip item creation for LIBRIS if there is a SELIBR entry/item
 						--or for Wikispecies for the current title/eid
 						if not (
-							param == 'worldcat identities' and (parentArgs['worldcat entities' .. f] or fromWikidata['worldcat entities' .. f]) or
 							param == 'libris' and (parentArgs['selibr' .. f] or fromWikidata['selibr' .. f]) or
 							param == 'wikispecies' and (parentArgs['from' .. f] == mw.wikibase.getEntityIdForCurrentPage() or parentArgs['from' .. f] == currentTitle.text)
 						) then
-							rowItem = createItem(label, val, getLink(propId, val, label).text, param ~= 'worldcat identities' and param ~= 'wikispecies', validValue, editAtWikidata(fromWikidata[param .. f] and parentArgs['from' .. f], propId))
+							rowItem = createItem(label, val, getLink(propId, val, label).text, param ~= 'wikispecies', validValue, editAtWikidata(fromWikidata[param .. f] and parentArgs['from' .. f], propId))
 						end
 						if rowItem then table.insert(elements, rowItem) end
 					end
