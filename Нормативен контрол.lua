@@ -35,6 +35,7 @@ local databases = {
 	{ id = 'EBIDAT', property = 9725, pattern = '[1-9]%d?%d?%d?' },
 	{ id = 'EIK', label = 'ЕИК', property = 8894, pattern = '%d%d%d%d%d%d%d%d%d' },
 	{ id = 'Emmy', property = 8381, pattern = '%S+' },
+	{ id = 'EU SWBC', label = 'ЕС КПВО', property = 2856, pattern = '[A-Z][A-Z][0-9A-Z%-_]+' },
 	{ id = 'Europeana', link = 'Europeana', property = 7704, pattern = { 'place/base/%d+', 'agent/base/%d+', 'concept/base/%d+', 'organisation/base/%d+' } },
 	{ id = 'FAST', property = 2163, pattern = '[1-9]%d?%d?%d?%d?%d?%d?%d?' },
 	{ id = 'GND', property = 227, pattern = { '1[0123]?%d%d%d%d%d%d%d[%dX]', '[47]%d%d%d%d%d%d%-%d', '[1-9]%d?%d?%d?%d?%d?%d?%d?%-[%dX]', '3%d%d%d%d%d%d%d[%dX]' } },
