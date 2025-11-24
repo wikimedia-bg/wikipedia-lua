@@ -111,7 +111,7 @@ end
 
 function p.main(frame)
 	local args = require('Модул:Arguments').getArgs(frame, {
-		wrappers = 'Шаблон:Съкр'
+		wrappers = { 'Шаблон:Съкр', 'Шаблон:Ombox/shortcut' }
 	})
 
 	-- Разделяне на съкращенията от опциите
