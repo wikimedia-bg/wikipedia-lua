@@ -873,7 +873,7 @@ function p.navbox (frame, boxtype)
 	if not getArgs then
 		getArgs = require('Module:Arguments').getArgs
 	end
-	local args = getArgs(frame, {wrappers = {cfg.pattern[boxtype or 'navbox']}})
+	local args = getArgs(frame, {wrappers = {cfg.pattern[boxtype or 'navbox'], 'Потребител:Ted Masters/Пясъчник/пробна'}})
 	readArgs(args, "")
 	args.argHash = nil -- we shouldn't accept argHash passed from a template
 	args.type = args.type or cfg.keyword[boxtype]
