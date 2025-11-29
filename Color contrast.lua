@@ -1,15 +1,15 @@
 --
--- This module implements 
+-- This module implements
 --  {{Color contrast ratio}}
 --  {{Greater color contrast ratio}}
 --  {{ColorToLum}}
 --  {{RGBColorToLum}}
 --
 local p = {}
-local HTMLcolor = mw.loadData( 'Module:Color contrast/colors' )
+local HTMLcolor = mw.loadData('Module:Color contrast/colors')
 
-local function sRGB ( v ) 
-	if (v <= 0.03928) then 
+local function sRGB (v)
+	if (v <= 0.03928) then
 		v = v / 12.92
 	else
 		v = math.pow((v+0.055)/1.055, 2.4)
@@ -17,7 +17,7 @@ local function sRGB ( v )
 	return v
 end
 
-local function rgbdec2lum( R, G, B )
+local function rgbdec2lum(R, G, B)
 	if ( 0 <= R and R < 256 and 0 <= G and G < 256 and 0 <= B and B < 256 ) then
 		return 0.2126 * sRGB(R/255) + 0.7152 * sRGB(G/255) + 0.0722 * sRGB(B/255)
 	else
@@ -25,7 +25,7 @@ local function rgbdec2lum( R, G, B )
 	end
 end
 
-local function hsl2lum( h, s, l )
+local function hsl2lum(h, s, l)
 	if ( 0 <= h and h < 360 and 0 <= s and s <= 1 and 0 <= l and l <= 1 ) then
 		local c = (1 - math.abs(2*l - 1))*s
 		local x = c*(1 - math.abs( math.fmod(h/60, 2) - 1) )
@@ -57,11 +57,15 @@ local function hsl2lum( h, s, l )
 	end
 end
 
-local function color2lum( c )
+local function color2lum(c)
 
 	if (c == nil) then
 		return ''
 	end
+
+	-- html '#' entity
+	c = c:gsub("&#35;", "#")
+
 	-- whitespace
 	c = c:match( '^%s*(.-)[%s;]*$' )
 
@@ -77,23 +81,23 @@ local function color2lum( c )
 		return L
 	end
 
-   	-- convert from hsl
-   	if mw.ustring.match(c,'^hsl%([%s]*[0-9][0-9%.]*[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*%)$') then
+	-- convert from hsl
+	if mw.ustring.match(c,'^hsl%([%s]*[0-9][0-9%.]*[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*%)$') then
 		local h, s, l = mw.ustring.match(c,'^hsl%([%s]*([0-9][0-9%.]*)[%s]*,[%s]*([0-9][0-9%.]*)%%[%s]*,[%s]*([0-9][0-9%.]*)%%[%s]*%)$')
 		return hsl2lum(tonumber(h), tonumber(s)/100, tonumber(l)/100)
-   	end
+	end
 
-   	-- convert from rgb
-   	if mw.ustring.match(c,'^rgb%([%s]*[0-9][0-9]*[%s]*,[%s]*[0-9][0-9]*[%s]*,[%s]*[0-9][0-9]*[%s]*%)$') then
+	-- convert from rgb
+	if mw.ustring.match(c,'^rgb%([%s]*[0-9][0-9]*[%s]*,[%s]*[0-9][0-9]*[%s]*,[%s]*[0-9][0-9]*[%s]*%)$') then
 		local R, G, B = mw.ustring.match(c,'^rgb%([%s]*([0-9][0-9]*)[%s]*,[%s]*([0-9][0-9]*)[%s]*,[%s]*([0-9][0-9]*)[%s]*%)$')
 		return rgbdec2lum(tonumber(R), tonumber(G), tonumber(B))
-   	end
+	end
 
-   	-- convert from rgb percent
-   	if mw.ustring.match(c,'^rgb%([%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*%)$') then
+	-- convert from rgb percent
+	if mw.ustring.match(c,'^rgb%([%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*,[%s]*[0-9][0-9%.]*%%[%s]*%)$') then
 		local R, G, B = mw.ustring.match(c,'^rgb%([%s]*([0-9][0-9%.]*)%%[%s]*,[%s]*([0-9][0-9%.]*)%%[%s]*,[%s]*([0-9][0-9%.]*)%%[%s]*%)$')
 		return rgbdec2lum(255*tonumber(R)/100, 255*tonumber(G)/100, 255*tonumber(B)/100)
-   	end
+	end
 
 	-- remove leading # (if there is one) and whitespace
 	c = mw.ustring.match(c, '^[%s#]*([a-f0-9]*)[%s]*$')
@@ -118,13 +122,19 @@ local function color2lum( c )
 	return ''
 end
 
+-- This exports the function for use in other modules.
+-- The colour is passed as a string.
+function p._lum(color)
+	return color2lum(color)
+end
+
 function p._greatercontrast(args)
 	local bias = tonumber(args['bias'] or '0') or 0
 	local css = (args['css'] and args['css'] ~= '') and true or false
 	local v1 = color2lum(args[1] or '')
-	local c2 = args[2] or '#FFFFFF'
+	local c2 = args[2] or 'white'
 	local v2 = color2lum(c2)
-	local c3 = args[3] or '#000000'
+	local c3 = args[3] or 'black'
 	local v3 = color2lum(c3)
 	local ratio1 = -1;
 	local ratio2 = -1;
@@ -136,7 +146,7 @@ function p._greatercontrast(args)
 		ratio2 = (v3 + 0.05)/(v1 + 0.05)
 		ratio2 = (ratio2 < 1) and 1/ratio2 or ratio2
 	end
-	
+
 	if css then
 		local c1 = args[1] or ''
 		if mw.ustring.match(c1, '^[A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9]$') or
@@ -153,7 +163,7 @@ function p._greatercontrast(args)
 		end
 		return 'background-color:' .. c1 .. '; color:' .. ((ratio1 > 0) and (ratio2 > 0) and ((ratio1 + bias > ratio2) and c2 or c3) or '') .. ';'
 	end
-	
+
 	return (ratio1 > 0) and (ratio2 > 0) and ((ratio1 + bias > ratio2) and c2 or c3) or ''
 end
 
@@ -206,8 +216,16 @@ function p._styleratio(args)
 	end
 end
 
+--[[
+Use {{#invoke:Color contrast|somecolor}} directly or
+{{#invoke:Color contrast}} from a wrapper template.
+
+Parameters:
+	-- |1=	— required; A color to check.
+--]]
 function p.lum(frame)
-	return color2lum(frame.args[1] or frame:getParent().args[1])
+	local color = frame.args[1] or frame:getParent().args[1]
+	return p._lum(color)
 end
 
 function p.ratio(frame)
