@@ -1,25 +1,34 @@
 require('strict')
 local p = {}
 local cfg = mw.loadData('Module:Navbox/configuration')
-local inArray = require("Module:TableTools").inArray
+local inArray = require('Module:TableTools').inArray
 local getArgs -- lazily initialized
 local hiding_templatestyles = {} 
 
 -- global passthrough variables
 local passthrough = {
-	[cfg.arg.above]=true,[cfg.arg.aboveclass]=true,[cfg.arg.abovestyle]=true,
-	[cfg.arg.basestyle]=true,
-	[cfg.arg.below]=true,[cfg.arg.belowclass]=true,[cfg.arg.belowstyle]=true,
-	[cfg.arg.bodyclass]=true,
-	[cfg.arg.groupclass]=true,
-	[cfg.arg.image]=true,[cfg.arg.imageclass]=true,[cfg.arg.imagestyle]=true,
-	[cfg.arg.imageleft]=true,[cfg.arg.imageleftstyle]=true,
-	[cfg.arg.listclass]=true,
-	[cfg.arg.name]=true,
-	[cfg.arg.navbar]=true,
-	[cfg.arg.state]=true,
-	[cfg.arg.title]=true,[cfg.arg.titleclass]=true,[cfg.arg.titlestyle]=true,
-	argHash=true
+	[cfg.arg.above] = true,
+	[cfg.arg.aboveclass] = true,
+	[cfg.arg.abovestyle] = true,
+	[cfg.arg.basestyle] = true,
+	[cfg.arg.below] = true,
+	[cfg.arg.belowclass] = true,
+	[cfg.arg.belowstyle] = true,
+	[cfg.arg.bodyclass] = true,
+	[cfg.arg.groupclass] = true,
+	[cfg.arg.image] = true,
+	[cfg.arg.imageclass] = true,
+	[cfg.arg.imagestyle] = true,
+	[cfg.arg.imageleft] = true,
+	[cfg.arg.imageleftstyle] = true,
+	[cfg.arg.listclass] = true,
+	[cfg.arg.name] = true,
+	[cfg.arg.navbar] = true,
+	[cfg.arg.state] = true,
+	[cfg.arg.title] = true,
+	[cfg.arg.titleclass] = true,
+	[cfg.arg.titlestyle] = true,
+	argHash = true
 }
 
 -- helper functions
@@ -28,7 +37,7 @@ local isblank = function(v) return (v or '') == '' end
 
 local function concatstrings(s)
 	local r = table.concat(s, '')
-	if r:match('^%s*$') then return nil end
+	if isblank(mw.text.trim(r)) then return nil end
 	return r
 end
 
@@ -114,23 +123,23 @@ function p._navbox(args)
 	end
 
 	local function processItem(item, nowrapitems)
-		if item:sub(1, 2) == '{|' then
+		if mw.ustring.sub(item, 1, 2) == '{|' then
 			-- Applying nowrap to lines in a table does not make sense.
 			-- Add newlines to compensate for trim of x in |parm=x in a template.
 			return '\n' .. item .. '\n'
 		end
 		if nowrapitems == cfg.keyword.nowrapitems_yes then
 			local lines = {}
-			for line in (item .. '\n'):gmatch('([^\n]*)\n') do
-				local prefix, content = line:match('^([*:;#]+)%s*(.*)')
-				if prefix and not content:match(cfg.pattern.nowrap) then
-					line = string.format(cfg.nowrap_item, prefix, content)
+			for line in mw.ustring.gmatch(item .. '\n', '([^\n]*)\n') do
+				local prefix, content = mw.ustring.match(line, '^([*:;#]+)%s*(.*)')
+				if prefix and not mw.ustring.match(content, cfg.pattern.nowrap) then
+					line = mw.ustring.format(cfg.nowrap_item, prefix, content)
 				end
 				table.insert(lines, line)
 			end
 			item = table.concat(lines, '\n')
 		end
-		if item:match('^[*:;#]') then
+		if mw.ustring.match(item, '^[*:;#]') then
 			return '\n' .. item .. '\n'
 		end
 		return item
@@ -141,7 +150,7 @@ function p._navbox(args)
 			and args[cfg.arg.navbar] ~= cfg.keyword.navbar_plain
 			and (
 				args[cfg.arg.name]
-				or mw.getCurrentFrame():getParent():getTitle():gsub(cfg.pattern.sandbox, '')
+				or mw.ustring.gsub(mw.getCurrentFrame():getParent():getTitle(), cfg.pattern.sandbox, '')
 					~= cfg.pattern.navbox
 			)
 	end
@@ -703,7 +712,7 @@ function p._withCollapsibleGroups(pargs)
 	targs[cfg.arg.bodystyle] = nil
 
 	-- child or subgroup
-	if targs[cfg.arg.border] == nil then targs[cfg.arg.border] = pargs[1] end
+	if not targs[cfg.arg.border] then targs[cfg.arg.border] = pargs[1] end
 
 	return p._navbox(targs)
 end --p._withCollapsibleGroups
@@ -719,11 +728,11 @@ function p._withColumns(pargs)
 
 	-- process args
 	local passthroughLocal = {
-		[cfg.arg.evenstyle]=true,
-		[cfg.arg.groupstyle]=true,
-		[cfg.arg.liststyle]=true,
-		[cfg.arg.oddstyle]=true,
-		[cfg.arg.state]=true,
+		[cfg.arg.evenstyle] = true,
+		[cfg.arg.groupstyle] = true,
+		[cfg.arg.liststyle] = true,
+		[cfg.arg.oddstyle] = true,
+		[cfg.arg.state] = true,
 	}
 	for k,v in pairs(pargs) do
 		if passthrough[k] or passthroughLocal[k] then
