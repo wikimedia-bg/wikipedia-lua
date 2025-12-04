@@ -23,7 +23,7 @@ local i18n = {
 		legend_text = 'Легенда',
 		legend = {
 			default = '[[:en:Template:Railway line legend',
-		}
+			}
 	},
 	html = {
 		["cell-icon-fmt"] = '<div style="%s">[[File:BSicon_%s.svg|x20px|link=%s|alt=|%s]]%s</div>',
@@ -55,7 +55,7 @@ local i18n = {
 
 		["row-collapsible-begin-fmt"] = '\
 |- style="line-height:1"\
-|colspan="7" style="padding:0 !important;background:%s"|\
+|colspan="7" style="padding:0 !important;color:inherit;background:%s"|\
 {|class="RMcollapse %s%s" style="%s"',-- parameters: bg, "collapsible "/"mw-collapsible mw-", collapse-state, "float:right" / ""
 
 		["row-collapsible-end-fmt"] = '\n|}',
@@ -81,7 +81,7 @@ local i18n = {
 {| class="RMreplace" style="%sbackground:%s"',-- parameters: "right-button-width 0 0" / "0 0 left-button-width", "right:0px" / "", bg
 		["row-collapsible-replace-end-fmt"] = '\n|}</div>',
 
-		["colspan-fmt"] = '%s\n|-\n| colspan="7" style="background:%s;text-align:%s;%s"|\n%s',
+		["colspan-fmt"] = '%s\n|-\n| colspan="7" style="color:inherit;background:%s;text-align:%s;%s"|\n%s',
 		["empty-row-fmt"] = '\n|-\n|style="padding:0 3px 0 0;%s"|\n|style="%s"|\n|%s style="%s"|\n|\n|%s style="%s"|\n|style="%s"|\n|style="padding:0 0 0 3px;%s"|'
 		}
 }
@@ -94,6 +94,14 @@ local function makeInvokeFunction(funcName)
 	-- [[Module:Arguments]].
 	return function (frame)
 		local args = getArgs(frame, {parentOnly = true})
+		return p[funcName](args)
+	end
+end
+
+local function makeTemplateFunction(funcName)
+	-- makes a function for calling via #invoke within a template
+	return function (frame)
+		local args = getArgs(frame, {frameOnly = true})
 		return p[funcName](args)
 	end
 end
@@ -115,6 +123,7 @@ local function RGBbyCode(code)-- RGB codes for BSicon sets at Commons:Category:I
 		black    = '000000', ex_black    = '646464',
 		blue     = '0078BE', ex_blue     = '64ACD6',
 		brown    = '8D5B2D', ex_brown    = 'B89A7F',
+		brunswick= '1B4D3E', ex_brunswick= '64A064',
 		carrot   = 'ED9121', ex_carrot   = 'F1BA76', excarrot   = 'F1BA76', ex_excarrot   = 'F3D2A9',
 		cerulean = '1A8BB9', ex_cerulean = '73B7D3',
 		cyan     = '40E0D0', ex_cyan     = '8AEAE1',
@@ -141,6 +150,8 @@ local function RGBbyCode(code)-- RGB codes for BSicon sets at Commons:Category:I
 		teal     = '339999', ex_teal     = '82C0C0', exteal     = '82C0C0', ex_exteal     = 'B1D6D6',
 		violet   = '800080', ex_violet   = 'B164B1',
 		yellow   = 'FFD702', ex_yellow   = 'FFEB81',
+		white    = 'FFFFFF', ex_white    = 'F9F9F9', -- ex-white is the same color as background masks - DO NOT CHANGE
+		water    = '007CC3',
 	}
 	return colors[code] or colors.bahn
 end
@@ -510,7 +521,7 @@ row properties~~linfo4~~linfo3~~linfo2~~linfo1! !(icon pattern)~~rinfo1~~rinfo2~
 end
 
 --↓ This table handles diagram rows beginning with a hyphen ("-").
-q = {collapsibles = -1, text_width = {'', '', '', '', '', ''}, linfo1_pad = 'class="RMl1"', rinfo1_pad = 'class="RMr1"', bg = '#F9F9F9'}
+q = {collapsibles = -1, text_width = {'', '', '', '', '', ''}, linfo1_pad = 'class="RMl1"', rinfo1_pad = 'class="RMr1"', bg = 'var(--background-color-neutral-subtle, #f8f9fa)'}
 q.isKeyword = function(pattern, i, rows, justTest)
 	if mw.ustring.sub(pattern, 1, 1) ~= '-' then if justTest then return false else return nil end end--not a valid keyword
 	local tmp = mw.text.split(string.sub(pattern, 2), '%-')
@@ -531,7 +542,7 @@ q['startCollapsible'] = function(params, i, rows)
 	if q.collapsibles == -1 then q.collapsibles = 1 else q.collapsibles = q.collapsibles + 1 end--q.collapsibles == -1 means there are no collapsibles at all; 0 - all closed; >0 - some not closed
 	local collapsed, replace, props = params[2], params[3] or '', properties(table.concat(params, '-', 4))--params[1] is the keyword name so all indices are shifted by one.
 	if collapsed == nil or collapsed == '' then collapsed = 'collapsed' end
-	if props.bg == nil or props.bg == '' then props.bg = 'transparent' ; props['bg-replace'] = q.bg else props['bg-replace'] = props.bg end
+	if props.bg == nil or props.bg == '' then props.bg = '' ; props['bg-replace'] = q.bg else props['bg-replace'] = props.bg end
 	local mode, float, result
 	if q.rinfo1_pad == '' then mode = 'collapsible ' ; float = 'float:right;'
 	else mode = 'mw-collapsible mw-' ; float = ''
@@ -707,6 +718,7 @@ local greatercontrast = require('Module:Color contrast')._greatercontrast
 local rgb_black = '#252525' -- class .mw-body in Mediawiki:Common.css
 
 p.infobox = makeInvokeFunction('_infobox')
+p.infoboxTemplate = makeTemplateFunction('_infobox')
 
 function p._infobox(args) -- Creates a pretty box.
 	args.map1, args.tw, args['map1-title'], args['map1-collapsible'], args['map1-collapse'] = args.map1 or args.map, args.tw or args['text-width'] or args['text width'], args['map1-title'] or args['map-title'], args['map1-collapsible'] or args['map-collapsible'], args['map1-collapse'] or args['map1-collapsed'] or args['map-collapse'] or args['map-collapsed']
@@ -760,9 +772,9 @@ function p._infobox(args) -- Creates a pretty box.
 		table.insert(classes, 'RMbox')
 		args.fontsize = 88 -- as above: CSS rule for .infobox in %
 	end
-	args.bg = args.bg or '#F9F9F9'
+	args.bg = args.bg or 'var(--background-color-neutral-subtle, f8f9fa)'
 	args.style = args.style or ''
-	result = result .. 'class="' .. table.concat(classes, ' ') .. '" cellspacing="0" cellpadding="0" style="float:' .. args.float .. ';clear:' .. args.float .. ';margin-top:0;margin-bottom:1em;' .. args.margin .. 'empty-cells:show;border-collapse:collapse;font-size:' .. args.fontsize .. '%;background:' .. args.bg .. ';' .. args.style .. '"'
+	result = result .. 'class="' .. table.concat(classes, ' ') .. '" cellspacing="0" cellpadding="0" style="float:' .. args.float .. ';clear:' .. args.float .. ';margin-top:0;margin-bottom:1em;' .. args.margin .. 'empty-cells:show;border-collapse:collapse;font-size:' .. args.fontsize .. '%;background:' .. args.bg .. ';color:inherit;' .. args.style .. '"'
 	args.title = args.title or ''
 	if args.inline or args.title == 'no' or args.title == '0' then
 	else
@@ -854,7 +866,7 @@ local function base(t1,t2,link,stn,italic,it,it2,bold,align,style,bg1,bg2,line,f
 		end
 	end
 	style = style or ''
-	local result = '&#32;<table cellspacing="0" cellpadding="0" style="font-weight:inherit;color:inherit;background:transparent;margin-top:-2px;margin-bottom:-2px;display:inline-table;vertical-align:middle;text-align:'..align
+	local result = '&#32;<table cellspacing="0" cellpadding="0" class="RMsplit" style="text-align:'..align
 	if italic or it == 'all' then result = result..';font-style:italic' end
 	if bold then result = result..';font-weight:bold' end
 	local rowstart = '<tr><td style="text-align:inherit;padding:0;line-height:'
@@ -1072,8 +1084,8 @@ Implemented in the RoutemapRoute template.
 ]]
 	args.l = args.l or args.Licon or args.licon or args.L
 	args.r = args.r or args.Ricon or args.ricon or args.R
-	if args.l then args.l = p._rmri{args.l,args.llink,(args.lsize or args.size),' '}..'&nbsp;' else args.l = '' end
-	if args.r then args.r = '&nbsp;'..p._rmri{args.r,args.rlink,(args.rsize or args.size),' '} else args.r = '' end
+	if args.l then args.l = p._rmri{args.l,args.Llink or args.llink,(args.Lsize or args.lsize or args.size),' '}..'&nbsp;' else args.l = '' end
+	if args.r then args.r = '&nbsp;'..p._rmri{args.r,args.Rlink or args.rlink,(args.Rsize or args.rsize or args.size),' '} else args.r = '' end
 	if args[1] then
 		if args[2] then args[1] = args[1]..'&nbsp;–&nbsp;'..args[2] end
 	else
