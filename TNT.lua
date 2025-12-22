@@ -85,15 +85,28 @@ function p.link(frame)
 	return link(frame.args[1])
 end
 
+local implGetTemplateData;
 function p.doc(frame)
-	local dataset = 'Templatedata/' .. sanitizeDataset(frame.args[1])
-	return frame:extensionTag('templatedata', p.getTemplateData(dataset)) ..
-		   formatMessage(i18nDataset, 'edit_doc', {link(dataset)})
+	local dataset = sanitizeDataset(frame.args[1])
+	local json, dataPage, categories = implGetTemplateData(nil, dataset, frame.args)
+	return frame:extensionTag('templatedata', json) ..
+		formatMessage(i18nDataset, 'edit_doc', {link(dataPage)}) ..
+		(categories or "");
 end
 
 function p.getTemplateData(dataset)
+	local data = implGetTemplateData(true, dataset);
+	return data;
+end
+
+function p.getTemplateDataNew(...)
+	return implGetTemplateData(nil, ...);
+end
+
+function implGetTemplateData(legacy, dataset, args)
 	-- TODO: add '_' parameter once lua starts reindexing properly for "all" languages
-	local data = loadData(dataset)
+	local data, dataPage, categories = loadData(
+		dataset, nil, not legacy and 'TemplateData' or nil);
 	local names = {}
 	for _, field in ipairs(data.schema.fields) do
 		table.insert(names, field.name)
@@ -136,13 +149,15 @@ function p.getTemplateData(dataset)
 		params=params,
 		paramOrder=paramOrder,
 		description=data.description,
+		-- TODO: Store this in a dataset:
+		format = (args and args.format or nil),
 	})
 
 	if numOnly then
 		json = string.gsub(json,'"zzz123":"",?', "")
 	end
 
-	return json
+	return json, dataPage, categories;
 end
 
 -- Local functions
@@ -161,7 +176,7 @@ sanitizeDataset = function(dataset)
 	end
 end
 
-loadData = function(dataset, lang)
+loadData = function(dataset, lang, dataType)
 	dataset = sanitizeDataset(dataset)
 	if not dataset then
 		error(formatMessage(i18nDataset, 'error_no_dataset', {}))
@@ -174,7 +189,21 @@ Cannot load https://commons.wikimedia.org/wiki/Data:%s.
 See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_templates''']], dataset))
 	end
 
-	local data = mw.ext.data.get(dataset, lang)
+	local dataPage = dataset;
+	local data, categories;
+	if dataType == 'TemplateData' then
+		dataPage = 'TemplateData/' .. dataset;
+		data = mw.ext.data.get(dataPage, lang);
+		if data == false then
+			data = mw.ext.data.get('Templatedata/' .. dataset, lang);
+			if data ~= false then
+				categories = '[[Category:Templates using legacy global TemplateData table name]]';
+				dataPage = 'Templatedata/' .. dataset;
+			end
+		end
+	else
+		data = mw.ext.data.get(dataset, lang)
+	end
 
 	if data == false then
 		if dataset == i18nDataset then
@@ -184,7 +213,7 @@ See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_tem
 			error(formatMessage(i18nDataset, 'error_bad_dataset', {link(dataset)}))
 		end
 	end
-	return data
+	return data, dataPage, categories
 end
 
 -- Given a dataset name, convert it to a title with the 'commons:data:' prefix
