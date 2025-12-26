@@ -33,6 +33,11 @@
 --        if the current page is Template:Graph:Lines/doc
 --
 
+local config = (function()
+	local ok, res = pcall(mw.loadData, "Module:TNT/config");
+	return ok and res or {};
+end)();
+
 local p = {}
 local i18nDataset = 'I18n/Module:TNT.tab'
 
@@ -197,7 +202,14 @@ See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_tem
 		if data == false then
 			data = mw.ext.data.get('Templatedata/' .. dataset, lang);
 			if data ~= false then
-				categories = '[[Category:Templates using legacy global TemplateData table name]]';
+				local legacyTemplateDataCategoryName = config.legacyTemplateDataCategoryName;
+				if legacyTemplateDataCategoryName ~= false then
+					categories = string.format(
+						'[[Category:%s%s]]',
+						legacyTemplateDataCategoryName or "Templates using legacy global TemplateData table name",
+						config.translatableCategoryLink and mw.getCurrentFrame():callParserFunction("#translation:") or ""
+					);
+				end
 				dataPage = 'Templatedata/' .. dataset;
 			end
 		end
@@ -213,7 +225,7 @@ See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_tem
 			error(formatMessage(i18nDataset, 'error_bad_dataset', {link(dataset)}))
 		end
 	end
-	return data, dataPage, categories
+	return data, dataPage, categories;
 end
 
 -- Given a dataset name, convert it to a title with the 'commons:data:' prefix
