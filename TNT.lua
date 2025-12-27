@@ -222,7 +222,7 @@ See https://www.mediawiki.org/wiki/Extension:JsonConfig#Supporting_Wikimedia_tem
 			-- Prevent cyclical calls
 			error('Missing Commons dataset ' .. i18nDataset)
 		else
-			error(formatMessage(i18nDataset, 'error_bad_dataset', {link(dataset)}))
+			error(formatMessage(i18nDataset, 'error_bad_dataset', {link(dataPage)}))
 		end
 	end
 	return data, dataPage, categories;
