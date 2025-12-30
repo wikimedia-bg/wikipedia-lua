@@ -285,7 +285,7 @@ return {
 		{ 'Лихтенщайн', 'Flag of Liechtenstein.svg' },
 		{ 'Люксембург', 'Flag of Luxembourg.svg' },
 		{ 'Малта', 'Flag of Malta.svg|border' },
-		{ 'Македония', 'Region_of_Macedonia_and_present_states_borders.png/120px-Region_of_Macedonia_and_present_states_borders.png|border' },
+		{ 'Македония', 'Region_of_Macedonia_and_present_states_borders.png|border' },
 		{ 'Молдова', 'Flag of Moldova.svg' },
 		{ 'Монако', 'Flag of Monaco.svg|border' },
 		{ 'Нидерландия|Холандия', 'Flag of the Netherlands.svg|border' },
