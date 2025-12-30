@@ -300,7 +300,7 @@ return {
 		{ 'Румъния', 'Flag of Romania.svg' },
 			{ 'Букурещ', 'Coat of arms of Bucharest.svg' },
 		{ 'Сан Марино', 'Flag of San Marino.svg' },
-		{ 'Северна Македония|Република Македония|Македония', 'Flag map of North Macedonia.svg' },
+		{ 'Северна Македония|Република Македония', 'Flag map of North Macedonia.svg' },
 		{ 'Словакия', 'Flag of Slovakia.svg|border' },
 		{ 'Словения', 'Flag of Slovenia.svg' },
 		{ 'Сърбия', 'Flag of Serbia.svg|border' },
