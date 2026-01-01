@@ -232,7 +232,7 @@ function barChart( frame )
         for gi = 2, numGroups do
             if #values[gi] ~= numValues then error( keywords.group .. " " .. gi .. " does not have same number of values as " .. keywords.group .. " 1" ) end
         end
-        if #xlegends ~= numValues then error( 'Illegal number of ' .. keywords.xlegend .. '. Should be exatly ' .. numValues ) end
+        if #xlegends ~= numValues then error( 'Illegal number of ' .. keywords.xlegend .. '. Should be exactly ' .. numValues ) end
     end
 
     function extractParams()
