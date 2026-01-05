@@ -1,4 +1,4 @@
-require('Module:No globals');
+require('strict');
 
 local count;
 local hcount;
