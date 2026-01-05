@@ -1,4 +1,4 @@
-require('Модул:No globals')
+require('strict')
 
 local p = {}
 
