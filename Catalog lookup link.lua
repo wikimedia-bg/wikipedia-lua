@@ -25,7 +25,7 @@ new parameters that support access icons:
 
 ]]
 
-require('Module:No globals');
+require('strict');
 local getArgs = require ('Module:Arguments').getArgs;
 local lock_icons = {															--icon classes are defined in Module:Citation/CS1/styles.css
 	['free'] = {'cs1-lock-free', 'Freely accessible'},
