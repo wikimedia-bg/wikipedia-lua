@@ -1,4 +1,4 @@
-require('Module:No globals')
+require('strict')
 return setmetatable({}, {
 	__index = function(t, k)
 		local what = mw.ustring[k]
