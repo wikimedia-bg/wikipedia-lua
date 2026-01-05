@@ -1,4 +1,4 @@
-require('Module:No globals');
+require('strict');
 
 local anchor_id_list_module = mw.loadData ('Module:Footnotes/anchor_id_list');
 local anchor_id_list = anchor_id_list_module.anchor_id_list;
