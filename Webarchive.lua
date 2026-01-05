@@ -10,7 +10,7 @@ A merger of the functionality of three templates: {{wayback}}, {{webcite}} and {
 --[[--------------------------< D E P E N D E N C I E S >------------------------------------------------------
 ]]
 
-require('Module:No globals');
+require('strict');
 local getArgs = require ('Module:Arguments').getArgs;
 
 
