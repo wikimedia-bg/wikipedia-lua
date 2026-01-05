@@ -2,7 +2,7 @@
 -- {{mbox}}, {{ambox}}, {{imbox}}, {{tmbox}}, {{ombox}}, {{cmbox}} and {{fmbox}}.
 
 -- Load necessary modules.
-require('Модул:No globals')
+require('strict')
 local getArgs
 local categoryHandler = require('Модул:Category handler')._main
 local yesno = require('Модул:Yesno')
