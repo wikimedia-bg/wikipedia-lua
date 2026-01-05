@@ -1,7 +1,7 @@
 --
 -- This module implements {{Sidebar}}
 --
-require('Module:No globals')
+require('strict')
 
 local p = {}
 
