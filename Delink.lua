@@ -1,6 +1,6 @@
 -- This module de-links most wikitext.
 
-require('Module:No globals')
+require('strict')
 
 local p = {}
 
