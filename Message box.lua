@@ -349,7 +349,7 @@ function MessageBox:setMainspaceCategories()
 			self:addCat(0, catTitle)
 			catTitle = getTitleObject('Category:' .. catTitle)
 			if not catTitle or not catTitle.exists then
-				self:addCat(0, 'Статии с невалидна дата в шаблона')
+				--self:addCat(0, 'Статии с невалидна дата в шаблона')
 			end
 		elseif mainCat and (not date or date == '') then
 			self:addCat(0, mainCat)
