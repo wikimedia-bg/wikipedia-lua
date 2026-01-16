@@ -400,7 +400,7 @@ Get coordinates from a Wikidata item
 @param {string} item_id  Wikidata item id (Q number)
 @returns {number, number} latitude, longitude
 @throws {L10n.error.noCoords} if item_id is invalid or the item does not exist
-@throws {L10n.error.wikidataCoords} if the the item does not have a P625
+@throws {L10n.error.wikidataCoords} if the the item does not have a P625 or P159/P625
   statement (coordinates), or it is set to "no value"
 ]]--
 function util.wikidataCoords(item_id)
@@ -408,14 +408,23 @@ function util.wikidataCoords(item_id)
 		error(L10n.error.noCoords, 0)
 	end
 	local coordStatements = mw.wikibase.getBestStatements(item_id, 'P625')
+	local mainsnak = nil
 	if not coordStatements or #coordStatements == 0 then
+		local hql = mw.wikibase.getBestStatements(item_id, 'P159')
+		if hql and hql[1].qualifiers and hql[1].qualifiers.P625 then
+			mainsnak = hql[1].qualifiers.P625[1]
+		end
+	else
+		mainsnak = coordStatements[1].mainsnak
+	end
+	if not mainsnak then
 		error(L10n.error.wikidataCoords, 0)
 	end
-	local hasNoValue = ( coordStatements[1].mainsnak and (coordStatements[1].mainsnak.snaktype == 'novalue' or coordStatements[1].mainsnak.snaktype == 'somevalue') )
+	local hasNoValue = ( mainsnak.snaktype == 'novalue' or mainsnak.snaktype == 'somevalue')
 	if hasNoValue then
 		error(L10n.error.wikidataCoords, 0)
 	end
-	local wdCoords = coordStatements[1]['mainsnak']['datavalue']['value']
+	local wdCoords = mainsnak['datavalue']['value']
 	return tonumber(wdCoords['latitude']), tonumber(wdCoords['longitude'])
 end
 
