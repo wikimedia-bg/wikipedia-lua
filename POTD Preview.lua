@@ -28,7 +28,7 @@ function p.preview( frame )
             rows[i] = v:match("^%s*(.-)%s*$")
             if i == 1 then
                 rows[i] = startTag
-            elseif rows[i] == "}}" then
+            elseif string.sub(rows[i], 1, 2) == "}}" then
                 rows[i] = endTag
             elseif rows[i] == "" then
                 rows[i] = endTag .. "\n----\n" .. startTag
