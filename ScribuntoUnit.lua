@@ -113,20 +113,22 @@ end
 -------------------------------------------------------------------------------
 -- Checks that the input is true
 -- @param message optional description of the test
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertTrue(actual, message)
+function ScribuntoUnit:assertTrue(actual, message, level)
     if not actual then
-        DebugHelper.raise({ScribuntoUnit = true, text = string.format("Failed to assert that %s is true", tostring(actual)), message = message}, 2)
+        DebugHelper.raise({ScribuntoUnit = true, text = string.format("Failed to assert that %s is true", tostring(actual)), message = message}, 2 + (level or 0))
     end
 end
 
 -------------------------------------------------------------------------------
 -- Checks that the input is false
 -- @param message optional description of the test
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertFalse(actual, message)
+function ScribuntoUnit:assertFalse(actual, message, level)
     if actual then
-        DebugHelper.raise({ScribuntoUnit = true, text = string.format("Failed to assert that %s is false", tostring(actual)), message = message}, 2)
+        DebugHelper.raise({ScribuntoUnit = true, text = string.format("Failed to assert that %s is false", tostring(actual)), message = message}, 2 + (level or 0))
     end
 end
 
@@ -134,28 +136,29 @@ end
 -- Checks an input string contains the expected string
 -- @param message optional description of the test
 -- @param plain search is made with a plain string instead of a ustring pattern
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertStringContains(pattern, s, plain, message)
+function ScribuntoUnit:assertStringContains(pattern, s, plain, message, level)
 	if type(pattern) ~= 'string' then
 		DebugHelper.raise({
 			ScribuntoUnit = true,
 			text = mw.ustring.format("Pattern type error (expected string, got %s)", type(pattern)),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 	if type(s) ~= 'string' then
 		DebugHelper.raise({
 			ScribuntoUnit = true,
 			text = mw.ustring.format("String type error (expected string, got %s)", type(s)),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 	if not mw.ustring.find(s, pattern, nil, plain) then
 		DebugHelper.raise({
 			ScribuntoUnit = true,
 			text = mw.ustring.format('Failed to find %s "%s" in string "%s"', plain and "plain string" or "pattern", pattern, s),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 end
 
@@ -163,21 +166,22 @@ end
 -- Checks an input string doesn't contain the expected string
 -- @param message optional description of the test
 -- @param plain search is made with a plain string instead of a ustring pattern
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertNotStringContains(pattern, s, plain, message)
+function ScribuntoUnit:assertNotStringContains(pattern, s, plain, message, level)
 	if type(pattern) ~= 'string' then
 		DebugHelper.raise({
 			ScribuntoUnit = true,
 			text = mw.ustring.format("Pattern type error (expected string, got %s)", type(pattern)),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 	if type(s) ~= 'string' then
 		DebugHelper.raise({
 			ScribuntoUnit = true,
 			text = mw.ustring.format("String type error (expected string, got %s)", type(s)),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 	local i, j = mw.ustring.find(s, pattern, nil, plain)
 	if i then
@@ -186,7 +190,7 @@ function ScribuntoUnit:assertNotStringContains(pattern, s, plain, message)
 			ScribuntoUnit = true,
 			text = mw.ustring.format('Found match "%s" for %s "%s"', match, plain and "plain string" or "pattern", pattern),
 			message = message
-		}, 2)
+		}, 2 + (level or 0))
 	end
 end
 
@@ -194,18 +198,19 @@ end
 -- Checks that an input has the expected value.
 -- @param message optional description of the test
 -- @example assertEquals(4, add(2,2), "2+2 should be 4")
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertEquals(expected, actual, message)
+function ScribuntoUnit:assertEquals(expected, actual, message, level)
 	if type(expected) == 'number' and type(actual) == 'number' then
-        self:assertWithinDelta(expected, actual, 1e-8, message)
+        self:assertWithinDelta(expected, actual, 1e-8, message, (level or 0) + 1)
 	elseif expected ~= actual then
-        DebugHelper.raise({
+		DebugHelper.raise({
             ScribuntoUnit = true, 
             text = string.format("Failed to assert that %s equals expected %s", tostring(actual), tostring(expected)), 
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 2 + (level or 0))
     end
 end
 
@@ -213,10 +218,11 @@ end
 -- Checks that an input does not have the expected value.
 -- @param message optional description of the test
 -- @example assertNotEquals(5, add(2,2), "2+2 should not be 5")
+-- @param level optional number to raise error stack level by
 -- 
-function ScribuntoUnit:assertNotEquals(expected, actual, message)
+function ScribuntoUnit:assertNotEquals(expected, actual, message, level)
 	if type(expected) == 'number' and type(actual) == 'number' then
-        self:assertNotWithinDelta(expected, actual, 1e-8, message)
+        self:assertNotWithinDelta(expected, actual, 1e-8, message, (level or 0) + 1)
 	elseif expected == actual then
         DebugHelper.raise({
             ScribuntoUnit = true, 
@@ -224,15 +230,16 @@ function ScribuntoUnit:assertNotEquals(expected, actual, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 2 + (level or 0))
     end
 end
 
 -------------------------------------------------------------------------------
 -- Validates that both the expected and actual values are numbers
 -- @param message optional description of the test
+-- @param level number to raise error stack level by
 -- 
-local function validateNumbers(expected, actual, message)
+local function validateNumbers(expected, actual, message, level)
     if type(expected) ~= "number" then
         DebugHelper.raise({
             ScribuntoUnit = true,
@@ -240,7 +247,7 @@ local function validateNumbers(expected, actual, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 3)
+        }, 3 + level)
     end
     if type(actual) ~= "number" then
         DebugHelper.raise({
@@ -249,16 +256,17 @@ local function validateNumbers(expected, actual, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 3)
+        }, 3 + level)
     end
 end
 
 -------------------------------------------------------------------------------
 -- Checks that 'actual' is within 'delta' of 'expected'.
 -- @param message optional description of the test
+-- @param level optional number to raise error stack level by
 -- @example assertWithinDelta(1/3, 3/9, 0.000001, "3/9 should be 1/3")
-function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
-    validateNumbers(expected, actual, message)
+function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message, level)
+    validateNumbers(expected, actual, message, level or 0)
     local diff = expected - actual
     if diff < 0 then diff = - diff end  -- instead of importing math.abs
     if diff > delta then
@@ -268,16 +276,17 @@ function ScribuntoUnit:assertWithinDelta(expected, actual, delta, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 2 + (level or 0))
     end
 end
 
 -------------------------------------------------------------------------------
 -- Checks that 'actual' is not within 'delta' of 'expected'.
 -- @param message optional description of the test
+-- @param level optional number to raise error stack level by
 -- @example assertNotWithinDelta(1/3, 2/3, 0.000001, "1/3 should not be 2/3")
-function ScribuntoUnit:assertNotWithinDelta(expected, actual, delta, message)
-    validateNumbers(expected, actual, message)
+function ScribuntoUnit:assertNotWithinDelta(expected, actual, delta, message, level)
+    validateNumbers(expected, actual, message, level or 0)
     local diff = expected - actual
     if diff < 0 then diff = - diff end  -- instead of importing math.abs
     if diff <= delta then
@@ -287,15 +296,16 @@ function ScribuntoUnit:assertNotWithinDelta(expected, actual, delta, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 2 + (level or 0))
     end
 end
 
 -------------------------------------------------------------------------------
 -- Checks that a table has the expected value (including sub-tables).
 -- @param message optional description of the test
+-- @param level optional number to raise error stack level by
 -- @example assertDeepEquals({{1,3}, {2,4}}, partition(odd, {1,2,3,4}))
-function ScribuntoUnit:assertDeepEquals(expected, actual, message)
+function ScribuntoUnit:assertDeepEquals(expected, actual, message, level)
     if not DebugHelper.deepCompare(expected, actual) then
         if type(expected) == 'table' then
             expected = mw.dumpObject(expected)
@@ -309,7 +319,7 @@ function ScribuntoUnit:assertDeepEquals(expected, actual, message)
             actual = actual,
             expected = expected,
             message = message,
-        }, 2)
+        }, 2 + (level or 0))
     end
 end
 
@@ -398,8 +408,9 @@ end
 -- @param fn the function to test
 -- @param expectedMessage optional the expected error message
 -- @param message optional description of the test
-function ScribuntoUnit:assertThrows(fn, expectedMessage, message)
-    local succeeded, actualMessage = pcall(fn)
+-- @param varargs optional arguments to be passed to fn
+function ScribuntoUnit:assertThrows(fn, expectedMessage, message, ...)
+    local succeeded, actualMessage = pcall(fn, ...)
     if succeeded then
         DebugHelper.raise({
             ScribuntoUnit = true,
@@ -429,8 +440,9 @@ end
 -- Checks whether a function doesn't throw an error
 -- @param fn the function to test
 -- @param message optional description of the test
-function ScribuntoUnit:assertDoesNotThrow(fn, message)
-	local succeeded, actualMessage = pcall(fn)
+-- @param varargs optional arguments to be passed to fn
+function ScribuntoUnit:assertDoesNotThrow(fn, message, ...)
+	local succeeded, actualMessage = pcall(fn, ...)
 	if succeeded then
 	    return
 	end
@@ -450,24 +462,24 @@ end
 
 -------------------------------------------------------------------------------
 -- Creates a new test suite.
--- @param o a table with test functions (alternatively, the functions can be added later to the returned suite)
 -- 
-function ScribuntoUnit:new(o)
-    o = o or {}
-    o._tests = {}
-    setmetatable(o, {
-    	__index = self,
+function ScribuntoUnit.new()
+    local self = {}
+    self._tests = {}
+    setmetatable(self, {
+    	__index = ScribuntoUnit,
     	__newindex = function (t, k, v)
     		if type(k) == "string" and k:find('^test') and type(v) == "function" then
     			-- Store test functions in the order they were defined
-    			table.insert(o._tests, {name = k, test = v})
+    			table.insert(self._tests, {name = k, test = v})
     		else
     			rawset(t, k, v)
     		end
     	end
     })
-    o.run = function(frame) return self:run(o, frame) end
-    return o
+    self.run = function(frame) return ScribuntoUnit.run(self, frame) end
+    
+    return self
 end
 
 -------------------------------------------------------------------------------
@@ -486,8 +498,8 @@ end
 -- @param name test nume
 -- @param test function containing assertions
 -- 
-function ScribuntoUnit:runTest(suite, name, test)
-    local success, details = pcall(test, suite)
+function ScribuntoUnit:runTest(name, test)
+    local success, details = pcall(test, self)
     
     if success then
         self.successCount = self.successCount + 1
@@ -512,10 +524,10 @@ end
 -------------------------------------------------------------------------------
 -- Runs all tests and displays the results.
 -- 
-function ScribuntoUnit:runSuite(suite, frame)
+function ScribuntoUnit:runSuite(frame)
     self:init(frame)
-	for i, testDetails in ipairs(suite._tests) do
-		self:runTest(suite, testDetails.name, testDetails.test)
+	for i, testDetails in ipairs(self._tests) do
+		self:runTest(testDetails.name, testDetails.test)
 	end
     return {
         successCount = self.successCount,
@@ -530,8 +542,8 @@ end
 -- Can be called without a frame, in which case it will use mw.log for output
 -- @param displayMode see displayResults()
 -- 
-function ScribuntoUnit:run(suite, frame)
-    local testData = self:runSuite(suite, frame)
+function ScribuntoUnit:run(frame)
+    local testData = self:runSuite(frame)
     if frame and frame.args then
         return self:displayResults(testData, frame.args.displayMode or 'table')
     else
