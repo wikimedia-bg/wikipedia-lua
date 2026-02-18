@@ -567,7 +567,7 @@ local function day_number(text)
 end
 
 local function month_number(text)
-	return name_to_number(text, {
+	return name_to_number(text:gsub('%.', ''), {
 		jan = 1, january = 1,
 		feb = 2, february = 2,
 		mar = 3, march = 3,
@@ -694,18 +694,9 @@ local function _date_list(date, spec)
 	return list
 end
 
--- A table to get the current date/time (UTC), but only if needed.
-local current = setmetatable({}, {
-	__index = function (self, key)
-		local d = os.date('!*t')
-		self.year = d.year
-		self.month = d.month
-		self.day = d.day
-		self.hour = d.hour
-		self.minute = d.min
-		self.second = d.sec
-		return rawget(self, key)
-	end })
+-- Cache the current date/time (UTC). Avoid `current.min` or `current.sec` in articles!
+-- This returns an empty object with a per-field lazy getter optimization. https://phabricator.wikimedia.org/T416616
+local current = os.date('!*t')
 
 local function extract_date(newdate, text)
 	-- Parse the date/time in text and return n, o where
