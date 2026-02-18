@@ -694,8 +694,12 @@ local function _date_list(date, spec)
 	return list
 end
 
--- Cache the current date/time (UTC). Avoid `current.min` or `current.sec` in articles!
--- This returns an empty object with a per-field lazy getter optimization. https://phabricator.wikimedia.org/T416616
+-- Cache the current date/time (UTC).
+--
+-- Note that os.date() returns an empty object with optimized lazy getters for each field.
+-- Avoid current.min or current.sec in articles! https://phabricator.wikimedia.org/T416616
+--
+-- Beware that while os.date() uses 'min' and 'sec', our Date() uses 'minute' and 'second'.
 local current = os.date('!*t')
 
 local function extract_date(newdate, text)
@@ -1285,8 +1289,8 @@ function Date(...)  -- for forward declaration above
 		newdate.day = current.day
 		if argtype == 'currentdatetime' then
 			newdate.hour = current.hour
-			newdate.minute = current.minute
-			newdate.second = current.second
+			newdate.minute = current.min
+			newdate.second = current.sec
 			newdate.hastime = true
 		end
 		newdate.calendar = 'Gregorian'  -- ignore any given calendar name
