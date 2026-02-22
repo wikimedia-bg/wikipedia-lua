@@ -110,7 +110,7 @@ local function renderTable(t, order, link, notimeline, align, timeline)
 			.. '<tr><th' .. style .. '>Година на<br>преброяване</th><th>Численост' .. order.. '</th></tr>\n'
 		-- end of tablebegin
 		tableend = '</table>\n' -- closing of the inner table
-			.. '</td><td style="text-align:center">' .. timeline .. '</td></tr>\n' -- timeline cell
+			.. '</td><td style="text-align:center' .. (#t > 15 and '; max-width:600px; overflow-x:auto' or '') .. '">' .. timeline .. '</td></tr>\n' -- timeline cell
 			.. '</table>' -- closing of the outer table
 		-- end of tableend
 	end
