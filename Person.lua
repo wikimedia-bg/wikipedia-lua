@@ -422,6 +422,7 @@ function lsc(location, defcountry, date, earliestdate, latestdate)
     if d == '' then
       d = mw.text.trim(earliestdate or '')   -- tries with earliest date
     end
+    lstr = relabel(lstr, wd._property({'linked', 'deprecated+', location, 'P1448', date=d}))
 	if isSettlement(location, 1) then
 		if cstr == '' then
 			country = wd._property({'raw', 'deprecated+', location, 'P17', date=d})
@@ -430,7 +431,6 @@ function lsc(location, defcountry, date, earliestdate, latestdate)
 				cstr = relabel(cstr, wd._property({'linked', 'deprecated+', country, 'P1448', date=d}))
 			end
 		end
-		lstr = relabel(lstr, wd._property({'linked', 'deprecated+', location, 'P1448', date=d}))
 	else
 		settlement = findSettlement(location, date, 3)
 		if settlement ~= '' then
