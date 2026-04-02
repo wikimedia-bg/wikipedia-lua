@@ -1,5 +1,5 @@
 return {
-	{ 'вещество|материал', 'Nuvola apps kalzium.png', 'вещества' },
+	{ 'вещество|материал', 'Nuvola apps kalzium.svg', 'вещества' },
 		{ 'биохимично вещество', 'AlphaHelixSection (yellow).svg', 'биохимични вещества' },
 				{ 'лекарство|антибиотик|фармакология', 'Emoji u1f48a.svg', 'лекарства' },
 		{ 'химичен елемент', 'Stylised atom with three Bohr model orbits and stylised nucleus.png', 'химични елементи' },
