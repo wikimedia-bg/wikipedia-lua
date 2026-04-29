@@ -62,3 +62,113 @@ body.skin-minerva .infobox th.onlysubbox,
 body.skin-minerva .infobox td.onlysubbox {
 	padding: 0 !important;
 }
+
+/* Пиктограми */
+.title {
+	background-repeat: no-repeat;
+	background-position: right center;
+	background-size: auto 45px;
+}
+.title.alpinist { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/89/Picto_infobox_climbing.svg"); }
+.title.animal { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/54/Picto_infobox_animal.png"); }
+.title.antenna { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/a2/Picto_infobox_antenna.png"); }
+.title.archaeology { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/80/Picto_infobox_archaeology.png"); }
+.title.archery { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/35/Picto_infobox_archery.png"); }
+.title.art { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/de/Crystal_Clear_app_k_less_color.png"); } 
+.title.artist { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f3/Picto_infobox_artiste.png"); }
+.title.astronaut { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/0a/Picto_infobox_astronaut.png"); }
+.title.astronomy { background-image: url("//upload.wikimedia.org/wikipedia/commons/7/71/Picto_infobox_astronomy.png"); }
+.title.athlet { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/5a/Athletics_infobox.png"); }
+.title.author { background-image: url("//upload.wikimedia.org/wikipedia/commons/1/1e/Picto_infobox_auteur.png"); }
+.title.automobil { background-image: url("//upload.wikimedia.org/wikipedia/commons/9/99/Picto_infobox_automobil.png"); } 
+.title.avio { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/ff/Picto_infobox_aircraft.png"); }
+.title.bars { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/8e/Weightlifting_pictogram_white.svg"); }
+.title.baseball { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/3c/Baseball_pictogram.svg"); }
+.title.basketbol { background-image: url("//upload.wikimedia.org/wikipedia/commons/1/16/Picto_infobox_baschet.png"); }
+.title.beer { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/04/Picto_infobox_beer.png"); }
+.title.biathlon { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/00/Biathlon_pictogram.svg"); }
+.title.bio { background-image: url("//upload.wikimedia.org/wikipedia/commons/4/48/Picto_infobox_character.png"); }
+.title.book { background-image: url("//upload.wikimedia.org/wikipedia/commons/4/42/Picto_infobox_book.png"); }
+.title.box { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/a2/Picto_infobox_box.png"); }
+.title.bridge { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/87/Picto_infobox_bridge.png"); }
+.title.buddhism { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/0d/BuddhismSymbolWhite.PNG"); }
+.title.cardinal { background-image: url("//upload.wikimedia.org/wikipedia/commons/b/b3/Picto_infobox_bishop.png"); }
+.title.castle { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/5c/Picto_infobox_chateau.png"); }
+.title.christianity{ background-image: url("//upload.wikimedia.org/wikipedia/commons/1/1c/Picto_infobox_christianity_1.svg"); }
+.title.cinema { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/ea/Picto_infobox_cinema.png"); }
+.title.computer { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/d1/Picto_infobox_pc.png"); }
+.title.cosmos { background-image: url("//upload.wikimedia.org/wikipedia/commons/9/94/Picto_infobox_shuttle.png"); }
+.title.cross { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e8/Picto_infobox_red_cross.png"); }
+.title.cycling { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/fa/Picto_infobox_cycling.svg"); }
+.title.data { background-image: url("//upload.wikimedia.org/wikipedia/commons/4/4a/Almanacco.png"); }
+.title.default { background-image: url("//upload.wikimedia.org/wikipedia/commons/2/24/Picto_infobox_default.png"); }
+.title.deportation { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e0/Picto_Infobox_deportation.png"); }
+.title.detective { background-image: url("//upload.wikimedia.org/wikipedia/commons/c/c1/Picto_infobox_detective.png"); }
+.title.diplomat { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e0/Picto_infobox_ambassade.png"); }
+.title.egipt { background-image: url("//upload.wikimedia.org/wikipedia/commons/c/cc/Picto_infobox_ancient_Egypt.png"); } 
+.title.europe { background-image: url("//upload.wikimedia.org/wikipedia/commons/c/c0/Picto_Infobox_Europe.png"); }
+.title.figura { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e3/Monument_istoric.svg"); }
+.title.filatelist { background-image: url("//upload.wikimedia.org/wikipedia/commons/b/b3/Picto_infobox_Stamps.png"); }
+.title.filosof { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/dd/Picto_infobox_philosopher.png"); }
+.title.firma { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/ff/Picto_infobox_enterprise.png"); }
+.title.flag { background-image: url("//upload.wikimedia.org/wikipedia/commons/6/6f/Entete_flag.png"); }
+.title.food { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/aa/Picto_infobox_mets.png"); }
+.title.football { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/87/Picto_infobox_fotbal_high.png"); }
+.title.formula1 { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/da/Picto_infobox_race.png"); } 
+.title.fungus { background-image: url("//upload.wikimedia.org/wikipedia/commons/7/79/Picto_infobox_fungus.png"); }
+.title.game { background-image: url("//upload.wikimedia.org/wikipedia/commons/9/90/Picto_infobox_Game.png"); }
+.title.gymnastic { background-image: url("//upload.wikimedia.org/wikipedia/commons/1/12/Gymnastics_%28artistic%29_pictogram.svg"); }
+.title.handbal { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e3/Picto_infobox_handbal.png"); }
+.title.hockey { background-image: url("//upload.wikimedia.org/wikipedia/commons/9/9b/Picto_Infobox_Ice_hockey.svg"); }
+.title.islam { background-image: url("//upload.wikimedia.org/wikipedia/commons/1/15/Picto_infobox_muslimness.svg"); }
+.title.jocey { background-image: url("//upload.wikimedia.org/wikipedia/commons/6/67/Equestrian_pictogram_white.png"); }
+.title.judaism { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/a5/Picto_infobox_israel-judaisme.png"); }
+.title.king { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/5f/Picto_infobox_prétendant_à_un_trône.png"); }
+.title.map { background-image: url("//upload.wikimedia.org/wikipedia/commons/7/7a/Picto_infobox_map.png"); }
+.title.medicine { background-image: url("//upload.wikimedia.org/wikipedia/commons/2/23/Picto_infobox_med.png"); }
+.title.military { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/03/Picto_infobox_military.png"); }
+.title.mous { background-image: url("//upload.wikimedia.org/wikipedia/commons/b/b8/Picto_infobox_informatique_souris.png") ; }
+.title.museum { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/ac/Infobox_museum_pictogram.png"); }
+.title.music { background-image: url("//upload.wikimedia.org/wikipedia/commons/6/60/Picto_infobox_music.png"); }
+.title.mythology { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f4/Dragao05_inverted.svg"); }
+.title.newspaper { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/d6/Picto_infobox_newspaper.png"); }
+.title.olympic { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/8e/Picto_infobox_Olympic.png"); }
+.title.physic { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/d1/Picto_infobox_physics.png"); }
+.title.plant { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/0b/Picto_infobox_plant.png"); }
+.title.pres { background-image: url("//upload.wikimedia.org/wikipedia/commons/2/23/Picto_infobox_journal.png"); }
+.title.project { background-image: url("//upload.wikimedia.org/wikipedia/commons/c/cb/Picto_infobox_tools.png"); }
+.title.rapir { background-image: url("//upload.wikimedia.org/wikipedia/commons/4/4c/Fencing_pictogram_white.svg"); }
+.title.regata { background-image: url("//upload.wikimedia.org/wikipedia/commons/7/7c/Rowing_pictogram_white.svg"); }
+.title.road { background-image: url("//upload.wikimedia.org/wikipedia/commons/b/b4/Picto_infobox_road.png"); }
+.title.romana { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/3c/Picto_infobox_Roman_military_banner.png"); }
+.title.rytmic { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/65/Gymnastics (rhythmic) pictogram white.svg"); }
+.title.sailing { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f4/Infobox_Sailing_pictogram.png"); }
+.title.samourai { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/81/Picto_infobox_samourai.png"); }
+.title.scienc { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/57/Picto_Info_sciences_exactes.png"); }
+.title.scifi { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/ed/Picto_infobox_fliyingsaucer.png"); }
+.title.sex { background-image: url("//upload.wikimedia.org/wikipedia/commons/8/82/Picto_infobox_manwoman.png"); }
+.title.ship { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/e0/Picto_infobox_ship.png"); }
+.title.shooting { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f6/Shooting_pictogram_white.svg"); }
+.title.skating { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f5/Infobox_Inline_speed_skating_pictogram.png"); }
+.title.skiing { background-image: url("//upload.wikimedia.org/wikipedia/commons/b/b1/Picto_infobox_alpine_skiing.png"); }
+.title.skijump { background-image: url("//upload.wikimedia.org/wikipedia/commons/c/ce/Infobox_Ski_jumping_pictogram.png"); }
+.title.snooker { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/32/Billard_Picto_2-white-l.svg"); }
+.title.snowboard { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/59/Infobox_Snowboarding_pictogram.png"); }
+.title.software { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/fe/Picto_infobox_software.png"); }
+.title.surf { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/31/Infobox_Surfing_pictogram.png"); }
+.title.swimming { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/0f/Swimming_pictogram_white.svg"); }
+.title.teatr { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/37/Picto_infobox_masks.png"); }
+.title.technology { background-image: url("//upload.wikimedia.org/wikipedia/commons/f/f9/Infobox_gear.png"); }
+.title.tenis { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/dc/Picto_infobox_tenis.png"); }
+.title.tren { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/3f/Infobox_train.png"); }
+.title.tv { background-image: url("//upload.wikimedia.org/wikipedia/commons/a/a6/Picto_infobox_TV-T%26PC.png"); }
+.title.unesco { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/3e/Unesco_Cultural_Heritage_logo.svg"); }
+.title.universitet { background-image: url("//upload.wikimedia.org/wikipedia/commons/6/66/Picto_infobox_universit%C3%A9.png"); }
+.title.vine { background-image: url("//upload.wikimedia.org/wikipedia/commons/6/66/Picto_info_grape.png"); }
+.title.virus { background-image: url("//upload.wikimedia.org/wikipedia/commons/d/dc/Picto_infobox_virus.png"); }
+.title.volleyball { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/39/Picto_infobox_volleyball.png"); }
+.title.waterpol { background-image: url("//upload.wikimedia.org/wikipedia/commons/9/99/Picto_infobox_water_polo.png"); }
+.title.world { background-image: url("//upload.wikimedia.org/wikipedia/commons/3/3a/Picto_infobox_UN.png"); }
+.title.wrestling { background-image: url("//upload.wikimedia.org/wikipedia/commons/0/04/Picto_infobox_wrestling.png"); }
+.title.zavod { background-image: url("//upload.wikimedia.org/wikipedia/commons/5/67/Factory_white.png"); }
+.title.eurovision { background-image: url("//upload.wikimedia.org/wikipedia/commons/e/ed/Wiki_Eurovision_Heart_%28Infobox%29.svg"); }
