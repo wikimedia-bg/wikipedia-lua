@@ -1,0 +1,19 @@
+/* {{pp-template}} */
+/* Geographical coordinates defaults. The classes "geo", "longitude", and
+"latitude" are used by the [[Geo microformat]]. */
+.geo-default,
+.geo-dms,
+.geo-dec {
+	display: inline;
+}
+
+.geo-nondefault,
+.geo-multi-punct,
+.geo-inline-hidden {
+	display: none;
+}
+
+.longitude,
+.latitude {
+	white-space: nowrap;
+}
