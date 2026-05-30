@@ -15,28 +15,26 @@
 
 ]]
 
+require('strict')
+
 local math_mod = require("Модул:Math")
 local coordinates = {};
+local isSandbox = mw.getCurrentFrame():getTitle():find('sandbox', 1, true);
 
 local current_page = mw.title.getCurrentTitle()
 local page_name = mw.uri.encode( current_page.prefixedText, 'WIKI' );
-local coord_link = '//tools.wmflabs.org/geohack/geohack.php?pagename=' .. page_name .. '&language=bg&params='
+local coord_link = 'https://geohack.toolforge.org/geohack.php?pagename=' .. page_name .. '&params='
 
---[[ Помощна функция, замества {{coord/display/title}} ]]
-local function displaytitle(s, notes)
+--[[ Helper function, replacement for {{coord/display/title}} ]]
+local function displaytitle(coords)
 	return mw.getCurrentFrame():extensionTag{
 		name = 'indicator',
 		args = { name = 'coordinates' },
-		content = '<span id="coordinates">[[Географска координатна система|Координати]]: ' .. s .. notes .. '</span>'
+		content = '<span id="coordinates">[[Geographic coordinate system|Coordinates]]: ' .. coords .. '</span>'
 	}
 end
 
---[[ Помощна функция, замества {{coord/display/inline}} ]]
-local function displayinline(s, notes)
-	return s .. notes	
-end
-
---[[ Помощна функция, used in detecting DMS formatting ]]
+--[[ Helper function, used in detecting DMS formatting ]]
 local function dmsTest(first, second)
 	if type(first) ~= 'string' or type(second) ~= 'string' then
 		return nil
@@ -46,17 +44,17 @@ local function dmsTest(first, second)
 end
 
 
---[[ Wrapper function to grab args, see Module:Arguments for this function's documentation. ]]
+--[[ Wrapper function to grab args, see Модул:Arguments for this function's documentation. ]]
 local function makeInvokeFunc(funcName)
 	return function (frame)
 		local args = require('Модул:Arguments').getArgs(frame, {
-			wrappers = 'Шаблон:Координати'
+			wrappers = 'Шаблон:Coord'
 		})
-		return coordinates[funcName](args)
+		return coordinates[funcName](args, frame)
 	end
 end
 
---[[ Помощна функция, handle optional args. ]]
+--[[ Helper function, handle optional args. ]]
 local function optionalArg(arg, supplement)
 	return arg and arg .. supplement or ''
 end
@@ -67,8 +65,7 @@ Formats any error messages generated for display
 local function errorPrinter(errors)
 	local result = ""
 	for i,v in ipairs(errors) do
-		local errorHTML = '<strong class="error">Координати: ' .. v[2] .. '</strong>'
-		result = result .. errorHTML .. "<br />"
+		result = result .. '<strong class="error">Coordinates: ' .. v[2] .. '</strong><br />'
 	end
 	return result
 end
@@ -78,13 +75,13 @@ Determine the required CSS class to display coordinates
 
 Usually geo-nondefault is hidden by CSS, unless a user has overridden this for himself
 default is the mode as specificied by the user when calling the {{coord}} template
-mode is the display mode (dec or dms) that we will need to determine the css class for 
+mode is the display mode (dec or dms) that we will need to determine the css class for
 ]]
 local function displayDefault(default, mode)
 	if default == "" then
 		default = "dec"
 	end
-	
+
 	if default == mode then
 		return "geo-default"
 	else
@@ -102,80 +99,83 @@ local function specPrinter(args, coordinateSpec)
 	local uriComponents = coordinateSpec["param"]
 	if uriComponents == "" then
 		-- RETURN error, should never be empty or nil
-		return "ГРЕШКА - липсва параметър"
+		return "ERROR param was empty"
 	end
 	if args["name"] then
 		uriComponents = uriComponents .. "&title=" .. mw.uri.encode(coordinateSpec["name"])
 	end
-	
-	local geodmshtml = '<span class="geo-dms" title="Карти, снимки от въздуха и други данни за това място">'
-			 .. '<span class="latitude">' .. coordinateSpec["dms-lat"] .. '</span> '
-			 .. '<span class="longitude">' ..coordinateSpec["dms-long"] .. '</span>'
-			 .. '</span>'
+
+	local geodmshtml = '<span class="geo-dms" title="Maps, aerial photos, and other data for this location">'
+			.. '<span class="latitude">' .. coordinateSpec["dms-lat"] .. '</span> '
+			.. '<span class="longitude">' ..coordinateSpec["dms-long"] .. '</span>'
+			.. '</span>'
 
 	local lat = tonumber( coordinateSpec["dec-lat"] ) or 0
 	local geodeclat
 	if lat < 0 then
 		-- FIXME this breaks the pre-existing precision
-		geodeclat = tostring(coordinateSpec["dec-lat"]):sub(2) .. "° ю.ш."
+		geodeclat = tostring(coordinateSpec["dec-lat"]):sub(2) .. "°S"
 	else
-		geodeclat = (coordinateSpec["dec-lat"] or 0) .. "° с.ш."
+		geodeclat = (coordinateSpec["dec-lat"] or 0) .. "°N"
 	end
 
 	local long = tonumber( coordinateSpec["dec-long"] ) or 0
 	local geodeclong
 	if long < 0 then
 		-- FIXME does not handle unicode minus
-		geodeclong = tostring(coordinateSpec["dec-long"]):sub(2) .. "° з.д." 
+		geodeclong = tostring(coordinateSpec["dec-long"]):sub(2) .. "°W"
 	else
-		geodeclong = (coordinateSpec["dec-long"] or 0) .. "° и.д."
+		geodeclong = (coordinateSpec["dec-long"] or 0) .. "°E"
 	end
-	
-	local geodechtml = '<span class="geo-dec" title="Карти, снимки от въздуха и други данни за това място">'
-			 .. geodeclat .. ' '
-			 .. geodeclong
-			 .. '</span>'
+
+	local geodechtml = '<span class="geo-dec" title="Maps, aerial photos, and other data for this location">'
+			.. geodeclat .. ' '
+			.. geodeclong
+			.. '</span>'
 
 	local geonumhtml = '<span class="geo">'
-			 .. coordinateSpec["dec-lat"] .. '; '
-			 .. coordinateSpec["dec-long"]
-			 .. '</span>'
+			.. coordinateSpec["dec-lat"] .. '; '
+			.. coordinateSpec["dec-long"]
+			.. '</span>'
 
 	local inner = '<span class="' .. displayDefault(coordinateSpec["default"], "dms" ) .. '">' .. geodmshtml .. '</span>'
 				.. '<span class="geo-multi-punct">&#xfeff; / &#xfeff;</span>'
 				.. '<span class="' .. displayDefault(coordinateSpec["default"], "dec" ) .. '">';
 
 	if not args["name"] then
-		inner = inner .. geodechtml 
+		inner = inner .. geodechtml
 				.. '<span style="display:none">&#xfeff; / ' .. geonumhtml .. '</span></span>'
 	else
-		inner = inner .. '<span class="vcard">' .. geodechtml 
+		inner = inner .. '<span class="vcard">' .. geodechtml
 				.. '<span style="display:none">&#xfeff; / ' .. geonumhtml .. '</span>'
 				.. '<span style="display:none">&#xfeff; (<span class="fn org">'
 				.. args["name"] .. '</span>)</span></span></span>'
 	end
 
-	return '<span class="plainlinks nourlexpansion">' .. 
-		'[' .. coord_link .. uriComponents .. ' ' .. inner .. ']' .. '</span>'
+    local stylesheetLink = 'Модул:Координати' .. ( isSandbox and '/sandbox' or '' ) .. '/styles.css'
+	return mw.getCurrentFrame():extensionTag{
+		name = 'templatestyles', args = { src = stylesheetLink }
+	} .. '<span class="plainlinks nourlexpansion">[' .. coord_link .. uriComponents ..
+	' ' .. inner .. ']</span>' .. '[[Category:Pages using gadget WikiMiniAtlas]]'
 end
 
---[[ Помощна функция, convert decimal to degrees ]]
+--[[ Helper function, convert decimal to degrees ]]
 local function convert_dec2dms_d(coordinate)
 	local d = math_mod._round( coordinate, 0 ) .. "°"
 	return d .. ""
 end
 
---[[ Помощна функция, convert decimal to degrees and minutes ]]
-local function convert_dec2dms_dm(coordinate)	
+--[[ Helper function, convert decimal to degrees and minutes ]]
+local function convert_dec2dms_dm(coordinate)
 	coordinate = math_mod._round( coordinate * 60, 0 );
 	local m = coordinate % 60;
 	coordinate = math.floor( (coordinate - m) / 60 );
 	local d = coordinate % 360 .."°"
-	
+
 	return d .. string.format( "%02d′", m )
 end
 
---[[ Помощна функция, convert decimal to degrees, minutes, and seconds ]]
+--[[ Helper function, convert decimal to degrees, minutes, and seconds ]]
 local function convert_dec2dms_dms(coordinate)
 	coordinate = math_mod._round( coordinate * 60 * 60, 0 );
 	local s = coordinate % 60
@@ -187,9 +187,9 @@ local function convert_dec2dms_dms(coordinate)
 	return d .. string.format( "%02d′", m ) .. string.format( "%02d″", s )
 end
 
---[[ 
-Помощна функция, convert decimal latitude or longitude to 
-degrees, minutes, and seconds format based on the specified precision.  
+--[[
+Helper function, convert decimal latitude or longitude to
+degrees, minutes, and seconds format based on the specified precision.
 ]]
 local function convert_dec2dms(coordinate, firstPostfix, secondPostfix, precision)
 	local coord = tonumber(coordinate)
@@ -217,12 +217,12 @@ local function convert_dms2dec(direction, degrees_str, minutes_str, seconds_str)
 	local degrees = tonumber(degrees_str)
 	local minutes = tonumber(minutes_str) or 0
 	local seconds = tonumber(seconds_str) or 0
-	
+
 	local factor = 1
 	if direction == "S" or direction == "W" then
 		factor = -1
 	end
-	
+
 	local precision = 0
 	if seconds_str then
 		precision = 5 + math.max( math_mod._precision(seconds_str), 0 );
@@ -231,12 +231,12 @@ local function convert_dms2dec(direction, degrees_str, minutes_str, seconds_str)
 	else
 		precision = math.max( math_mod._precision(degrees_str), 0 );
 	end
-	
-	local decimal = factor * (degrees+(minutes+seconds/60)/60) 
+
+	local decimal = factor * (degrees+(minutes+seconds/60)/60)
 	return string.format( "%." .. precision .. "f", decimal ) -- not tonumber since this whole thing is string based.
 end
 
---[[ 
+--[[
 Checks input values to for out of range errors.
 ]]
 local function validate( lat_d, lat_m, lat_s, long_d, long_m, long_s, source, strong )
@@ -255,18 +255,18 @@ local function validate( lat_d, lat_m, lat_s, long_d, long_m, long_s, source, st
 		if long_d < 0 then
 			table.insert(errors, {source, "longitude degrees < 0 with hemisphere flag"})
 		end
-		--[[ 
+		--[[
 		#coordinates is inconsistent about whether this is an error.  If globe: is
 		specified, it won't error on this condition, but otherwise it will.
-		
+
 		For not simply disable this check.
-		
+
 		if long_d > 180 then
 			table.insert(errors, {source, "longitude degrees > 180 with hemisphere flag"})
 		end
 		]]
-	end	
-		
+	end
+
 	if lat_d > 90 then
 		table.insert(errors, {source, "latitude degrees > 90"})
 	end
@@ -303,34 +303,34 @@ local function validate( lat_d, lat_m, lat_s, long_d, long_m, long_s, source, st
 	if long_s < 0 then
 		table.insert(errors, {source, "longitude seconds < 0"})
 	end
-	
+
 	return errors;
 end
 
 --[[
 parseDec
 
-Transforms decimal format latitude and longitude into the a
+Transforms decimal format latitude and longitude into the
 structure to be used in displaying coordinates
 ]]
 local function parseDec( lat, long, format )
 	local coordinateSpec = {}
 	local errors = {}
-	
+
 	if not long then
-		return nil, {{"parseDec", "Липсва геогр. дължина"}}
+		return nil, {{"parseDec", "Missing longitude"}}
 	elseif not tonumber(long) then
 		return nil, {{"parseDec", "Longitude could not be parsed as a number: " .. long}}
 	end
-	
-	errors = validate( lat, nil, nil, long, nil, nil, 'parseDec', false );	
+
+	errors = validate( lat, nil, nil, long, nil, nil, 'parseDec', false );
 	coordinateSpec["dec-lat"]  = lat;
 	coordinateSpec["dec-long"] = long;
 
 	local mode = coordinates.determineMode( lat, long );
-	coordinateSpec["dms-lat"]  = convert_dec2dms( lat, "с.ш.", "ю.ш.", mode)  -- {{coord/dec2dms|{{{1}}}|N|S|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}
-	coordinateSpec["dms-long"] = convert_dec2dms( long, "и.д.", "з.д.", mode)  -- {{coord/dec2dms|{{{2}}}|E|W|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}	
-	
+	coordinateSpec["dms-lat"]  = convert_dec2dms( lat, "N", "S", mode)  -- {{coord/dec2dms|{{{1}}}|N|S|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}
+	coordinateSpec["dms-long"] = convert_dec2dms( long, "E", "W", mode)  -- {{coord/dec2dms|{{{2}}}|E|W|{{coord/prec dec|{{{1}}}|{{{2}}}}}}}
+
 	if format then
 		coordinateSpec.default = format
 	else
@@ -343,53 +343,40 @@ end
 --[[
 parseDMS
 
-Transforms degrees, minutes, seconds format latitude and longitude 
+Transforms degrees, minutes, seconds format latitude and longitude
 into the a structure to be used in displaying coordinates
 ]]
 local function parseDMS( lat_d, lat_m, lat_s, lat_f, long_d, long_m, long_s, long_f, format )
-	local coordinateSpec = {}
-	local errors = {}
-	
+	local coordinateSpec, errors, backward = {}, {}
+
 	lat_f = lat_f:upper();
 	long_f = long_f:upper();
-	
+
 	-- Check if specified backward
 	if lat_f == 'E' or lat_f == 'W' then
-		local t_d, t_m, t_s, t_f;
-		t_d = lat_d;
-		t_m = lat_m;
-		t_s = lat_s;
-		t_f = lat_f;
-		lat_d = long_d;
-		lat_m = long_m;
-		lat_s = long_s;
-		lat_f = long_f;
-		long_d = t_d;
-		long_m = t_m;
-		long_s = t_s;
-		long_f = t_f;
-	end	
-	
+		lat_d, long_d, lat_m, long_m, lat_s, long_s, lat_f, long_f, backward = long_d, lat_d, long_m, lat_m, long_s, lat_s, long_f, lat_f, true;
+	end
+
 	errors = validate( lat_d, lat_m, lat_s, long_d, long_m, long_s, 'parseDMS', true );
 	if not long_d then
-		return nil, {{"parseDMS", "Липсва геогр. дължина" }}
+		return nil, {{"parseDMS", "Missing longitude" }}
 	elseif not tonumber(long_d) then
 		return nil, {{"parseDMS", "Longitude could not be parsed as a number:" .. long_d }}
 	end
-	
-	if not lat_m and not lat_s and not long_m and not long_s and #errors == 0 then 
+
+	if not lat_m and not lat_s and not long_m and not long_s and #errors == 0 then
 		if math_mod._precision( lat_d ) > 0 or math_mod._precision( long_d ) > 0 then
-			if lat_f:upper() == 'S' then 
+			if lat_f:upper() == 'S' then
 				lat_d = '-' .. lat_d;
 			end
-			if long_f:upper() == 'W' then 
+			if long_f:upper() == 'W' then
 				long_d = '-' .. long_d;
-			end	 
-			
+			end
+
 			return parseDec( lat_d, long_d, format );
-		end		
-	end   
-	
+		end
+	end
+
 	coordinateSpec["dms-lat"]  = lat_d.."°"..optionalArg(lat_m,"′") .. optionalArg(lat_s,"″") .. lat_f
 	coordinateSpec["dms-long"] = long_d.."°"..optionalArg(long_m,"′") .. optionalArg(long_s,"″") .. long_f
 	coordinateSpec["dec-lat"]  = convert_dms2dec(lat_f, lat_d, lat_m, lat_s) -- {{coord/dms2dec|{{{4}}}|{{{1}}}|0{{{2}}}|0{{{3}}}}}
@@ -399,18 +386,18 @@ local function parseDMS( lat_d, lat_m, lat_s, lat_f, long_d, long_m, long_s, lon
 		coordinateSpec.default = format
 	else
 		coordinateSpec.default = "dms"
-	end   
+	end
 
-	return coordinateSpec, errors
+	return coordinateSpec, errors, backward
 end
 
---[[ 
+--[[
 Check the input arguments for coord to determine the kind of data being provided
 and then make the necessary processing.
 ]]
 local function formatTest(args)
 	local result, errors
-	local primary = false
+	local backward, primary = false, false
 
 	local function getParam(args, lim)
 		local ret = {}
@@ -419,7 +406,7 @@ local function formatTest(args)
 		end
 		return table.concat(ret, '_')
 	end
-	
+
 	if not args[1] then
 		-- no lat logic
 		return errorPrinter( {{"formatTest", "Missing latitude"}} )
@@ -431,11 +418,19 @@ local function formatTest(args)
 		result, errors = parseDec(args[1], args[2], args.format)
 		if not result then
 			return errorPrinter(errors);
-		end			  
-		result.param = table.concat({args[1], 'N', args[2] or '', 'E', args[3] or ''}, '_')
+		end
+		-- formatting for geohack: geohack expects D_N_D_E notation or D;D notation
+		-- wikiminiatlas doesn't support D;D notation
+		-- #coordinates parserfunction doesn't support negative decimals with NSWE
+		result.param = table.concat({
+			math.abs(tonumber(args[1])),
+			((tonumber(args[1]) or 0) < 0) and 'S' or 'N',
+			math.abs(tonumber(args[2])),
+			((tonumber(args[2]) or 0) < 0) and 'W' or 'E',
+			args[3] or ''}, '_')
 	elseif dmsTest(args[4], args[8]) then
 		-- dms logic
-		result, errors = parseDMS(args[1], args[2], args[3], args[4], 
+		result, errors, backward = parseDMS(args[1], args[2], args[3], args[4],
 			args[5], args[6], args[7], args[8], args.format)
 		if args[10] then
 			table.insert(errors, {'formatTest', 'Extra unexpected parameters'})
@@ -446,10 +441,10 @@ local function formatTest(args)
 		result.param = getParam(args, 9)
 	elseif dmsTest(args[3], args[6]) then
 		-- dm logic
-		result, errors = parseDMS(args[1], args[2], nil, args[3], 
+		result, errors, backward = parseDMS(args[1], args[2], nil, args[3],
 			args[4], args[5], nil, args[6], args['format'])
 		if args[8] then
-			table.insert(errors, {'formatTest', 'Допълнителни неочаквани параметри'})
+			table.insert(errors, {'formatTest', 'Extra unexpected parameters'})
 		end
 		if not result then
 			return errorPrinter(errors)
@@ -457,44 +452,44 @@ local function formatTest(args)
 		result.param = getParam(args, 7)
 	elseif dmsTest(args[2], args[4]) then
 		-- d logic
-		result, errors = parseDMS(args[1], nil, nil, args[2], 
+		result, errors, backward = parseDMS(args[1], nil, nil, args[2],
 			args[3], nil, nil, args[4], args.format)
 		if args[6] then
-			table.insert(errors, {'formatTest', 'Допълнителен неочакван параметър'})
-		end	
+			table.insert(errors, {'formatTest', 'Extra unexpected parameters'})
+		end
 		if not result then
 			return errorPrinter(errors)
 		end
 		result.param = getParam(args, 5)
 	else
 		-- Error
-		return errorPrinter({{"formatTest", "Unknown argument format"}})
+		return errorPrinter({{"formatTest", "Unknown argument format"}}) .. '[[Category:Pages with malformed coordinate tags]]'
 	end
 	result.name = args.name
-	
+
 	local extra_param = {'dim', 'globe', 'scale', 'region', 'source', 'type'}
 	for _, v in ipairs(extra_param) do
-		if args[v] then 
+		if args[v] then
 			table.insert(errors, {'formatTest', 'Parameter: "' .. v .. '=" should be "' .. v .. ':"' })
 		end
 	end
-	
+
 	local ret = specPrinter(args, result)
 	if #errors > 0 then
 		ret = ret .. ' ' .. errorPrinter(errors) .. '[[Category:Pages with malformed coordinate tags]]'
 	end
-	return ret
+	return ret, backward
 end
 
 --[[
 Generate Wikidata tracking categories.
 ]]
-local function makeWikidataCategories()
+local function makeWikidataCategories(qid)
 	local ret
+	local qid = qid or mw.wikibase.getEntityIdForCurrentPage()
 	if mw.wikibase and current_page.namespace == 0 then
-		local entity = mw.wikibase.getEntityObject()
-		if entity and entity.claims and entity.claims.P625 and entity.claims.P625[1] then
-			local snaktype = entity.claims.P625[1].mainsnak.snaktype
+		if qid and mw.wikibase.entityExists(qid) and mw.wikibase.getBestStatements(qid, "P625") and mw.wikibase.getBestStatements(qid, "P625")[1] then
+			local snaktype = mw.wikibase.getBestStatements(qid, "P625")[1].mainsnak.snaktype
 			if snaktype == 'value' then
 				-- coordinates exist both here and on Wikidata, and can be compared.
 				ret = 'Coordinates on Wikidata'
@@ -521,8 +516,8 @@ link
 Simple function to export the coordinates link for other uses.
 
 Usage:
-	{{ Invoke:Coordinates | link }}
-	
+	{{#invoke:Coordinates | link }}
+
 ]]
 function coordinates.link(frame)
 	return coord_link;
@@ -534,9 +529,9 @@ dec2dms
 Wrapper to allow templates to call dec2dms directly.
 
 Usage:
-	{{ Invoke:Coordinates | dec2dms | decimal_coordinate | positive_suffix | 
+	{{#invoke:Coordinates | dec2dms | decimal_coordinate | positive_suffix |
 		negative_suffix | precision }}
-	
+
 decimal_coordinate is converted to DMS format.  If positive, the positive_suffix
 is appended (typical N or E), if negative, the negative suffix is appended.  The
 specified precision is one of 'D', 'DM', or 'DMS' to specify the level of detail
@@ -565,7 +560,7 @@ function coordinates.determineMode( value1, value2 )
 	else
 		return 'dms';
 	end
-end		
+end
 
 --[[
 dms2dec
@@ -573,11 +568,11 @@ dms2dec
 Wrapper to allow templates to call dms2dec directly.
 
 Usage:
-	{{ Invoke:Coordinates | dms2dec | direction_flag | degrees | 
+	{{#invoke:Coordinates | dms2dec | direction_flag | degrees |
 		minutes | seconds }}
-	
+
 Converts DMS values specified as degrees, minutes, seconds too decimal format.
-direction_flag is one of N, S, E, W, and determines whether the output is 
+direction_flag is one of N, S, E, W, and determines whether the output is
 positive (i.e. N and E) or negative (i.e. S and W).
 ]]
 coordinates.dms2dec = makeInvokeFunc('_dms2dec')
@@ -596,43 +591,45 @@ coord
 Main entry point for Lua function to replace {{coord}}
 
 Usage:
-	{{ Invoke:Coordinates | coord }}
-	{{ Invoke:Coordinates | coord | lat | long }}
-	{{ Invoke:Coordinates | coord | lat | lat_flag | long | long_flag }}
+	{{#invoke:Coordinates | coord }}
+	{{#invoke:Coordinates | coord | lat | long }}
+	{{#invoke:Coordinates | coord | lat | lat_flag | long | long_flag }}
 	...
-	
-	Refer to {{coord}} documentation page for many additional parameters and 
+
+	Refer to {{coord}} documentation page for many additional parameters and
 	configuration options.
-	
+
 Note: This function provides the visual display elements of {{coord}}.  In
-order to load coordinates into the database, the {{#coordinates:}} parser 
+order to load coordinates into the database, the {{#coordinates:}} parser
 function must also be called, this is done automatically in the Lua
 version of {{coord}}.
 ]]
 coordinates.coord = makeInvokeFunc('_coord')
 function coordinates._coord(args)
-	if not args[1] and not args[2] and mw.wikibase.getEntityObject() then
-		local entity = mw.wikibase.getEntityObject()
-		if entity 
+	if not tonumber(args[1]) and not args[2] then
+		args[3] = args[1]; args[1] = nil
+		local entity = mw.wikibase.getEntityObject(args.qid)
+		if entity
 			and entity.claims
 			and entity.claims.P625
 			and entity.claims.P625[1].mainsnak.snaktype == 'value'
 		then
 			local precision = entity.claims.P625[1].mainsnak.datavalue.value.precision
-			args[1]=entity.claims.P625[1].mainsnak.datavalue.value.latitude
-			args[2]=entity.claims.P625[1].mainsnak.datavalue.value.longitude
+			args[1] = entity.claims.P625[1].mainsnak.datavalue.value.latitude
+			args[2] = entity.claims.P625[1].mainsnak.datavalue.value.longitude
 			if precision then
-				precision=-math_mod._round(math.log(precision)/math.log(10),0)
-				args[1]=math_mod._round(args[1],precision)
-				args[2]=math_mod._round(args[2],precision)
+				precision = -math_mod._round(math.log(precision)/math.log(10),0)
+				args[1] = math_mod._round(args[1],precision)
+				args[2] = math_mod._round(args[2],precision)
 			end
 		end
 	end
-	
-	local contents = formatTest(args)
+
+	local contents, backward = formatTest(args)
 	local Notes = args.notes or ''
 	local Display = args.display and args.display:lower() or 'inline'
 
+	-- it and ti are short for inline,title and title,inline
 	local function isInline(s)
 		-- Finds whether coordinates are displayed inline.
 		return s:find('inline') ~= nil or s == 'i' or s == 'it' or s == 'ti'
@@ -641,17 +638,140 @@ function coordinates._coord(args)
 		-- Finds whether coordinates are displayed in the title.
 		return s:find('title') ~= nil or s == 't' or s == 'it' or s == 'ti'
 	end
-	
+
+	local function coord_wrapper(in_args)
+		-- Calls the parser function {{#coordinates:}}.
+		return mw.getCurrentFrame():callParserFunction('#coordinates', in_args) or ''
+	end
+
 	local text = ''
 	if isInline(Display) then
-		text = text .. displayinline(contents, Notes)
+		text = text .. '<span class="geo-inline">' .. contents .. Notes .. '</span>'
 	end
 	if isInTitle(Display) then
-		text = text
-			.. displaytitle(contents, Notes)
-			.. makeWikidataCategories()
+		-- Add to output since indicator content is invisible to Lua later on
+		if not isInline(Display) then
+			text = text .. '<span class="geo-inline-hidden noexcerpt">' .. contents .. Notes .. '</span>'
+		end
+		text = text .. displaytitle(contents .. Notes) .. makeWikidataCategories(args.qid)
+	end
+	if not args.nosave then
+		local page_title, count = mw.title.getCurrentTitle(), 1
+		if backward then
+			local tmp = {}
+			while not string.find((args[count-1] or ''), '[EW]') do tmp[count] = (args[count] or ''); count = count+1 end
+			tmp.count = count; count = 2*(count-1)
+			while count >= tmp.count do table.insert(tmp, 1, (args[count] or '')); count = count-1 end
+			for i, v in ipairs(tmp) do args[i] = v end
+		else
+			while count <= 9 do args[count] = (args[count] or ''); count = count+1 end
+		end
+		if isInTitle(Display) and not page_title.isTalkPage and page_title.subpageText ~= 'doc' and page_title.subpageText ~= 'testcases' then args[10] = 'primary' end
+		args.notes, args.format, args.display = nil
+		text = text .. coord_wrapper(args)
 	end
 	return text
+end
+
+--[[
+coord2text
+
+Extracts a single value from a transclusion of {{Coord}}.
+IF THE GEOHACK LINK SYNTAX CHANGES THIS FUNCTION MUST BE MODIFIED.
+
+Usage:
+
+    {{#invoke:Coordinates | coord2text | {{Coord}} | parameter }}
+
+Valid values for the second parameter are: lat (signed integer), long (signed integer), type, scale, dim, region, globe, source
+
+]]
+function coordinates._coord2text(coord,type)
+	if coord == '' or type == '' or not type then return nil end
+	type = mw.text.trim(type)
+	if type == 'lat' or type == 'long' then
+        local coordString = mw.ustring.match(coord,'[%.%d]+°[NS] [%.%d]+°[EW]')
+        if not coordString then
+            return nil
+        end
+		local result = mw.text.split(coordString, ' ')
+        local negative
+		if type == 'lat' then
+			result, negative = result[1], 'S'
+		else
+			result, negative = result[2], 'W'
+		end
+        if not result then
+            return nil
+        end
+		result = mw.text.split(result, '°')
+        if not result[1] then
+            return nil
+        end
+		if result[2] == negative then result[1] = '-'..result[1] end
+		return result[1]
+	else
+		return mw.ustring.match(coord, 'params=.-_' .. type .. ':(.-)[ _]')
+	end
+end
+
+function coordinates.coord2text(frame)
+	return coordinates._coord2text(frame.args[1],frame.args[2]) or ''
+end
+
+--[[
+coordinsert
+
+Injects some text into the Geohack link of a transclusion of {{Coord}} (if that text isn't already in the transclusion). Outputs the modified transclusion of {{Coord}}.
+IF THE GEOHACK LINK SYNTAX CHANGES THIS FUNCTION MUST BE MODIFIED.
+
+Usage:
+
+    {{#invoke:Coordinates | coordinsert | {{Coord}} | parameter:value | parameter:value | … }}
+
+Do not make Geohack unhappy by inserting something which isn't mentioned in the {{Coord}} documentation.
+
+]]
+function coordinates.coordinsert(frame)
+	-- for the 2nd or later integer parameter (the first is the coord template, as above)
+	for i, v in ipairs(frame.args) do
+		if i ~= 1 then
+			-- if we cannot find in the coord_template the i_th coordinsert parameter e.g. region
+			if not mw.ustring.find(frame.args[1], (mw.ustring.match(frame.args[i], '^(.-:)') or '')) then
+				-- find from the params= up to the first possibly-present underscore
+				-- and append the i_th coordinsert parameter and a space
+				-- IDK why we're adding a space but it does seem somewhat convenient
+				frame.args[1] = mw.ustring.gsub(frame.args[1], '(params=.-)_? ', '%1_'..frame.args[i]..' ')
+			end
+		end
+	end
+	if frame.args.name then
+		-- if we can't find the vcard class
+		if not mw.ustring.find(frame.args[1], '<span class="vcard">') then
+			-- take something that looks like a coord template and add the vcard span with class and fn org class
+			local namestr = frame.args.name
+			frame.args[1] = mw.ustring.gsub(
+				frame.args[1],
+				'(<span class="geo%-default">)(<span[^<>]*>[^<>]*</span><span[^<>]*>[^<>]*<span[^<>]*>[^<>]*</span></span>)(</span>)',
+				'%1<span class="vcard">%2<span style="display:none">&#xfeff; (<span class="fn org">' .. namestr .. '</span>)</span></span>%3'
+			)
+			-- then find anything from coordinates parameters to the 'end' and attach the title parameter
+			frame.args[1] = mw.ustring.gsub(
+				frame.args[1],
+				'(&params=[^&"<>%[%] ]*) ',
+				'%1&title=' .. mw.uri.encode(namestr) .. ' '
+			)
+		end
+	end
+	
+	-- replace the existing indicator with a new indicator using the modified content
+	frame.args[1] = mw.ustring.gsub(
+		frame.args[1],
+		'(<span class="geo%-inline[^"]*">(.+)</span>)\127[^\127]*UNIQ%-%-indicator%-%x+%-%-?QINU[^\127]*\127',
+		function (inline, coord) return inline .. displaytitle(coord) end
+	)
+
+	return frame.args[1]
 end
 
 return coordinates
