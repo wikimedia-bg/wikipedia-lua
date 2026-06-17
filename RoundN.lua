@@ -1,9 +1,11 @@
 local p = {
 	RD = {
-		'Quarter-finals',
-		'Semi-finals',
-		'Final',
-		'Third place'
+		'Шестнайсетинафинал',
+		'Осминафинал',
+		'Четвъртфинал',
+		'Полуфинал',
+		'Финал',
+		'Трето място'
 	},
     -- The text and background colors are paired and when you set one, you should set the other (accessibility)
     textColor = {head = '#202122', '#202122', '#202122', '#202122', '#202122'},
@@ -482,7 +484,6 @@ function p._main(args)
 		if not p.no_column_head then
 			head.wt = head_br:compare(args:clean('RD' .. k, {pattern = ''}))
 				or p.RD[#p.RD + k - p.tCols - 1]
-				or ('Round of ' .. math.pow(2, p.tCols - k + 1))
 			drawHead(head.wt)
 		end
 	end
