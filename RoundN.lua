@@ -484,6 +484,7 @@ function p._main(args)
 		if not p.no_column_head then
 			head.wt = head_br:compare(args:clean('RD' .. k, {pattern = ''}))
 				or p.RD[#p.RD + k - p.tCols - 1]
+			    or ('Round of ' .. math.pow(2, p.tCols - k + 1))
 			drawHead(head.wt)
 		end
 	end
