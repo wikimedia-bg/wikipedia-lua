@@ -501,7 +501,7 @@ function p._main(args)
 	}
 	p['3rdplace'] =  p.tCols == p.cols and (p['3rdplace'] or p.cols > 3 and nil == p['3rdplace'] and not p.no_column_head)
 	if p['3rdplace'] then
-		p.textThird = args.Consol or args['RD' .. (p.cols + 1)] or p.RD[4]
+		p.textThird = args.Consol or args['RD' .. (p.cols + 1)] or p.RD[6]
 		local no3rdText = p.no_column_head or p.textThird and p.textThird:match('omit_label')
 		rowNum.third = math.max(math.pow(2, p.branch_upwards and -3 or p.cols - 2) * 9 + (no3rdText and 4 or 9), no3rdText and 12 or 17, rows)
 	end
