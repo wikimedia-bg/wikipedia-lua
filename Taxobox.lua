@@ -679,7 +679,7 @@ local function getSynonyms(entity, property)
 	return synonyms
 end
 
-local function getStatus(status)
+local function getStatus(status, categorize)
 	if status then
 		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|240px|%s|class=skin-invert-image', status, status)) .. '<br/>'
 		local category = ''
@@ -713,8 +713,10 @@ local function getStatus(status)
 		else
 			return nil
 		end
-		
-		table.insert(CATEGORIES, category .. ' видове')
+
+		if categorize then
+			table.insert(CATEGORIES, category .. ' видове')
+		end
 		
 		return result
 	end
@@ -926,7 +928,7 @@ local function getExternalParameters(args, taxobox)
 	-- BG RED BOOK
 	local statusBg = getArg(args.statusBg)
 	if statusBg then
-		taxobox.statusBg = getStatus(statusBg:upper())
+		taxobox.statusBg = getStatus(statusBg:upper(), false)
 		local statusBgExtinct = getArg(args.statusBgExtinct)
 		if statusBgExtinct then
 			taxobox.statusBg =  string.format('%s (%s)', taxobox.statusBg, statusBgExtinct)
@@ -1224,7 +1226,7 @@ local function getTaxobox(itemId)
 	if iucnClaim then
 		local status = iucnClaim[1].mainsnak.datavalue.value.id
 		if status and status ~= '' then
-			taxobox.status = getStatus(IUCNSTATUS[status])
+			taxobox.status = getStatus(IUCNSTATUS[status], true)
 			if status == ITEM.EXTINCT_SPECIES and iucnClaim[1].qualifiers then
 				local disappearedDate = iucnClaim[1].qualifiers[PROPERTY.DISAPPEARED_DATE]
 				if disappearedDate and disappearedDate[1].datavalue.value then
