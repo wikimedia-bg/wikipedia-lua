@@ -832,6 +832,18 @@ Here we name properties categories
 
 ]]
 
+local prop_cats = {
+	['foreign_lang_source'] = 'CS1 $1-language sources ($2)',					-- |language= categories; $1 is foreign-language name, $2 is ISO639-1 code
+	['foreign_lang_source_2'] = 'CS1 foreign language sources (ISO 639-2)|$1',	-- |language= category; a cat for ISO639-2 languages; $1 is the ISO 639-2 code used as a sort key
+	['local_lang_source'] = 'CS1 $1-language sources ($2)',						-- |language= categories; $1 is local-language name, $2 is ISO639-1 code; not emitted when local_lang_cat_enable is false
+	['location test'] = 'CS1 location test',
+	['script'] = 'CS1 uses foreign language script',							-- when language specified by |script-title=xx: doesn't have its own category
+	['script_with_name'] = 'CS1 uses $1-language script ($2)',					-- |script-title=xx: has matching category; $1 is language name, $2 is ISO639-1 code
+	['jul_greg_uncertainty'] = 'CS1: Julian–Gregorian uncertainty',				-- probably temporary cat to identify scope of template with dates 1 October 1582 – 1 January 1926
+	['long_vol'] = 'CS1: long volume value',									-- probably temporary cat to identify scope of |volume= values longer than 4 charachters
+	}
+
+
 --[[--------------------------< T I T L E _ T Y P E S >--------------------------------------------------------
 
 Here we map a template's CitationClass to TitleType (default values for |type= parameter)
