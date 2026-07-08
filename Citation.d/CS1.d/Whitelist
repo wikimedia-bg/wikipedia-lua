@@ -1,16 +1,14 @@
-
 --[[--------------------------< S U P P O R T E D   P A R A M E T E R S >--------------------------------------
 
 Because a steady-state signal conveys no useful information, whitelist.basic_arguments[] list items can have three values:
 	true - these parameters are valid and supported parameters
 	false - these parameters are deprecated but still supported
+	tracked - these parameters are valid and supported parameters tracked in an eponymous properties category
 	nil - these parameters are no longer supported. remove entirely
 	
 ]]
 
-local whitelist = {}
-
-local basic_arguments = {
+local basic_arguments_t = {
 	['accessdate'] = true,
 	['access-date'] = true,
 	['agency'] = true,
@@ -21,6 +19,7 @@ local basic_arguments = {
 	['archive-url'] = true,
 	['article'] = true,
 	['article-format'] = true,
+	['article-number'] = true,													-- {{cite journal}}, {{cite conference}}; {{citation}} when |journal= has a value
 	['article-url'] = true,
 	['article-url-access'] = true,
 	['arxiv'] = true,															-- cite arxiv; here because allowed in cite ... as identifier
@@ -30,74 +29,56 @@ local basic_arguments = {
 	['at'] = true,
 	['author'] = true,
 	['author-first'] = true,
+	['author-given'] = true,
 	['author-last'] = true,
+	['author-surname'] = true,
 	['authorlink'] = true,
 	['author-link'] = true,
-	['authormask'] = true,
 	['author-mask'] = true,
-	['authors'] = true,
 	['bibcode'] = true,
 	['bibcode-access'] = true,
-	['biorxiv'] = true,
-	['booktitle'] = true,
-	['book-title'] = true,
-	['cartography'] = true,
+	['biorxiv'] = true,															-- cite biorxiv; here because allowed in cite ... as identifier
 	['chapter'] = true,
 	['chapter-format'] = true,
-	['chapterurl'] = true,
 	['chapter-url'] = true,
 	['chapter-url-access'] = true,
-	['citeseerx'] = true,
+	['citeseerx'] = true,														-- cite citeseerx; here because allowed in cite ... as identifier
 	['collaboration'] = true,
-	['conference'] = true,
-	['conference-format'] = true,
-	['conferenceurl'] = true,
-	['conference-url'] = true,
 	['contribution'] = true,
 	['contribution-format'] = true,
-	['contributionurl'] = true,
 	['contribution-url'] = true,
 	['contribution-url-access'] = true,
 	['contributor'] = true,
 	['contributor-first'] = true,
-	['contributor-last'] = true,
 	['contributor-given'] = true,
+	['contributor-last'] = true,
 	['contributor-surname'] = true,
 	['contributor-link'] = true,
 	['contributor-mask'] = true,
 	['date'] = true,
-	['degree'] = true,
 	['department'] = true,
 	['df'] = true,
 	['dictionary'] = true,
-	['displayauthors'] = true,
 	['display-authors'] = true,
 	['display-contributors'] = true,
-	['displayeditors'] = true,
 	['display-editors'] = true,
 	['display-interviewers'] = true,
+	['display-subjects'] = true,
 	['display-translators'] = true,
-	['docket'] = true,
 	['doi'] = true,
 	['DOI'] = true,
 	['doi-access'] = true,
-	['doi-broken'] = true,
 	['doi-broken-date'] = true,
-	['doi-inactive-date'] = true,
 	['edition'] = true,
 	['editor'] = true,
 	['editor-first'] = true,
 	['editor-given'] = true,
 	['editor-last'] = true,
-	['editorlink'] = true,
-	['editor-link'] = true,
-	['editormask'] = true,
-	['editor-mask'] = true,
-	['editors'] = true,
 	['editor-surname'] = true,
+	['editor-link'] = true,
+	['editor-mask'] = true,
 	['eissn'] = true,
 	['EISSN'] = true,
-	['embargo'] = true,
 	['encyclopaedia'] = true,
 	['encyclopedia'] = true,
 	['entry'] = true,
@@ -105,34 +86,25 @@ local basic_arguments = {
 	['entry-url'] = true,
 	['entry-url-access'] = true,
 	['eprint'] = true,															-- cite arxiv; here because allowed in cite ... as identifier
-	['event'] = true,
-	['event-format'] = true,
-	['eventurl'] = true,
-	['event-url'] = true,
 	['first'] = true,
 	['format'] = true,
 	['given'] = true,
 	['hdl'] = true,
 	['HDL'] = true,
 	['hdl-access'] = true,
-	['host'] = true,
+	['host'] = true,															-- unique to certain templates?
 	['id'] = true,
 	['ID'] = true,
-	['ignoreisbnerror'] = true,
-	['ignore-isbn-error'] = true,
-	['inset'] = true,
-	['institution'] = true,
+	['institution'] = true,														-- constrain to cite thesis?
 	['interviewer'] = true,
 	['interviewer-first'] = true,
+	['interviewer-given'] = true,
 	['interviewer-last'] = true,
-	['interviewerlink'] = true,
+	['interviewer-surname'] = true,
 	['interviewer-link'] = true,
-	['interviewermask'] = true,
 	['interviewer-mask'] = true,
 	['isbn'] = true,
 	['ISBN'] = true,
-	['isbn13'] = true,
-	['ISBN13'] = true,
 	['ismn'] = true,
 	['ISMN'] = true,
 	['issn'] = true,
@@ -147,33 +119,19 @@ local basic_arguments = {
 	['lang'] = true,
 	['language'] = true,
 	['last'] = true,
-	['lastauthoramp'] = true,
-	['last-author-amp'] = true,
-	['laydate'] = true,
-	['lay-date'] = true,
-	['laysource'] = true,
-	['lay-source'] = true,
-	['lay-format'] = true,
-	['layurl'] = true,
-	['lay-url'] = true,
 	['lccn'] = true,
 	['LCCN'] = true,
 	['location'] = true,
 	['magazine'] = true,
-	['mailinglist'] = true,														-- cite mailing list only
-	['mailing-list'] = true,													-- cite mailing list only
 	['medium'] = true,
-	['minutes'] = true,
+	['medrxiv'] = true,															-- cite medrxiv; here because allowed in cite ... as identifier
+	['minutes'] = true,															-- constrain to cite AV media and podcast?
 	['mode'] = true,
 	['mr'] = true,
 	['MR'] = true,
-	['name-list-format'] = true,
+	['name-list-style'] = true,
 	['newspaper'] = true,
-	['nocat'] = true,
-	['no-cat'] = true,
-	['nopp'] = true,
 	['no-pp'] = true,
-	['notracking'] = true,
 	['no-tracking'] = true,
 	['number'] = true,
 	['oclc'] = true,
@@ -181,6 +139,7 @@ local basic_arguments = {
 	['ol'] = true,
 	['OL'] = true,
 	['ol-access'] = true,
+	['orig-date'] = true,
 	['origyear'] = true,
 	['orig-year'] = true,
 	['osti'] = true,
@@ -190,22 +149,22 @@ local basic_arguments = {
 	['p'] = true,
 	['page'] = true,
 	['pages'] = true,
-	['people'] = true,
 	['periodical'] = true,
 	['place'] = true,
 	['pmc'] = true,
 	['PMC'] = true,
+	['pmc-embargo-date'] = true,
 	['pmid'] = true,
 	['PMID'] = true,
 	['postscript'] = true,
 	['pp'] = true,
-	['publicationdate'] = true,
 	['publication-date'] = true,
-	['publicationplace'] = true,
 	['publication-place'] = true,
 	['publisher'] = true,
 	['quotation'] = true,
 	['quote'] = true,
+	['quote-page'] = true,
+	['quote-pages'] = true,
 	['ref'] = true,
 	['rfc'] = true,
 	['RFC'] = true,
@@ -215,64 +174,61 @@ local basic_arguments = {
 	['script-article'] = true,
 	['script-chapter'] = true,
 	['script-contribution'] = true,
+	['script-encyclopaedia'] = true,
+	['script-encyclopedia'] = true,
 	['script-entry'] = true,
 	['script-journal'] = true,
 	['script-magazine'] = true,
 	['script-newspaper'] = true,
 	['script-periodical'] = true,
+	['script-quote'] = true,
 	['script-section'] = true,
 	['script-title'] = true,
 	['script-website'] = true,
 	['script-work'] = true,
-	['season'] = true,
 	['section'] = true,
 	['section-format'] = true,
-	['sectionurl'] = true,
 	['section-url'] = true,
 	['section-url-access'] = true,
 	['series'] = true,
-	['serieslink'] = true,
-	['series-link'] = true,
-	['seriesno'] = true,
-	['series-no'] = true,
-	['seriesnumber'] = true,
-	['series-number'] = true,
-	['series-separator'] = true,
-	['ssrn'] = true,
+	['ssrn'] = true,															-- cite ssrn; these three here because allowed in cite ... as identifier
 	['SSRN'] = true,
+	['ssrn-access'] = true,
 	['subject'] = true,
-	['subjectlink'] = true,
+	['subject-first'] = true,
+	['subject-given'] = true,
+	['subject-last'] = true,
 	['subject-link'] = true,
+	['subject-mask'] = true,
+	['subject-surname'] = true,
 	['surname'] = true,
 	['s2cid'] = true,
 	['S2CID'] = true,
 	['s2cid-access'] = true,
 	['template-doc-demo'] = true,
-	['time'] = true,
-	['timecaption'] = true,
-	['time-caption'] = true,
+	['time'] = true,															-- constrain to cite av media and podcast?
+	['time-caption'] = true,													-- constrain to cite av media and podcast?
 	['title'] = true,
-	['titlelink'] = true,
 	['title-link'] = true,
-	['transcript'] = true,
-	['transcript-format'] = true,
-	['transcripturl'] = true,
-	['transcript-url'] = true,
+	['title-note'] = true,
 	['translator'] = true,
 	['translator-first'] = true,
-	['translator-last'] = true,
 	['translator-given'] = true,
+	['translator-last'] = true,	
 	['translator-surname'] = true,
 	['translator-link'] = true,
 	['translator-mask'] = true,
 	['trans-article'] = true,
 	['trans-chapter'] = true,
 	['trans-contribution'] = true,
+	['trans-encyclopaedia'] = true,
+	['trans-encyclopedia'] = true,
 	['trans-entry'] = true,
 	['trans-journal'] = true,
 	['trans-magazine'] = true,
 	['trans-newspaper'] = true,
 	['trans-periodical'] = true,
+	['trans-quote'] = true,
 	['trans-section'] = true,
 	['trans-title'] = true,
 	['trans-website'] = true,
@@ -292,29 +248,31 @@ local basic_arguments = {
 	['year'] = true,
 	['zbl'] = true,
 	['ZBL'] = true,
-}
+	}
 
-local numbered_arguments = {
+local numbered_arguments_t = {
 	['author#'] = true,
 	['author-first#'] = true,
 	['author#-first'] = true,
+	['author-given#'] = true,
+	['author#-given'] = true,
 	['author-last#'] = true,
 	['author#-last'] = true,
+	['author-surname#'] = true,
+	['author#-surname'] = true,
 	['author-link#'] = true,
-	['author#link'] = true,
 	['author#-link'] = true,
 	['authorlink#'] = true,
+	['author#link'] = true,
 	['author-mask#'] = true,
-	['author#mask'] = true,
 	['author#-mask'] = true,
-	['authormask#'] = true,
 	['contributor#'] = true,
 	['contributor-first#'] = true,
 	['contributor#-first'] = true,
-	['contributor-last#'] = true,
-	['contributor#-last'] = true,
 	['contributor-given#'] = true,
 	['contributor#-given'] = true,
+	['contributor-last#'] = true,
+	['contributor#-last'] = true,
 	['contributor-surname#'] = true,
 	['contributor#-surname'] = true,
 	['contributor-link#'] = true,
@@ -324,70 +282,79 @@ local numbered_arguments = {
 	['editor#'] = true,
 	['editor-first#'] = true,
 	['editor#-first'] = true,
-	['editor#-given'] = true,
 	['editor-given#'] = true,
+	['editor#-given'] = true,
 	['editor-last#'] = true,
 	['editor#-last'] = true,
-	['editor-link#'] = true,
-	['editor#link'] = true,
-	['editor#-link'] = true,
-	['editorlink#'] = true,
-	['editor-mask#'] = true,
-	['editor#mask'] = true,
-	['editor#-mask'] = true,
-	['editormask#'] = true,
-	['editor#-surname'] = true,
 	['editor-surname#'] = true,
+	['editor#-surname'] = true,
+	['editor-link#'] = true,
+	['editor#-link'] = true,
+	['editor-mask#'] = true,
+	['editor#-mask'] = true,
 	['first#'] = true,
 	['given#'] = true,
 	['host#'] = true,
 	['interviewer#'] = true,
 	['interviewer-first#'] = true,
 	['interviewer#-first'] = true,
+	['interviewer-given#'] = true,
+	['interviewer#-given'] = true,
 	['interviewer-last#'] = true,
 	['interviewer#-last'] = true,
+	['interviewer-surname#'] = true,
+	['interviewer#-surname'] = true,
 	['interviewer-link#'] = true,
 	['interviewer#-link'] = true,
 	['interviewer-mask#'] = true,
 	['interviewer#-mask'] = true,
 	['last#'] = true,
 	['subject#'] = true,
+	['subject-first#'] = true,
+	['subject#-first'] = true,
+	['subject-given#'] = true,
+	['subject#-given'] = true,
+	['subject-last#'] = true,
+	['subject#-last'] = true,
 	['subject-link#'] = true,
-	['subject#link'] = true,
 	['subject#-link'] = true,
-	['subjectlink#'] = true,
+	['subject-mask#'] = true,
+	['subject#-mask'] = true,
+	['subject-surname#'] = true,
+	['subject#-surname'] = true,
 	['surname#'] = true,
 	['translator#'] = true,
 	['translator-first#'] = true,
 	['translator#-first'] = true,
-	['translator-last#'] = true,
-	['translator#-last'] = true,
 	['translator-given#'] = true,
 	['translator#-given'] = true,
+	['translator-last#'] = true,
+	['translator#-last'] = true,
 	['translator-surname#'] = true,
 	['translator#-surname'] = true,
 	['translator-link#'] = true,
 	['translator#-link'] = true,
 	['translator-mask#'] = true,
 	['translator#-mask'] = true,
-}
+	}
 
 
 --[[--------------------------< P R E P R I N T   S U P P O R T E D   P A R A M E T E R S >--------------------
 
-Cite arXiv, cite biorxiv, cite citeseerx, and cite ssrn are preprint templates that use the limited set of parameters
-defined in the limited_basic_arguments and limited_numbered_arguments tables.  Those lists are supplemented with a
-template-specific list of parameters that are required by the particular template and may be exclusive to one of the
-preprint templates.  Some of these parameters may also be available to the general cs1|2 templates.
+Cite arXiv, cite biorxiv, cite citeseerx, cite medrxiv, and cite ssrn are preprint templates that use the limited
+set of parameters defined in the limited_basic_arguments and limited_numbered_arguments tables.  Those lists are
+supplemented with a template-specific list of parameters that are required by the particular template and may be
+exclusive to one of the preprint templates.  Some of these parameters may also be available to the general cs1|2
+templates.
 
-Same conventions for true/false/nil as above.
+Same conventions for true/false/tracked/nil as above.
 
 ]]
 
-local preprint_arguments = {
+local preprint_arguments_t = {
 	arxiv = {
 		['arxiv'] = true,														-- cite arxiv and arxiv identifiers
-		['class'] = true,														-- cite arxiv only
+		['class'] = true,
 		['eprint'] = true,														-- cite arxiv and arxiv identifiers
 		},
 	biorxiv = {
@@ -396,49 +363,49 @@ local preprint_arguments = {
 	citeseerx = {
 		['citeseerx'] = true,
 		},
+	medrxiv = {
+		['medrxiv'] = true,
+		},
 	ssrn = {
 		['ssrn'] = true,
 		['SSRN'] = true,
+		['ssrn-access'] = true,
 		},
 	}
 
 
 --[[--------------------------< L I M I T E D   S U P P O R T E D   P A R A M E T E R S >----------------------
 
-This is an experiment that attempts to use validate() and a limited list of valid parameters to validate the
-parameters provided in a cite arxiv, cite biorxiv, or cite citeseerx templates.  These parameters are common to
-all three templates
+cite arxiv, cite biorxiv, cite citeseerx, cite medrxiv, and cite ssrn templates are preprint templates so are
+allowed only a limited subset of parameters allowed to all other cs1|2 templates.  The limited subset is defined
+here.
 
-Same conventions for true/false/nil as above.
+This list of parameters also used by {{cite document}}
+
+Same conventions for true/false/tracked/nil as above.
 	
 ]]
 
-local limited_basic_arguments = {
+local limited_basic_arguments_t = {
 	['at'] = true,
 	['author'] = true,
 	['author-first'] = true,
+	['author-given'] = true,
 	['author-last'] = true,
-	['authorlink'] = true,
+	['author-surname'] = true,
 	['author-link'] = true,
-	['authormask'] = true,
+	['authorlink'] = true,
 	['author-mask'] = true,
-	['authors'] = true,
 	['collaboration'] = true,
 	['date'] = true,
 	['df'] = true,
-	['displayauthors'] = true,
 	['display-authors'] = true,
 	['first'] = true,
 	['given'] = true,
 	['language'] = true,
 	['last'] = true,
-	['lastauthoramp'] = true,
-	['last-author-amp'] = true,
 	['mode'] = true,
-	['name-list-format'] = true,
-	['nocat'] = true,
-	['no-cat'] = true,
-	['notracking'] = true,
+	['name-list-style'] = true,
 	['no-tracking'] = true,
 	['p'] = true,
 	['page'] = true,
@@ -452,26 +419,26 @@ local limited_basic_arguments = {
 	['template-doc-demo'] = true,
 	['title'] = true,
 	['trans-title'] = true,
-	['url'] = true,
-	['URL'] = true,
 	['vauthors'] = true,
 	['year'] = true,
-}
+	}
 
-local limited_numbered_arguments = {
+local limited_numbered_arguments_t = {
 	['author#'] = true,
 	['author-first#'] = true,
 	['author#-first'] = true,
+	['author-given#'] = true,
+	['author#-given'] = true,
 	['author-last#'] = true,
 	['author#-last'] = true,
+	['author-surname#'] = true,
+	['author#-surname'] = true,
 	['author-link#'] = true,
-	['author#link'] = true,
 	['author#-link'] = true,
 	['authorlink#'] = true,
+	['author#link'] = true,
 	['author-mask#'] = true,
-	['author#mask'] = true,
 	['author#-mask'] = true,
-	['authormask#'] = true,
 	['first#'] = true,
 	['given#'] = true,
 	['last#'] = true,
@@ -481,27 +448,51 @@ local limited_numbered_arguments = {
 
 --[[--------------------------< U N I Q U E _ A R G U M E N T S >----------------------------------------------
 
-some templates have unique parameters.  Those templates and their unique parameters are listed here. Keys in this
+Some templates have unique parameters.  Those templates and their unique parameters are listed here. Keys in this
 table are the template's CitationClass parameter value
 
-Same conventions for true/false/nil as above.
+Same conventions for true/false/tracked/nil as above.
 
 ]]
 
-local unique_arguments = {
+local unique_arguments_t = {
+	['audio-visual'] = {
+		['people'] = true,
+		['transcript'] = true,
+		['transcript-format'] = true,
+		['transcript-url'] = true,
+		},
+	conference = {
+		['book-title'] = true,
+		['conference'] = true,
+		['conference-format'] = true,
+		['conference-url'] = true,
+		['event'] = true,
+		},
 	episode = {
 		['airdate'] = true,
 		['air-date'] = true,
 		['credits'] = true,
-		['episodelink'] = true,													-- aliases of |title-link=
-		['episode-link'] = true,
+		['episode-link'] = true,												-- alias of |title-link=
 		['network'] = true,
+		['people'] = true,
+		['season'] = true,
+		['series-link'] = true,
+		['series-no'] = true,
+		['series-number'] = true,
 		['station'] = true,
+		['transcript'] = true,
+		['transcript-format'] = true,
+		['transcript-url'] = true,
+		},
+	mailinglist = {
+		['mailing-list'] = true,
 		},
 	map = {
+		['cartography'] = true,
+		['inset'] = true,
 		['map'] = true,
 		['map-format'] = true,
-		['mapurl'] = true,
 		['map-url'] = true,
 		['map-url-access'] = true,
 		['script-map'] = true,
@@ -514,17 +505,121 @@ local unique_arguments = {
 		['message-id'] = true,
 		['newsgroup'] = true,
 		},
+	report = {
+		['docket'] = true,
+		},
 	serial = {
 		['airdate'] = true,
 		['air-date'] = true,
 		['credits'] = true,
 		['episode'] = true,														-- cite serial only TODO: make available to cite episode?
-		['episodelink'] = true,													-- aliases of |title-link=
-		['episode-link'] = true,
+		['episode-link'] = true,												-- alias of |title-link=
 		['network'] = true,
+		['people'] = true,
+		['series-link'] = true,
 		['station'] = true,
 		},
+	speech = {
+		['conference'] = true,
+		['conference-format'] = true,
+		['conference-url'] = true,
+		['event'] = true,
+		},
+	thesis = {
+		['degree'] = true,
+		['docket'] = true,
+		},
 	}
+
+
+--[[--------------------------< C I T E _ D O C U M E N T >----------------------------------------------------
+
+Special case for cite document.  This template takes the limited basic and limited enumerated parameters plus
+others that are apply only to standalone published sources that cannot be cited any other way; no url, book,
+periodical, etc parameters; limited support for name lists and named identifiers.
+
+when validating parameters in {{cite document}} templates, the basic and 
+
+]]
+
+local document_arguments_t = {
+	['bibcode'] = true,
+	['bibcode-access'] = true,
+	['doi'] = true,
+	['DOI'] = true,
+	['doi-access'] = true,
+	['doi-broken-date'] = true,
+	['hdl'] = true,
+	['HDL'] = true,
+	['hdl-access'] = true,
+	['id'] = true,
+	['ID'] = true,
+	['jfm'] = true,
+	['JFM'] = true,
+	['lang'] = true,
+	['location'] = true,
+	['mr'] = true,
+	['MR'] = true,
+	['no-pp'] = true,
+	['orig-date'] = true,
+	['origyear'] = true,
+	['orig-year'] = true,
+	['osti'] = true,
+	['OSTI'] = true,
+	['osti-access'] = true,
+	['place'] = true,
+	['publisher'] = true,
+	['quote-page'] = true,
+	['quote-pages'] = true,
+	['script-quote'] = true,
+	['script-title'] = true,
+	['title-link'] = true,
+	['translator'] = true,
+	['translator-first'] = true,
+	['translator-given'] = true,
+	['translator-last'] = true,
+	['translator-surname'] = true,
+	['translator-link'] = true,
+	['translator-mask'] = true,
+	['trans-quote'] = true,
+	['type'] = true,
+	['zbl'] = true,
+	['ZBL'] = true,
+	}
+
+local document_numbered_arguments_t = {
+	['translator#'] = true,
+	['translator-first#'] = true,
+	['translator#-first'] = true,
+	['translator-given#'] = true,
+	['translator#-given'] = true,
+	['translator-last#'] = true,
+	['translator#-last'] = true,
+	['translator-surname#'] = true,
+	['translator#-surname'] = true,
+	['translator-link#'] = true,
+	['translator#-link'] = true,
+	['translator-mask#'] = true,
+	['translator#-mask'] = true,
+	}
+
+
+--[[--------------------------< L I S T _ C O M B I N E >------------------------------------------------------
+
+makes one table from a list of tables.  <lists_t> is a sequence of tables to be combined
+
+]]
+
+local function list_combine (lists_t)
+	local out_t = {};
+
+	for _, list_t in ipairs (lists_t) do										-- for each list in <lists_t>
+		for k, v in pairs (list_t) do											-- extract each k/v pair
+			out_t[k] = v;														-- add to <out_t>
+		end
+	end
+	return out_t;																-- and done
+end
 
 
 --[[--------------------------< T E M P L A T E _ L I S T _ G E T >--------------------------------------------
@@ -534,11 +629,11 @@ gets a list of the templates from table t
 ]]
 
 local function template_list_get (t)
-	local out = {};																-- a table for output
+	local out_t = {};															-- a table for output
 	for k, _ in pairs (t) do													-- spin through the table and collect the keys
-		table.insert (out, k)													-- add each key to the output table
+		table.insert (out_t, k)													-- add each key to the output table
 	end
-	return out;																	-- and done
+	return out_t;																-- and done
 end
 
 
@@ -546,13 +641,12 @@ end
 ]]
 
 return {
-	basic_arguments = basic_arguments,
-	numbered_arguments = numbered_arguments,
-	limited_basic_arguments = limited_basic_arguments,
-	limited_numbered_arguments = limited_numbered_arguments,
-
-	preprint_arguments = preprint_arguments,
-	preprint_template_list = template_list_get (preprint_arguments),			-- make a template list from preprint_arguments{} table
-	unique_arguments = unique_arguments,
-	unique_param_template_list = template_list_get (unique_arguments),			-- make a template list from unique_arguments{} table
+	preprint_arguments_t = preprint_arguments_t,
+	preprint_template_list_t = template_list_get (preprint_arguments_t),		-- make a template list from preprint_arguments{} table
+	unique_arguments_t = unique_arguments_t,
+	unique_param_template_list_t = template_list_get (unique_arguments_t),		-- make a template list from unique_arguments{} table
+	
+	document_parameters_t = list_combine ({limited_basic_arguments_t, limited_numbered_arguments_t, document_arguments_t, document_numbered_arguments_t});
+	common_parameters_t = list_combine ({basic_arguments_t, numbered_arguments_t});
+	limited_parameters_t = list_combine ({limited_basic_arguments_t, limited_numbered_arguments_t});
 	};
