@@ -1,27 +1,26 @@
---[[ 
-  __  __           _       _         ____                      _                 _       _       
+--[[
+  __  __           _       _         ____                      _                 _
  |  \/  | ___   __| |_   _| | ___ _ / ___|___  _ __ ___  _ __ | | _____  __   __| | __ _| |_ ___ 
  | |\/| |/ _ \ / _` | | | | |/ _ (_) |   / _ \| '_ ` _ \| '_ \| |/ _ \ \/ /  / _` |/ _` | __/ _ \
  | |  | | (_) | (_| | |_| | |  __/_| |__| (_) | | | | | | |_) | |  __/>  <  | (_| | (_| | ||  __/
  |_|  |_|\___/ \__,_|\__,_|_|\___(_)\____\___/|_| |_| |_| .__/|_|\___/_/\_\  \__,_|\__,_|\__\___|
-                                                        |_|                                      
- 
+                                                        |_|
+
 This module is intended for creation of complex date phrases in variety of languages.
- 
-Once deployed, please do not modify this code without applying the changes first at Module:Complex date/sandbox and testing 
+
+Once deployed, please do not modify this code without applying the changes first at Module:Complex date/sandbox and testing
 at Module:Complex date/sandbox/testcases.
- 
+
 Authors and maintainers:
-* User:Sn1per - first draft of the original version 
-* User:Jarekt - corrections and expansion of the original version 
- 
+* User:Sn1per - first draft of the original version
+* User:Jarekt - corrections and expansion of the original version
 ]]
 
 -- List of external modules and functions
 local p = {Error = nil}
-local i18n       = require('Module:i18n/complex date')
-local ISOdate    = require('Module:ISOdate')._ISOdate
-local Calendar -- loaded lazily
+local i18n       = require('Module:i18n/complex date')   -- used for translations of date related phrases
+local ISOdate    = require('Module:ISOdate')._ISOdate    -- used for parsing dates in YYYY-MM-DD and related formats
+local Calendar   -- loaded lazily
 
 -- ==================================================
 -- === Internal functions ===========================
@@ -38,8 +37,9 @@ local function langSwitch(list,lang)
 	end
 end
 
+-- ==================================================
 local function formatnum1(numStr, lang)
--- mostly require('Module:Formatnum').formatNum function used to translate a number to use different numeral characters, 
+-- mostly require('Module:Formatnum').formatNum function used to translate a number to use different numeral characters,
 -- except that it it does not call  that function unless the language is on the list "LList"
 	local LList = {bn=1,bpy=1,kn=1,hi=1,mr=1,new=1,pa=1,gu=1,fa=1,glk=1,mzn=1,ur=1,ar=1,ckb=1,ks=1,lo=1,['or']=1,bo=1,['ml-old']=1,mn=1,te=1,th=1}
 	if LList[lang] then -- call only when the language is on the list
@@ -48,6 +48,7 @@ local function formatnum1(numStr, lang)
 	return numStr
 end
 
+-- ==================================================
 local function getISODate(datestr, datetype, lang, num, case)
 -- translate dates in the format YYYY, YYYY-MM, and YYYY-MM-DD
 	if  not case and i18n.Translations[datetype] then
@@ -60,6 +61,7 @@ local function getISODate(datestr, datetype, lang, num, case)
 	return ISOdate(datestr, lang, case, '', 1)
 end
 
+-- =======================================================================
 local function translatePhrase(date1, date2, operation, lang, state)
 -- use tables in Module:i18n/complex date to translate a phrase
 	if not i18n.Translations[operation] then
@@ -71,12 +73,12 @@ local function translatePhrase(date1, date2, operation, lang, state)
 		dateStr = dateStr[1]
 	end
 	if type(dateStr)=='function' then
-		local success
+		local dateFunc = dateStr
 		local nDates = i18n.Translations[operation]['nDates']
 		if nDates==2 then -- 2 date phrase
-			success, dateStr = pcall(dateStr, date1, date2, state)
+			dateStr = dateFunc(date1, date2, state)
 		else  -- 1 date phrase
-			success, dateStr = pcall(dateStr, date1, state)
+			dateStr = dateFunc(date1, state)
 		end
 	end
 	
@@ -93,13 +95,14 @@ local function translatePhrase(date1, date2, operation, lang, state)
 	return dateStr
 end
 
+-- =======================================================================
 local function oneDatePhrase(dateStr, adj, era, units, lang, num, case, state)
 -- translate a single date phrase
 	if num==2 then
-		state.adj, state.era, state.units, state.precision = state.adj2, state.era2, state.units2, state.precision2 
+		state.adj, state.era, state.units, state.precision = state.adj2, state.era2, state.units2, state.precision2
 	end
 	
-	-- dateStr can have many forms: ISO date, year or a number for 
+	-- dateStr can have many forms: ISO date, year or a number for
 	-- decade, century or millennium
 	if units == '' then -- unit is "year", "month", "day"
 		dateStr = getISODate(dateStr, adj, lang, num, case)
@@ -107,7 +110,7 @@ local function oneDatePhrase(dateStr, adj, era, units, lang, num, case, state)
 		dateStr = translatePhrase(dateStr, '', units, lang, state)
 	end
 	
-	-- add adjective ("early", "mid", etc.) or preposition ("before", "after", 
+	-- add adjective ("early", "mid", etc.) or preposition ("before", "after",
 	-- "circa", etc.) to the date
 	if adj ~= '' then
 		dateStr = translatePhrase(dateStr, '', adj, lang, state)
@@ -122,6 +125,7 @@ local function oneDatePhrase(dateStr, adj, era, units, lang, num, case, state)
 	return dateStr
 end
 
+-- =======================================================================
 local function twoDatePhrase(date1, date2, state, lang)
 -- translate a double date phrase
 	local dateStr, case
@@ -148,6 +152,7 @@ local function twoDatePhrase(date1, date2, state, lang)
 	return dateStr
 end
 
+-- =======================================================================
 local function otherPhrases(date1, date2, operation, era, lang, state)
 -- translate specialized phrases
 	local dateStr = ''
@@ -162,7 +167,7 @@ local function otherPhrases(date1, date2, operation, era, lang, state)
 	elseif operation == 'julian' then
 		if not date2 and date1 then -- Convert from Julian to Gregorian calendar date
 			if Calendar == nil then
-				Calendar = require("Module:Calendar")
+				Calendar = require("Module:Calendar") -- lazy loding (only if needed)
 			end
 			local JDN = Calendar._date2jdn(date1, 0)
 			if JDN then
@@ -188,9 +193,9 @@ local function otherPhrases(date1, date2, operation, era, lang, state)
 		end
 		dateStr = translatePhrase(date1, date2, operation, lang, state)
 	elseif operation == 'year unknown' then
-		dateStr = translatePhrase('', '', operation, lang, state)
+		dateStr = translatePhrase('', '', operation, lang, state) .. '<div style="display: none;">Unknown date</div>'
 	elseif operation == 'unknown' then
-		dateStr = tostring(mw.message.new( "exif-unknowndate" ):inLanguage( lang ))
+		dateStr = tostring(mw.message.new( "exif-unknowndate" ):inLanguage( lang )) .. '<div style="display: none;">Unknown date</div>'
 	end
 	
 	-- add era
@@ -200,41 +205,43 @@ local function otherPhrases(date1, date2, operation, era, lang, state)
 	return dateStr
 end
 
+-- =======================================================================
 local function checkAliases(str1, str2, sType)
 -- some inputs have many aliases - reconcile them and ensure string is playing a proper role	
-local out = ''
-if str1 and str1~='' then
-	a = i18n.Synonyms[str1] -- look up synonyms of "str1"
-	if a then
-		out = a[1]
-	else
-		p.Error = string.format('<span style="background-color:red;">Error in [[Module:Complex date]]: %s is not recognized.</span>', str1)
+	local out = ''
+	if str1 and str1~='' then
+		local a = i18n.Synonyms[str1] -- look up synonyms of "str1"
+		if a then
+			out = a[1]
+		else
+			p.Error = string.format('<span style="background-color:red;">Error in [[Module:Complex date]]: %s is not recognized.</span>', str1)
+		end
+	elseif str2 and str2~='' then -- if "str1" of type "sType" is empty than maybe ...
+		local a = i18n.Synonyms[str2]   -- ..."str2" is of the same type and is not empty
+		if a and a[2]==sType then
+			out  = a[1]
+			str2 = ''
+		end
 	end
-elseif str2 and str2~='' then -- if "str1" of type "sType" is empty than maybe ...
-	a = i18n.Synonyms[str2]   -- ..."str2" is of the same type and is not empty
-	if a and a[2]==sType then
-		out  = a[1]
-		str2 = ''
-	end
-end
-return out, str2
+	return out, str2
 end
 
-local function datePrecision(dateStr, units)	
+-- =======================================================================
+local function datePrecision(dateStr, units)
 -- "in this module "Units" is a string like millennium, century, or decade
 --	"precision" is wikibase compatible date precision number: 6=millennium, 7=century, 8=decade, 9=year, 10=month, 11=day
 -- based on string or numeric input calculate "Units" and "precision"
-	local dateNum = tonumber(dateStr);
+	local precision
 	if type(units)=='number' then
 		precision = units
 		if precision>11 then precision=11 end -- clip the range of precision values
-		if     precision==6 then units='millennium' 		
+		if     precision==6 then units='millennium'
 		elseif precision==7 then units='century'
 		elseif precision==8 then units='decade'
 		else units = ''
 		end
 	elseif type(units)=='string' then
-		units = string.lower(units);
+		units = string.lower(units)
 		if     units=='millennium' then precision=6
 		elseif units=='century'    then precision=7
 		elseif units=='decade'     then precision=8
@@ -249,7 +256,7 @@ local function datePrecision(dateStr, units)
 		end
 		units=''
 	end
-	if precision==6 and dateStr.match( dateStr, '%d000' )~=nil then 
+	if precision==6 and dateStr.match( dateStr, '%d000' )~=nil then
 		dateStr = tostring(math.floor(tonumber(dateStr)/1000) +1)
 	elseif precision==7 and mw.ustring.match( dateStr, '%d%d00' )~=nil then
 		dateStr = tostring(math.floor(tonumber(dateStr)/100) +1)
@@ -258,26 +265,26 @@ local function datePrecision(dateStr, units)
 	return dateStr, units, precision
 end
 
-
+-- =======================================================================
 local function isodate2timestamp(dateStr, precision, era)
 -- convert date string to timestamps used by Quick Statements
 	local tStamp = nil
 	if era == 'ah' or precision<6 then
 		return nil
 	elseif era ~= '' then
-		eraLUT = {ad='+', bc='-', bp='-' }
+		local eraLUT = {ad='+', bc='-', bp='-' }
 		era = eraLUT[era]
 	else
 		era='+'
 	end
 
 -- convert isodate to timestamp used by quick statements
-	if precision>=9 then 
-		if string.match(dateStr,"^%d%d%d%d$") then               -- if YYYY  format 
+	if precision>=9 then
+		if string.match(dateStr,"^%d%d%d%d$") then               -- if YYYY  format
 			tStamp = era .. dateStr .. '-00-00T00:00:00Z/9'
-		elseif string.match(dateStr,"^%d%d%d%d%-%d%d$") then      -- if YYYY-MM format 
+		elseif string.match(dateStr,"^%d%d%d%d%-%d%d$") then      -- if YYYY-MM format
 			tStamp = era .. dateStr .. '-00T00:00:00Z/10'
-		elseif string.match(dateStr,"^%d%d%d%d%-%d%d%-%d%d$") then  -- if YYYY-MM-DD format 
+		elseif string.match(dateStr,"^%d%d%d%d%-%d%d%-%d%d$") then  -- if YYYY-MM-DD format
 			tStamp = era .. dateStr .. 'T00:00:00Z/11'
 		end
 	elseif precision==8 then -- decade
@@ -293,6 +300,7 @@ local function isodate2timestamp(dateStr, precision, era)
 	return tStamp
 end
 
+-- =======================================================================
 local function oneDateQScode(dateStr, adj, era, precision)
 -- create QuickStatements string for "one date" dates
 	local outputStr = ''
@@ -305,7 +313,7 @@ local function oneDateQScode(dateStr, adj, era, precision)
 		['1quarter']='Q40690303' , ['2quarter']='Q40719649'  , ['3quarter']='Q40719662', ['4quarter']='Q40719674',
 		spring='Q40720559'   , summer='Q40720564'    , autumn='Q40720568'  , winter='Q40720553',
 		firsthalf='Q40719687', secondhalf='Q40719707' }
-	local qLUT = {['from']='P580', ['until']='P582', ['after']='P1319', ['before']='P1326'}
+	local qLUT = {['from']='P580', ['until']='P582', ['after']='P1319', ['before']='P1326', ['by']='P1326'}
 
 	local refine = rLUT[adj]
 	local qualitier = qLUT[adj]
@@ -320,42 +328,45 @@ local function oneDateQScode(dateStr, adj, era, precision)
 		local century = string.gsub(d, 'Z%/%d+', 'Z/7')
 		outputStr = century ..",".. qualitier ..","..d
 	end
-	return outputStr 
+	return outputStr
 end
 
+-- =======================================================================
 local function twoDateQScode(date1, date2, state)
 -- create QuickStatements string for "two date" dates
 	if state.adj1~='' or state.adj2~='' or state.era1~=state.era2 then
-		return ''
+		return '' -- QuickStatements string are not generated for two date phrases with adjectives
 	end
 	local outputStr = ''
 	local d1 = isodate2timestamp(date1, state.precision1, state.era1)
 	local d2 = isodate2timestamp(date2, state.precision2, state.era2)
 	if (not d1) or (not d2) then
 		return ''
-	end	
+	end
 	-- find date with lower precision in common to both dates
 	local cd
-	local year1 = string.sub(d1,2,5)
+	local year1 = tonumber(string.sub(d1,2,5))
+	local year2 = tonumber(string.sub(d2,2,5))
 	local k = 0
-	for i = 1,10,1 do 
-		if string.sub(d1,1,i)==string.sub(d2,1,i) then 
+	for i = 1,10,1 do
+		if string.sub(d1,1,i)==string.sub(d2,1,i) then
 			k = i -- find last matching letter
 		end
 	end
 	if k>=9 then              -- same month, since "+YYYY-MM-" is in common
 		cd = isodate2timestamp(string.sub(d1,2,8), 10, state.era1)
 	elseif k>=6 and k<9 then  -- same year, since "+YYYY-" is in common
-		cd = isodate2timestamp(year1, 9, state.era1)
+		cd = isodate2timestamp(tostring(year1), 9, state.era1)
 	elseif k==4 then          -- same decade(k=4, precision=8),  since "+YYY" is in common
-		cd = isodate2timestamp(year1, 8, state.era1)
+		cd = isodate2timestamp(tostring(year1), 8, state.era1)
 	elseif k==3 then          -- same century(k=3, precision=7) since "+YY" is in common
-	  local d = tostring(math.floor(tonumber(year1)/100) +1) -- convert 1999 -> 20
+	  local d = tostring(math.floor(year1/100) +1) -- convert 1999 -> 20
 		cd = isodate2timestamp( d, 7, state.era1)
 	elseif k==2 then          -- same millennium (k=2, precision=6),  since "+Y" is in common
-		local d = tostring(math.floor(tonumber(year1)/1000) +1) -- convert 1999 -> 2
+		local d = tostring(math.floor(year1/1000) +1) -- convert 1999 -> 2
 		cd = isodate2timestamp( d, 6, state.era1)
-	else
+	end
+	if not cd then
 		return ''
 	end
 	--if not cd then
@@ -363,9 +374,9 @@ local function twoDateQScode(date1, date2, state)
 	--end
 
 	--
-	if state.conj=='from-until' then
+	if (state.conj=='from-until') or (state.conj=='and' and year1==year2-1) then
 		outputStr = cd ..",P580,".. d1 ..",P582,".. d2
-	elseif state.conj=='between' then
+	elseif (state.conj=='between') or (state.conj=='or' and year1==year2-1) then
 		outputStr = cd ..",P1319,".. d1 ..",P1326,".. d2
 	elseif state.conj=='circa2' then
 		outputStr = cd ..",P1319,".. d1 ..",P1326,".. d2 ..",P1480,Q5727902"
@@ -374,34 +385,11 @@ local function twoDateQScode(date1, date2, state)
 	return outputStr
 end
 
--- ==================================================
--- === External functions ===========================
--- ==================================================
+-- =======================================================================
+local function processInputParams(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, passNr)
 
-function p.Era(frame)
-    -- process inputs
-	local dateStr
-	local args    = frame.args
-	if not (args.lang and mw.language.isSupportedLanguage(args.lang)) then 
-		args.lang = frame:callParserFunction( "int", "lang" ) -- get user's chosen language  
-	end
-	local lang    = args['lang']
-	local dateStr = args['date'] or ''
-	local eraType = string.lower(args['era']  or '')
-
-	dateStr = ISOdate(dateStr, lang, '', '', 1)
-	if eraType then 
-		eraType = checkAliases(eraType ,'','e')
-		dateStr = translatePhrase(dateStr, '', eraType, lang, {}) 
-	end
-	return dateStr
-end
-	
-function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, passNr)
-	local Output=''
-
-    -- process inputs and save date in state array
-	local state  = {} 
+	-- process inputs and save date in state array
+	local state  = {}
 	state.conj   = string.lower(conj   or '')
 	state.adj1   = string.lower(adj1   or '')
 	state.adj2   = string.lower(adj2   or '')
@@ -409,7 +397,7 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 	state.era2   = string.lower(era2   or '')
 	state.units1 = string.lower(units1 or '')
 	state.units2 = string.lower(units2 or '')
-		  
+
 	-- if date 1 is missing but date 2 is provided than swap them
 	if date1 == '' and date2 ~= '' then
 		date1 = date2
@@ -417,11 +405,11 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 		state = {adj1 = state.adj2, era1 = state.era2, units1 = state.units2, 
 		         adj2 = '',         era2 = '',         units2 = '',  conj=state.conj, num=1}
 	end
-	if     date2 ~= '' then state.nDates = 2 
-	elseif date1 ~= '' then state.nDates = 1 
-	else	                  state.nDates = 0
+	if     date2 ~= '' then state.nDates = 2
+	elseif date1 ~= '' then state.nDates = 1
+	else                    state.nDates = 0
 	end
-	
+
 	-- reconcile alternative names for text inputs
 	local conj         = checkAliases(state.conj ,''  ,'j')
 	state.adj1 ,conj   = checkAliases(state.adj1 ,conj,'a')
@@ -436,13 +424,13 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 	if p.Error~=nil then
 		return nil
 	end
-	
+
 	-- calculate date precision value
 	date1, state.units1, state.precision1 = datePrecision(date1, state.units1)
 	date2, state.units2, state.precision2 = datePrecision(date2, state.units2)
 
-	-- Handle special cases 
-	-- Some complex phrases can be created out of simpler ones. Therefore on pass # 1 we try to create 
+	-- Handle special cases
+	-- Some complex phrases can be created out of simpler ones. Therefore on pass # 1 we try to create
 	-- the phrase using complex phrase and if that is not found than on the second pass we try to build
 	-- the phrase out of the simpler ones
 	if passNr==1 then
@@ -451,7 +439,7 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 			state.adj1 = ''
 			state.adj2 = ''
 		end
-		if state.nDates == 2 and state.adj1=='late' and state.adj2=='early' and state.conj=='and' 
+		if state.nDates == 2 and state.adj1=='late' and state.adj2=='early' and state.conj=='and'
 		and state.units1==state.units2 and state.era1==state.era2 then
 			if state.units1=='century' then
 				state.conj='turn of the century'
@@ -467,16 +455,53 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 		end
 	end
 
+	state.adj, state.era, state.units, state.precision = state.adj1, state.era1, state.units1, state.precision1
+	return date1, date2, state
+end
+
+-- ==================================================
+-- === External functions ===========================
+-- ==================================================
+
+function p.Era(frame)
+	-- process inputs
+	local dateStr
+	local args    = frame.args
+	if not (args.lang and mw.language.isSupportedLanguage(args.lang)) then
+		args.lang = frame:callParserFunction( "int", "lang" ) -- get user's chosen language
+	end
+	local lang    = args['lang']
+	local dateStr = args['date'] or ''
+	local eraType = string.lower(args['era']  or '')
+
+	dateStr = ISOdate(dateStr, lang, '', '', 1)
+	if eraType then 
+		eraType = checkAliases(eraType ,'','e')
+		dateStr = translatePhrase(dateStr, '', eraType, lang, {})
+	end
+	return dateStr
+end
+
+-- =======================================================================
+function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, passNr)
+	local Output=''
+	local state
+
+	-- process inputs and save date in state array
+	date1, date2, state  = processInputParams(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, passNr)
+	if p.Error~=nil then
+		return nil
+	end
+
 	local errorStr = string.format(
-	 '\n*conj=%s, adj1=%s, era1=%s, unit1=%s, prec1=%i, adj2=%s, era2=%s, unit2=%s, prec2=%i, special=%s', 
+	  '\n*conj=%s, adj1=%s, era1=%s, unit1=%s, prec1=%i, adj2=%s, era2=%s, unit2=%s, prec2=%i, special=%s',
 	  state.conj, state.adj1, state.era1, state.units1, state.precision1,
-	  state.adj2, state.era2, state.units2, state.precision2, state.special)  
-	state.adj, state.era, state.units, state.precision = state.adj1, state.era1, state.units1, state.precision1 
+	  state.adj2, state.era2, state.units2, state.precision2, state.special)
 
 	-- call specialized functions
 	local QScode = ''
 	if state.special~='' then
-		Output = otherPhrases(date1, date2, state.special, state.era1, lang, state)	
+		Output = otherPhrases(date1, date2, state.special, state.era1, lang, state)
 	elseif state.conj~='' then
 		QScode = twoDateQScode(date1, date2, state)
 		Output = twoDatePhrase(date1, date2, state, lang)
@@ -501,12 +526,28 @@ function p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, e
 	return Output .. QScode
 end
 
+-- =======================================================================
+function p._complex_date_cer(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, certainty, lang)
+-- same as p._complex_date but with extra parameter for certainty: probably, possibly, presumably, etc.
+	local dateStr = p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, 1)
+	certainty = checkAliases(certainty, conj, 'r')
+	local LUT = {probably='Q56644435',  presumably='Q18122778', possibly='Q30230067', circa='Q5727902' }
+	if certainty and LUT[certainty] then
+		local state  = {} 
+		date1, date2, state  = processInputParams(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, 1)
+		dateStr = translatePhrase(dateStr, '', certainty, lang, state)
+		dateStr = string.gsub(dateStr, '(%<div style="display: none;"%>date QS:P,[^%<]+)(%</div%>)', '%1,P1480,' .. LUT[certainty] .. '%2' )
+	end
+	return dateStr
+end
+
+-- =======================================================================
 function p.complex_date(frame)
-    -- process inputs
-	local dateStr, Error
+	-- process inputs
+	local dateStr
 	local args   = frame.args
-	if not (args.lang and mw.language.isSupportedLanguage(args.lang)) then 
-		args.lang = frame:callParserFunction( "int", "lang" ) -- get user's chosen language  
+	if not (args.lang and mw.language.isSupportedLanguage(args.lang)) then
+		args.lang = frame:callParserFunction( "int", "lang" ) -- get user's chosen language
 	end
 	local date1  = args['date1'] or args['2'] or args['date'] or ''
 	local date2  = args['date2'] or args['3'] or ''
@@ -517,9 +558,10 @@ function p.complex_date(frame)
 	local units2 = args['precision2'] or args['precision'] or ''
 	local era1   = args['era1'] or args['era'] or ''
 	local era2   = args['era2'] or args['era'] or ''
+	local certainty = args['certainty']
 	local lang   = args['lang']
 
-	dateStr = p._complex_date(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, lang, 1)
+	dateStr = p._complex_date_cer(conj, adj1, date1, units1, era1, adj2, date2, units2, era2, certainty, lang)
 	if p.Error~=nil then
 		dateStr = p.Error .. '[[Category:Pages using Complex date template with incorrect parameter]]'
 	end
