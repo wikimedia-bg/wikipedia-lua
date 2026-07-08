@@ -1,15 +1,59 @@
+local lang_obj = mw.language.getContentLanguage();								-- make a language object for the local language; used here for languages and dates 
+
+
+--[[--------------------------< S E T T I N G S >--------------------------------------------------------------
+
+boolean settings used to control various things.  these setting located here to make them easy to find
+
+]]
+																				-- these settings local to this module only
+local local_digits_from_mediawiki = false;										-- for i18n; when true, module fills date_names['local_digits'] from MediaWiki; manual fill required else; always false at en.wiki
+local local_date_names_from_mediawiki = false;									-- for i18n; when true, module fills date_names['local']['long'] and date_names['local']['short'] from MediaWiki;
+																				-- manual translation required else; ; always false at en.wiki
+
+																				-- these settings exported to other modules
+local use_identifier_redirects = true;											-- when true use redirect name for identifier label links; always true at en.wiki
+local local_lang_cat_enable = false;											-- when true categorizes pages where |language=<local wiki's language>; always false at en.wiki
+local date_name_auto_xlate_enable = false;										-- when true translates English month-names to the local-wiki's language month names; always false at en.wiki
+local date_digit_auto_xlate_enable = false;										-- when true translates Western date digit to the local-wiki's language digits (date_names['local_digits']); always false at en.wiki
+local enable_sort_keys = true;													-- when true module adds namespace sort keys to error and maintenance category links
+
+local suppress_archive_today_urls = true;										-- when true module suppresses all parameters with an archive.today url and any deprendent parameters
 
 --[[--------------------------< U N C A T E G O R I Z E D _ N A M E S P A C E S >------------------------------
 
-List of namespaces that should not be included in citation error categories.  Same as setting notracking = true by default
+List of namespaces identifiers for namespaces that will not be included in citation error categories.
+Same as setting notracking = true by default.
 
-Note: Namespace names should use underscores instead of spaces.
+For wikis that have a current version of Module:cs1 documentation support, this #invoke will return an unordered
+list of namespace names and their associated identifiers:
+	{{#invoke:cs1 documentation support|uncategorized_namespace_lister|all=<anything>}}
 
 ]]
-local uncategorized_namespaces = { 'User', 'Talk', 'User_talk', 'Wikipedia_talk', 'File_talk', 'Template_talk', 'Help_talk', 'Category_talk', 'Portal_talk', 'Book_talk', 'Draft_talk', 'Education_Program_talk', 'Module_talk', 'MediaWiki_talk' };
 
-local uncategorized_subpages = {'/[Ss]andbox', '/[Tt]estcases'};				-- list of Lua patterns found in page names of pages we should not categorize
+local uncategorized_namespaces_t = {[2]=true};										-- init with user namespace id
+for k, _ in pairs (mw.site.talkNamespaces) do									-- add all talk namespace ids
+	uncategorized_namespaces_t[k] = true;
+end
 
+local uncategorized_subpages = {'/[Ss]andbox', '/[Tt]estcases', '/[^/]*[Ll]og', '/[Aa]rchive'};		-- list of Lua patterns found in page names of pages we should not categorize
+
+--[[
+at en.wiki Greek characters are used as sort keys for certain items in a category so that those items are
+placed at the end of a category page.  See Wikipedia:Categorization#Sort_keys.  That works well for en.wiki
+because English is written using the Latn script.  This may not work well for other languages.  At en.wiki it
+is desireable to place content from certain namespaces at the end of a category listing so the module adds sort
+keys to error and maintenance category links when rendering a cs1|2 template on a page in that namespace.
+
+i18n: if this does not work well for your language, set <enable_sort_keys> to false.
+]]
+
+local name_space_sort_keys = {													-- sort keys to be used with these namespaces:
+	[4] = 'ω',																	-- wikipedia; omega
+	[10] = 'τ',																	-- template; tau
+	[118] = 'Δ', 																-- draft; delta
+	['other'] = 'ο',															-- all other non-talk namespaces except main (article); omicron
+	}
 
 --[[--------------------------< M E S S A G E S >--------------------------------------------------------------
 
@@ -25,41 +69,52 @@ local messages = {
 	['agency'] = '$1 $2',														-- $1 is sepc, $2 is agency
 	['archived-dead'] = 'Archived from $1 on $2',
 	['archived-live'] = '$1 from the original on $2',
-	['archived-missing'] = 'Archived from the original$1 on $2',
-	['archived-unfit'] = 'Archived from the original on ',
+	['archived-unfit'] = 'Archived from the original on $1',
 	['archived'] = 'Archived',
 	['by'] = 'By',																-- contributions to authored works: introduction, foreword, afterword
 	['cartography'] = 'Cartography by $1',
 	['editor'] = 'ed.',
 	['editors'] = 'eds.',
-	['edition'] = '($1 ed.)',
+	['edition'] = '($1&nbsp;ed.)',
 	['episode'] = 'Episode $1',
-	['et al'] = 'et al.',
+	['et al'] = 'et&nbsp;al.',
 	['in'] = 'In',																-- edited works
-	['inactive'] = 'inactive',
+	['inactive'] = ' (inactive $1)',											-- $1 is date which the doi was found to be broken in 
 	['inset'] = '$1 inset',
-	['interview'] = 'Interviewed by $1',										
-	['lay summary'] = 'Lay summary',
+	['interview'] = 'Interviewed by $1',
+	invisible_1 = '$1 $2',														-- $1 stripmarker name; $2 is text from <invisible_chars[1]>
+	invisible_2 = '$1 character',												-- $1 character name from <invisible_chars[1]>
+	['mismatch'] = '<code class="cs1-code">&#124;$1=</code> / <code class="cs1-code">&#124;$2=</code> mismatch',	-- $1 is year param name; $2 is date param name
 	['newsgroup'] = '[[Usenet newsgroup|Newsgroup]]:&nbsp;$1',
+	['notitle'] = 'No title',													-- for |title=(()) and (in the future) |title=none
 	['original'] = 'the original',
-	['origyear'] = ' [$1]',
+	['origdate'] = ' [$1]',
 	['published'] = ' (published $1)',
 	['retrieved'] = 'Retrieved $1',
 	['season'] = 'Season $1',
-	['section'] = '§ $1',
-	['sections'] = '§§ $1',
+	['section'] = '§&nbsp;$1',
+	['sections'] = '§§&nbsp;$1',
 	['series'] = '$1 $2',														-- $1 is sepc, $2 is series
 	['seriesnum'] = 'Series $1',
 	['translated'] = 'Translated by $1',
 	['type'] = ' ($1)',															-- for titletype
+
+	wikidata = 'Wikidata',														-- these used for interwikilinked author/editor/... names
+	wikipedia = 'Wikipedia',
+	wikisource = 'Wikisource',
+
 	['written'] = 'Written at $1',
 
 	['vol'] = '$1 Vol.&nbsp;$2',												-- $1 is sepc; bold journal style volume is in presentation{}
-	['vol-no'] = '$1 Vol.&nbsp;$2 no.&nbsp;$3',									-- sepc, volume, issue
+	['vol-no'] = '$1 Vol.&nbsp;$2, no.&nbsp;$3',								-- sepc, volume, issue (alternatively insert $1 after $2, but then we'd also have to change capitalization)
 	['issue'] = '$1 No.&nbsp;$2',												-- $1 is sepc
+
+	['art'] = '$1 Art.&nbsp;$2',												-- $1 is sepc; for {{cite conference}} only
+	['vol-art'] = '$1 Vol.&nbsp;$2, art.&nbsp;$3',								-- sepc, volume, article-number; for {{cite conference}} only
 
 	['j-vol'] = '$1 $2',														-- sepc, volume; bold journal volume is in presentation{}
 	['j-issue'] = ' ($1)',
+	['j-article-num'] = ' $1',													-- TODO: any punctuation here? static text?
 
 	['nopp'] = '$1 $2';															-- page(s) without prefix; $1 is sepc
 
@@ -75,23 +130,70 @@ local messages = {
 	['language'] = '(in $1)',
 	['via'] = " &ndash; via $1",
 	['event'] = 'Event occurs at',
-	['minutes'] = 'minutes in',
-	
-	['parameter-separator'] = ', ',
-	['parameter-final-separator'] = ', and ',
-	['parameter-pair-separator'] = ' and ',
+	['minutes'] = ' $1 minutes in',												-- $1 is the number of minutes
 	
 	-- Determines the location of the help page
 	['help page link'] = 'Help:CS1 errors',
 	['help page label'] = 'help',
 	
+	-- categories
+	['cat wikilink'] = '[[Category:$1]]',										-- $1 is the category name
+	['cat wikilink sk'] = '[[Category:$1|$2]]',									-- $1 is the category name; $2 is namespace sort key
+	[':cat wikilink'] = '[[:Category:$1|link]]',								-- category name as maintenance message wikilink; $1 is the category name
+
 	-- Internal errors (should only occur if configuration is bad)
 	['undefined_error'] = 'Called with an undefined error condition',
-	['unknown_manual_ID'] = 'Unrecognized manual ID mode',
-	['unknown_ID_mode'] = 'Unrecognized ID mode',
+	['unknown_ID_key'] = 'Unrecognized ID key: ',								-- an ID key in id_handlers not found in ~/Identifiers func_map{}
+	['unknown_ID_access'] = 'Unrecognized ID access keyword: ',					-- an ID access keyword in id_handlers not found in keywords_lists['id-access']{}
 	['unknown_argument_map'] = 'Argument map not defined for this variable',
-	['bare_url_no_origin'] = 'Bare url found but origin indicator is nil or empty',
+	['bare_url_no_origin'] = 'Bare URL found but origin indicator is nil or empty',
+	
+	['warning_msg_e'] = '<span style="color:#d33"><code style="color: inherit; background: inherit; border: none; padding: inherit;">&#123;{$1}}</code>: this [[#$2|reference]] has errors</span>; messages may be hidden ([[Help:CS1_errors#Controlling_error_message_display|help]]).';	-- $1 is template link; $2 is anchor ID
+	['warning_msg_m'] = '<span style="color:#085"><code style="color: inherit; background: inherit; border: none; padding: inherit;">&#123;{$1}}</code>: this [[#$2|reference]] has maintenance messages</span>; messages may be hidden ([[Help:CS1_errors#Controlling_error_message_display|help]]).';	-- $1 is template link; $2 is anchor ID
 	}
+
+
+--[[--------------------------< C I T A T I O N _ C L A S S _ M A P >------------------------------------------
+
+this table maps the value assigned to |CitationClass= in the cs1|2 templates to the canonical template name when
+the value assigned to |CitationClass= is different from the canonical template name.  |CitationClass= values are
+used as class attributes in the <cite> tag that encloses the citation so these names may not contain spaces while
+the canonical template name may.  These names are used in warning_msg_e and warning_msg_m to create links to the
+template's documentation when an article is displayed in preview mode.
+
+]]
+
+	local citation_class_map_t = {												-- TODO: in Module:Cite/config write a function to use this table 
+		arxiv = 'cite arXiv',													-- as the source for known_templates_t and citation_classes_t
+		['audio-visual'] = 'cite AV media',
+		['AV-media-notes'] = 'cite AV media notes',
+		biorxiv = 'cite bioRxiv',
+		book = 'cite book',
+		citation = 'citation',
+		citeseerx = 'cite CiteSeerX',
+		conference = 'cite conference',
+		document = 'cite document',
+		encyclopaedia = 'cite encyclopedia',
+		episode = 'cite episode',
+		interview = 'cite interview',
+		journal = 'cite journal',
+		magazine = 'cite magazine',
+		mailinglist = 'cite mailing list',
+		map = 'cite map',
+		medrxiv = 'cite medRxiv',
+		news = 'cite news',
+		newsgroup = 'cite newsgroup',
+		podcast = 'cite podcast',
+		pressrelease = 'cite press release',
+		report = 'cite report',
+		serial = 'cite serial',
+		sign = 'cite sign',
+		speech = 'cite speech',
+		ssrn = 'cite SSRN',
+		techreport = 'cite tech report',
+		thesis = 'cite thesis',
+		web = 'cite web',
+		}
 
 
 --[=[-------------------------< E T _ A L _ P A T T E R N S >--------------------------------------------------
@@ -102,85 +204,56 @@ This table provides Lua patterns for the phrase "et al" and variants in name tex
 ]=]
 
 local et_al_patterns = {
-	"[;,]? *[\"']*%f[%a][Ee][Tt]%.? *[Aa][Ll][%.\"']*$",						-- variations on the 'et al' theme
-	"[;,]? *[\"']*%f[%a][Ee][Tt]%.? *[Aa][Ll][Ii][Aa][%.\"']*$",				-- variations on the 'et alia' theme
-	"[;,]? *%f[%a]and [Oo]thers",												-- and alternate to et al.
+	"[;,]? *[\"']*%f[%a][Ee][Tt]%.? *[Aa][Ll][%.;,\"']*$",						-- variations on the 'et al' theme
+	"[;,]? *[\"']*%f[%a][Ee][Tt]%.? *[Aa][Ll][Ii][AaIi][Ee]?[%.;,\"']*$",		-- variations on the 'et alia', 'et alii' and 'et aliae' themes (false positive 'et aliie' unlikely to match)
+	"[;,]? *%f[%a]and [Oo]thers",												-- an alternative to et al.
 	"%[%[ *[Ee][Tt]%.? *[Aa][Ll]%.? *%]%]",										-- a wikilinked form
+	"%(%( *[Ee][Tt]%.? *[Aa][Ll]%.? *%)%)",										-- a double-bracketed form (to counter partial removal of ((...)) syntax)
 	"[%(%[] *[Ee][Tt]%.? *[Aa][Ll]%.? *[%)%]]",									-- a bracketed form
 	}
 
 
---[[--------------------------< E D I T O R _ M A R K U P _ P A T T E R N S >----------------------------------
+--[[--------------------------< P R E S E N T A T I O N >------------------------
 
-This table provides Lua patterns for the phrase "ed" and variants in name text
-(author, editor, etc.). The main module uses these to identify and emit the
-'extra_text_names' message. (It is not the only series of patterns for this message.)
-
-]]
-local editor_markup_patterns = {												-- these patterns match annotations at end of name
-	'%f[%(%[][%(%[]%s*[Ee][Dd][Ss]?%.?%s*[%)%]]?$',								-- (ed) or (eds): leading '(', case insensitive 'ed', optional 's', '.' and/or ')'
-	'[,%.%s]%f[e]eds?%.?$',														-- ed or eds: without '('or ')'; case sensitive (ED could be initials Ed could be name)
-	'%f[%(%[][%(%[]%s*[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%.?%s*[%)%]]?$',				-- (editor) or (editors): leading '(', case insensitive, optional '.' and/or ')'
-	'[,%.%s]%f[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%.?$',								-- editor or editors: without '('or ')'; case insensitive
-		
-																				-- these patterns match annotations at beginning of name
-	'^eds?[%.,;]',																-- ed. or eds.: lower case only, optional 's', requires '.'
-	'^[%(%[]%s*[Ee][Dd][Ss]?%.?%s*[%)%]]',										-- (ed) or (eds): also sqare brackets, case insensitive, optional 's', '.'
-	'^[%(%[]?%s*[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%A',								-- (editor or (editors: also sq brackets, case insensitive, optional brackets, 's'
-	'^[%(%[]?%s*[Ee][Dd][Ii][Tt][Ee][Dd]%A',									-- (edited: also sq brackets, case insensitive, optional brackets
-
-																				-- these patterns match annotations that are the 'name'	
-	'^[Ee][Dd][Ii][Tt][Oo][Rr][Ss]?%.?$',										-- editor or editors; case insensitive
-	}
-
-
---[[--------------------------< P R E S E N T A T I O N >------------------------------------------------------
-
-Fixed presentation markup.  Originally part of citation_config.messages it has been moved into its own, more semantically
-correct place.
+Fixed presentation markup.  Originally part of citation_config.messages it has
+been moved into its own, more semantically correct place.
 
 ]]
 
 local presentation = 
 	{
-	-- Error output
-	-- .error class is specified at https://git.wikimedia.org/blob/mediawiki%2Fcore.git/9553bd02a5595da05c184f7521721fb1b79b3935/skins%2Fcommon%2Fshared.css#L538
 	-- .citation-comment class is specified at Help:CS1_errors#Controlling_error_message_display
-	['hidden-error'] = '<span class="cs1-hidden-error error citation-comment">$1</span>',
-	['visible-error'] = '<span class="cs1-visible-error error citation-comment">$1</span>',
+	['hidden-error'] = '<span class="cs1-hidden-error citation-comment">$1</span>',
+	['visible-error'] = '<span class="cs1-visible-error citation-comment">$1</span>',
 	['hidden-maint'] = '<span class="cs1-maint citation-comment">$1</span>',
 	
-	['accessdate'] = '<span class="reference-accessdate">$1$2</span>',			-- to allow editors to hide accessdate using personal css
+	['accessdate'] = '<span class="reference-accessdate">$1$2</span>',			-- to allow editors to hide accessdate using personal CSS
 
 	['bdi'] = '<bdi$1>$2</bdi>',												-- bidirectional isolation used with |script-title= and the like
 
-	['cite'] = '<cite class="$1">$2</cite>';									-- |ref= not set so no id="..." attribute
-	['cite-id'] = '<cite id="$1" class="$2">$3</cite>';							-- for use when |ref= is set
+	['cite'] = '<cite class="$1">$2</cite>';									-- for use when citation does not have a namelist and |ref= not set so no id="..." attribute
+	['cite-id'] = '<cite id="$1" class="$2">$3</cite>';							-- for use when when |ref= is set or when citation has a namelist
 
-	['format'] = ' <span class="cs1-format">($1)</span>',						-- for |format=, |chapter-format=, etc
-	
-																				-- various access levels, for |access=, |doi-access=, |arxiv=, ...
-																				-- narrow no-break space &#8239; may work better than nowrap css. Or not? browser support?
+	['format'] = ' <span class="cs1-format">($1)</span>',						-- for |format=, |chapter-format=, etc.
+	['interwiki'] = ' <span class="cs1-format">[in $1]</span>',					-- for interwiki-language-linked author, editor, etc
+	['interproj'] = ' <span class="cs1-format">[at $1]</span>',					-- for interwiki-project-linked author, editor, etc (:d: and :s: supported; :w: ignored)
+
+	-- various access levels, for |access=, |doi-access=, |arxiv=, ...
+	-- narrow no-break space &#8239; may work better than nowrap CSS. Or not? Browser support?
 
 	['ext-link-access-signal'] = '<span class="$1" title="$2">$3</span>',		-- external link with appropriate lock icon
-		['free'] = {class='cs1-lock-free', title='Freely accessible'},			-- classes defined in Module:Citation/CS1/styles.css
-		['registration'] = {class='cs1-lock-registration', title='Free registration required'},
-		['limited'] = {class='cs1-lock-limited', title='Free access subject to limited trial, subscription normally required'},
-		['subscription'] = {class='cs1-lock-subscription', title='Paid subscription required'},
+		['free'] = {class='id-lock-free', title='Freely accessible'},			-- classes defined in Module:Citation/CS1/styles.css
+		['registration'] = {class='id-lock-registration', title='Free registration required'},
+		['limited'] = {class='id-lock-limited', title='Free access subject to limited trial, subscription normally required'},
+		['subscription'] = {class='id-lock-subscription', title='Paid subscription required'},
 
 	['interwiki-icon'] = '<span class="$1" title="$2">$3</span>',
 		['class-wikisource'] = 'cs1-ws-icon',
 
 	['italic-title'] = "''$1''",
 
-	['kern-left'] = '<span class="cs1-kern-left">$1</span>$2',					-- spacing to use when title contains leading single or double quote mark
-	['kern-right'] = '$1<span class="cs1-kern-right">$2</span>',				-- spacing to use when title contains trailing single or double quote mark
-
-																				-- these for simple wikilinked titles [["text]], [[text"]] and [["text"]]
-																				-- span wraps entire wikilink
-	['kern-wl-left'] = '<span class="cs1-kern-wl-left">$1</span>',				-- when title contains leading single or double quote mark
-	['kern-wl-right'] = '<span class="cs1-kern-wl-left">$1</span>',				-- when title contains trailing single or double quote mark
-	['kern-wl-both'] = '<span class="cs1-kern-wl-left cs1-kern-wl-right">$1</span>',	-- when title contains leading and trailing single or double quote marks
+	['kern-left'] = '<span class="cs1-kern-left"></span>$1',					-- spacing to use when title contains leading single or double quote mark
+	['kern-right'] = '$1<span class="cs1-kern-right"></span>',					-- spacing to use when title contains trailing single or double quote mark
 
 	['nowrap1'] = '<span class="nowrap">$1</span>',								-- for nowrapping an item: <span ...>yyyy-mm-dd</span>
 	['nowrap2'] = '<span class="nowrap">$1</span> $2',							-- for nowrapping portions of an item: <span ...>dd mmmm</span> yyyy (note white space)
@@ -188,32 +261,38 @@ local presentation =
 	['ocins'] = '<span title="$1" class="Z3988"></span>',
 	
 	['parameter'] = '<code class="cs1-code">&#124;$1=</code>',
- 
-	['ps_cs1'] = '.';															-- cs1 style postscript (terminal) character
-	['ps_cs2'] = '';															-- cs2 style postscript (terminal) character (empty string)
+	
+	['ps_cs1'] = '.';															-- CS1 style postscript (terminal) character
+	['ps_cs2'] = '';															-- CS2 style postscript (terminal) character (empty string)
 
 	['quoted-text'] = '<q>$1</q>',												-- for wrapping |quote= content
 	['quoted-title'] = '"$1"',
 
-	['sep_cs1'] = '.',															-- cs1 element separator
-	['sep_cs2'] = ',',															-- cs2 separator
-	['sep_nl'] = ';',															-- cs1|2 style name-list separator between authors is a semicolon
-	['sep_name'] = ', ',														-- cs1|2 style last/first separator is <comma><space>
+	['sep_cs1'] = '.',															-- CS1 element separator
+	['sep_cs2'] = ',',															-- CS2 separator
+	['sep_nl'] = ';',															-- CS1|2 style name-list separator between names is a semicolon
+	['sep_nl_and'] = ' and ',													-- used as last nl sep when |name-list-style=and and list has 2 items
+	['sep_nl_end'] = '; and ',													-- used as last nl sep when |name-list-style=and and list has 3+ names
+	['sep_name'] = ', ',														-- CS1|2 style last/first separator is <comma><space>
 	['sep_nl_vanc'] = ',',														-- Vancouver style name-list separator between authors is a comma
 	['sep_name_vanc'] = ' ',													-- Vancouver style last/first separator is a space
 
+	['sep_list'] = ', ',														-- used for |language= when list has 3+ items except for last sep which uses sep_list_end
+	['sep_list_pair'] = ' and ',												-- used for |language= when list has 2 items
+	['sep_list_end'] = ', and ',												-- used as last list sep for |language= when list has 3+ items
+	
 	['trans-italic-title'] = "&#91;''$1''&#93;",
-	['trans-quoted-title'] = "&#91;$1&#93;",
+	['trans-quoted-title'] = "&#91;$1&#93;",									-- for |trans-title= and |trans-quote=
 	['vol-bold'] = '$1 <b>$2</b>',												-- sepc, volume; for bold journal cites; for other cites ['vol'] in messages{}
 	}
 
 	
---[[--------------------------< A L I A S E S >----------------------------------------------------------------
+--[[--------------------------< A L I A S E S >---------------------------------
 
 Aliases table for commonly passed parameters.
 
-Parameter names on the right side in the assignements in this table must have been defined in the Whitelist
-before they will be recognized as valid parameter names
+Parameter names on the right side in the assignments in this table must have been
+defined in the Whitelist before they will be recognized as valid parameter names
 
 ]]
 
@@ -223,46 +302,42 @@ local aliases = {
 	['ArchiveDate'] = {'archive-date', 'archivedate'},							-- Used by InternetArchiveBot
 	['ArchiveFormat'] = 'archive-format',
 	['ArchiveURL'] = {'archive-url', 'archiveurl'},								-- Used by InternetArchiveBot
+	['ArticleNumber'] = 'article-number',
 	['ASINTLD'] = 'asin-tld',
 	['At'] = 'at',																-- Used by InternetArchiveBot
-	['Authors'] = {'authors', 'people', 'credits'},
+	['Authors'] = {'people', 'credits'},
 	['BookTitle'] = {'book-title', 'booktitle'},
 	['Cartography'] = 'cartography',
 	['Chapter'] = {'chapter', 'contribution', 'entry', 'article', 'section'},
-	['ChapterFormat'] = {'chapter-format', 'contribution-format', 'entry-format', 'article-format', 'section-format'};
-	['ChapterURL'] = {'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'entry-url', 'article-url', 'section-url', 'sectionurl'},	-- Used by InternetArchiveBot
-	['ChapterUrlAccess'] = {'chapter-url-access', 'contribution-url-access', 'entry-url-access', 'article-url-access', 'section-url-access'},	-- Used by InternetArchiveBot
-	['Class'] = 'class',														-- cite arxiv and arxiv identifiers
+	['ChapterFormat'] = {'chapter-format', 'contribution-format', 'entry-format',
+		'article-format', 'section-format'};
+	['ChapterURL'] = {'chapter-url', 'contribution-url', 'entry-url', 'article-url', 'section-url'},	-- Used by InternetArchiveBot
+	['ChapterUrlAccess'] = {'chapter-url-access', 'contribution-url-access',
+		'entry-url-access', 'article-url-access', 'section-url-access'},		-- Used by InternetArchiveBot
+	['Class'] = 'class',														-- cite arxiv and arxiv identifier
 	['Collaboration'] = 'collaboration',
 	['Conference'] = {'conference', 'event'},
-	['ConferenceFormat'] = {'conference-format', 'event-format'},
-	['ConferenceURL'] = {'conference-url', 'conferenceurl', 'event-url', 'eventurl'},	-- Used by InternetArchiveBot
+	['ConferenceFormat'] = 'conference-format',
+	['ConferenceURL'] = 'conference-url',										-- Used by InternetArchiveBot
 	['Date'] = {'date', 'air-date', 'airdate'},									-- air-date and airdate for cite episode and cite serial only
 	['Degree'] = 'degree',
 	['DF'] = 'df',
-	['DisplayAuthors'] = {'display-authors', 'displayauthors'},
+	['DisplayAuthors'] = {'display-authors', 'display-subjects'},
 	['DisplayContributors'] = 'display-contributors',
-	['DisplayEditors'] = {'display-editors', 'displayeditors'},
+	['DisplayEditors'] = 'display-editors',
 	['DisplayInterviewers'] = 'display-interviewers',
 	['DisplayTranslators'] = 'display-translators',
 	['Docket'] = 'docket',
-	['DoiBroken'] = {'doi-broken', 'doi-broken-date', 'doi-inactive-date'},
+	['DoiBroken'] = 'doi-broken-date',
 	['Edition'] = 'edition',
-	['Editors'] = 'editors',
-	['Embargo'] = 'embargo',
+	['Embargo'] = 'pmc-embargo-date',
 	['Encyclopedia'] = {'encyclopedia', 'encyclopaedia', 'dictionary'},			-- cite encyclopedia only
 	['Episode'] = 'episode',													-- cite serial only TODO: make available to cite episode?
 	['Format'] = 'format',
 	['ID'] = {'id', 'ID'},
-	['IgnoreISBN'] = {'ignore-isbn-error', 'ignoreisbnerror'},
 	['Inset'] = 'inset',
 	['Issue'] = {'issue', 'number'},
 	['Language'] = {'language', 'lang'},
-	['LastAuthorAmp'] = {'last-author-amp', 'lastauthoramp'},
-	['LayDate'] = {'lay-date', 'laydate'},
-	['LayFormat'] = 'lay-format',
-	['LaySource'] = {'lay-source', 'laysource'},
-	['LayURL'] = {'lay-url', 'layurl'},											-- Used by InternetArchiveBot
 	['MailingList'] = {'mailing-list', 'mailinglist'},							-- cite mailing list only
 	['Map'] = 'map',															-- cite map only
 	['MapFormat'] = 'map-format',												-- cite map only
@@ -270,13 +345,13 @@ local aliases = {
 	['MapUrlAccess'] = 'map-url-access',										-- cite map only -- Used by InternetArchiveBot
 	['Minutes'] = 'minutes',
 	['Mode'] = 'mode',
-	['NameListFormat'] = 'name-list-format',
+	['NameListStyle'] = 'name-list-style',
 	['Network'] = 'network',
 	['Newsgroup'] = 'newsgroup',												-- cite newsgroup only
 	['NoPP'] = {'no-pp', 'nopp'},
-	['NoTracking'] = {'template-doc-demo', 'no-cat', 'nocat', 'no-tracking', 'notracking'},
+	['NoTracking'] = {'no-tracking', 'template-doc-demo'},
 	['Number'] = 'number',														-- this case only for cite techreport
-	['OrigYear'] = {'orig-year', 'origyear'},
+	['OrigDate'] = {'orig-date', 'orig-year', 'origyear'},
 	['Others'] = 'others',
 	['Page'] = {'page', 'p'},													-- Used by InternetArchiveBot
 	['Pages'] = {'pages', 'pp'},												-- Used by InternetArchiveBot
@@ -287,33 +362,42 @@ local aliases = {
 	['PublicationPlace'] = {'publication-place', 'publicationplace'},
 	['PublisherName'] = {'publisher', 'institution'},
 	['Quote'] = {'quote', 'quotation'},
+	['QuotePage'] = 'quote-page',
+	['QuotePages'] = 'quote-pages',
 	['Ref'] = 'ref',
 	['Scale'] = 'scale',
-	['ScriptChapter'] = {'script-chapter', 'script-contribution', 'script-entry', 'script-article', 'script-section'},
+	['ScriptChapter'] = {'script-chapter', 'script-contribution', 'script-entry',
+		'script-article', 'script-section'},
+	['ScriptEncyclopedia'] = {'script-encyclopedia', 'script-encyclopaedia'},	-- cite encyclopedia only
 	['ScriptMap'] = 'script-map',
-	['ScriptPeriodical'] = {'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-website', 'script-work'},
+	['ScriptPeriodical'] = {'script-journal', 'script-magazine', 'script-newspaper',
+		'script-periodical', 'script-website', 'script-work'},
+	['ScriptQuote'] = 'script-quote',
 	['ScriptTitle'] = 'script-title',											-- Used by InternetArchiveBot
 	['Season'] = 'season',
 	['Sections'] = 'sections',													-- cite map only
 	['Series'] = {'series', 'version'},
-	['SeriesSeparator'] = 'series-separator',
 	['SeriesLink'] = {'series-link', 'serieslink'},
-	['SeriesNumber'] = {'series-number', 'series-no', 'seriesnumber', 'seriesno'},
+	['SeriesNumber'] = {'series-number', 'series-no'},
 	['Sheet'] = 'sheet',														-- cite map only
 	['Sheets'] = 'sheets',														-- cite map only
 	['Station'] = 'station',
 	['Time'] = 'time',
-	['TimeCaption'] = {'time-caption', 'timecaption'},
+	['TimeCaption'] = 'time-caption',
 	['Title'] = 'title',														-- Used by InternetArchiveBot
-	['TitleLink'] = {'title-link', 'episode-link', 'titlelink', 'episodelink'},	-- Used by InternetArchiveBot
-	['TitleNote'] = 'department',
+	['TitleLink'] = {'title-link', 'episode-link', 'episodelink'},				-- Used by InternetArchiveBot
+	['TitleNote'] = {'title-note', 'department'},
 	['TitleType'] = {'type', 'medium'},
-	['TransChapter'] = {'trans-article', 'trans-chapter', 'trans-contribution', 'trans-entry', 'trans-section'},
+	['TransChapter'] = {'trans-article', 'trans-chapter', 'trans-contribution',
+		'trans-entry', 'trans-section'},
 	['Transcript'] = 'transcript',
 	['TranscriptFormat'] = 'transcript-format',	
-	['TranscriptURL'] = {'transcript-url', 'transcripturl'},					-- Used by InternetArchiveBot
+	['TranscriptURL'] = 'transcript-url',										-- Used by InternetArchiveBot
+	['TransEncyclopedia'] = {'trans-encyclopedia', 'trans-encyclopaedia'},		-- cite encyclopedia only
 	['TransMap'] = 'trans-map',													-- cite map only
-	['TransPeriodical'] = {'trans-journal', 'trans-magazine', 'trans-newspaper', 'trans-periodical', 'trans-website', 'trans-work'},
+	['TransPeriodical'] = {'trans-journal', 'trans-magazine', 'trans-newspaper',
+		'trans-periodical', 'trans-website', 'trans-work'},
+	['TransQuote'] = 'trans-quote',
 	['TransTitle'] = 'trans-title',												-- Used by InternetArchiveBot
 	['URL'] = {'url', 'URL'},													-- Used by InternetArchiveBot
 	['UrlAccess'] = 'url-access',												-- Used by InternetArchiveBot
@@ -324,142 +408,369 @@ local aliases = {
 	['Volume'] = 'volume',
 	['Year'] = 'year',
 
-	['AuthorList-First'] = {"first#", "author-first#", "author#-first", "given#"},
-	['AuthorList-Last'] = {"last#", "author-last#", "author#-last", "author#", "surname#", "subject#", 'host#'},
-	['AuthorList-Link'] = {"author-link#", "author#-link", "authorlink#", "author#link", "subject-link#", "subject#-link", "subjectlink#", "subject#link"},
-	['AuthorList-Mask'] = {"author-mask#", "author#-mask", "authormask#", "author#mask"},
-	
-	['ContributorList-First'] = {'contributor-first#', 'contributor#-first', 'contributor-given#', 'contributor#-given'},
-	['ContributorList-Last'] = {'contributor-last#', 'contributor#-last', 'contributor#', 'contributor-surname#', 'contributor#-surname'},
+	['AuthorList-First'] = {"first#", "author-first#", "author#-first", "author-given#", "author#-given",
+		"subject-first#", "subject#-first", "subject-given#", "subject#-given",
+		"given#"},
+	['AuthorList-Last'] = {"last#", "author-last#", "author#-last", "author-surname#", "author#-surname",
+		"subject-last#", "subject#-last", "subject-surname#", "subject#-surname",
+		"author#", 'host#', "subject#", "surname#"},
+	['AuthorList-Link'] = {"author-link#", "author#-link", "subject-link#",
+		"subject#-link", "authorlink#", "author#link"},
+	['AuthorList-Mask'] = {"author-mask#", "author#-mask", "subject-mask#", "subject#-mask"},
+
+	['ContributorList-First'] = {'contributor-first#', 'contributor#-first',
+		'contributor-given#', 'contributor#-given'},
+	['ContributorList-Last'] = {'contributor-last#', 'contributor#-last',
+		'contributor-surname#', 'contributor#-surname', 'contributor#'},
 	['ContributorList-Link'] = {'contributor-link#', 'contributor#-link'},
 	['ContributorList-Mask'] = {'contributor-mask#', 'contributor#-mask'},
 
 	['EditorList-First'] = {"editor-first#", "editor#-first", "editor-given#", "editor#-given"},
-	['EditorList-Last'] = {"editor-last#", "editor#-last", "editor#", "editor-surname#", "editor#-surname"},
-	['EditorList-Link'] = {"editor-link#", "editor#-link", "editorlink#", "editor#link"},
-	['EditorList-Mask'] = {"editor-mask#", "editor#-mask", "editormask#", "editor#mask"},
+	['EditorList-Last'] = {"editor-last#", "editor#-last", "editor-surname#",
+		"editor#-surname", "editor#"},
+	['EditorList-Link'] = {"editor-link#", "editor#-link"},
+	['EditorList-Mask'] = {"editor-mask#", "editor#-mask"},
 	
-	['InterviewerList-First'] = {'interviewer-first#', 'interviewer#-first'},
-	['InterviewerList-Last'] = {'interviewer-last#', 'interviewer#-last', 'interviewer#'},
+	['InterviewerList-First'] = {'interviewer-first#', 'interviewer#-first',
+		'interviewer-given#', 'interviewer#-given'},
+	['InterviewerList-Last'] = {'interviewer-last#', 'interviewer#-last',
+		'interviewer-surname#', 'interviewer#-surname', 'interviewer#'},
 	['InterviewerList-Link'] = {'interviewer-link#', 'interviewer#-link'},
 	['InterviewerList-Mask'] = {'interviewer-mask#', 'interviewer#-mask'},
 
-	['TranslatorList-First'] = {'translator-first#', 'translator#-first', 'translator-given#', 'translator#-given'},
-	['TranslatorList-Last'] = {'translator-last#', 'translator#-last', 'translator#', 'translator-surname#', 'translator#-surname'},
+	['TranslatorList-First'] = {'translator-first#', 'translator#-first',
+		'translator-given#', 'translator#-given'},
+	['TranslatorList-Last'] = {'translator-last#', 'translator#-last',
+		'translator-surname#', 'translator#-surname', 'translator#'},
 	['TranslatorList-Link'] = {'translator-link#', 'translator#-link'},
 	['TranslatorList-Mask'] = {'translator-mask#', 'translator#-mask'},
 	}
 
 
---[[--------------------------< P U N C T _ S K I P >----------------------------------------------------------
+--[[--------------------------< D E P E N D E N C I E S _ T >--------------------------------------------------
+
+a table of url-holding parameters upon which other parameters are dependent.
+
+this table is used by has_archive_today_url() to suppress parameters that are dependant upon a url-holding parameter
+that has as a value an archive.today (or alternate tld) url.
+
+archive.today is deprecated at en.wiki; see Wikipedia:Requests_for_comment/Archive.is_RFC_5
+
+]]
+
+local url_dependency_map_t = {													-- table of url-holding parameters and the meta-parameters that are dependent on them
+	['url'] = {'AccessDate', 'ArchiveURL', 'Format', 'UrlAccess'},
+	['archive-url'] = {'ArchiveDate', 'ArchiveFormat', 'UrlStatus'},
+	['archiveurl'] = {'ArchiveDate', 'ArchiveFormat', 'UrlStatus'},
+	['article-url'] = {'ChapterFormat', 'ChapterUrlAccess'},
+	['chapter-url'] = {'ChapterFormat', 'ChapterUrlAccess'},
+	['conference-url'] = {'ConferenceFormat'},
+	['contribution-url'] = {'ChapterFormat', 'ChapterUrlAccess'},
+	['entry-url'] = {'ChapterFormat', 'ChapterUrlAccess'},
+	['map-url'] = {'MapFormat', 'MapUrlAccess'},
+	['section-url'] = {'ChapterFormat', 'ChapterUrlAccess'},
+	['transcript-url'] = {'TranscriptFormat'},
+	};
+
+local dependencies_t = {};														-- the table of url-holding parameters and their dependent parameters
+
+for url_param, meta_parameters_t in pairs (url_dependency_map_t) do				-- sequence of meta-parameters (indexes) into <aliases> table
+	local dependant_params_t = {};												-- collection of parameters that are dependent on this <url_param>
+	for _, meta_parameter in ipairs (meta_parameters_t) do						-- for each <aliases> meta-parameter (index)
+		if 'string' == type (aliases[meta_parameter]) then						-- for single parameter names (no aliases), <aliases[meta_parameter]> will be a string
+			table.insert (dependant_params_t, aliases[meta_parameter]);			-- add to this <url_param>'s dependency sequence
+		else
+			for _, alias in ipairs (aliases[meta_parameter]) do					-- for each alias in aliases[meta_parameter] (aliases['AccessDate'] for example)
+				table.insert (dependant_params_t, alias);						-- add to this <url_param>'s dependency sequence
+			end
+		end
+	end
+	dependencies_t[url_param] = dependant_params_t;								-- add the <url_param> and its dependent parameters
+end
+
+
+--[[--------------------------< P U N C T _ S K I P >---------------------------
 
 builds a table of parameter names that the extraneous terminal punctuation check should not check.
 
 ]]
 
-local punct_skip = {};
-
-local meta_params = {															-- table of aliases[] keys (meta parameters); each key has a table of parameter names for a value
+local punct_meta_params = {														-- table of aliases[] keys (meta parameters); each key has a table of parameter names for a value
 	'BookTitle', 'Chapter', 'ScriptChapter', 'ScriptTitle', 'Title', 'TransChapter', 'Transcript', 'TransMap',	'TransTitle',	-- title-holding parameters
 	'AuthorList-Mask', 'ContributorList-Mask', 'EditorList-Mask', 'InterviewerList-Mask', 'TranslatorList-Mask',	-- name-list mask may have name separators
-	'PostScript', 'Quote', 'Ref',																		-- miscellaneous
-	'ArchiveURL', 'ChapterURL', 'ConferenceURL', 'LayURL', 'MapURL', 'TranscriptURL', 'URL',			-- url-holding parameters
+	'PostScript', 'Quote', 'ScriptQuote', 'TransQuote', 'Ref',						-- miscellaneous
+	'ArchiveURL', 'ChapterURL', 'ConferenceURL', 'MapURL', 'TranscriptURL', 'URL',	-- URL-holding parameters
 	}
 
+local url_meta_params = {														-- table of aliases[] keys (meta parameters); each key has a table of parameter names for a value
+	'ArchiveURL', 'ChapterURL', 'ConferenceURL', 'ID', 'MapURL', 'TranscriptURL', 'URL',		-- parameters allowed to hold urls
+	'Page', 'Pages', 'At', 'QuotePage', 'QuotePages',							-- insource locators allowed to hold urls
+	}
+
+local function build_skip_table (skip_t, meta_params)
 	for _, meta_param in ipairs (meta_params) do								-- for each meta parameter key
 		local params = aliases[meta_param];										-- get the parameter or the table of parameters associated with the meta parameter name
 		if 'string' == type (params) then
-			punct_skip[params] = 1;												-- just a single parameter
+			skip_t[params] = 1;													-- just a single parameter
 		else
 			for _, param in ipairs (params) do									-- get the parameter name
-				punct_skip[param] = 1;											-- add the parameter name to the skip table
+				skip_t[param] = 1;												-- add the parameter name to the skip table
 				local count;
 				param, count = param:gsub ('#', '');							-- remove enumerator marker from enumerated parameters
 				if 0 ~= count then												-- if removed
-					punct_skip[param] = 1;										-- add param name without enumerator marker
+					skip_t[param] = 1;											-- add param name without enumerator marker
 				end
 			end
 		end
 	end
+	return skip_t;
+end
+
+local punct_skip = {};
+local url_skip = {};
 
 
---[[--------------------------< S P E C I A L   C A S E   T R A N S L A T I O N S >----------------------------
+--[[--------------------------< U R L _ A C C E S S _ M A P >--------------------------------------------------
 
-This table is primarily here to support internationalization.  Translations in this table are used, for example,
-when an error message, category name, etc is extracted from the English alias key.  There may be other cases where
-this translation table may be useful.
+this table used by the wikipedia library url test, has_twl_url(), which automatically sets a url-access parameter
+to 'subscription' when it discovers a wikipedia library url in any of the url-holding paramters used as keys in
+this table.
+
+translators:  if your wiki uses parameter names for these url-holding parameters and their matching -access parameters,
+add your wiki's parameters to this list.  Leave the English parameters in place.
+
+TODO: is there a better way to do this?
 
 ]]
 
+local url_access_map_t = {
+	['chapter-url'] = 'chapter-url-access',
+	['contribution-url'] = 'contribution-url-access',
+	['entry-url'] = 'entry-url-access',
+	['article-url'] = 'article-url-access',
+	['section-url'] = 'section-url-access',
+	['map-url'] = 'map-url-access',
+	['mapurl'] = 'map-url-access',
+	['url'] = 'url-access',
+	['URL'] = 'url-access'
+	}
+
+
+--[[--------------------------< S I N G L E - L E T T E R   S E C O N D - L E V E L   D O M A I N S >----------
+
+this is a list of tlds that are known to have single-letter second-level domain names.  This list does not include
+ccTLDs which are accepted in is_domain_name().
+
+]]
+
+local single_letter_2nd_lvl_domains_t = {'cash', 'company', 'foundation', 'media', 'org', 'today'};
+
+
+--[[-----------< S P E C I A L   C A S E   T R A N S L A T I O N S >------------
+
+This table is primarily here to support internationalization.  Translations in
+this table are used, for example, when an error message, category name, etc.,
+is extracted from the English alias key.  There may be other cases where
+this translation table may be useful.
+
+]]
+local is_Latn = 'A-Za-z\195\128-\195\150\195\152-\195\182\195\184-\198\191\199\132-\201\143\225\184\128-\225\187\191';
 local special_case_translation = {
+	author = 'author',
+	editor = 'editor',
+	name_list_params = '$1-name-list parameters',								-- $1 is 'author' or 'editor'; used with err_redundant_parameters
+
 	['AuthorList'] = 'authors list',											-- used to assemble maintenance category names
-	['ContributorList'] = 'contributors list',									-- translation of these names plus translation of the base mainenance category names in maint_cats{} table below
+	['ContributorList'] = 'contributors list',									-- translation of these names plus translation of the base maintenance category names in maint_cats{} table below
 	['EditorList'] = 'editors list',											-- must match the names of the actual categories
 	['InterviewerList'] = 'interviewers list',									-- this group or translations used by name_has_ed_markup() and name_has_mult_names()
 	['TranslatorList'] = 'translators list',
 	
-	['authors'] = 'authors',													-- used to assemble maintenance category names
-	['contributors'] = 'contributors',											-- translation of these names plus translation of the base mainenance category names in maint_cats{} table below
-	['editors'] = 'editors',													-- must match the names of the actual categories
-	['interviewers'] = 'interviewers',											-- this group of translations used by get_display_names()
-	['translators'] = 'translators',
-
-																				-- lua patterns to match pseudo title used by Internet Archive bot and others as place holder for unknown |title= value
-	['archived_copy'] = {														-- used with CS1 maint: Archived copy as title
+																				-- Lua patterns to match pseudo-titles used by InternetArchiveBot and others as placeholder for unknown |title= value
+	['archived_copy'] = {														-- used with CS1 maint: Archive[d] copy as title
 		['en'] = '^archived?%s+copy$',											-- for English; translators: keep this because templates imported from en.wiki
-		['local'] = '^archived?%s+copy$',										-- for the local language; lowercase only
+		['local'] = nil,														-- translators: replace ['local'] = nil with lowercase translation only when bots or tools create generic titles in your language
+		},
+
+																				-- Lua patterns to match generic titles; usually created by bots or reference filling tools
+																				-- translators: replace ['local'] = nil with lowercase translation only when bots or tools create generic titles in your language
+		-- generic titles and patterns in this table should be lowercase only
+		-- leave ['local'] nil except when there is a matching generic title in your language
+		-- boolean 'true' for plain-text searches; 'false' for pattern searches
+
+	['generic_titles'] = {
+		['accept'] = {
+			},
+		['reject'] = {
+			{['en'] = {'^wayback%s+machine$', false},				['local'] = nil},
+			{['en'] = {'are you a robot', true},					['local'] = nil},
+			{['en'] = {'hugedomains', true},						['local'] = nil},
+			{['en'] = {'^[%(%[{<]?no +title[>}%]%)]?$', false},		['local'] = nil},
+			{['en'] = {'page not found', true},						['local'] = nil},
+			{['en'] = {'subscribe to read', true},					['local'] = nil},
+			{['en'] = {'^[%(%[{<]?unknown[>}%]%)]?$', false},		['local'] = nil},
+			{['en'] = {'website is for sale', true},				['local'] = nil},
+			{['en'] = {'^404', false},								['local'] = nil},
+			{['en'] = {'error[ %-]404', false},						['local'] = nil},
+			{['en'] = {'internet archive wayback machine', true},	['local'] = nil},
+			{['en'] = {'log into facebook', true},					['local'] = nil},
+			{['en'] = {'login • instagram', true},					['local'] = nil},
+			{['en'] = {'redirecting...', true},						['local'] = nil},
+			{['en'] = {'usurped title', true},						['local'] = nil},	-- added by a GreenC bot
+			{['en'] = {'wayback machine', true},					['local'] = nil},
+			{['en'] = {'webcite query result', true},				['local'] = nil},
+			{['en'] = {'wikiwix\'s cache', true},					['local'] = nil},
+			{['en'] = {'bot verification', true},					['local'] = nil},
+			}
+		},
+
+		-- boolean 'true' for plain-text searches, search string must be lowercase only
+		-- boolean 'false' for pattern searches
+		-- leave ['local'] nil except when there is a matching generic name in your language
+
+	['generic_names'] = {
+		['accept'] = {
+			{['en'] = {'%[%[[^|]*%(author%) *|[^%]]*%]%]', false},				['local'] = nil},
+			},
+		['reject'] = {
+			{['en'] = {'about us', true},										['local'] = nil},
+			{['en'] = {'%f[%a][Aa]dvisor%f[%A]', false},						['local'] = nil},
+			{['en'] = {'allmusic', true},										['local'] = nil},
+			{['en'] = {'%f[%a][Aa]uthor%f[%A]', false},							['local'] = nil},
+			{['en'] = {'^[Bb]ureau$', false},									['local'] = nil},
+			{['en'] = {'business', true},										['local'] = nil},
+			{['en'] = {'cnn', true},											['local'] = nil},
+			{['en'] = {'collaborator', true},									['local'] = nil},
+			{['en'] = {'^[Cc]ompany$', false},									['local'] = nil},
+			{['en'] = {'contributor', true},									['local'] = nil},
+			{['en'] = {'contact us', true},										['local'] = nil},
+			{['en'] = {'correspondent', true},									['local'] = nil},
+			{['en'] = {'^[Dd]esk$', false},										['local'] = nil},
+			{['en'] = {'directory', true},										['local'] = nil},
+			{['en'] = {'%f[%(%[][%(%[]%s*eds?%.?%s*[%)%]]?$', false},			['local'] = nil},
+			{['en'] = {'[,%.%s]%f[e]eds?%.?$', false},							['local'] = nil},
+			{['en'] = {'^eds?[%.,;]', false},									['local'] = nil},
+			{['en'] = {'^[%(%[]%s*[Ee][Dd][Ss]?%.?%s*[%)%]]', false},			['local'] = nil},
+			{['en'] = {'%f[%a][Ee]dited%f[%A]', false},							['local'] = nil},
+			{['en'] = {'%f[%a][Ee]ditors?%f[%A]', false},						['local'] = nil},
+			{['en'] = {'%f[%a][Ee]mail%f[%A]', false},							['local'] = nil},
+			{['en'] = {'facebook', true},										['local'] = nil},
+			{['en'] = {'google', true},											['local'] = nil},
+			{['en'] = {'^[Gg]roup$', false},									['local'] = nil},
+			{['en'] = {'home page', true},										['local'] = nil},
+			{['en'] = {'^[Ii]nc%.?$', false},									['local'] = nil},
+			{['en'] = {'instagram', true},										['local'] = nil},
+			{['en'] = {'interviewer', true},									['local'] = nil},
+			{['en'] = {'^[Ll]imited$', false},									['local'] = nil},
+			{['en'] = {'linkedIn', true},										['local'] = nil},
+			{['en'] = {'^[Nn]ews$', false},										['local'] = nil},
+			{['en'] = {'[Nn]ews[ %-]?[Rr]oom', false},							['local'] = nil},
+			{['en'] = {'pinterest', true},										['local'] = nil},
+			{['en'] = {'policy', true},											['local'] = nil},
+			{['en'] = {'privacy', true},										['local'] = nil},
+			{['en'] = {'reuters', true},										['local'] = nil},
+			{['en'] = {'translator', true},										['local'] = nil},
+			{['en'] = {'tumblr', true},											['local'] = nil},
+			{['en'] = {'twitter', true},										['local'] = nil},
+			{['en'] = {'site name', true},										['local'] = nil},
+			{['en'] = {'statement', true},										['local'] = nil},
+			{['en'] = {'submitted', true},										['local'] = nil},
+			{['en'] = {'super.?user', false},									['local'] = nil},
+			{['en'] = {'%f['..is_Latn..'][Uu]ser%f[^'..is_Latn..']', false},	['local'] = nil},
+			{['en'] = {'updated', true},										['local'] = nil},
+			{['en'] = {'verfasser', true},										['local'] = nil},
+			}
 		}
 	}
 
 
 --[[--------------------------< D A T E _ N A M E S >----------------------------------------------------------
 
-This table of tables lists local language date names and fallback English date names.  The code in Date_validation
-will look first in the local table for valid date names.  If date names are not found in the local table, the code
-will look in the English table.
+This table of tables lists local language date names and fallback English date names.
+The code in Date_validation will look first in the local table for valid date names.
+If date names are not found in the local table, the code will look in the English table.
 
-Because citations can be copied to the local wiki from en.wiki, the English is required when the date-name translation
-function date_name_xlate() is used.
+Because citations can be copied to the local wiki from en.wiki, the English is
+required when the date-name translation function date_name_xlate() is used.
 
-In these tables, season numbering is defined by Extended Date/Time Format (EDTF) Specification (https://www.loc.gov/standards/datetime/)
-which became part of ISO 8601 in 2019.  See '§Sub-year groupings'.  The standard defines various divisions using
-numbers 21-41.  cs1|2 only supports generic seasons.  EDTF does support the distinction between north and south
-hemispere seasons but cs1|2 has no way to make that distinction.
+In these tables, season numbering is defined by
+Extended Date/Time Format (EDTF) Specification (https://www.loc.gov/standards/datetime/)
+which became part of ISO 8601 in 2019.  See '§Sub-year groupings'. The standard
+defines various divisions using numbers 21-41. CS1|2 only supports generic seasons.
+EDTF does support the distinction between north and south hemisphere seasons
+but CS1|2 has no way to make that distinction.
 
 33-36 = Quarter 1, Quarter 2, Quarter 3, Quarter 4 (3 months each)
 
-The standard does not address 'named' dates so, for the purposes of cs1|2, Easter and Christmas are defined here as 98 and 99, which
-should be out of the ISO 8601 (EDTF) range of uses for a while.
+The standard does not address 'named' dates so, for the purposes of CS1|2,
+Easter and Christmas are defined here as 98 and 99, which should be out of the
+ISO 8601 (EDTF) range of uses for a while.
+
+local_date_names_from_mediawiki is a boolean.  When set to:
+	true – module will fetch local month names from MediaWiki for both date_names['local']['long'] and date_names['local']['short']; this will unconditionally overwrite manual translations
+	false – module will *not* fetch local month names from MediaWiki
+
+Caveat lector:  There is no guarantee that MediaWiki will provide short month names.  At your wiki you can test
+the results of the MediaWiki fetch in the debug console with this command (the result is alpha sorted):
+	=mw.dumpObject (p.date_names['local'])
+
+While the module can fetch month names from MediaWiki, it cannot fetch the quarter, season, and named date names
+from MediaWiki.  Those must be translated manually.
 
 ]]
 
+local local_date_names_from_mediawiki = true;									-- when false, manual translation required for date_names['local']['long'] and date_names['local']['short']; overwrites manual translations
+																				-- when true, module fetches long and short month names from MediaWiki
 local date_names = {
-	['en'] = {			-- English
-		['long']	= {['January']=1, ['February']=2, ['March']=3, ['April']=4, ['May']=5, ['June']=6, ['July']=7, ['August']=8, ['September']=9, ['October']=10, ['November']=11, ['December']=12},
-		['short']	= {['Jan']=1, ['Feb']=2, ['Mar']=3, ['Apr']=4, ['May']=5, ['Jun']=6, ['Jul']=7, ['Aug']=8, ['Sep']=9, ['Oct']=10, ['Nov']=11, ['Dec']=12},
-		['quarter'] = {['First Quarter']=33, ['Second Quarter']=34, ['Third Quarter']=35, ['Fourth Quarter']=36},
-		['season']	= {['Winter']=24, ['Spring']=21, ['Summer']=22, ['Fall']=23, ['Autumn']=23},
-		['named']	= {['Easter']=98, ['Christmas']=99},
+	['en'] = {																	-- English
+		['long']	= {['January'] = 1, ['February'] = 2, ['March'] = 3, ['April'] = 4, ['May'] = 5, ['June'] = 6, ['July'] = 7, ['August'] = 8, ['September'] = 9, ['October'] = 10, ['November'] = 11, ['December'] = 12},
+		['short']	= {['Jan'] = 1, ['Feb'] = 2, ['Mar'] = 3, ['Apr'] = 4, ['May'] = 5, ['Jun'] = 6, ['Jul'] = 7, ['Aug'] = 8, ['Sep'] = 9, ['Oct'] = 10, ['Nov'] = 11, ['Dec'] = 12},
+		['quarter'] = {['First Quarter'] = 33, ['Second Quarter'] = 34, ['Third Quarter'] = 35, ['Fourth Quarter'] = 36},
+		['season']	= {['Winter'] = 24, ['Spring'] = 21, ['Summer'] = 22, ['Fall'] = 23, ['Autumn'] = 23},
+		['named']	= {['Easter'] = 98, ['Christmas'] = 99},
 		},
-	['local'] = {		-- replace these English date names with the local language equivalents
-		['long']	= {['January']=1, ['February']=2, ['March']=3, ['April']=4, ['May']=5, ['June']=6, ['July']=7, ['August']=8, ['September']=9, ['October']=10, ['November']=11, ['December']=12},
-		['short']	= {['Jan']=1, ['Feb']=2, ['Mar']=3, ['Apr']=4, ['May']=5, ['Jun']=6, ['Jul']=7, ['Aug']=8, ['Sep']=9, ['Oct']=10, ['Nov']=11, ['Dec']=12},
-		['quarter'] = {['First Quarter']=33, ['Second Quarter']=34, ['Third Quarter']=35, ['Fourth Quarter']=36},
-		['season']	= {['Winter']=24, ['Spring']=21, ['Summer']=22, ['Fall']=23, ['Autumn']=23},
-		['named']	= {['Easter']=98, ['Christmas']=99},
+																				-- when local_date_names_from_mediawiki = false
+	['local'] = {																-- replace these English date names with the local language equivalents
+		['long']	= {['January'] = 1, ['February'] = 2, ['March'] = 3, ['April'] = 4, ['May'] = 5, ['June'] = 6, ['July'] = 7, ['August'] = 8, ['September'] = 9, ['October'] = 10, ['November'] = 11, ['December'] = 12},
+		['short']	= {['Jan'] = 1, ['Feb'] = 2, ['Mar'] = 3, ['Apr'] = 4, ['May'] = 5, ['Jun'] = 6, ['Jul'] = 7, ['Aug'] = 8, ['Sep'] = 9, ['Oct'] = 10, ['Nov'] = 11, ['Dec'] = 12},
+		['quarter'] = {['First Quarter'] = 33, ['Second Quarter'] = 34, ['Third Quarter'] = 35, ['Fourth Quarter'] = 36},
+		['season']	= {['Winter'] = 24, ['Spring'] = 21, ['Summer'] = 22, ['Fall'] = 23, ['Autumn'] = 23},
+		['named']	= {['Easter'] = 98, ['Christmas'] = 99},
 		},
-	['inv_local_l'] = {},														-- used in date reformatting; copy of date_names['local'].long where k/v are inverted: [1]='<local name>' etc
-	['inv_local_s'] = {},														-- used in date reformatting; copy of date_names['local'].short where k/v are inverted: [1]='<local name>' etc
+	['inv_local_long'] = {},													-- used in date reformatting & translation; copy of date_names['local'].long where k/v are inverted: [1]='<local name>' etc.
+	['inv_local_short'] = {},													-- used in date reformatting & translation; copy of date_names['local'].short where k/v are inverted: [1]='<local name>' etc.
+	['inv_local_quarter'] = {},													-- used in date translation; copy of date_names['local'].quarter where k/v are inverted: [1]='<local name>' etc.
+	['inv_local_season'] = {},													-- used in date translation; copy of date_names['local'].season where k/v are inverted: [1]='<local name>' etc.
+	['inv_local_named'] = {},													-- used in date translation; copy of date_names['local'].named where k/v are inverted: [1]='<local name>' etc.
 	['local_digits'] = {['0'] = '0', ['1'] = '1', ['2'] = '2', ['3'] = '3', ['4'] = '4', ['5'] = '5', ['6'] = '6', ['7'] = '7', ['8'] = '8', ['9'] = '9'},	-- used to convert local language digits to Western 0-9
 	['xlate_digits'] = {},
 	}
 
-for name, i in pairs (date_names['local'].long) do								-- this table is ['name'] = i
-	date_names['inv_local_l'][i] = name;										-- invert to get [i] = 'name' for conversions from ymd
+if local_date_names_from_mediawiki then											-- if fetching local month names from MediaWiki is enabled
+	local long_t = {};
+	local short_t = {};
+	for i=1, 12 do																-- loop 12x and 
+		local name = lang_obj:formatDate('F', '2022-' .. i .. '-1');			-- get long month name for each i
+		long_t[name] = i;														-- save it
+		name = lang_obj:formatDate('M', '2022-' .. i .. '-1');					-- get short month name for each i
+		short_t[name] = i;														-- save it
+	end
+	date_names['local']['long'] = long_t;										-- write the long table – overwrites manual translation
+	date_names['local']['short'] = short_t;										-- write the short table – overwrites manual translation
+end
+																				-- create inverted date-name tables for reformatting and/or translation
+for _, invert_t in pairs {{'long', 'inv_local_long'}, {'short', 'inv_local_short'}, {'quarter', 'inv_local_quarter'}, {'season', 'inv_local_season'}, {'named', 'inv_local_named'}} do
+	for name, i in pairs (date_names['local'][invert_t[1]]) do					-- this table is ['name'] = i
+		date_names[invert_t[2]][i] = name;										-- invert to get [i] = 'name' for conversions from ymd
+	end
 end
 
-for name, i in pairs (date_names['local'].short) do								-- this table is ['name'] = i
-	date_names['inv_local_s'][i] = name;										-- invert to get [i] = 'name' for conversions from ymd
+if local_digits_from_mediawiki then												-- if fetching local digits from MediaWiki is enabled
+	local digits_t = {};
+	for i=0, 9 do																-- loop 10x and 
+		digits_t [lang_obj:formatNum (i)] = tostring (i);						-- format the loop indexer as local lang table index and assign loop indexer (a string) as the value
+	end
+	date_names['local_digits'] = digits_t;
 end
 
 for ld, ed in pairs (date_names.local_digits) do								-- make a digit translation table for simple date translation from en to local language using local_digits table
@@ -467,30 +778,37 @@ for ld, ed in pairs (date_names.local_digits) do								-- make a digit translat
 end
 
 local df_template_patterns = {													-- table of redirects to {{Use dmy dates}} and {{Use mdy dates}}
-	'{{ *[Uu]se (dmy) dates *[|}]',		-- 915k									-- sorted by approximate transclusion count
-	'{{ *[Uu]se *(mdy) *dates *[|}]',	-- 161k
-	'{{ *[Uu]se (DMY) dates *[|}]',		-- 2929
-	'{{ *[Uu]se *(dmy) *[|}]',			-- 250 + 34
-	'{{ *([Dd]my) *[|}]',				-- 272
-	'{{ *[Uu]se (MDY) dates *[|}]',		-- 173
-	'{{ *[Uu]se *(mdy) *[|}]',			-- 59 + 12
-	'{{ *([Mm]dy) *[|}]',				-- 9
-	'{{ *[Uu]se (MDY) *[|}]',			-- 3
-	'{{ *([Dd]MY) *[|}]',				-- 2
+	'{{ *[Uu]se +(dmy) +dates *[|}]',	-- 1159k								-- sorted by approximate transclusion count
+	'{{ *[Uu]se +(mdy) +dates *[|}]',	-- 212k
+	'{{ *[Uu]se +(MDY) +dates *[|}]',	-- 788
+	'{{ *[Uu]se +(DMY) +dates *[|}]',	-- 343
+	'{{ *([Mm]dy) *[|}]',				-- 176
+	'{{ *[Uu]se *(dmy) *[|}]',			-- 156 + 18
+	'{{ *[Uu]se *(mdy) *[|}]',			-- 149 + 11
+	'{{ *([Dd]my) *[|}]',				-- 56
+	'{{ *[Uu]se +(MDY) *[|}]',			-- 5
+	'{{ *([Dd]MY) *[|}]',				-- 3
+	'{{ *[Uu]se(mdy)dates *[|}]',		-- 1
+	'{{ *[Uu]se +(DMY) *[|}]',			-- 0
 	'{{ *([Mm]DY) *[|}]',				-- 0
---	'{{ *[Uu]se(mdy) *[|}]',
---	'{{ *[Uu]se(mdy)dates *[|}]',
---	'{{ *[Uu]se(dmy) *[|}]',
 	}
 
+local title_object = mw.title.getCurrentTitle();
+local content;																	-- done this way  so that unused templates appear in unused-template-reports; self-transcluded makes them look like they are used
+if 10 ~= title_object.namespace then											-- all namespaces except Template
+	content = title_object:getContent() or '';									-- get the content of the article or ''; new pages edited w/ve do not have 'content' until saved; ve does not preview; phab:T221625
+end
+
 local function get_date_format ()
-	local content = mw.title.getCurrentTitle():getContent() or '';				-- get the content of the article or ''; new pages edited w/ve do not have 'content' until saved; ve does not preview; phab:T221625
+	if not content then															-- nil content when we're in template
+		return nil;																-- auto-formatting does not work in Template space so don't set global_df
+	end
 	for _, pattern in ipairs (df_template_patterns) do							-- loop through the patterns looking for {{Use dmy dates}} or {{Use mdy dates}} or any of their redirects
 		local start, _, match = content:find(pattern);							-- match is the three letters indicating desired date format
 		if match then
-			content = content:match ('%b{}', start);							-- get the whole template
-			if content:match ('| *cs1%-dates *= *[lsy][sy]?') then				-- look for |cs1-dates=publication date length access-/archive-date length
-				return match:lower() .. '-' .. content:match ('| *cs1%-dates *= *([lsy][sy]?)');
+			local use_dates_template = content:match ('%b{}', start);			-- get the whole template
+			if use_dates_template:match ('| *cs1%-dates *= *[lsy][sy]?') then	-- look for |cs1-dates=publication date length access-/archive-date length
+				return match:lower() .. '-' .. use_dates_template:match ('| *cs1%-dates *= *([lsy][sy]?)');
 			else
 				return match:lower() .. '-all';									-- no |cs1-dates= k/v pair; return value appropriate for use in |df=
 			end
@@ -498,10 +816,10 @@ local function get_date_format ()
 	end
 end
 
-local global_df = get_date_format ();
+local global_df;																-- TODO: add this to <global_cs1_config_t>?
 
 
---[[--------------------------< V O L U M E ,  I S S U E ,  P A G E S >----------------------------------------
+--[[-----------------< V O L U M E ,  I S S U E ,  P A G E S >------------------
 
 These tables hold cite class values (from the template invocation) and identify those templates that support
 |volume=, |issue=, and |page(s)= parameters.  Cite conference and cite map require further qualification which
@@ -513,57 +831,107 @@ local templates_using_volume = {'citation', 'audio-visual', 'book', 'conference'
 local templates_using_issue = {'citation', 'conference', 'episode', 'interview', 'journal', 'magazine', 'map', 'news', 'podcast'}
 local templates_not_using_page = {'audio-visual', 'episode', 'mailinglist', 'newsgroup', 'podcast', 'serial', 'sign', 'speech'}
 
+--[[
 
---[[--------------------------< K E Y W O R D S >--------------------------------------------------------------
-
-These tables hold keywords for those parameters that have defined sets of acceptible keywords.
+These tables control when it is appropriate for {{citation}} to render |volume= and/or |issue=.  The parameter
+names in the tables constrain {{citation}} so that its renderings match the renderings of the equivalent cs1
+templates.  For example, {{cite web}} does not support |volume= so the equivalent {{citation |website=...}} must
+not support |volume=.
 
 ]]
 
---[[--------------------------< K E Y W O R D S   T A B L E >--------------------------------------------------
+local citation_no_volume_t = {													-- {{citation}} does not render |volume= when these parameters are used
+	'website', 'mailinglist', 'script-website',
+	}
+local citation_issue_t = {														-- {{citation}} may render |issue= when these parameters are used
+	'journal', 'magazine', 'newspaper', 'periodical', 'work',
+	'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-work',
+	}
 
-this is a list of keywords; each key in the list is associated with a table of synonymous keywords possibly from
-different languages.
+--[[
 
-for i18n: add local-language keywords to value table; do not change the key.  For example, adding the German keyword 'ja':
+Patterns for finding extra text in |volume=, |issue=, |page=, |pages=
+
+]]
+
+local vol_iss_pg_patterns = {
+	good_ppattern = '^P[^%.PpGg]',												-- OK to begin with uppercase P: P7 (page 7 of section P), but not p123 (page 123); TODO: this allows 'Pages' which it should not
+	bad_ppatterns = {															-- patterns for |page= and |pages=
+		'^[Pp][PpGg]?%.?[ %d]',
+		'^[Pp][Pp]?%.&nbsp;',													-- from {{p.}} and {{pp.}} templates
+		'^[Pp]ages?',
+		'^[Pp]gs.?',
+		},
+	vi_patterns_t = {															-- combined to catch volume-like text in |issue= and issue-like text in |volume=
+		'^volumes?',															-- volume-like text
+		'^vols?[%.:=]?',
+
+		'^issues?',																--issue-like text
+		'^iss[%.:=]?',
+		'^numbers?',
+		'^nos?%A',																-- don't match 'november' or 'nostradamus'
+		'^nr[%.:=]?',
+		'^n[%.:= ]',															-- might be a valid issue without separator (space char is sep char here)
+		'^n°',																	-- 'n' with degree sign (U+00B0)
+		'^№',																	-- precomposed unicode numero character (U+2116)
+		},
+	}
+
+--[[--------------------------< K E Y W O R D S >-------------------------------
+
+These tables hold keywords for those parameters that have defined sets of acceptable keywords.
+
+]]
+
+--[[-------------------< K E Y W O R D S   T A B L E >--------------------------
+
+this is a list of keywords; each key in the list is associated with a table of
+synonymous keywords possibly from different languages.
+
+for I18N: add local-language keywords to value table; do not change the key.
+For example, adding the German keyword 'ja':
 	['affirmative'] = {'yes', 'true', 'y', 'ja'},
 
-Because cs1|2 templates from en.wiki articles are often copied to other local wikis, it is recommended that the English
-keywords remain in these tables.
+Because CS1|2 templates from en.wiki articles are often copied to other local wikis,
+it is recommended that the English keywords remain in these tables.
 
 ]]
 
 local keywords = {
-	['affirmative'] = {'yes', 'true', 'y'},										-- ignore-isbn-error, last-author-amp, no-tracking, nopp -- Used by InternetArchiveBot
-	['afterword'] = {'afterword'},												-- contribution
-	['bot: unknown'] = {'bot: unknown'},										-- url-status -- Used by InternetArchiveBot
-	['cs1'] = {'cs1'},															-- mode
-	['cs2'] = {'cs2'},															-- mode
-	['dead'] = {'dead'},														-- url-status -- Used by InternetArchiveBot
-	['dmy'] = {'dmy'},															-- df
-	['dmy-all'] = {'dmy-all'},													-- df
-	['foreword'] = {'foreword'},												-- contribution
-	['free'] = {'free'},														-- url-access -- Used by InternetArchiveBot
-	['introduction'] = {'introduction'},										-- contribution
-	['limited'] = {'limited'},													-- url-access -- Used by InternetArchiveBot
-	['live'] = {'live'},														-- url-status -- Used by InternetArchiveBot
-	['mdy'] = {'mdy'},															-- df
-	['mdy-all'] = {'mdy-all'},													-- df
-	['none'] = {'none'},														-- postscript, ref, title, type -- Used by InternetArchiveBot
-	['preface'] = {'preface'},													-- contribution
-	['registration'] = {'registration'},										-- url-access -- Used by InternetArchiveBot
-	['subscription'] = {'subscription'},										-- url-access -- Used by InternetArchiveBot
-	['unfit'] = {'unfit'},														-- url-status -- Used by InternetArchiveBot
-	['usurped'] = {'usurped'},													-- url-status -- Used by InternetArchiveBot
-	['vanc'] = {'vanc'},														-- name-list-format
-	['ymd'] = {'ymd'},															-- df
-	['ymd-all'] = {'ymd-all'},													-- df
---	['yMd'] = {'yMd'},															-- df; not supported at en.wiki
---	['yMd-all'] = {'yMd-all'},													-- df; not supported at en.wiki
+	['amp'] = {'&', 'amp', 'ampersand'}, 										-- |name-list-style=
+	['and'] = {'and', 'serial'},												-- |name-list-style=
+	['affirmative'] = {'yes', 'true', 'y'},										-- |no-tracking=, |no-pp= -- Used by InternetArchiveBot
+	['afterword'] = {'afterword'},												-- |contribution=
+	['bot: unknown'] = {'bot: unknown'},										-- |url-status= -- Used by InternetArchiveBot
+	['cs1'] = {'cs1'},															-- |mode=
+	['cs2'] = {'cs2'},															-- |mode=
+	['dead'] = {'dead', 'deviated'},											-- |url-status= -- Used by InternetArchiveBot
+	['dmy'] = {'dmy'},															-- |df=
+	['dmy-all'] = {'dmy-all'},													-- |df=
+	['foreword'] = {'foreword'},												-- |contribution=
+	['free'] = {'free'},														-- |<id>-access= -- Used by InternetArchiveBot
+	['harv'] = {'harv'},														-- |ref=; this no longer supported; is_valid_parameter_value() called with <invert> = true
+	['introduction'] = {'introduction'},										-- |contribution=
+	['limited'] = {'limited'},													-- |url-access= -- Used by InternetArchiveBot
+	['live'] = {'live'},														-- |url-status= -- Used by InternetArchiveBot
+	['mdy'] = {'mdy'},															-- |df=
+	['mdy-all'] = {'mdy-all'},													-- |df=
+	['none'] = {'none'},														-- |postscript=, |ref=, |title=, |type= -- Used by InternetArchiveBot
+	['off'] = {'off'},															-- |title= (potentially also: |title-link=, |postscript=, |ref=, |type=)
+	['preface'] = {'preface'},													-- |contribution=
+	['registration'] = {'registration'},										-- |url-access= -- Used by InternetArchiveBot
+	['subscription'] = {'subscription'},										-- |url-access= -- Used by InternetArchiveBot
+	['unfit'] = {'unfit'},														-- |url-status= -- Used by InternetArchiveBot
+	['usurped'] = {'usurped'},													-- |url-status= -- Used by InternetArchiveBot
+	['vanc'] = {'vanc'},														-- |name-list-style=
+	['ymd'] = {'ymd'},															-- |df=
+	['ymd-all'] = {'ymd-all'},													-- |df=
+	--	['yMd'] = {'yMd'},														-- |df=; not supported at en.wiki
+	--	['yMd-all'] = {'yMd-all'},												-- |df=; not supported at en.wiki
 	}
 
 
---[[--------------------------< X L A T E _ K E Y W O R D S >--------------------------------------------------
+--[[------------------------< X L A T E _ K E Y W O R D S >---------------------
 
 this function builds a list, keywords_xlate{}, of the keywords found in keywords{} where the values from keywords{}
 become the keys in keywords_xlate{} and the keys from keywords{} become the values in keywords_xlate{}:
@@ -592,7 +960,7 @@ end
 local keywords_xlate = xlate_keywords ();										-- the list of translated keywords
 
 
---[[--------------------------< M A K E _ K E Y W O R D S _ L I S T >------------------------------------------
+--[[----------------< M A K E _ K E Y W O R D S _ L I S T >---------------------
 
 this function assembles, for parameter-value validation, the list of keywords appropriate to that parameter.
 
@@ -612,15 +980,18 @@ local function make_keywords_list (keywords_lists)
 end
 
 
---[[--------------------------< K E Y W O R D S _ L I S T S >--------------------------------------------------
+--[[----------------< K E Y W O R D S _ L I S T S >-----------------------------
 
-this is a list of lists of valid keywords for the various parameters in [key].  Generally the keys in this table
-are the canonical en.wiki parameter names though some are contrived because of use in multiple differently named
-parameters: ['yes_true_y'], ['id-access'].
+this is a list of lists of valid keywords for the various parameters in [key].
+Generally the keys in this table are the canonical en.wiki parameter names though
+some are contrived because of use in multiple differently named parameters:
+['yes_true_y'], ['id-access'].
 
-The function make_keywords_list() extracts the individual keywords from the appropriate list in keywords{}.
+The function make_keywords_list() extracts the individual keywords from the
+appropriate list in keywords{}.
 
-The lists in this table are used to validate the keyword assignment for the parameters named in this table's keys.
+The lists in this table are used to validate the keyword assignment for the
+parameters named in this table's keys.
 
 ]]
 
@@ -628,19 +999,90 @@ local keywords_lists = {
 	['yes_true_y'] = make_keywords_list ({keywords.affirmative}),
 	['contribution'] = make_keywords_list ({keywords.afterword, keywords.foreword, keywords.introduction, keywords.preface}),
 	['df'] = make_keywords_list ({keywords.dmy, keywords['dmy-all'], keywords.mdy, keywords['mdy-all'], keywords.ymd, keywords['ymd-all']}),
---	['df'] = make_keywords_list ({keywords.dmy, keywords['dmy-all'], keywords.mdy, keywords['mdy-all'], keywords.ymd, keywords['ymd-all'], keywords.yMd, keywords['yMd-all']}),	-- not supported at en.wiki
+	--	['df'] = make_keywords_list ({keywords.dmy, keywords['dmy-all'], keywords.mdy, keywords['mdy-all'], keywords.ymd, keywords['ymd-all'], keywords.yMd, keywords['yMd-all']}),	-- not supported at en.wiki
 	['mode'] = make_keywords_list ({keywords.cs1, keywords.cs2}),
-	['name-list-format'] = make_keywords_list ({keywords.vanc}),
+	['name-list-style'] = make_keywords_list ({keywords.amp, keywords['and'], keywords.vanc}),
+	['ref'] = make_keywords_list ({keywords.harv}),								-- inverted check; |ref=harv no longer supported
 	['url-access'] = make_keywords_list ({keywords.subscription, keywords.limited, keywords.registration}),
 	['url-status'] = make_keywords_list ({keywords.dead, keywords.live, keywords.unfit, keywords.usurped, keywords['bot: unknown']}),
 	['id-access'] = make_keywords_list ({keywords.free}),
 	}
 
 
---[[--------------------------< S T R I P M A R K E R S >------------------------------------------------------
+--[[--------------------------< C S 1 _ C O N F I G _ G E T >--------------------------------------------------
 
-Common pattern definition location for stripmarkers so that we don't have to go hunting for them if (when)
-MediaWiki changes their form.
+fetch and validate values from {{cs1 config}} template to fill <global_cs1_config_t>
+
+no error messages; when errors are detected, the parameter value from {{cs1 config}} is blanked.
+
+Supports all parameters and aliases associated with the metaparameters: DisplayAuthors, DisplayContributors,
+DisplayEditors, DisplayInterviewers, DisplayTranslators, NameListStyle, and Mode.  The DisplayWhatever metaparameters
+accept numeric values only (|display-authors=etal and the like is not supported).
+
+]]
+
+local global_cs1_config_t = {};													-- TODO: add value returned from get_date_format() to this table?
+
+local function get_cs1_config ()
+	if not content then															-- nil content when we're in template
+		return nil;																-- auto-formatting does not work in Template space so don't set global_df
+	end
+
+	local start = content:find('{{ *[Cc][Ss]1 config *[|}]');					-- <start> is offset into <content> when {{cs1 config}} found; nil else
+	if start then
+		local cs1_config_template = content:match ('%b{}', start);				-- get the whole template
+
+		if not cs1_config_template then
+			return nil;
+		end
+
+		local params_t = mw.text.split (cs1_config_template:gsub ('^{{%s*', ''):gsub ('%s*}}$', ''), '%s*|%s*');	-- remove '{{' and '}}'; make a sequence of parameter/value pairs (split on the pipe)
+		table.remove (params_t, 1);												-- remove the template name because it isn't a parameter/value pair
+
+		local config_meta_params_t = {'DisplayAuthors', 'DisplayContributors', 'DisplayEditors', 'DisplayInterviewers', 'DisplayTranslators', 'NameListStyle', 'Mode'};
+		local meta_param_map_t = {};											-- list of accepted parameter names usable in {{cs1 config}} goes here
+		
+		for _, meta_param in ipairs (config_meta_params_t) do					-- for i18n using <config_meta_params_t>, map template parameter names to their metaparameter equivalents
+			if 'table' == type (aliases[meta_param]) then						-- if <meta_param> is a sequence, 
+				for _, param in ipairs (aliases[meta_param]) do					-- extract its contents
+					meta_param_map_t[param] = meta_param;						-- and add to <meta_param_map_t>
+				end
+			else
+				meta_param_map_t[aliases[meta_param]] = meta_param;				-- not a sequence so just add the parameter to <meta_param_map_t>
+			end
+		end
+
+		local keywords_t = {};													-- map valid keywords to their associate metaparameter; reverse form of <keyword_lists[key] for these metaparameters
+		for _, metaparam_t in ipairs ({{'NameListStyle', 'name-list-style'}, {'Mode', 'mode'}}) do	-- only these metaparameter / keywords_lists key pairs
+			for _, keyword in ipairs (keywords_lists[metaparam_t[2]]) do		-- spin through the list of keywords
+				keywords_t[keyword] = metaparam_t[1];							-- add [keyword] = metaparameter to the map
+			end
+		end
+
+		for _, param in ipairs (params_t) do									-- spin through the {{cs1 config}} parameters and fill <global_cs1_config_t>
+			local k, v = param:match ('([^=]-)%s*=%s*(.+)');					-- <k> is the parameter name; <v> is parameter's assigned value
+			if k then
+				if k:find ('^display') then										-- if <k> is one of the |display-<namelist>= parameters
+					if v:match ('%d+') then										-- the assigned value must be digits; doesn't accept 'etal'
+						global_cs1_config_t[meta_param_map_t[k]]=v;				-- add the display param and its value to globals table
+					end
+				else
+					if keywords_t[v] == meta_param_map_t[k] then				-- keywords_t[v] returns nil or the metaparam name; these must be the same
+						global_cs1_config_t[meta_param_map_t[k]]=v;				-- add the parameter and its value to globals table
+					end
+				end
+			end
+		end
+	end
+end
+
+get_cs1_config ();																-- fill <global_cs1_config_t>
+
+
+--[[---------------------< S T R I P M A R K E R S >----------------------------
+
+Common pattern definition location for stripmarkers so that we don't have to go
+hunting for them if (when) MediaWiki changes their form.
 
 ]]
 
@@ -650,22 +1092,30 @@ local stripmarkers = {
 	}
 
 
---[[--------------------------< I N V I S I B L E _ C H A R A C T E R S >--------------------------------------
+--[[------------< I N V I S I B L E _ C H A R A C T E R S >---------------------
 
-This table holds non-printing or invisible characters indexed either by name or by Unicode group. Values are decimal
-representations of UTF-8 codes.  The table is organized as a table of tables because the lua pairs keyword returns
-table data in an arbitrary order.  Here, we want to process the table from top to bottom because the entries at
-the top of the table are also found in the ranges specified by the entries at the bottom of the table.
+This table holds non-printing or invisible characters indexed either by name or
+by Unicode group. Values are decimal representations of UTF-8 codes.  The table
+is organized as a table of tables because the Lua pairs keyword returns table
+data in an arbitrary order.  Here, we want to process the table from top to bottom
+because the entries at the top of the table are also found in the ranges specified
+by the entries at the bottom of the table.
 
-Also here is a pattern that recognizes stripmarkers that begin and end with the delete characters.  The nowiki
-stripmarker is not an error but some others are because the parameter values that include them become part of the
-template's metadata before stripmarker replacement.
+Also here is a pattern that recognizes stripmarkers that begin and end with the
+delete characters.  The nowiki stripmarker is not an error but some others are
+because the parameter values that include them become part of the template's
+metadata before stripmarker replacement.
 
 ]]
 
+local invisible_defs = {
+	del = '\127',																-- used to distinguish between stripmarker and del char
+	zwj = '\226\128\141',														-- used with capture because zwj may be allowed
+	}
+
 local invisible_chars = {
 	{'replacement', '\239\191\189'},											-- U+FFFD, EF BF BD
-	{'zero width joiner', '\226\128\141'},										-- U+200D, E2 80 8D
+	{'zero width joiner', '('.. invisible_defs.zwj .. ')'},						-- U+200D, E2 80 8D; capture because zwj may be allowed
 	{'zero width space', '\226\128\139'},										-- U+200B, E2 80 8B
 	{'hair space', '\226\128\138'},												-- U+200A, E2 80 8A
 	{'soft hyphen', '\194\173'},												-- U+00AD, C2 AD
@@ -674,18 +1124,20 @@ local invisible_chars = {
 	{'no-break space', '\194\160'},												-- U+00A0 (NBSP), C2 A0
 	{'carriage return', '\013'},												-- U+000D (CR), 0D
 	{'stripmarker', stripmarkers.any},											-- stripmarker; may or may not be an error; capture returns the stripmaker type
-	{'delete', '\127'},															-- U+007F (DEL), 7F; must be done after stripmarker test
+	{'delete', '('.. invisible_defs.del .. ')'},								-- U+007F (DEL), 7F; must be done after stripmarker test; capture to distinguish isolated del chars not part of stripmarker
 	{'C0 control', '[\000-\008\011\012\014-\031]'},								-- U+0000–U+001F (NULL–US), 00–1F (except HT, LF, CR (09, 0A, 0D))
 	{'C1 control', '[\194\128-\194\159]'},										-- U+0080–U+009F (XXX–APC), C2 80 – C2 9F
---	{'Specials', '[\239\191\185-\239\191\191]'},								-- U+FFF9-U+FFFF, EF BF B9 – EF BF BF
---	{'Private use area', '[\238\128\128-\239\163\191]'},						-- U+E000–U+F8FF, EE 80 80 – EF A3 BF
---	{'Supplementary Private Use Area-A', '[\243\176\128\128-\243\191\191\189]'},	-- U+F0000–U+FFFFD, F3 B0 80 80 – F3 BF BF BD
---	{'Supplementary Private Use Area-B', '[\244\128\128\128-\244\143\191\189]'},	-- U+100000–U+10FFFD, F4 80 80 80 – F4 8F BF BD
+	--	{'Specials', '[\239\191\185-\239\191\191]'},								-- U+FFF9-U+FFFF, EF BF B9 – EF BF BF
+	--	{'Private use area', '[\238\128\128-\239\163\191]'},						-- U+E000–U+F8FF, EE 80 80 – EF A3 BF
+	--	{'Supplementary Private Use Area-A', '[\243\176\128\128-\243\191\191\189]'},	-- U+F0000–U+FFFFD, F3 B0 80 80 – F3 BF BF BD
+	--	{'Supplementary Private Use Area-B', '[\244\128\128\128-\244\143\191\189]'},	-- U+100000–U+10FFFD, F4 80 80 80 – F4 8F BF BD
 	}
 
 --[[
-Indic script makes use of zero width joiner as a character modifier so zwj characters must be left in.  This
-pattern covers all of the unicode characters for these languages:
+
+Indic script makes use of zero width joiner as a character modifier so zwj
+characters must be left in.  This pattern covers all of the unicode characters
+for these languages:
 	Devanagari					0900–097F – https://unicode.org/charts/PDF/U0900.pdf
 		Devanagari extended		A8E0–A8FF – https://unicode.org/charts/PDF/UA8E0.pdf
 	Bengali						0980–09FF – https://unicode.org/charts/PDF/U0980.pdf
@@ -702,78 +1154,165 @@ plus the not-necessarily Indic scripts for Sinhala and Burmese:
 		Myanmar extended A		AA60-AA7F - https://unicode.org/charts/PDF/UAA60.pdf
 		Myanmar extended B		A9E0-A9FF - https://unicode.org/charts/PDF/UA9E0.pdf
 the pattern is used by has_invisible_chars() and coins_cleanup()
-TODO: find a better place for this?
+
 ]]
 
 local indic_script = '[\224\164\128-\224\181\191\224\163\160-\224\183\191\225\128\128-\225\130\159\234\167\160-\234\167\191\234\169\160-\234\169\191]';
 
+-- list of emoji that use a zwj character (U+200D) to combine with another emoji
+-- from: https://unicode.org/Public/emoji/17.0/emoji-zwj-sequences.txt; version: 17.0; 2025-01-08
+-- table created by: [[:en:Module:Make emoji zwj table]]
+local emoji_t = {																-- indexes are decimal forms of the hex values in U+xxxx
+	[8596] = true,																-- U+2194 ↔ left right arrow
+	[8597] = true,																-- U+2195 ↕ up down arrow
+	[9760] = true,																-- U+2620 ☠ skull and crossbones
+	[9792] = true,																-- U+2640 ♀ female sign
+	[9794] = true,																-- U+2642 ♂ male sign
+	[9877] = true,																-- U+2695 ⚕ staff of aesculapius
+	[9878] = true,																-- U+2696 ⚖ scales
+	[9895] = true,																-- U+26A7 ⚧ male with stroke and male and female sign
+	[9992] = true,																-- U+2708 ✈ airplane
+	[10052] = true,																-- U+2744 ❄ snowflake
+	[10084] = true,																-- U+2764 ❤ heavy black heart
+	[10145] = true,																-- U+27A1 ➡ black rightwards arrow
+	[11035] = true,																-- U+2B1B ⬛ black large square
+	[127752] = true,															-- U+1F308 🌈 rainbow
+	[127787] = true,															-- U+1F32B 🌫 fog
+	[127806] = true,															-- U+1F33E 🌾 ear of rice
+	[127859] = true,															-- U+1F373 🍳 cooking
+	[127868] = true,															-- U+1F37C 🍼 baby bottle
+	[127876] = true,															-- U+1F384 🎄 christmas tree
+	[127891] = true,															-- U+1F393 🎓 graduation cap
+	[127908] = true,															-- U+1F3A4 🎤 microphone
+	[127912] = true,															-- U+1F3A8 🎨 artist palette
+	[127979] = true,															-- U+1F3EB 🏫 school
+	[127981] = true,															-- U+1F3ED 🏭 factory
+	[128048] = true,															-- U+1F430 🐰 rabbit face
+	[128102] = true,															-- U+1F466 👦 boy
+	[128103] = true,															-- U+1F467 👧 girl
+	[128104] = true,															-- U+1F468 👨 man
+	[128105] = true,															-- U+1F469 👩 woman
+	[128139] = true,															-- U+1F48B 💋 kiss mark
+	[128165] = true,															-- U+1F4A5 💥 collision symbol
+	[128168] = true,															-- U+1F4A8 💨 dash symbol
+	[128171] = true,															-- U+1F4AB 💫 dizzy symbol
+	[128187] = true,															-- U+1F4BB 💻 personal computer
+	[128188] = true,															-- U+1F4BC 💼 brief case
+	[128293] = true,															-- U+1F525 🔥 fire
+	[128295] = true,															-- U+1F527 🔧 wrench
+	[128300] = true,															-- U+1F52C 🔬 microscope
+	[128488] = true,															-- U+1F5E8 🗨 left speech bubble
+	[128640] = true,															-- U+1F680 🚀 rocket
+	[128658] = true,															-- U+1F692 🚒 fire engine
+	[129001] = true,															-- U+1F7E9 🟩 large green square
+	[129003] = true,															-- U+1F7EB 🟫 large brown square
+	[129309] = true,															-- U+1F91D 🤝 handshake
+	[129455] = true,															-- U+1F9AF 🦯 probing cane
+	[129456] = true,															-- U+1F9B0 🦰 emoji component red hair
+	[129457] = true,															-- U+1F9B1 🦱 emoji component curly hair
+	[129458] = true,															-- U+1F9B2 🦲 emoji component bald
+	[129459] = true,															-- U+1F9B3 🦳 emoji component white hair
+	[129466] = true,															-- U+1F9BA 🦺 safety vest
+	[129468] = true,															-- U+1F9BC 🦼 motorized wheelchair
+	[129469] = true,															-- U+1F9BD 🦽 manual wheelchair
+	[129489] = true,															-- U+1F9D1 🧑 adult
+	[129490] = true,															-- U+1F9D2 🧒 child
+	[129648] = true,															-- U+1FA70 🩰 ballet shoes
+	[129657] = true,															-- U+1FA79 🩹 adhesive bandage
+	[129775] = true,															-- U+1FAEF 🫯 fight cloud
+	[129778] = true,															-- U+1FAF2 🫲 leftwards hand
+	}
 
 
-
---[[--------------------------< L A N G U A G E   S U P P O R T >----------------------------------------------
+--[[----------------------< L A N G U A G E   S U P P O R T >-------------------
 
 These tables and constants support various language-specific functionality.
 
 ]]
 
-local this_wiki_code = mw.getContentLanguage():getCode();						-- get this wiki's language code
-	if string.match (mw.site.server, 'wikidata') then
-		this_wiki_code = mw.getCurrentFrame():preprocess('{{int:lang}}');		-- on wikidata so use interface language setting instead
+--local this_wiki_code = mw.getContentLanguage():getCode();						-- get this wiki's language code
+local this_wiki_code = lang_obj:getCode();										-- get this wiki's language code
+if string.match (mw.site.server, 'wikidata') then
+		this_wiki_code = mw.getCurrentFrame():callParserFunction('int', {'lang'}); -- on Wikidata so use interface language setting instead
 	end
 
-local local_lang_cat_enable = false;											-- set to true to categorize pages where |language=<local wiki's language>
+local mw_languages_by_tag_t = mw.language.fetchLanguageNames (this_wiki_code, 'all');	-- get a table of language tag/name pairs known to Wikimedia; used for interwiki tests
+local mw_languages_by_name_t = {};
+	for k, v in pairs (mw_languages_by_tag_t) do								-- build a 'reversed' table name/tag language pairs know to MediaWiki; used for |language=
+		v = mw.ustring.lower (v);												-- lowercase for tag fetch; get name's proper case from mw_languages_by_tag_t[<tag>]
+		if mw_languages_by_name_t[v] then										-- when name already in the table
+			if 2 == #k or 3 == #k then											-- if tag does not have subtags
+				mw_languages_by_name_t[v] = k;									-- prefer the shortest tag for this name
+			end
+		else																	-- here when name not in the table
+			mw_languages_by_name_t[v] = k;										-- so add name and matching tag
+		end
+	end
+
+local inter_wiki_map = {};														-- map of interwiki prefixes that are language-code prefixes
+	for k, v in pairs (mw.site.interwikiMap ('local')) do						-- spin through the base interwiki map (limited to local)
+		if mw_languages_by_tag_t[v["prefix"]] then								-- if the prefix matches a known language tag
+			inter_wiki_map[v["prefix"]] = true;									-- add it to our local map
+		end
+	end
 
 
---[[--------------------------< S C R I P T _ L A N G _ C O D E S >--------------------------------------------
+--[[--------------------< S C R I P T _ L A N G _ C O D E S >-------------------
 
-This table is used to hold ISO 639-1 two-character and ISO 639-3 three-character language codes that apply only
-to |script-title= and |script-chapter=
+This table is used to hold ISO 639-1 two-character and ISO 639-3 three-character
+language codes that apply only to |script-title= and |script-chapter=
 
 ]]
 
 local script_lang_codes = {
-	'am', 'ar', 'be', 'bg', 'bn', 'bo', 'bs', 'dv', 'dz', 'el', 'fa',
-	'gu', 'he', 'hi', 'hy', 'ja', 'ka', 'kk', 'km', 'kn', 'ko', 'ku',
-	'lo', 'mk', 'ml', 'mn', 'mr', 'my', 'ne', 'or', 'ota', 'ps', 'ru',
-	'sd', 'si', 'sr', 'ta', 'tg', 'th', 'ug', 'uk', 'ur', 'uz', 'yi', 'zh'
+	'ab', 'am', 'ar', 'as', 'az', 'be', 'bg', 'bn', 'bo', 'bs', 'ce', 'chr',
+	'cu', 'dv', 'dz', 'el', 'fa', 'grc', 'gu', 'he', 'hi', 'hy', 'ja', 'ka',
+	'kaa', 'kk', 'km', 'kn', 'ko', 'ku', 'ky', 'lo', 'mk', 'ml', 'mn', 'mni',
+	'mr', 'my', 'ne', 'or', 'ota', 'pa', 'ps', 'ru', 'sd', 'si', 'sr', 'syc',
+	'ta', 'te', 'tg', 'th', 'ti', 'tkr', 'tt', 'ug', 'uk', 'ur', 'uz', 'yi',
+	'yue', 'zh', 'zgh'
 	};
 
 
---[[--------------------------< L A N G U A G E   R E M A P P I N G >------------------------------------------
+--[[---------------< L A N G U A G E   R E M A P P I N G >----------------------
 
 These tables hold language information that is different (correct) from MediaWiki's definitions
 
-For each ['code'] = 'language name' in lang_code_remap{} there must be a matching ['language name'] = {'language name', 'code'} in lang_name_remap{}
+For each ['<tag>'] = 'language name' in lang_code_remap{} there must be a matching ['language name'] = {'language name', '<tag>'} in lang_name_remap{}
 
-lang_code_remap{}:
-	key is always lowercase ISO 639-1, -2, -3 language code or a valid lowercase IETF language tag
-	value is properly spelled and capitalized language name associated with key
-	only one language name per key;
+lang_tag_remap{}:
+	key is always lowercase ISO 639-1, -2, -3 language tag or a valid lowercase IETF language tag
+	value is properly spelled and capitalized language name associated with <tag>
+	only one language name per <tag>;
 	key/value pair must have matching entry in lang_name_remap{}
 
 lang_name_remap{}:
 	key is always lowercase language name
-	value is a table the holds correctly spelled and capitalized language name [1] and associated code [2] (code must match a code key in lang_code_remap{})
-	may have multiple keys referring to a common preferred name and code; For example:
+	value is a table the holds correctly spelled and capitalized language name [1] and associated tag [2] (tag must match a tag key in lang_tag_remap{})
+	may have multiple keys referring to a common preferred name and tag; For example:
 		['kolsch'] and ['kölsch'] both refer to 'Kölsch' and 'ksh'
 
 ]]
 
-local lang_code_remap = {														-- used for |language= and |script-title= / |script-chapter=
+local lang_tag_remap = {														-- used for |language= and |script-title= / |script-chapter=
 	['als'] = 'Tosk Albanian',													-- MediaWiki returns Alemannisch 
 	['bh'] = 'Bihari',															-- MediaWiki uses 'bh' as a subdomain name for Bhojpuri Wikipedia: bh.wikipedia.org
 	['bla'] = 'Blackfoot',														-- MediaWiki/IANA/ISO 639: Siksika; use en.wiki preferred name
 	['bn'] = 'Bengali',															-- MediaWiki returns Bangla
 	['ca-valencia'] = 'Valencian',												-- IETF variant of Catalan
-	['crh'] = 'Crimean Tatar',													-- synonymous with Crimean Turkish (return value from {{#language:crh|en}})
+	['fkv'] = 'Kven',															-- MediaWiki returns Kvensk
+	['gsw'] = 'Swiss German',
 	['ilo'] = 'Ilocano',														-- MediaWiki/IANA/ISO 639: Iloko; use en.wiki preferred name
 	['ksh'] = 'Kölsch',															-- MediaWiki: Colognian; use IANA/ISO 639 preferred name
 	['ksh-x-colog'] = 'Colognian',												-- override MediaWiki ksh; no IANA/ISO 639 code for Colognian; IETF private code created at Module:Lang/data
 	['mis-x-ripuar'] = 'Ripuarian',												-- override MediaWiki ksh; no IANA/ISO 639 code for Ripuarian; IETF private code created at Module:Lang/data
 	['nan-tw'] = 'Taiwanese Hokkien',											-- make room for MediaWiki/IANA/ISO 639 nan: Min Nan Chinese and support en.wiki preferred name
+	['sr-ec'] = 'Serbian (Cyrillic script)',									-- MediaWiki returns српски (ћирилица)
+	['sr-el'] = 'Serbian (Latin script)',										-- MediaWiki returns srpski (latinica)
 	}
 
-local lang_name_remap = {														-- used for |language=
+local lang_name_remap = {														-- used for |language=; names require proper capitalization; tags must be lowercase
+	['alemannic'] = {'Swiss German', 'gsw'},									-- ISO 639-2, -3 alternate for Swiss German; MediaWiki mediawiki returns Alemannic for gsw; en.wiki preferred name
 	['alemannisch'] = {'Swiss German', 'gsw'},									-- not an ISO or IANA language name; MediaWiki uses 'als' as a subdomain name for Alemannic Wikipedia: als.wikipedia.org
 	['bangla'] = {'Bengali', 'bn'},												-- MediaWiki returns Bangla (the endonym) but we want Bengali (the exonym); here we remap
 	['bengali'] = {'Bengali', 'bn'},											-- MediaWiki doesn't use exonym so here we provide correct language name and 639-1 code
@@ -781,70 +1320,44 @@ local lang_name_remap = {														-- used for |language=
 	['bihari'] = {'Bihari', 'bh'},												-- MediaWiki replaces 'Bihari' with 'Bhojpuri' so 'Bihari' cannot be found
 	['blackfoot'] = {'Blackfoot', 'bla'},										-- MediaWiki/IANA/ISO 639: Siksika; use en.wiki preferred name
 	['colognian'] = {'Colognian', 'ksh-x-colog'},								-- MediaWiki preferred name for ksh
-	['crimean tatar'] = {'Crimean Tatar', 'crh'},								-- MediaWiki uses 'crh' as a subdomain name for Crimean Tatar Wikipedia: crh.wikipedia.org
 	['ilocano'] = {'Ilocano', 'ilo'},											-- MediaWiki/IANA/ISO 639: Iloko; use en.wiki preferred name
 	['kolsch'] = {'Kölsch', 'ksh'},												-- use IANA/ISO 639 preferred name (use non-diacritical o instead of umlaut ö)
 	['kölsch'] = {'Kölsch', 'ksh'},												-- use IANA/ISO 639 preferred name
+	['kven'] = {'Kven', 'fkv'},													-- Unicode CLDR have decided not to support English language name for these two...
+	['kvensk'] = {'Kven', 'fkv'},												-- ...they say to refer to IANA registry for English names
 	['ripuarian'] = {'Ripuarian', 'mis-x-ripuar'},								-- group of dialects; no code in MediaWiki or in IANA/ISO 639
---	['siksika'] = {'Siksika', 'bla'},											-- MediaWiki/IANA/ISO 639 preferred name: Siksika
-	['taiwanese hokkien'] = {'Taiwanese Hokkien', 'nan-TW'},					-- make room for MediaWiki/IANA/ISO 639 nan: Min Nan Chinese 
+	['serbian (cyrillic script)'] = {'Serbian (Cyrillic script)', 'sr-cyrl'},	-- special case to get correct tag when |language=sr-ec
+	['serbian (latin script)'] = {'Serbian (Latin script)', 'sr-latn'},			-- special case to get correct tag when |language=sr-el
+	['swiss german'] = {'Swiss German', 'gsw'},
+	['taiwanese hokkien'] = {'Taiwanese Hokkien', 'nan-tw'},					-- make room for MediaWiki/IANA/ISO 639 nan: Min Nan Chinese 
 	['tosk albanian'] = {'Tosk Albanian', 'als'},								-- MediaWiki replaces 'Tosk Albanian' with 'Alemannisch' so 'Tosk Albanian' cannot be found
-	['valencian'] = {'Valencian', 'ca'},										-- variant of Catalan; categorizes as Catalan
+	['valencian'] = {'Valencian', 'ca-valencia'},								-- variant of Catalan; categorizes as Valencian
 	}
 
 
---[[--------------------------< M A I N T E N A N C E _ C A T E G O R I E S >----------------------------------
+--[[---------------< P R O P E R T I E S _ C A T E G O R I E S >----------------
 
-Here we name maintenance categories to be used in maintenance messages.
-
-]]
-
-local maint_cats = {
-	['ASIN'] = 'CS1 maint: ASIN uses ISBN',
-	['archived_copy'] = 'CS1 maint: archived copy as title',
-	['authors'] = 'CS1 maint: uses authors parameter',
-	['bot:_unknown'] = 'CS1 maint: BOT: original-url status unknown',
-	['date_format'] = 'CS1 maint: date format',
-	['date_year'] = 'CS1 maint: date and year',
-	['disp_name'] = 'CS1 maint: display-$1',									-- $1 is 'authors', 'contributors', 'editors', 'interviewers', 'translators'; gets value from special_case_translation table
-	['editors'] = 'CS1 maint: uses editors parameter',
-	['embargo'] = 'CS1 maint: PMC embargo expired',
-	['extra_punct'] = 'CS1 maint: extra punctuation',
-	['extra_text'] = 'CS1 maint: extra text',
-	['extra_text_names'] = 'CS1 maint: extra text: $1',							-- $1 is '<name>s list'; gets value from special_case_translation table
-	['ignore_isbn_err'] = 'CS1 maint: ignored ISBN errors',
-	['location'] = 'CS1 maint: location',
-	['mult_names'] = 'CS1 maint: multiple names: $1',							-- $1 is '<name>s list'; gets value from special_case_translation table
-	['numeric_names'] = 'CS1 maint: numeric names: $1',							-- $1 is '<name>s list'; gets value from special_case_translation table
-	['others'] = 'CS1 maint: others',
-	['pmc_format'] = 'CS1 maint: PMC format',
-	['ref_harv'] = 'CS1 maint: ref=harv',
-	['unfit'] = 'CS1 maint: unfit url',
-	['unknown_lang'] = 'CS1 maint: unrecognized language',
-	['untitled'] = 'CS1 maint: untitled periodical',
-	['zbl'] = 'CS1 maint: ZBL',
-	}
-
-
---[[--------------------------< P R O P E R T I E S _ C A T E G O R I E S >------------------------------------
-
-Here we name properties categories
+Properties categories. These are used for investigating qualities of citations.
 
 ]]
 
 local prop_cats = {
-	['foreign_lang_source'] = 'CS1 $1-language sources ($2)',					-- |language= categories; $1 is foreign-language name, $2 is ISO639-1 code
-	['foreign_lang_source_2'] = 'CS1 foreign language sources (ISO 639-2)|$1',	-- |language= category; a cat for ISO639-2 languages; $1 is the ISO 639-2 code used as a sort key
-	['local_lang_source'] = 'CS1 $1-language sources ($2)',						-- |language= categories; $1 is local-language name, $2 is ISO639-1 code; not emitted when local_lang_cat_enable is false
-	['location test'] = 'CS1 location test',
-	['script'] = 'CS1 uses foreign language script',							-- when language specified by |script-title=xx: doesn't have its own category
-	['script_with_name'] = 'CS1 uses $1-language script ($2)',					-- |script-title=xx: has matching category; $1 is language name, $2 is ISO639-1 code
-	['jul_greg_uncertainty'] = 'CS1: Julian–Gregorian uncertainty',				-- probably temporary cat to identify scope of template with dates 1 October 1582 – 1 January 1926
-	['long_vol'] = 'CS1: long volume value',									-- probably temporary cat to identify scope of |volume= values longer than 4 charachters
+	['foreign-lang-source'] = 'CS1 $1-language sources ($2)',					-- |language= categories; $1 is foreign-language name, $2 is ISO639-1 code
+	['foreign-lang-source-2'] = 'CS1 foreign language sources (ISO 639-2)|$1',	-- |language= category; a cat for ISO639-2 languages; $1 is the ISO 639-2 code used as a sort key
+	['interproj-linked-name'] = 'CS1 interproject-linked names|$1',				-- any author, editor, etc that has an interproject link; $1 is interproject tag used as a sort key
+	['interwiki-linked-name'] = 'CS1 interwiki-linked names|$1',				-- any author, editor, etc that has an interwiki link; $1 is interwiki tag used as a sort key; yeilds to interproject
+	['local-lang-source'] = 'CS1 $1-language sources ($2)',						-- |language= categories; $1 is local-language name, $2 is ISO639-1 code; not emitted when local_lang_cat_enable is false
+	['location-test'] = 'CS1 location test',
+	['long-vol'] = 'CS1: long volume value',									-- probably temporary cat to identify scope of |volume= values longer than 4 characters
+	['script'] = 'CS1 uses $1-language script ($2)',							-- |script-title=xx: has matching category; $1 is language name, $2 is language tag
+	['tracked-param'] = 'CS1 tracked parameter: $1',							-- $1 is base (enumerators removed) parameter name
+	['unfit'] = 'CS1: unfit URL',												-- |url-status=unfit or |url-status=usurped; used to be a maint cat
+	['vanc-accept'] = 'CS1:Vancouver names with accept markup',					-- for |vauthors=/|veditors= with accept-as-written markup
+	['year-range-abbreviated'] = 'CS1: abbreviated year range',					-- probably temporary cat to identify scope of |date=, |year= values using YYYY–YY form
 	}
 
 
---[[--------------------------< T I T L E _ T Y P E S >--------------------------------------------------------
+--[[-------------------< T I T L E _ T Y P E S >--------------------------------
 
 Here we map a template's CitationClass to TitleType (default values for |type= parameter)
 
@@ -852,469 +1365,971 @@ Here we map a template's CitationClass to TitleType (default values for |type= p
 
 local title_types = {
 	['AV-media-notes'] = 'Media notes',
+	['document'] = 'Document',
 	['interview'] = 'Interview',
 	['mailinglist'] = 'Mailing list',
 	['map'] = 'Map',
 	['podcast'] = 'Podcast',
 	['pressrelease'] = 'Press release',
 	['report'] = 'Report',
+	['speech'] = 'Speech',
 	['techreport'] = 'Technical report',
 	['thesis'] = 'Thesis',
 	}
 
 
---[[=========================<< E R R O R   M E S S A G I N G >>===============================================
+--[[--------------------------< B U I L D _ K N O W N _ F R E E _ D O I _ R E G I S T R A N T S _ T A B L E >--
+
+build a table of doi registrants known to be free-to-read  In a doi, the registrant ID is the series of digits
+between the '10.' and the first '/': in doi 10.1100/sommat, 1100 is the registrant ID
+
+see §3.2.2 DOI prefix of the Doi Handbook p. 43
+https://www.doi.org/doi-handbook/DOI_Handbook_Final.pdf#page=43
 
 ]]
 
+local function build_free_doi_registrants_table()
+	local registrants_t = {};
+	for _, v in ipairs ({
+		'1045', '1074', '1096', '1100', '1155', '1186', '1194', '1371', '1613', '1629', '1989', '1999', '2147', '2196', '3285', '3389', '3390', '3906',
+		'3748', '3814', '3847', '3897', '4061', '4089', '4103', '4172', '4175', '4230', '4236', '4239', '4240', '4249', '4251',
+		'4252', '4253', '4254', '4291', '4292', '4329', '4330', '4331', '5086', '5194', '5210', '5306', '5312', '5313', '5314',
+		'5315', '5316', '5317', '5318', '5319', '5320', '5321', '5334', '5402', '5409', '5410', '5411', '5412',
+		'5492', '5493', '5494', '5495', '5496', '5497', '5498', '5499', '5500', '5501', '5527', '5528', '5662',
+		'6064', '6219', '7167', '7217', '7287', '7482', '7490', '7554', '7717', '7759', '7766', '9778', '11131', '11569', '11647',
+		'11648', '12688', '12703', '12715', '12942', '12998', '13105', '14256', '14293', '14303', '15215', '15347', '15412', '15560', '16995',
+		'17645', '18637', '19080', '19173', '20944', '21037', '21105', '21468', '21767', '21425', '22261', '22323', '22459', '24105', '24196', '24966',
+		'26775', '30845', '32545', '35711', '35712', '35713', '35995', '36648', '37126', '37532', '37871', '47128',
+		'47622', '47959', '52437', '52975', '53288', '53347', '54081', '54947', '55667', '55914', '57009', '58647', '59081',
+		}) do
+			registrants_t[v] = true;											-- build a k/v table of known free-to-read doi registrants
+	end
 
---[[--------------------------< E R R O R   M E S S A G E   S U P P L I M E N T S >----------------------------
+	return registrants_t;
+end
+																				-- known free registrants identifiable by the doi suffix incipit
+local extended_registrants_t = {												-- doi suffix incipits are evaluated as lua patterns
+	['1002'] = {'aelm', 'leap', 'loe2%.', 'lol2%.'},							    	-- Advanced Electronic Materials, Learned Publishing, L&O e-Lectures, L&O Letters
+	['1016'] = {'j%.aace', 'j%.aed', 'j%.aiopen', 'j%.animal', 'j%.apsb', 'j%.addicn',	-- AACE Endocrinology and Diabetes, AACE Endocrinology and Diabetes, AI Open, Animal, Acta Pharmaceutica Sinica B, Addiction Neuroscience
+				'j%.abrep', 'j%.gpb', 'j%.heliyon', 'j%.nlp', 'j%.patter', 'j%.proche', -- Addictive Behaviors Reports, Genomics, Proteomics & Bioinformatics after 2015, Heliyon, Natural Language Processing, Patterns, Procedia Chemistry
+				'j%.vgie', 'S1672-0229'},		                                -- VideoGIE, Genomics, Proteomics & Bioinformatics before 2015
+	['1017'] = {'apj%.', 'nlp', 'mdh', 'S15574660'},  							-- Natural Language Processing Journal, Medical History, Asia Pacific Journal
+	['1046'] = {'j%.1365-8711', 'j%.1365-246x'},								-- MNRAS, GJI
+	['1021'] = {'acscentsci', 'acsomega'},                                      -- ACS Central Science, ACS Omega
+	['1093'] = {'mnras', 'mnrasl', 'gji', 'pnasnexus', 'rasti'},				-- MNRAS, MNRAS Letters, GJI, PNAS Nexus, RASTI
+	['1098'] = {'rsbm', 'rsob', 'rsos'},                                        -- Biographical Memoirs of Fellows of the Royal Society, Open Biology, Royal Society Open Science
+	['1099'] = {'acmi', 'mic', '00221287', 'mgen'},                             -- Access Microbiology, Microbiology, Journal of General Microbiology, Microbial Genomics
+	['1107'] = {'S20569890', 'S20522525', 'S16005775', 'S24143146'},            -- Acta Crystallographica E, IUCrJ, Journal of Synchrotron Radiation, IUCrData
+	['1109'] = {'oa', 'oj'},                                                    -- IEEE Open Access..., IEEE Open Journal...
+	['1111'] = {'aogs', 'j%.1365-2966', 'j%.1745-3933', 'j%.1365-246X'},			-- Acta Obstetricia et Gynecologica Scandinavica, MNRAS, MNRAS Letters, GJI
+	['1128'] = {'asmcr', 'jmbe', 'mbio', 'mra', 'spectrum', 'msphere', 'msystems'}, --ASM Case Reports, Journal of Microbiology & Biology Education, mBio, Microbiology Resource Announcements, Microbiology Spectrum, mSphere, mSystems
+	['1136'] = {'bmjopen'},                                                     -- BMJ Open
+	['1140'] = {'epjc'},														-- European Physical Journal C
+	['1192'] = {'bjo'},                                                         -- BJPsych Open
+	['1210'] = {'jendso','jcemcr'},												-- Journal of the Endocrine Society, JCEM Case Reports
+	['1215'] = {'21573689', '21573698'},                                        -- L&O Fluids 
+	['1590'] = {'0102-3306'},                                                   -- Acta Botanica Brasilica
+	['4171'] = {'dm','mag'},												    -- Documenta Mathematica, EMS Magazine
+	['4319'] = {'lo%.', 'lol%.', 'lom%.'},                                         -- L&O, L&O e-Lectures, L&O Methods
+	['5852'] = {'ejt'},                                                         -- European Journal of Taxonomy
+	['7155'] = {'jgaa'},                                                        -- Journal of Graph Algorithms and Applications
+	['11158'] = {'saasp'},                                                      -- Systematic and Applied Acarology Special Publications
+	['11646'] = {'megataxa', 'mesozoic'},                                       -- Megataxa, Mesozoic
+	['14231'] = {'ag'},															-- Algebraic Geometry
+	['15446'] = {'abc'},                                                        -- Acta Biológica Colombiana
+	['17239'] = {'jowr'},                                                       -- Journal of Writing Research
+	['22073'] = {'pja'},                                                        -- Persian Journal of Acarology
+	['24310'] = {'abm'},                                                        -- Acta Botanica Malacitana
+	['24425'] = {'agp'},                                                        -- Acta  Geologica  Polonica
+	['35249'] = {'rche'},                                                       -- Revista Chilena de Entomología
+	['37520'] = {'fi'},                                                         -- Fossil Imprint
+	['53562'] = {'ajcb'}                                                        -- Asian Journal of Conservation Biology
+	}
 
-i18n for those messages that are supplimented with additional specific text that describes the reason for
-the error
+
+--[[===================<< E R R O R   M E S S A G I N G >>======================
+]]
+
+--[[----------< E R R O R   M E S S A G E   S U P P L E M E N T S >-------------
+
+I18N for those messages that are supplemented with additional specific text that
+describes the reason for the error
 
 TODO: merge this with special_case_translations{}?
 ]]
 
 local err_msg_supl = {
-	['char'] = 'invalid character',												-- isbn, sbn
-	['check'] = 'checksum',														-- isbn, sbn
-	['flag'] = 'flag',															-- archive-url
-	['form'] = 'invalid form',													-- isbn, sbn
-	['group'] = 'invalid group id',												-- isbn
-	['initials'] = 'initials',													-- vancouver
-	['journal'] = 'journal',													-- bibcode
-	['length'] = 'length',														-- isbn, bibcode, sbn
-	['liveweb'] = 'liveweb',													-- archive-url
-	['missing comma'] = 'missing comma',										-- vancouver
-	['name'] = 'name',															-- vancouver
-	['non-Latin char'] = 'non-Latin character',									-- vancouver
-	['path'] = 'path',															-- archive-url
-	['prefix'] = 'invalid prefix',												-- isbn
-	['punctuation'] = 'punctuation',											-- vancouver
-	['save'] = 'save command',													-- archive-url
-	['suffix'] = 'suffix',														-- vancouver
-	['timestamp'] = 'timestamp',												-- archive-url
-	['value'] = 'value',														-- bibcode
-	['year'] = 'year',															-- bibcode
+	['char'] = 'invalid character',												-- |isbn=, |sbn=
+	['check'] = 'checksum',														-- |isbn=, |sbn=
+	empty_str = '(empty string)',												-- empty unknown parameter check when cite has |=
+	['flag'] = 'flag',															-- |archive-url=
+	['form'] = 'invalid form',													-- |isbn=, |sbn=
+	['group'] = 'invalid group id',												-- |isbn=
+	['initials'] = 'initials',													-- Vancouver
+	['invalid language code'] = 'invalid language code',						-- |script-<param>=
+	['journal'] = 'journal',													-- |bibcode=
+	['length'] = 'length',														-- |isbn=, |bibcode=, |sbn=
+	['liveweb'] = 'liveweb',													-- |archive-url=
+	['missing comma'] = 'missing comma',										-- Vancouver
+	['missing prefix'] = 'missing prefix',										-- |script-<param>=
+	['missing title part'] = 'missing title part',								-- |script-<param>=
+	['name'] = 'name',															-- Vancouver
+	['non-Latin char'] = 'non-Latin character',									-- Vancouver
+	['path'] = 'path',															-- |archive-url=
+	['prefix'] = 'invalid prefix',												-- |isbn=
+	['punctuation'] = 'punctuation',											-- Vancouver
+	['save'] = 'save command',													-- |archive-url=
+	['suffix'] = 'suffix',														-- Vancouver
+	['timestamp'] = 'timestamp',												-- |archive-url=
+	['unknown language code'] = 'unknown language code',						-- |script-<param>=
+	['value'] = 'value',														-- |bibcode=
+	['year'] = 'year',															-- |bibcode=
 	}
 
 
---[[--------------------------< E R R O R _ C O N D I T I O N S >----------------------------------------------
+--[[--------------< E R R O R _ C O N D I T I O N S >---------------------------
 
-Error condition table
+Error condition table.  This table has two sections: errors at the top, maintenance
+at the bottom.  Maint 'messaging' does not have a 'message' (message=nil)
 
-The following contains a list of IDs for various error conditions defined in the code.  For each ID, we specify a
-text message to display, an error category to include, and whether the error message should be wrapped as a hidden comment.
+The following contains a list of IDs for various error conditions defined in the
+code.  For each ID, we specify a text message to display, an error category to
+include, and whether the error message should be wrapped as a hidden comment.
 
 Anchor changes require identical changes to matching anchor in Help:CS1 errors
+
+TODO: rename error_conditions{} to something more generic; create separate error
+and maint tables inside that?
 
 ]]
 
 local error_conditions = {
-	accessdate_missing_url = {
+	err_accessdate_missing_url = {
 		message = '<code class="cs1-code">&#124;access-date=</code> requires <code class="cs1-code">&#124;url=</code>',
 		anchor = 'accessdate_missing_url',
-		category = 'Pages using citations with accessdate and no URL',
+		category = 'CS1 errors: access-date without URL',
 		hidden = false
  		},
-	apostrophe_markup = {
+	err_apostrophe_markup = {
 		message = 'Italic or bold markup not allowed in: <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'apostrophe_markup',
 		category = 'CS1 errors: markup',
 		hidden = false
  		},
-	archive_missing_date = {
+	err_archive_date_missing_url = {
+		message = '<code class="cs1-code">&#124;archive-date=</code> requires <code class="cs1-code">&#124;archive-url=</code>',
+		anchor = 'archive_date_missing_url',
+		category = 'CS1 errors: archive-url',
+		hidden = false
+		},
+	err_archive_date_url_ts_mismatch = {
+		message = '<code class="cs1-code">&#124;archive-date=</code> / <code class="cs1-code">&#124;archive-url=</code> timestamp mismatch; $1 suggested',
+		anchor = 'archive_date_url_ts_mismatch',
+		category = 'CS1 errors: archive-url',
+		hidden = false
+		},
+	err_archive_missing_date = {
 		message = '<code class="cs1-code">&#124;archive-url=</code> requires <code class="cs1-code">&#124;archive-date=</code>',
 		anchor = 'archive_missing_date',
-		category = 'Pages with archiveurl citation errors',
+		category = 'CS1 errors: archive-url',
 		hidden = false
 		},
-	archive_missing_url = {
+	err_archive_missing_url = {
 		message = '<code class="cs1-code">&#124;archive-url=</code> requires <code class="cs1-code">&#124;url=</code>',
 		anchor = 'archive_missing_url',
-		category = 'Pages with archiveurl citation errors',
+		category = 'CS1 errors: archive-url',
 		hidden = false
 		},
-	archive_url = {
+	err_archive_url = {
 		message = '<code class="cs1-code">&#124;archive-url=</code> is malformed: $1',	-- $1 is error message detail
 		anchor = 'archive_url',
-		category = 'Pages with archiveurl citation errors',
+		category = 'CS1 errors: archive-url',
 		hidden = false
 		},
-	arxiv_missing = {
+	err_arxiv_missing = {
 		message = '<code class="cs1-code">&#124;arxiv=</code> required',
 		anchor = 'arxiv_missing',
 		category = 'CS1 errors: arXiv',											-- same as bad arxiv
 		hidden = false
 		},
-	bad_arxiv = {
+	err_asintld_missing_asin = {
+		message = '<code class="cs1-code">&#124;$1=</code> requires <code class="cs1-code">&#124;asin=</code>',	-- $1 is parameter name
+		anchor = 'asintld_missing_asin',
+		category = 'CS1 errors: ASIN TLD',
+		hidden = false
+		},
+	err_bad_arxiv = {
 		message = 'Check <code class="cs1-code">&#124;arxiv=</code> value',
 		anchor = 'bad_arxiv',
 		category = 'CS1 errors: arXiv',
 		hidden = false
 		},
-	bad_asin = {
+	err_bad_asin = {
 		message = 'Check <code class="cs1-code">&#124;asin=</code> value',
 		anchor = 'bad_asin',
 		category ='CS1 errors: ASIN',
 		hidden = false
 		},
-	bad_bibcode = {
+	err_bad_asin_tld = {
+		message = 'Check <code class="cs1-code">&#124;asin-tld=</code> value',
+		anchor = 'bad_asin_tld',
+		category ='CS1 errors: ASIN TLD',
+		hidden = false
+		},
+	err_bad_bibcode = {
 		message = 'Check <code class="cs1-code">&#124;bibcode=</code> $1',		-- $1 is error message detail
 		anchor = 'bad_bibcode',
 		category = 'CS1 errors: bibcode',
 		hidden = false
 		},
-	bad_biorxiv = {
+	err_bad_biorxiv = {
 		message = 'Check <code class="cs1-code">&#124;biorxiv=</code> value',
 		anchor = 'bad_biorxiv',
 		category = 'CS1 errors: bioRxiv',
 		hidden = false
 		},
-	bad_citeseerx = {
+	err_bad_citeseerx = {
 		message = 'Check <code class="cs1-code">&#124;citeseerx=</code> value',
 		anchor = 'bad_citeseerx',
 		category = 'CS1 errors: citeseerx',
 		hidden = false
 		},
-	bad_date = {
-		message = 'Check date values in: <code class="cs1-code">$1</code>',		-- $1 is parameter name
+	err_bad_date = {
+		message = 'Check date values in: $1',									-- $1 is a parameter name list
 		anchor = 'bad_date',
 		category = 'CS1 errors: dates',
 		hidden = false
 		},
-	bad_doi = {
+	err_bad_doi = {
 		message = 'Check <code class="cs1-code">&#124;doi=</code> value',
 		anchor = 'bad_doi',
 		category = 'CS1 errors: DOI',
 		hidden = false
 		},
-	bad_hdl = {
+	err_bad_hdl = {
 		message = 'Check <code class="cs1-code">&#124;hdl=</code> value',
 		anchor = 'bad_hdl',
 		category = 'CS1 errors: HDL',
 		hidden = false
 		},
-	bad_isbn = {
+	err_bad_isbn = {
 		message = 'Check <code class="cs1-code">&#124;isbn=</code> value: $1',	-- $1 is error message detail
 		anchor = 'bad_isbn',
 		category = 'CS1 errors: ISBN',
 		hidden = false
 		},
-	bad_ismn = {
+	err_bad_ismn = {
 		message = 'Check <code class="cs1-code">&#124;ismn=</code> value',
 		anchor = 'bad_ismn',
 		category = 'CS1 errors: ISMN',
 		hidden = false
 		},
-	bad_issn = {
+	err_bad_issn = {
 		message = 'Check <code class="cs1-code">&#124;$1issn=</code> value',	-- $1 is 'e' or '' for eissn or issn
 		anchor = 'bad_issn',
 		category = 'CS1 errors: ISSN',
 		hidden = false
 		},
-	bad_jfm = {
+	err_bad_jfm = {
 		message = 'Check <code class="cs1-code">&#124;jfm=</code> value',
 		anchor = 'bad_jfm',
 		category = 'CS1 errors: JFM',
 		hidden = false
 		},
-	bad_lccn = {
+	err_bad_jstor = {
+		message = 'Check <code class="cs1-code">&#124;jstor=</code> value',
+		anchor = 'bad_jstor',
+		category = 'CS1 errors: JSTOR',
+		hidden = false
+		},
+	err_bad_lccn = {
 		message = 'Check <code class="cs1-code">&#124;lccn=</code> value',
 		anchor = 'bad_lccn',
 		category = 'CS1 errors: LCCN',
 		hidden = false
 		},
-	bad_usenet_id = {
-		message = 'Check <code class="cs1-code">&#124;message-id=</code> value',
-		anchor = 'bad_message_id',
-		category = 'CS1 errors: message-id',
+	err_bad_medrxiv = {
+		message = 'Check <code class="cs1-code">&#124;medrxiv=</code> value',
+		anchor = 'bad_medrxiv',
+		category = 'CS1 errors: medRxiv',
 		hidden = false
 		},
-	bad_mr = {
+	err_bad_mr = {
 		message = 'Check <code class="cs1-code">&#124;mr=</code> value',
 		anchor = 'bad_mr',
 		category = 'CS1 errors: MR',
 		hidden = false
 		},
-	bad_ol = {
-		message = 'Check <code class="cs1-code">&#124;ol=</code> value',
-		anchor = 'bad_ol',
-		category = 'CS1 errors: OL',
-		hidden = false
-		},
-	bad_paramlink = {															-- for |title-link=, |author/editor/translator-link=, |series-link=, |episode-link=
-		message = 'Check <code class="cs1-code">&#124;$1=</code> value',		-- $1 is parameter name
-		anchor = 'bad_paramlink',
-		category = 'CS1 errors: parameter link',
-		hidden = false
-		},
-	bad_pmc = {
-		message = 'Check <code class="cs1-code">&#124;pmc=</code> value',
-		anchor = 'bad_pmc',
-		category = 'CS1 errors: PMC',
-		hidden = false
-		},
-	bad_pmid = {
-		message = 'Check <code class="cs1-code">&#124;pmid=</code> value',
-		anchor = 'bad_pmid',
-		category = 'CS1 errors: PMID',
-		hidden = false
-		},
-	bad_oclc = {
+	err_bad_oclc = {
 		message = 'Check <code class="cs1-code">&#124;oclc=</code> value',
 		anchor = 'bad_oclc',
 		category = 'CS1 errors: OCLC',
 		hidden = false
 		},
-	bad_s2cid = {
+	err_bad_ol = {
+		message = 'Check <code class="cs1-code">&#124;ol=</code> value',
+		anchor = 'bad_ol',
+		category = 'CS1 errors: OL',
+		hidden = false
+		},
+	err_bad_osti = {
+		message = 'Check <code class="cs1-code">&#124;osti=</code> value',
+		anchor = 'bad_osti',
+		category = 'CS1 errors: OSTI',
+		hidden = false
+		},
+	err_bad_paramlink = {														-- for |title-link=, |author/editor/translator-link=, |series-link=, |episode-link=
+		message = 'Check <code class="cs1-code">&#124;$1=</code> value',		-- $1 is parameter name
+		anchor = 'bad_paramlink',
+		category = 'CS1 errors: parameter link',
+		hidden = false
+		},
+	err_bad_pmc = {
+		message = 'Check <code class="cs1-code">&#124;pmc=</code> value',
+		anchor = 'bad_pmc',
+		category = 'CS1 errors: PMC',
+		hidden = false
+		},
+	err_bad_pmid = {
+		message = 'Check <code class="cs1-code">&#124;pmid=</code> value',
+		anchor = 'bad_pmid',
+		category = 'CS1 errors: PMID',
+		hidden = false
+		},
+	err_bad_rfc = {
+		message = 'Check <code class="cs1-code">&#124;rfc=</code> value',
+		anchor = 'bad_rfc',
+		category = 'CS1 errors: RFC',
+		hidden = false
+		},
+	err_bad_s2cid = {
 		message = 'Check <code class="cs1-code">&#124;s2cid=</code> value',
 		anchor = 'bad_s2cid',
 		category = 'CS1 errors: S2CID',
 		hidden = false
 		},
-	bad_sbn = {
+	err_bad_sbn = {
 		message = 'Check <code class="cs1-code">&#124;sbn=</code> value: $1',	-- $1 is error message detail
 		anchor = 'bad_sbn',
 		category = 'CS1 errors: SBN',
 		hidden = false
 		},
-	bad_ssrn = {
+	err_bad_ssrn = {
 		message = 'Check <code class="cs1-code">&#124;ssrn=</code> value',
 		anchor = 'bad_ssrn',
 		category = 'CS1 errors: SSRN',
 		hidden = false
 		},
-	bad_url = {
+	err_bad_url = {
 		message = 'Check $1 value',												-- $1 is parameter name
 		anchor = 'bad_url',
-		category = 'Pages with URL errors',
+		category = 'CS1 errors: URL',
 		hidden = false
 		},
-	bad_zbl = {
+	err_bad_usenet_id = {
+		message = 'Check <code class="cs1-code">&#124;message-id=</code> value',
+		anchor = 'bad_message_id',
+		category = 'CS1 errors: message-id',
+		hidden = false
+		},
+	err_bad_zbl = {
 		message = 'Check <code class="cs1-code">&#124;zbl=</code> value',
 		anchor = 'bad_zbl',
-		category = 'CS1 errors: ZBL',
+		category = 'CS1 errors: Zbl',
 		hidden = false
 		},
-	bare_url_missing_title = {
+	err_bare_url_missing_title = {
 		message = '$1 missing title',											-- $1 is parameter name
 		anchor = 'bare_url_missing_title',
-		category = 'Pages with citations having bare URLs',
+		category = 'CS1 errors: bare URL',
 		hidden = false
 		},
-	biorxiv_missing = {
+	err_biorxiv_missing = {
 		message = '<code class="cs1-code">&#124;biorxiv=</code> required',
 		anchor = 'biorxiv_missing',
 		category = 'CS1 errors: bioRxiv',										-- same as bad bioRxiv
 		hidden = false
 		},
-	chapter_ignored = {
+	err_chapter_ignored = {
 		message = '<code class="cs1-code">&#124;$1=</code> ignored',			-- $1 is parameter name
 		anchor = 'chapter_ignored',
 		category = 'CS1 errors: chapter ignored',
 		hidden = false
 		},
-	citation_missing_title = {
+	err_citation_missing_title = {
 		message = 'Missing or empty <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'citation_missing_title',
-		category = 'Pages with citations lacking titles',
+		category = 'CS1 errors: missing title',
 		hidden = false
 		},
-	citeseerx_missing = {
+	err_citeseerx_missing = {
 		message = '<code class="cs1-code">&#124;citeseerx=</code> required',
 		anchor = 'citeseerx_missing',
 		category = 'CS1 errors: citeseerx',										-- same as bad citeseerx
 		hidden = false
 		},
-	cite_web_url = {															-- this error applies to cite web and to cite podcast
+	err_cite_web_url = {														-- this error applies to cite web and to cite podcast
 		message = 'Missing or empty <code class="cs1-code">&#124;url=</code>',
 		anchor = 'cite_web_url',
-		category = 'Pages using web citations with no URL',
+		category = 'CS1 errors: requires URL',
 		hidden = false
 		},
-	class_ignored = {
+	err_class_ignored = {
 		message = '<code class="cs1-code">&#124;class=</code> ignored',
 		anchor = 'class_ignored',
 		category = 'CS1 errors: class',
 		hidden = false
 		},
-	contributor_ignored = {
+	err_contributor_ignored = {
 		message = '<code class="cs1-code">&#124;contributor=</code> ignored',
 		anchor = 'contributor_ignored',
 		category = 'CS1 errors: contributor',
 		hidden = false
 		},
-	contributor_missing_required_param = {
+	err_contributor_missing_required_param = {
 		message = '<code class="cs1-code">&#124;contributor=</code> requires <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'contributor_missing_required_param',
 		category = 'CS1 errors: contributor',
 		hidden = false
 		},
-	deprecated_params = {
+	err_deprecated_params = {
 		message = 'Cite uses deprecated parameter <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'deprecated_params',
 		category = 'CS1 errors: deprecated parameters',
 		hidden = false
 		},
-	doibroken_missing_doi = {
+	err_disp_name = {
+		message = 'Invalid <code class="cs1-code">&#124;$1=$2</code>',			-- $1 is parameter name; $2 is the assigned value
+		anchor = 'disp_name',
+		category = 'CS1 errors: display-names',
+		hidden = false,
+		},
+	err_doibroken_missing_doi = {
 		message = '<code class="cs1-code">&#124;$1=</code> requires <code class="cs1-code">&#124;doi=</code>',	-- $1 is parameter name
 		anchor = 'doibroken_missing_doi',
 		category = 'CS1 errors: DOI',
 		hidden = false
 		},
-	empty_citation = {
-		message = 'Empty citation',
-		anchor = 'empty_citation',
-		category = 'Pages with empty citations',
+	err_embargo_missing_pmc = {
+		message = '<code class="cs1-code">&#124;$1=</code> requires <code class="cs1-code">&#124;pmc=</code>',	-- $1 is parameter name
+		anchor = 'embargo_missing_pmc',
+		category = 'CS1 errors: PMC embargo',
 		hidden = false
 		},
-	etal = {
+	err_empty_citation = {
+		message = 'Empty citation',
+		anchor = 'empty_citation',
+		category = 'CS1 errors: empty citation',
+		hidden = false
+		},
+	err_etal = {
 		message = 'Explicit use of et al. in: <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'explicit_et_al',
 		category = 'CS1 errors: explicit use of et al.',
 		hidden = false
 		},
-	first_missing_last = {
+	err_extra_text_edition = {
+		message = '<code class="cs1-code">&#124;edition=</code> has extra text',
+		anchor = 'extra_text_edition',
+		category = 'CS1 errors: extra text: edition',
+		hidden = false,
+		},
+	err_extra_text_issue = {
+		message = '<code class="cs1-code">&#124;$1=</code> has extra text',		-- $1 is parameter name
+		anchor = 'extra_text_issue',
+		category = 'CS1 errors: extra text: issue',
+		hidden = false,
+		},
+	err_extra_text_pages = {
+		message = '<code class="cs1-code">&#124;$1=</code> has extra text',		-- $1 is parameter name
+		anchor = 'extra_text_pages',
+		category = 'CS1 errors: extra text: pages',
+		hidden = false,
+		},
+	err_extra_text_volume = {
+		message = '<code class="cs1-code">&#124;$1=</code> has extra text',		-- $1 is parameter name
+		anchor = 'extra_text_volume',
+		category = 'CS1 errors: extra text: volume',
+		hidden = false,
+		},
+	err_first_missing_last = {
 		message = '<code class="cs1-code">&#124;$1=</code> missing <code class="cs1-code">&#124;$2=</code>',	-- $1 is first alias, $2 is matching last alias
 		anchor = 'first_missing_last',
 		category = 'CS1 errors: missing name',									-- author, contributor, editor, interviewer, translator
 		hidden = false
 		},
-	format_missing_url = {
+	err_format_missing_url = {
 		message = '<code class="cs1-code">&#124;$1=</code> requires <code class="cs1-code">&#124;$2=</code>',	-- $1 is format parameter $2 is url parameter
 		anchor = 'format_missing_url',
-		category = 'Pages using citations with format and no URL',
+		category = 'CS1 errors: format without URL',
 		hidden = false
 		},
-	invalid_param_val = {
-		message = 'Invalid <code class="cs1-code">&#124;$1=$2</code>',			-- $1 is parameter name $2 is paramter value
+	err_generic_name = {
+		message = '<code class="cs1-code">&#124;$1=</code> has generic name',	-- $1 is parameter name
+		anchor = 'generic_name',
+		category = 'CS1 errors: generic name',
+		hidden = false,
+		},
+	err_generic_title = {
+		message = 'Cite uses generic title',
+		anchor = 'generic_title',
+		category = 'CS1 errors: generic title',
+		hidden = false,
+		},
+	err_invalid_isbn_date = {
+		message = 'ISBN / Date incompatibility',
+		anchor = 'invalid_isbn_date',
+		category = 'CS1 errors: ISBN date',
+		hidden = true
+		},
+	err_invalid_param_val = {
+		message = 'Invalid <code class="cs1-code">&#124;$1=$2</code>',			-- $1 is parameter name $2 is parameter value
 		anchor = 'invalid_param_val',
 		category = 'CS1 errors: invalid parameter value',
 		hidden = false
 		},
-	invisible_char = {
+	err_invisible_char = {
 		message = '$1 in $2 at position $3',									-- $1 is invisible char $2 is parameter name $3 is position number
 		anchor = 'invisible_char',
 		category = 'CS1 errors: invisible characters',
 		hidden = false
 		},
-	missing_name = {
+	err_medrxiv_missing = {
+		message = '<code class="cs1-code">&#124;medrxiv=</code> required',
+		anchor = 'medrxiv_missing',
+		category = 'CS1 errors: medRxiv',										-- same as bad medRxiv
+		hidden = false
+		},
+	err_missing_name = {
 		message = 'Missing <code class="cs1-code">&#124;$1$2=</code>',			-- $1 is modified NameList; $2 is enumerator
 		anchor = 'missing_name',
 		category = 'CS1 errors: missing name',									-- author, contributor, editor, interviewer, translator
 		hidden = false
 		},
-	missing_periodical = {
+	err_missing_periodical = {
 		message = 'Cite $1 requires <code class="cs1-code">&#124;$2=</code>',	-- $1 is cs1 template name; $2 is canonical periodical parameter name for cite $1
 		anchor = 'missing_periodical',
 		category = 'CS1 errors: missing periodical',
-		hidden = true
+		hidden = false
 		},
-	missing_pipe = {
+	err_missing_pipe = {
 		message = 'Missing pipe in: <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'missing_pipe',
 		category = 'CS1 errors: missing pipe',
 		hidden = false
 		},
-	param_access_requires_param = {
+	err_missing_publisher = {
+		message = 'Cite $1 requires <code class="cs1-code">&#124;$2=</code>',	-- $1 is cs1 template name; $2 is canonical publisher parameter name for cite $1
+		anchor = 'missing_publisher',
+		category = 'CS1 errors: missing publisher',
+		hidden = false
+		},
+	err_numeric_names = {
+		message = '<code class="cs1-code">&#124;$1=</code> has numeric name',	-- $1 is parameter name',
+		anchor = 'numeric_names',
+		category = 'CS1 errors: numeric name',
+		hidden = false,
+		},
+	err_param_access_requires_param = {
 		message = '<code class="cs1-code">&#124;$1-access=</code> requires <code class="cs1-code">&#124;$1=</code>',	-- $1 is parameter name
 		anchor = 'param_access_requires_param',
 		category = 'CS1 errors: param-access',
 		hidden = false
 		},
-	param_has_ext_link = {
+	err_param_has_ext_link = {
 		message = 'External link in <code class="cs1-code">$1</code>',			-- $1 is parameter name
 		anchor = 'param_has_ext_link',
 		category = 'CS1 errors: external links',
 		hidden = false
 		},
-	parameter_ignored = {
+	err_param_has_twl_url = {
+		message = 'Wikipedia Library link in <code class="cs1-code">$1</code>',	-- $1 is parameter name
+		anchor = 'param_has_twl_url',
+		category = 'CS1 errors: URL',
+		hidden = false
+		},
+	err_parameter_ignored = {
 		message = 'Unknown parameter <code class="cs1-code">&#124;$1=</code> ignored',	-- $1 is parameter name
 		anchor = 'parameter_ignored',
-		category = 'Pages with citations using unsupported parameters',
+		category = 'CS1 errors: unsupported parameter',
 		hidden = false
 		},
-	parameter_ignored_suggest = {
-		message = 'Unknown parameter <code class="cs1-code">&#124;$1=</code> ignored (<code class="cs1-code">&#124;$2=</code> suggested)',	-- $1 is unknown paramter $2 is suggested parameter name
+	err_parameter_ignored_suggest = {
+		message = 'Unknown parameter <code class="cs1-code">&#124;$1=</code> ignored (<code class="cs1-code">&#124;$2=</code> suggested)',	-- $1 is unknown parameter $2 is suggested parameter name
 		anchor = 'parameter_ignored_suggest',
-		category = 'Pages with citations using unsupported parameters',
+		category = 'CS1 errors: unsupported parameter',
 		hidden = false
 		},
-	redundant_parameters = {
+	err_periodical_ignored = {
+		message = '<code class="cs1-code">&#124;$1=</code> ignored',			-- $1 is parameter name
+		anchor = 'periodical_ignored',
+		category = 'CS1 errors: periodical ignored',
+		hidden = false
+		},
+	err_redundant_parameters = {
 		message = 'More than one of $1 specified',								-- $1 is error message detail
 		anchor = 'redundant_parameters',
-		category = 'Pages with citations having redundant parameters',
+		category = 'CS1 errors: redundant parameter',
 		hidden = false
 		},
-	script_parameter = {
+	err_script_parameter = {
 		message = 'Invalid <code class="cs1-code">&#124;$1=</code>: $2',		-- $1 is parameter name $2 is script language code or error detail
 		anchor = 'script_parameter',
 		category = 'CS1 errors: script parameters',
 		hidden = false
 		},
-	ssrn_missing = {
+	err_ssrn_missing = {
 		message = '<code class="cs1-code">&#124;ssrn=</code> required',
 		anchor = 'ssrn_missing',
-		category = 'CS1 errors: ssrn',											-- same as bad arxiv
+		category = 'CS1 errors: SSRN',
 		hidden = false
 		},
-	text_ignored = {
+	err_text_ignored = {
 		message = 'Text "$1" ignored',											-- $1 is ignored text
 		anchor = 'text_ignored',
-		category = 'Pages with citations using unnamed parameters',
+		category = 'CS1 errors: unrecognized parameter',
 		hidden = false
 		},
-	trans_missing_title = {
-		message = '<code class="cs1-code">&#124;trans-$1=</code> requires <code class="cs1-code">&#124;$1=</code> or  <code class="cs1-code">&#124;script-$1=</code>',	-- $1 is base parameter name
+	err_trans_missing_title = {
+		message = '<code class="cs1-code">&#124;trans-$1=</code> requires <code class="cs1-code">&#124;$1=</code> or <code class="cs1-code">&#124;script-$1=</code>',	-- $1 is base parameter name
 		anchor = 'trans_missing_title',
 		category = 'CS1 errors: translated title',
 		hidden = false
 		},
-	vancouver = {
-		message = 'Vancouver style error: $1',									-- $1 is error detail
+	err_param_unknown_empty = {
+		message = 'Cite has empty unknown parameter$1: $2',						-- $1 is 's' or empty space; $2 is emty unknown param list
+		anchor = 'param_unknown_empty',
+		category = 'CS1 errors: empty unknown parameters',
+		hidden = false
+		},
+	err_vancouver = {
+		message = 'Vancouver style error: $1 in name $2',						-- $1 is error detail, $2 is the nth name
 		anchor = 'vancouver',
 		category = 'CS1 errors: Vancouver style',
 		hidden = false
 		},
-	wikilink_in_url = {
+	err_wikilink_in_url = {
 		message = 'URL–wikilink conflict',										-- uses ndash
 		anchor = 'wikilink_in_url',
 		category = 'CS1 errors: URL–wikilink conflict',							-- uses ndash
 		hidden = false
 		},
+
+
+--[[--------------------------< M A I N T >-------------------------------------
+
+maint messages do not have a message (message = nil); otherwise the structure
+is the same as error messages
+
+]]
+
+	maint_archive_origin = {
+		message = nil,
+		anchor = 'archive_origin',
+		category = 'CS1 maint: archive origin',
+		hidden = true,
+		},
+	maint_archived_copy = {
+		message = nil,
+		anchor = 'archived_copy',
+		category = 'CS1 maint: archived copy as title',
+		hidden = true,
+		},
+	maint_bibcode = {
+		message = nil,
+		anchor = 'bibcode',
+		category = 'CS1 maint: bibcode',
+		hidden = true,
+		},
+	maint_location_no_publisher = {												-- cite book, conference, encyclopedia; citation as book cite or encyclopedia cite
+		message = nil,
+		anchor = 'location_no_publisher',
+		category = 'CS1 maint: location missing publisher',
+		hidden = true,
+		},
+	maint_bot_unknown = {
+		message = nil,
+		anchor = 'bot:_unknown',
+		category = 'CS1 maint: bot: original URL status unknown',
+		hidden = true,
+		},
+	maint_date_auto_xlated = {													-- date auto-translation not supported by en.wiki
+		message = nil,
+		anchor = 'date_auto_xlated',
+		category = 'CS1 maint: date auto-translated',
+		hidden = true,
+		},
+	maint_date_format = {
+		message = nil,
+		anchor = 'date_format',
+		category = 'CS1 maint: date format',
+		hidden = true,
+		},
+	maint_date_year = {
+		message = nil,
+		anchor = 'date_year',
+		category = 'CS1 maint: date and year',
+		hidden = true,
+		},
+	maint_deprecated_archive = {
+		message = nil,
+		anchor = 'deprecated_archive',
+		category = 'CS1 maint: deprecated archival service',
+		hidden = true,
+		},
+	maint_doi_ignore = {
+		message = nil,
+		anchor = 'doi_ignore',
+		category = 'CS1 maint: ignored DOI errors',
+		hidden = true,
+		},
+	maint_doi_inactive = {
+		message = nil,
+		anchor = 'doi_inactive',
+		category = 'CS1 maint: DOI inactive',
+		hidden = true,
+		},
+	maint_doi_inactive_dated = {
+		message = nil,
+		anchor = 'doi_inactive_dated',
+		category = 'CS1 maint: DOI inactive as of $2$3$1',						-- $1 is year, $2 is month-name or empty string, $3 is space or empty string
+		hidden = true,
+		},
+	maint_doi_unflagged_free = {
+		message = nil,
+		anchor = 'doi_unflagged_free',
+		category = 'CS1 maint: unflagged free DOI',
+		hidden = true,
+		},
+	maint_extra_punct = {
+		message = nil,
+		anchor = 'extra_punct',
+		category = 'CS1 maint: extra punctuation',
+		hidden = true,
+		},
+	maint_id_limit_load_fail = {												-- applies to all cs1|2 templates on a page; 
+		message = nil,															-- maint message (category link) never emitted
+		anchor = 'id_limit_load_fail',
+		category = 'CS1 maint: ID limit load fail',
+		hidden = true,
+		},
+	maint_isbn_ignore = {
+		message = nil,
+		anchor = 'ignore_isbn_err',
+		category = 'CS1 maint: ignored ISBN errors',
+		hidden = true,
+		},
+	maint_issn_ignore = {
+		message = nil,
+		anchor = 'ignore_issn',
+		category = 'CS1 maint: ignored ISSN errors',
+		hidden = true,
+		},
+	maint_jfm_format = {
+		message = nil,
+		anchor = 'jfm_format',
+		category = 'CS1 maint: JFM format',
+		hidden = true,
+		},
+	maint_location = {
+		message = nil,
+		anchor = 'location',
+		category = 'CS1 maint: location',
+		hidden = true,
+		},
+	maint_missing_class = {
+		message = nil,
+		anchor = 'missing_class',
+		category = 'CS1 maint: missing class',
+		hidden = true,
+		},
+	maint_mr_format = {
+		message = nil,
+		anchor = 'mr_format',
+		category = 'CS1 maint: MR format',
+		hidden = true,
+		},
+	maint_mult_names = {
+		message = nil,
+		anchor = 'mult_names',
+		category = 'CS1 maint: multiple names: $1',								-- $1 is '<name>s list'; gets value from special_case_translation table
+		hidden = true,
+		},
+	maint_numeric_names = {
+		message = nil,
+		anchor = 'numeric_names',
+		category = 'CS1 maint: numeric names: $1',								-- $1 is '<name>s list'; gets value from special_case_translation table
+		hidden = true,
+		},
+	maint_others = {
+		message = nil,
+		anchor = 'others',
+		category = 'CS1 maint: others',
+		hidden = true,
+		},
+	maint_others_avm = {
+		message = nil,
+		anchor = 'others_avm',
+		category = 'CS1 maint: others in cite AV media (notes)',
+		hidden = true,
+		},
+	maint_overridden_setting = {
+		message = nil,
+		anchor = 'overridden',
+		category = 'CS1 maint: overridden setting',
+		hidden = true,
+		},
+	maint_page_art_num = {
+		message = nil,
+		anchor = 'page_art_num',
+		category = 'CS1 maint: article number as page number',
+		hidden = true,
+		},
+	maint_pmc_embargo = {
+		message = nil,
+		anchor = 'embargo',
+		category = 'CS1 maint: PMC embargo expired',
+		hidden = true,
+		},
+	maint_pmc_format = {
+		message = nil,
+		anchor = 'pmc_format',
+		category = 'CS1 maint: PMC format',
+		hidden = true,
+		},
+	maint_postscript = {
+		message = nil,
+		anchor = 'postscript',
+		category = 'CS1 maint: postscript',
+		hidden = true,
+	},
+	maint_publisher_location = {
+		message = nil,
+		anchor = 'publisher_location',
+		category = 'CS1 maint: publisher location',
+		hidden = true,
+	},
+	maint_ref_duplicates_default = {
+		message = nil,
+		anchor = 'ref_default',
+		category = 'CS1 maint: ref duplicates default',
+		hidden = true,
+	},
+	maint_shortened_archive_url = {
+		message = nil,
+		anchor = 'shortened_archive_url',
+		category = 'CS1 maint: shortened archive url',
+		hidden = true,
+	},
+	maint_unknown_lang = {
+		message = nil,
+		anchor = 'unknown_lang',
+		category = 'CS1 maint: unrecognized language',
+		hidden = true,
+		},
+	maint_untitled = {
+		message = nil,
+		anchor = 'untitled',
+		category = 'CS1 maint: untitled periodical',
+		hidden = true,
+		},
+	maint_url_status = {
+		message = nil,
+		anchor = 'url_status',
+		category = 'CS1 maint: url-status',
+		hidden = true,
+		},
+	maint_work_isbn = {
+		message = nil,
+		anchor = 'work_isbn',
+		category = 'CS1 maint: work parameter with ISBN',
+		hidden = true,
+		},
+	maint_year= {
+		message = nil,
+		anchor = 'year',
+		category = 'CS1 maint: year',
+		hidden = true,
+		},
+	maint_zbl = {
+		message = nil,
+		anchor = 'zbl',
+		category = 'CS1 maint: Zbl',
+		hidden = true,
+		},
 	}
+
+
+--[[--------------------------< I D _ L I M I T S _ D A T A _ T >----------------------------------------------
+
+fetch id limits for certain identifiers from c:Data:CS1/Identifier limits.tab.  This source is a json tabular 
+data file maintained at wikipedia commons.  Convert the json format to a table of k/v pairs.
+
+The values from <id_limits_data_t> are used to set handle.id_limit.
+
+From 2025-02-21, MediaWiki is broken.  Use this link to edit the tablular data file:
+	https://commons.wikimedia.org/w/index.php?title=Data:CS1/Identifier_limits.tab&action=edit
+See Phab:T389105
+
+]]
+
+local id_limits_data_t = {};
+
+local use_commons_data = true;													-- set to false if your wiki does not have access to mediawiki commons; then,
+if false == use_commons_data then												-- update this table from https://commons.wikimedia.org/wiki/Data:CS1/Identifier_limits.tab; last update: 2025-02-21
+	id_limits_data_t = {['OCLC'] = 10450000000, ['OSTI'] = 23010000, ['PMC'] = 11900000, ['PMID'] = 40400000, ['RFC'] = 9300, ['SSRN'] = 5200000, ['S2CID'] = 276000000};	-- this table must be maintained locally
+
+else																			-- here for wikis that do have access to mediawiki commons
+	local load_fail_limit = 99999999999;										-- very high number to avoid error messages on load failure
+	id_limits_data_t = {['OCLC'] = load_fail_limit, ['OSTI'] = load_fail_limit, ['PMC'] = load_fail_limit, ['PMID'] = load_fail_limit, ['RFC'] = load_fail_limit, ['SSRN'] = load_fail_limit, ['S2CID'] = load_fail_limit};
+
+	local id_limits_data_load_fail = false;										-- flag; assume that we will be successful when loading json id limit tabular data
+
+	if mw.ext.data == nil then
+		id_limits_data_load_fail = true;										-- safeguard against Lua errors if mw.ext.data is not available for some reason
+	else
+		local tab_data_t = mw.ext.data.get ('CS1/Identifier limits.tab');		-- attempt to load the tabular data from commons into <tab_data_t>
+		if false == tab_data_t then												-- undocumented 'feature': mw.ext.data.get() sometimes returns false
+			id_limits_data_load_fail = true;									-- set the flag so that Module:Citation/CS1 can create an unannotated maint category
+		else
+			for _, limit_t in ipairs (tab_data_t.data) do						-- overwrite default <load_fail_limit> values from the data table in the tabular data
+				id_limits_data_t[limit_t[1]] = limit_t[2];						-- <limit[1]> is identifier; <limit[2]> is upper limit for that identifier
+			end
+		end
+	end
+end
 
 
 --[[--------------------------< I D _ H A N D L E R S >--------------------------------------------------------
 
-The following contains a list of values for various defined identifiers.  For each identifier we specify a
-variety of information necessary to properly render the identifier in the citation.
+The following contains a list of values for various defined identifiers.  For each
+identifier we specify a variety of information necessary to properly render the
+identifier in the citation.
 
 	parameters: a list of parameter aliases for this identifier; first in the list is the canonical form
 	link: Wikipedia article name
 	redirect: a local redirect to a local Wikipedia article name;  at en.wiki, 'ISBN (identifier)' is a redirect to 'International Standard Book Number'
-	q: wikidata q number for the identifier
-	label: the label preceeding the identifier; label is linked to a wikipedia article (in this order):
+	q: Wikidata q number for the identifier
+	label: the label preceding the identifier; label is linked to a Wikipedia article (in this order):
 		redirect from id_handlers['<id>'].redirect when use_identifier_redirects is true
-		wikidata-supplied article name for the local wiki from id_handlers['<id>'].q
+		Wikidata-supplied article name for the local wiki from id_handlers['<id>'].q
 		local article name from id_handlers['<id>'].link
-	mode: 	'manual' when there is a specific function in the code to handle the identifier;
-			'external' for identifiers that link outside of Wikipedia;
-	prefix: the first part of a url that will be concatenated with a second part which usually contains the identifier
-	encode: true if uri should be percent encoded; otherwise false
+	prefix: the first part of a URL that will be concatenated with a second part which usually contains the identifier
+	suffix: optional third part to be added after the identifier
+	encode: true if URI should be percent-encoded; otherwise false
 	COinS: identifier link or keyword for use in COinS:
-		for identifiers registered at info-uri.info use: info:....
+		for identifiers registered at info-uri.info use: info:.... where '...' is the appropriate identifier label 
 		for identifiers that have COinS keywords, use the keyword: rft.isbn, rft.issn, rft.eissn
-		for others make a url using the value in prefix, use the keyword: pre (not checked; any text other than 'info' or 'rft' works here)
+		for |asin= and |ol=, which require assembly, use the keyword: url
+		for others make a URL using the value in prefix/suffix and #label, use the keyword: pre (not checked; any text other than 'info', 'rft', or 'url' works here)
 		set to nil to leave the identifier out of the COinS
 	separator: character or text between label and the identifier in the rendered citation
 	id_limit: for those identifiers with established limits, this property holds the upper limit
 	access: use this parameter to set the access level for all instances of this identifier.
-			the value must be a valid access level for an identifier (see ['id-access'] in this file).
+		the value must be a valid access level for an identifier (see ['id-access'] in this file).
 	custom_access: to enable custom access level for an identifier, set this parameter
-			to the parameter that should control it (normally 'id-access')
+		to the parameter that should control it (normally 'id-access')
+		
 ]]
 
 local id_handlers = {
@@ -1324,8 +2339,7 @@ local id_handlers = {
 		redirect = 'arXiv (identifier)',
 		q = 'Q118398',
 		label = 'arXiv',
-		mode = 'manual',
-		prefix = '//arxiv.org/abs/', 											-- protocol relative tested 2013-09-04
+		prefix = 'https://arxiv.org/abs/',
 		encode = false,
 		COinS = 'info:arxiv',
 		separator = ':',
@@ -1337,9 +2351,8 @@ local id_handlers = {
 		redirect = 'ASIN (identifier)',
 		q = 'Q1753278',
 		label = 'ASIN',
-		mode = 'manual',
-		prefix = '//www.amazon.',
-		COinS = nil,															-- no COinS for this id (needs thinking on implementation because |asin-tld=)
+		prefix = 'https://www.amazon.',
+		COinS = 'url',
 		separator = '&nbsp;',
 		encode = false;
 		},
@@ -1349,7 +2362,6 @@ local id_handlers = {
 		redirect = 'Bibcode (identifier)',
 		q = 'Q25754',
 		label = 'Bibcode',
-		mode = 'manual',
 		prefix = 'https://ui.adsabs.harvard.edu/abs/',
 		encode = false,
 		COinS = 'info:bibcode',
@@ -1362,8 +2374,7 @@ local id_handlers = {
 		redirect = 'bioRxiv (identifier)',
 		q = 'Q19835482',
 		label = 'bioRxiv',
-		mode = 'manual',
-		prefix = '//doi.org/',
+		prefix = 'https://doi.org/',
 		COinS = 'pre',															-- use prefix value
 		access = 'free',														-- free to read
 		encode = true,
@@ -1375,21 +2386,19 @@ local id_handlers = {
 		redirect = 'CiteSeerX (identifier)',
 		q = 'Q2715061',
 		label = 'CiteSeerX',
-		mode = 'manual',														-- manual for custom validation of the "doi"
-		prefix = '//citeseerx.ist.psu.edu/viewdoc/summary?doi=',
+		prefix = 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=',
 		COinS =  'pre',															-- use prefix value
 		access = 'free',														-- free to read
 		encode = true,
 		separator = '&nbsp;',
 		},
 	['DOI'] = {																	-- Used by InternetArchiveBot
-		parameters = { 'doi', 'DOI' },
+		parameters = { 'doi', 'DOI'},
 		link = 'Digital object identifier',
 		redirect = 'doi (identifier)',
 		q = 'Q25670',
 		label = 'doi',
-		mode = 'manual',
-		prefix = '//doi.org/',
+		prefix = 'https://doi.org/',
 		COinS = 'info:doi',
 		separator = ':',
 		encode = true,
@@ -1397,12 +2406,11 @@ local id_handlers = {
 		},
 	['EISSN'] = {
 		parameters = {'eissn', 'EISSN'},
-		link = 'International_Standard_Serial_Number#Electronic_ISSN',
+		link = 'International Standard Serial Number#Electronic ISSN',
 		redirect = 'eISSN (identifier)',
 		q = 'Q46339674',
 		label = 'eISSN',
-		mode = 'manual',
-		prefix = '//www.worldcat.org/issn/',
+		prefix = 'https://search.worldcat.org/issn/',
 		COinS = 'rft.eissn',
 		encode = false,
 		separator = '&nbsp;',
@@ -1413,20 +2421,18 @@ local id_handlers = {
 		redirect = 'hdl (identifier)',
 		q = 'Q3126718',
 		label = 'hdl',
-		mode = 'manual',
-		prefix = '//hdl.handle.net/',
+		prefix = 'https://hdl.handle.net/',
 		COinS = 'info:hdl',
 		separator = ':',
 		encode = true,
 		custom_access = 'hdl-access',
 		},
 	['ISBN'] = {																-- Used by InternetArchiveBot
-		parameters = {'isbn', 'ISBN', 'isbn13', 'ISBN13'},
+		parameters = {'isbn', 'ISBN'},
 		link = 'International Standard Book Number',
 		redirect = 'ISBN (identifier)',
 		q = 'Q33057',
 		label = 'ISBN',
-		mode = 'manual',
 		prefix = 'Special:BookSources/',
 		COinS = 'rft.isbn',
 		separator = '&nbsp;',
@@ -1437,9 +2443,8 @@ local id_handlers = {
 		redirect = 'ISMN (identifier)',
 		q = 'Q1666938',
 		label = 'ISMN',
-		mode = 'manual',
 		prefix = '',															-- not currently used;
-		COinS = 'nil',															-- nil because we can't use pre or rft or info:
+		COinS = nil,															-- nil because we can't use pre or rft or info:
 		separator = '&nbsp;',
 		},
 	['ISSN'] = {
@@ -1448,8 +2453,7 @@ local id_handlers = {
 		redirect = 'ISSN (identifier)',
 		q = 'Q131276',
 		label = 'ISSN',
-		mode = 'manual',
-		prefix = '//www.worldcat.org/issn/',
+		prefix = 'https://search.worldcat.org/issn/',
 		COinS = 'rft.issn',
 		encode = false,
 		separator = '&nbsp;',
@@ -1460,8 +2464,7 @@ local id_handlers = {
 		redirect = 'JFM (identifier)',
 		q = '',
 		label = 'JFM',
-		mode = 'manual',
-		prefix = '//zbmath.org/?format=complete&q=an:',
+		prefix = 'https://zbmath.org/?format=complete&q=an:',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
@@ -1472,8 +2475,7 @@ local id_handlers = {
 		redirect = 'JSTOR (identifier)',
 		q = 'Q1420342',
 		label = 'JSTOR',
-		mode = 'external',
-		prefix = '//www.jstor.org/stable/', 									-- protocol relative tested 2013-09-04
+		prefix = 'https://www.jstor.org/stable/',
 		COinS = 'pre',															-- use prefix value
 		encode = false,
 		separator = '&nbsp;',
@@ -1485,9 +2487,20 @@ local id_handlers = {
 		redirect = 'LCCN (identifier)',
 		q = 'Q620946',
 		label = 'LCCN',
-		mode = 'manual',
-		prefix = '//lccn.loc.gov/', 											-- protocol relative tested 2015-12-28
-		COinS = 'info:lccn',													-- use prefix value
+		prefix = 'https://lccn.loc.gov/',
+		COinS = 'info:lccn',
+		encode = false,
+		separator = '&nbsp;',
+		},
+	['MEDRXIV'] = {
+		parameters = {'medrxiv'},
+		link = 'medRxiv',
+		redirect = 'medRxiv (identifier)',
+		q = 'Q58465838',
+		label = 'medRxiv',
+		prefix = 'https://www.medrxiv.org/content/',
+		COinS = 'pre',															-- use prefix value
+		access = 'free',														-- free to read
 		encode = false,
 		separator = '&nbsp;',
 		},
@@ -1497,8 +2510,7 @@ local id_handlers = {
 		redirect = 'MR (identifier)',
 		q = 'Q211172',
 		label = 'MR',
-		mode = 'manual',
-		prefix = '//www.ams.org/mathscinet-getitem?mr=', 						-- protocol relative tested 2013-09-04
+		prefix = 'https://mathscinet.ams.org/mathscinet-getitem?mr=',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
@@ -1509,11 +2521,11 @@ local id_handlers = {
 		redirect = 'OCLC (identifier)',
 		q = 'Q190593',
 		label = 'OCLC',
-		mode = 'manual',
-		prefix = '//www.worldcat.org/oclc/',
+		prefix = 'https://search.worldcat.org/oclc/',
 		COinS = 'info:oclcnum',
 		encode = true,
 		separator = '&nbsp;',
+		id_limit = id_limits_data_t.OCLC or 0,
 		},
 	['OL'] = {
 		parameters = { 'ol', 'OL' },
@@ -1521,9 +2533,8 @@ local id_handlers = {
 		redirect = 'OL (identifier)',
 		q = 'Q1201876',
 		label = 'OL',
-		mode = 'manual',
-		prefix = '//openlibrary.org/',
-		COinS = nil,															-- no COinS for this id (needs thinking on implementation because /authors/books/works/OL)
+		prefix = 'https://openlibrary.org/',
+		COinS = 'url',
 		separator = '&nbsp;',
 		encode = true,
 		custom_access = 'ol-access',
@@ -1534,11 +2545,11 @@ local id_handlers = {
 		redirect = 'OSTI (identifier)',
 		q = 'Q2015776',
 		label = 'OSTI',
-		mode = 'external',
-		prefix = '//www.osti.gov/biblio/',										-- protocol relative tested 2018-09-12
+		prefix = 'https://www.osti.gov/biblio/',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
+		id_limit = id_limits_data_t.OSTI or 0,
 		custom_access = 'osti-access',
 		},
 	['PMC'] = {
@@ -1547,27 +2558,25 @@ local id_handlers = {
 		redirect = 'PMC (identifier)',
 		q = 'Q229883',
 		label = 'PMC',
-		mode = 'manual',
-		prefix = '//www.ncbi.nlm.nih.gov/pmc/articles/PMC',
-		suffix = " ",
+		prefix = 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC',
+		suffix = '',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
-		id_limit = 7500000,
+		id_limit = id_limits_data_t.PMC or 0,
 		access = 'free',														-- free to read
 		},
 	['PMID'] = {
 		parameters = {'pmid', 'PMID'},
 		link = 'PubMed Identifier',
 		redirect = 'PMID (identifier)',
-		q = '',
+		q = 'Q2082879',
 		label = 'PMID',
-		mode = 'manual',
-		prefix = '//pubmed.ncbi.nlm.nih.gov/',
+		prefix = 'https://pubmed.ncbi.nlm.nih.gov/',
 		COinS = 'info:pmid',
 		encode = false,
 		separator = '&nbsp;',
-		id_limit = 33000000,
+		id_limit = id_limits_data_t.PMID or 0,
 		},
 	['RFC'] = {
 		parameters = {'rfc', 'RFC'},
@@ -1575,11 +2584,11 @@ local id_handlers = {
 		redirect = 'RFC (identifier)',
 		q = 'Q212971',
 		label = 'RFC',
-		mode = 'external',
-		prefix = '//tools.ietf.org/html/rfc',
+		prefix = 'https://tools.ietf.org/html/rfc',
 		COinS = 'pre',															-- use prefix value
 		encode = false,
 		separator = '&nbsp;',
+		id_limit = id_limits_data_t.RFC or 0,
 		access = 'free',														-- free to read
 		},
 	['SBN'] = {
@@ -1587,7 +2596,6 @@ local id_handlers = {
 		link = 'Standard Book Number',											-- redirect to International_Standard_Book_Number#History
 		redirect = 'SBN (identifier)',
 		label = 'SBN',
-		mode = 'manual',
 		prefix = 'Special:BookSources/0-',										-- prefix has leading zero necessary to make 9-digit sbn a 10-digit isbn
 		COinS = nil,															-- nil because we can't use pre or rft or info:
 		separator = '&nbsp;',
@@ -1598,13 +2606,12 @@ local id_handlers = {
 		redirect = 'SSRN (identifier)',
 		q = 'Q7550801',
 		label = 'SSRN',
-		mode = 'manual',
-		prefix = '//ssrn.com/abstract=', 										-- protocol relative tested 2013-09-04
+		prefix = 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
-		id_limit = 4000000,
-		access = 'free',														-- always free to read
+		id_limit = id_limits_data_t.SSRN or 0,
+		custom_access = 'ssrn-access',
 		},
 	['S2CID'] = {
 		parameters = {'s2cid', 'S2CID'},
@@ -1612,12 +2619,11 @@ local id_handlers = {
 		redirect = 'S2CID (identifier)',
 		q = 'Q22908627',
 		label = 'S2CID',
-		mode = 'manual',
 		prefix = 'https://api.semanticscholar.org/CorpusID:',
 		COinS = 'pre',															-- use prefix value
 		encode = false,
 		separator = '&nbsp;',
-		id_limit = 230000000,
+		id_limit = id_limits_data_t.S2CID or 0,
 		custom_access = 's2cid-access',
 		},
 	['USENETID'] = {
@@ -1626,7 +2632,6 @@ local id_handlers = {
 		redirect = 'Usenet (identifier)',
 		q = 'Q193162',
 		label = 'Usenet:',
-		mode = 'manual',
 		prefix = 'news:',
 		encode = false,
 		COinS = 'pre',															-- use prefix value
@@ -1638,8 +2643,7 @@ local id_handlers = {
 		redirect = 'Zbl (identifier)',
 		q = 'Q190269',
 		label = 'Zbl',
-		mode = 'manual',
-		prefix = '//zbmath.org/?format=complete&q=an:',
+		prefix = 'https://zbmath.org/?format=complete&q=an:',
 		COinS = 'pre',															-- use prefix value
 		encode = true,
 		separator = '&nbsp;',
@@ -1647,12 +2651,29 @@ local id_handlers = {
 	}
 
 
---[[--------------------------< E X P O R T S >----------------------------------------------------------------
+--[[--------------------------< E X P O R T S >---------------------------------
 ]]
 
 return 	{
-	use_identifier_redirects = true,											-- when true use redirect name for identifier label links
+	use_identifier_redirects = use_identifier_redirects,						-- booleans defined in the settings at the top of this module
+	local_lang_cat_enable = local_lang_cat_enable,
+	date_name_auto_xlate_enable = date_name_auto_xlate_enable,
+	date_digit_auto_xlate_enable = date_digit_auto_xlate_enable,
+	enable_sort_keys = enable_sort_keys,
+	suppress_archive_today_urls = suppress_archive_today_urls,
+	
+																				-- tables and variables created when this module is loaded
+	dependencies_t = dependencies_t,											-- used to suppress parameters dependent on url-holding parameters holding archive.today urls
+	enum_needs_xlation = '1' ~= date_names.xlate_digits['1'],					-- to avoid unnecessary enumerator translation
+	global_df = get_date_format (),												-- this line can be replaced with "global_df = 'dmy-all'," to have all dates auto translated to dmy format.
+	global_cs1_config_t = global_cs1_config_t,									-- global settings from {{cs1 config}}
+	id_limits_data_load_fail = id_limits_data_load_fail,						-- true when commons tabular identifier-limit data fails to load
+	known_free_doi_registrants_t = build_free_doi_registrants_table(),
+	punct_skip = build_skip_table (punct_skip, punct_meta_params),
+	url_skip = build_skip_table (url_skip, url_meta_params),
 
+	archive_today_tlds_t = {['today'] = true, ['ph'] = true, ['is'] = true, ['md'] = true, ['li'] = true, ['fo'] = true, ['vn'] = true};	-- used by is_archive_today_url()
+	name_space_sort_keys = name_space_sort_keys,
 	aliases = aliases,
 	special_case_translation = special_case_translation,
 	date_names = date_names,
@@ -1660,27 +2681,38 @@ return 	{
 	error_conditions = error_conditions,
 	editor_markup_patterns = editor_markup_patterns,
 	et_al_patterns = et_al_patterns,
-	global_df = global_df,
+	extended_registrants_t = extended_registrants_t,
 	id_handlers = id_handlers,
 	keywords_lists = keywords_lists,
 	keywords_xlate = keywords_xlate,
-	stripmarkers=stripmarkers,
+	stripmarkers = stripmarkers,
 	invisible_chars = invisible_chars,
+	invisible_defs = invisible_defs,
 	indic_script = indic_script,
-	local_lang_cat_enable = local_lang_cat_enable,
+	emoji_t = emoji_t,
 	maint_cats = maint_cats,
 	messages = messages,
 	presentation = presentation,
 	prop_cats = prop_cats,
-	punct_skip = punct_skip,
 	script_lang_codes = script_lang_codes,
-	lang_code_remap = lang_code_remap,
+	lang_tag_remap = lang_tag_remap,
 	lang_name_remap = lang_name_remap,
 	this_wiki_code = this_wiki_code,
 	title_types = title_types,
-	uncategorized_namespaces = uncategorized_namespaces,
+	uncategorized_namespaces = uncategorized_namespaces_t,
 	uncategorized_subpages = uncategorized_subpages,
 	templates_using_volume = templates_using_volume,
 	templates_using_issue = templates_using_issue,
 	templates_not_using_page = templates_not_using_page,
+	vol_iss_pg_patterns = vol_iss_pg_patterns,
+	single_letter_2nd_lvl_domains_t = single_letter_2nd_lvl_domains_t,
+	url_access_map_t = url_access_map_t,
+	
+	inter_wiki_map = inter_wiki_map,
+	mw_languages_by_tag_t = mw_languages_by_tag_t,
+	mw_languages_by_name_t = mw_languages_by_name_t,
+	citation_class_map_t = citation_class_map_t,
+
+	citation_issue_t = citation_issue_t,
+	citation_no_volume_t = citation_no_volume_t,
 	}
