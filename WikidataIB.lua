@@ -83,10 +83,10 @@ local i18n =
 	["list separator"] = ", ",
 	["multipliers"] = {
 		[0]  = "",
-		[3]  = " thousand",
-		[6]  = " million",
-		[9]  = " billion",
-		[12] = " trillion",
+		[3]  = " хил.",
+		[6]  = " млн.",
+		[9]  = " млрд.",
+		[12] = " трлн.",
 	}
 }
 -- This allows an internationisation module to override the above table
@@ -884,6 +884,11 @@ local assembleoutput = function(out, args, entityID, propertyID)
 	-- before the output is collapsed.
 	-- Zero or not a number result in no collapsing (default becomes 0).
 	local collapse = tonumber(args.collapse) or 0
+	
+	-- quotes is a boolean passed to enable placing quotes around the returned values if they contain Cyrillic characters
+	-- if nothing or an empty string is passed set it false
+	-- if "false" or "no" or "0" is passed set it false
+	local quotes = parseParam(args.quotes, false)	
 
 	-- replacetext (rt) is a string that is returned instead of any non-empty Wikidata value
 	-- this is useful for tracking and debugging
@@ -905,6 +910,13 @@ local assembleoutput = function(out, args, entityID, propertyID)
 		end
 		if not noic and hasdisplay then
 			out[#out] = out[#out] .. createicon(args.langobj.code, entityID, propertyID)
+	    end
+		if quotes then
+			for k, v in ipairs(out) do
+				if mw.ustring.find(v, "[А-я]") then
+					out[k] = "„" .. v .. "“"
+				end
+			end			
 		end
 		if list == "" then
 			strout = table.concat(out, separator)
@@ -1041,13 +1053,13 @@ local rendersnak = function(propval, args, linked, lpre, lpost, pre, post, uabbr
 		local scale
 		if sc == "a" then
 			-- automatic scaling
-			if amount > 1e15 then
+			if amount > 1e12 then
 				scale = 12
-			elseif amount > 1e12 then
-				scale = 9
 			elseif amount > 1e9 then
-				scale = 6
+				scale = 9
 			elseif amount > 1e6 then
+				scale = 6
+			elseif amount > 1e3 then
 				scale = 3
 			else
 				scale = 0
