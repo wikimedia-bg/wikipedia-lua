@@ -1,0 +1,118 @@
+--[[--------------------------< I 1 8 N _ T >-----------------------------------
+
+settings definitions for i18n
+
+]]
+
+local i18n_t = {
+	["cite_q"] = "{{cite Q|",
+	["erratum"] = "(erratum)",
+	["unknown-author"] = mw.wikibase.getLabel("Q4233718"):gsub("^%l", mw.ustring.upper),
+	["wdq"] = "[[WDQ (identifier)|Wikidata]]", -- go through "WDQ (identifier)" redirect to reduce clutter in "What links here" and improve reverse lookup. Keep in sync with {{QID}}.
+	["wikisource"] = "enwikisource",
+	["errors"] = {
+		["local-article-not-found"] = "Local article not found.",
+		["no-label-or-title"] = "No label or title -- debug: ",
+	},
+	["months"] = {
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December"
+	},
+	["ordinal"] = {
+		[1] = "st",
+		[2] = "nd",
+		[3] = "rd",
+		["default"] = "th"
+	},
+	["trackingcats"] = {
+		["erratum"] = "[[Category:Cite Q - cites a work with an erratum]]",
+		["missing-wikidata"] = "[[Category:Articles with missing Wikidata information]]",	-- TODO: point to a {{cite q}}-specific category; this one is specific to Module:WikidataIB
+		['no-label-or-title'] = '[[Category:Cite Q - missing label or title]]',
+		["retracted"] = "[[Category:Cite Q - cites a retracted work]]<!-- retracted -->",
+		["replaced"] = "[[Category:Cite Q - cites a replaced work]]<!-- replaced -->",
+		["unknown-author"] = "", -- [[Category:Cite Q - author unknown]] removed as misplaced; someone is welcome to restore it if it is placed outside of the template parameter value
+		["unknown-template"] = "[[Category:Cite Q - template unknown]]",
+	},
+}
+
+
+--[[----------------< S I M P L E _ P R O P E R T I E S _ T >-------------------
+
+Table of simple properties that can be fetched in roughly the same way:
+
+id = PXXX
+
+maxvals = maximum number of multiple values (0 for all)
+linked = "no" suppresses linking
+populate_from_journal = true/false determines whether to look in a journal where the source is published
+rank = "best", "preferred", normal, etc. determines how Wikidata ranks are treated
+others = true - the value for the property goes to "others" section
+
+]]
+
+local simple_properties_t = {
+	publisher = {id = "P123", maxvals = 1},
+	oclc = {id = "P243", maxvals = 1},
+	['publication-place'] = {id = "P291", maxvals = 0, linked = 'no'}, -- publication place (don't put into |place=; is treated specially in {{citation}} if both are given)
+	doi = {id = "P356", maxvals = 1}, -- take care of |doi-broken-date= (WD "reason for deprecation"/"stated as") and |doi-access= (WD "access status")?
+	issue = {id = "P433", maxvals = 0, populate_from_journal = true}, -- distinguish from |number= ("P1545"?) if both are given (still blocked by {{citation}}, but will be supported in the future)
+	pmid = {id = "P698", maxvals = 1},
+	arxiv = {id = "P818", maxvals = 1},
+	bibcode = {id = "P819", maxvals = 1}, -- take care of |bibcode-access=?
+	jstor = {id = "P888", maxvals = 1}, -- take care of |jstor-access=?
+	mr = {id = "P889", maxvals = 1},
+	rfc = {id = "P892", maxvals = 1},
+	zbl = {id = "P894", maxvals = 1},
+	ssrn = {id = "P893", maxvals = 1},
+	place = {id = "P1071", maxvals = 0, linked = 'no'}, -- written-at place
+	s2cid = {id = "P8299", maxvals = 1}, -- take care of |s2cid-access=?
+	pmc = {id = "P932", maxvals = 1}, -- take care of |pmc-embargo-date= (WD "reason for deprecation")?
+	lccn = {id = "P1144", maxvals = 1},
+	hdl = {id = "P1184", maxvals = 1}, -- take care of |hdl-access=?
+	ismn = {id = "P1208", maxvals = 1},
+	journal = {id = "P1433", maxvals = 1},
+	citeseerx = {id = "P3784", maxvals = 1},
+	osti = {id = "P3894", maxvals = 1}, -- take care of |osti-access=?
+	biorxiv = {id = "P3951", maxvals = 1},
+	asin = {id = "P5749", maxvals = 1}, -- What about |asin-tld=? (WD examples resolve to .com at present, but may change)
+	['article-number'] = {id = "P2322", maxvals = 1, populate_from_journal = true},
+	isbn = {id = "P212", maxvals = 1, populate_from_journal = true}, -- ISBN 13
+	issn = {id = "P236", maxvals = 1, populate_from_journal = true}, -- distinguish from |eissn= for electronic issues?
+--	jfm = {id = "P?", maxvals = 1}, -- Jahrbuch über die Fortschritte der Mathematik (not Zbl)
+--	sbn = {id = "P?", maxvals = 1}, -- Standard Book Number (predecessor of ISBN, not ICCU)
+--	message-id = {id = "P?", maxvals = 1}, -- Usenet message ID
+	chapter = {id = "P792", maxvals = 1},
+	['publication-date'] = {id = "P577", maxvals = 1, populate_from_journal = true}, -- publication date (don't use |date=; is treated specially in {{citation}} if both are given.)
+	series = {id = "P179", maxvals = 1, populate_from_journal = true},
+	version = {id = "P348", maxvals = 0},
+	edition = {id = "P393", maxvals = 0},
+	volume = {id = "P478", maxvals = 0, populate_from_journal = true},
+--	part = {id = "P1545"?, maxvals = 0}, --  to be added to {{citation}} / COinS &rft.part=
+	title = {id = "P1476", rank="p n"},
+--	url = {id = "P953", maxvals = 1}, -- deal with this along with archive-url
+	pages = {id = "P304", maxvals = 0, populate_from_journal = true},
+	at = {id = "P958", maxvals = 0, populate_from_journal = true}, -- also incorporate lines (P7421) and columns (P3903) into this (cite map also supports |section=)
+--	sheets = {id = "P7416", maxvals = 0, populate_from_journal = true},
+--	interviewer = {id = "P?", maxvals = 0}, -- does **not** go to "others" section! Multiple interviewers should be n-enumerated
+	illustrator = {id = "P110", maxvals = 10, others = true}, -- goes to "others" section
+-- foreword and afterword, when contributions to another author's work, are contributions so belong in |contribution=;
+-- the writer's name goes in |contributor=; requires |title= and |author=
+-- However, this might need to add support for multiple contributors and their roles to {{citation}}, see Help_talk:Citation_Style_1#Others
+--	foreword = {id = "P2679", maxvals = 10, others = true}, -- goes to "others" section
+--	afterword = {id = "P2680", maxvals = 10, others = true}, -- goes to "others" section
+	composer = {id = "P86", maxvals = 10, others = true}, -- goes to "others" section
+	animator = {id = "P6942", maxvals = 10, others = true}, -- goes to "others" section
+	director = {id = "P57", maxvals = 10, others = true}, -- goes to "others" section
+	screenwriter = {id = "P58", maxvals = 10, others = true}, -- goes to "others" section
+	signatory = {id = "P1891", maxvals = 10, others = true}, -- goes to "others" section
+	presenter = {id = "P371", maxvals = 10, others = true}, -- goes to "others" section
+	performer = {id = "P175", maxvals = 10, others = true}, -- goes to "others" section
+}
+
+--[[--------------------------< E X P O R T S >----------------------------------------------------------------
+]]
+
+return {
+	i18n_t = i18n_t,
+	simple_properties_t = simple_properties_t,
+	}
