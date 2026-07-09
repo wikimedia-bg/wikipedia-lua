@@ -27,7 +27,7 @@ function p._navbar(args)
 	local t_linkquery, t_color, t_tip
 	if mw.getCurrentFrame():callParserFunction('PROTECTIONEXPIRY', 'edit', talkpage) == '' then
 		t_linkquery = {action = 'edit', redlink = '1'}
-		t_color = '#ba0000'
+		t_color = 'var(--color-destructive, #bf3c2c)'
 		t_tip = ' (страницата не съществува)'
 	end
 
