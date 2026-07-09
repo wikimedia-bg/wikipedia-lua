@@ -86,6 +86,8 @@ function renderNavBar(titleCell)
 	-- or right to keep the title centered.
 	local spacerSide = nil
 
+	if mw.text.trim(args.name or '') == '' then return end
+	
 	if args.navbar == 'off' then
 		-- No navbar, and client wants no spacer, i.e. wants the title to be shifted to the left. If there's
 		-- also no show/hide link, then we need a spacer on the right to achieve the left shift.
