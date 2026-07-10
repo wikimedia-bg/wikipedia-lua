@@ -85,8 +85,6 @@ function renderNavBar(titleCell)
 	-- Depending on the presence of the navbar and/or show/hide link, we may need to add a spacer div on the left
 	-- or right to keep the title centered.
 	local spacerSide = nil
-
-	if mw.text.trim(args.name or '') == '' then return end
 	
 	if args.navbar == 'off' then
 		-- No navbar, and client wants no spacer, i.e. wants the title to be shifted to the left. If there's
@@ -100,17 +98,19 @@ function renderNavBar(titleCell)
 		-- to balance out the width of the navbar.
 		if args.state == 'plain' then spacerSide = 'right' end
 
-		titleCell.wikitext(Navbar.navbar({
-			args.name,
-			mini = 1,
-			fontstyle = 'border:none;' .. (args.basestyle or '')
-		}))
+		if args.name then
+			titleCell.wikitext(Navbar.navbar({
+				args.name,
+				mini = 1,
+				fontstyle = 'border:none;' .. (args.basestyle or '')
+			}))
+		end
 	end
 
 	-- Render the spacer div.
 	if spacerSide then
 		titleCell
-			.tag('span')
+			.tag('div')
 				.css('float', spacerSide)
 				.css('width', '6em')
 				.wikitext('&nbsp;')
