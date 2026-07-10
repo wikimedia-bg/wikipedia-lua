@@ -98,7 +98,7 @@ function renderNavBar(titleCell)
 		-- to balance out the width of the navbar.
 		if args.state == 'plain' then spacerSide = 'right' end
 
-		if args.name then
+		if mw.text.trim(args.name or '') ~= '' then
 			titleCell.wikitext(Navbar.navbar({
 				args.name,
 				mini = 1,
