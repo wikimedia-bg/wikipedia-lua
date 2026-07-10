@@ -2833,7 +2833,9 @@ end
 -- Dependencies: dateFormat()
 -------------------------------------------------------------------------------
 p.getWorkPeriod = function(frame)
-	local itemID = mw.text.trim(frame.args[1] or frame.args.qid or mw.wikibase.getEntityIdForCurrentPage())
+	local itemID = mw.text.trim(frame.args[1] or frame.args.qid or mw.wikibase.getEntityIdForCurrentPage() or '')
+
+	if itemID == '' then return end
 	
 	local p2031 = mw.wikibase.getBestStatements(itemID, "P2031")
 	local p2032 = mw.wikibase.getBestStatements(itemID, "P2032")
@@ -2842,11 +2844,17 @@ p.getWorkPeriod = function(frame)
 	local work_period_end = {}
 	
 	for i = 1, #p2031 do
-		table.insert(work_period_start, dateFormat(p2031[i].mainsnak.datavalue.value.time, nil, "y"))
+		local success, val = pcall(function() return p2031[i].mainsnak.datavalue.value.time end)
+		if success and val then
+			table.insert(work_period_start, dateFormat(val, nil, "y"))
+		end
 	end
 	
 	for i = 1, #p2032 do
-		table.insert(work_period_end, dateFormat(p2032[i].mainsnak.datavalue.value.time, nil, "y"))
+		local success, val = pcall(function() return p2032[i].mainsnak.datavalue.value.time end)
+		if success and val then
+			table.insert(work_period_end, dateFormat(val, nil, "y"))
+		end
 	end
 	
 	local result = {}
