@@ -411,8 +411,11 @@ function util.wikidataCoords(item_id)
 	local mainsnak = nil
 	if not coordStatements or #coordStatements == 0 then
 		local hql = mw.wikibase.getBestStatements(item_id, 'P159')
-		if hql and hql[1].qualifiers and hql[1].qualifiers.P625 then
-			mainsnak = hql[1].qualifiers.P625[1]
+		for i = 1, #hql do
+			if hql[i].qualifiers and hql[i].qualifiers.P625 then
+				mainsnak = hql[i].qualifiers.P625[1]
+				if mainsnak then break end
+			end
 		end
 	else
 		mainsnak = coordStatements[1].mainsnak
