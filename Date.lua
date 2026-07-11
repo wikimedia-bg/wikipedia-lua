@@ -523,29 +523,29 @@ end
 
 local day_info = {
 	-- 0=Sun to 6=Sat
-	[0] = { 'Sun', 'Sunday' },
-	{ 'Mon', 'Monday' },
-	{ 'Tue', 'Tuesday' },
-	{ 'Wed', 'Wednesday' },
-	{ 'Thu', 'Thursday' },
-	{ 'Fri', 'Friday' },
-	{ 'Sat', 'Saturday' },
+	[0] = { 'Sun', 'Sunday', 'Нед', 'Неделя' },
+	{ 'Mon', 'Monday', 'Пон', 'Понеделник' },
+	{ 'Tue', 'Tuesday', 'Вто', 'Вторник' },
+	{ 'Wed', 'Wednesday', 'Сря', 'Сряда' },
+	{ 'Thu', 'Thursday', 'Чет', 'Четвъртък' },
+	{ 'Fri', 'Friday', 'Пет', 'Петък' },
+	{ 'Sat', 'Saturday', 'Съб', 'Събота' },
 }
 
 local month_info = {
 	-- 1=Jan to 12=Dec
-	{ 'Jan', 'January' },
-	{ 'Feb', 'February' },
-	{ 'Mar', 'March' },
-	{ 'Apr', 'April' },
-	{ 'May', 'May' },
-	{ 'Jun', 'June' },
-	{ 'Jul', 'July' },
-	{ 'Aug', 'August' },
-	{ 'Sep', 'September' },
-	{ 'Oct', 'October' },
-	{ 'Nov', 'November' },
-	{ 'Dec', 'December' },
+	{ 'Jan', 'January', 'Яну', 'Януари' },
+	{ 'Feb', 'February', 'Фев', 'Февруари' },
+	{ 'Mar', 'March', 'Мар', 'Март' },
+	{ 'Apr', 'April', 'Апр', 'Април' },
+	{ 'May', 'May', 'Май' },
+	{ 'Jun', 'June', 'Юни' },
+	{ 'Jul', 'July', 'Юли' },
+	{ 'Aug', 'August', 'Авг', 'Август' },
+	{ 'Sep', 'September', 'Сеп', 'Септември' },
+	{ 'Oct', 'October', 'Окт', 'Октомври' },
+	{ 'Nov', 'November', 'Ное', 'Ноември' },
+	{ 'Dec', 'December', 'Дек', 'Декември' },
 }
 
 local function name_to_number(text, translate)
@@ -563,6 +563,13 @@ local function day_number(text)
 		thu = 4, thursday = 4,
 		fri = 5, friday = 5,
 		sat = 6, saturday = 6,
+		['нед'] = 0, ['неделя'] = 0,
+		['пон'] = 1, ['понеделник'] = 1,
+		['вто'] = 2, ['вторник'] = 2,
+		['сря'] = 3, ['сряда'] = 3,
+		['чет'] = 4, ['четвъртък'] = 4,
+		['пет'] = 5, ['петък'] = 5,
+		['съб'] = 6, ['събота'] = 6,
 	})
 end
 
@@ -580,6 +587,18 @@ local function month_number(text)
 		oct = 10, october = 10,
 		nov = 11, november = 11,
 		dec = 12, december = 12,
+		['яну'] = 1, ['януари'] = 1,
+		['фев'] = 2, ['февруари'] = 2,
+		['мар'] = 3, ['март'] = 3,
+		['апр'] = 4, ['април'] = 4,
+		['май'] = 5,
+		['юни'] = 6,
+		['юли'] = 7,
+		['авг'] = 8, ['август'] = 8,
+		['сеп'] = 9, ['септември'] = 9,
+		['окт'] = 10, ['октомври'] = 10,
+		['ное'] = 11, ['ноември'] = 11,
+		['дек'] = 12, ['декември'] = 12
 	})
 end
 
