@@ -150,8 +150,9 @@ local function decodeArgs(args)
 				person.dateDeath = decodeDate(strings[4]) -- Date of death
 				person.age = ageInYearsMonthsAndDays(person.dateDeath or dateNow, person.dateBirth)
 				person.nation = strings[5] or ''
+                person.Nation = strings[6] or ''
 				-- For templates and/or html codes with semicolon
-				for k = 6, #strings do person.nation = person.nation .. ';' .. strings[k] or '' end
+				for k = 7, #strings do person.nation = person.nation .. ';' .. strings[k] or '' end
 				table.insert(persons, person)
 			end
 		end
