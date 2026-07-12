@@ -102,7 +102,7 @@ function p.displaySortedTable(persons, frame)
 		.. "'''||border=1px solid #AAAAAA}}")
 		.. '\n' .. [[
 <br/>
-<small>‡{{note|Възраст}} посочва датата на смъртта или, ако лицето е живо – възрастта към {{date}}</small>
+<small>‡{{Бележка|Възраст}} посочва датата на смъртта или, ако лицето е живо – възрастта към {{Datum}}</small>
 {|class="wikitable sortable" width=75%
 |-
 !width=1%  |№
