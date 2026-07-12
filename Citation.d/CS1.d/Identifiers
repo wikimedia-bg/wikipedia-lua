@@ -635,7 +635,7 @@ local function doi (options)
 	else																		-- here when doi has no errors or has been wrapped in accept-as-written markup
 		suffix = mw.ustring.match (id, '^10%.[^/]+/(.+)');						-- refetch suffix because doi may have been wrapped in accept-as-written markup
 		if not access and (cfg.known_free_doi_registrants_t[registrant] or is_extended_free (registrant, suffix)) then		-- |doi-access=free not set and <registrant> is known to be free
-			set_message ('maint_doi_unflagged_free');							-- set a maint cat
+			-- set_message ('maint_doi_unflagged_free');							-- set a maint cat
 		end
 	end
 	
