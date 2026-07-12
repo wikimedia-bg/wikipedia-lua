@@ -78,9 +78,9 @@ function p.displaySortedTable(persons, frame)
 			row:tag('td'):wikitext(formatDateSortable(person.dateDeath))
 		else
 			if person.sex == 'Ж' then
-				row:tag('td'):wikitext("'''''Жива'''''")
+				row:tag('td'):wikitext("'''''жива'''''")
 			else
-				row:tag('td'):wikitext("'''''Жив'''''")
+				row:tag('td'):wikitext("'''''жив'''''")
 			end
 		end
 		row:tag('td'):wikitext(ageInYearsMonthsAndDaysFormat(person.age))
@@ -101,8 +101,6 @@ function p.displaySortedTable(persons, frame)
 		.. tostring(keyLast - numberOfLiving) 
 		.. "'''||border=1px solid #AAAAAA}}")
 		.. '\n' .. [[
-<br>
-<small>‡{{Бележка|Възраст}} посочва датата на смъртта или, ако лицето е живо – възрастта към {{Datum}}</small>
 {|class="wikitable sortable" width=75%
 |-
 !width=1%  |№
@@ -110,7 +108,7 @@ function p.displaySortedTable(persons, frame)
 !width=3%  |Пол
 !width=15% |Дата на раждане
 !width=15% |Дата на смъртта
-!width=15% |Възраст {{Ref label|Възраст|‡}}
+!width=15% |Възраст
 !nowrap width=25% |Място на раждане
 !nowrap width=25% |Място на смъртта<br>или местоживеене
 ]]
