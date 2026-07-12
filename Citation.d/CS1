@@ -600,7 +600,7 @@ local function format_script_value (script_value, script_param)
 			script_value = script_value:gsub ('^%l+%s*:%s*', '');				-- strip prefix from script
 																				-- is prefix one of these language codes?
 			if utilities.in_array (lang, cfg.script_lang_codes) then
-				utilities.add_prop_cat ('script', {name, lang})
+				-- utilities.add_prop_cat ('script', {name, lang})
 			else
 				utilities.set_message ('err_script_parameter', {script_param, cfg.err_msg_supl['unknown language code']});	-- unknown script-language; add error message
 			end
@@ -1318,7 +1318,7 @@ local function list_people (control, people, etal)
 					local proj_name = ({['d'] = cfg.messages.wikidata, ['s'] = cfg.messages.wikisource, ['w'] = cfg.messages.wikipedia})[proj];	-- :w (wikipedia) for linking from a non-wikipedia project
 					if proj_name then 
 						one = one .. utilities.wrap_style ('interproj', proj_name);	-- add resized leading space, brackets, static text, language name
-						utilities.add_prop_cat ('interproj-linked-name', proj);	-- categorize it; <proj> is sort key
+						-- utilities.add_prop_cat ('interproj-linked-name', proj);	-- categorize it; <proj> is sort key
 						tag = nil;												-- unset; don't do both project and language
 					end
 				end
@@ -1329,7 +1329,7 @@ local function list_people (control, people, etal)
 					local lang = cfg.lang_tag_remap[tag] or cfg.mw_languages_by_tag_t[tag];
 					if lang then												-- error messaging done in extract_names() where we know parameter names
 						one = one .. utilities.wrap_style ('interwiki', lang);	-- add resized leading space, brackets, static text, language name
-						utilities.add_prop_cat ('interwiki-linked-name', tag);	-- categorize it; <tag> is sort key
+						-- utilities.add_prop_cat ('interwiki-linked-name', tag);	-- categorize it; <tag> is sort key
 					end
 				end
 
@@ -1840,12 +1840,12 @@ local function language_parameter (lang)
 
 			if cfg.this_wiki_code ~= lang_subtag then							-- when the language is not the same as this wiki's language
 				if 2 == lang_subtag:len() then									-- and is a two-character tag
-					utilities.add_prop_cat ('foreign-lang-source', {name, tag}, lang_subtag);		-- categorize it; tag appended to allow for multiple language categorization
+					-- utilities.add_prop_cat ('foreign-lang-source', {name, tag}, lang_subtag);		-- categorize it; tag appended to allow for multiple language categorization
 				else															-- or is a recognized language (but has a three-character tag)
-					utilities.add_prop_cat ('foreign-lang-source-2', {lang_subtag}, lang_subtag);			-- categorize it differently TODO: support multiple three-character tag categories per cs1|2 template?
+					-- utilities.add_prop_cat ('foreign-lang-source-2', {lang_subtag}, lang_subtag);			-- categorize it differently TODO: support multiple three-character tag categories per cs1|2 template?
 				end
 			elseif cfg.local_lang_cat_enable then								-- when the language and this wiki's language are the same and categorization is enabled
-				utilities.add_prop_cat ('local-lang-source', {name, lang_subtag});		-- categorize it
+				-- utilities.add_prop_cat ('local-lang-source', {name, lang_subtag});		-- categorize it
 			end
 		else
 			name = lang;														-- return whatever <lang> has so that we show something
@@ -2101,7 +2101,7 @@ rendered citation and in the metadata.  Individual author names may be wikilinke
 local function get_v_name_table (vparam, output_table, output_link_table)
 	local _, accept = utilities.has_accept_as_written (vparam);
 	if accept then
-		utilities.add_prop_cat ('vanc-accept');									-- add properties category
+		-- utilities.add_prop_cat ('vanc-accept');									-- add properties category
 	end
 	local name_table = mw.text.split(vparam, "%s*,%s*");						-- names are separated by commas
 	local wl_type, label, link;													-- wl_type not used here; just a placeholder
@@ -2332,7 +2332,7 @@ local function format_volume_issue (volume, issue, article, cite_class, origin, 
 	local is_long_vol = volume and (4 < mw.ustring.len(volume));				-- is |volume= value longer than 4 characters?
 	
 	if volume and (not is_numeric_vol and is_long_vol) then						-- when not all digits or Roman numerals, is |volume= longer than 4 characters?
-		utilities.add_prop_cat ('long-vol');									-- yes, add properties cat
+		-- utilities.add_prop_cat ('long-vol');									-- yes, add properties cat
 	end
 
 	if is_journal then															-- journal-style formatting
@@ -3137,7 +3137,7 @@ local function citation0( config, args )
 	
 	if not utilities.is_set (URL) and utilities.is_set (UrlAccess) then
 		UrlAccess = nil;
-		utilities.set_message ('err_param_access_requires_param', 'url');
+		-- utilities.set_message ('err_param_access_requires_param', 'url');
 	end
 	
 	local ChapterURL = A['ChapterURL'];
@@ -3176,7 +3176,7 @@ local function citation0( config, args )
 	Page, Pages, At, coins_pages = insource_loc_get (Page, A:ORIGIN('Page'), Pages, A:ORIGIN('Pages'), At);
 
 	if utilities.is_set (PublicationPlace) and utilities.is_set (Place) then	-- both |publication-place= and |place= (|location=) allowed if different
-		utilities.add_prop_cat ('location-test');								-- add property cat to evaluate how often PublicationPlace and Place are used together
+		-- utilities.add_prop_cat ('location-test');								-- add property cat to evaluate how often PublicationPlace and Place are used together
 		if PublicationPlace == Place then
 			Place = '';															-- unset; don't need both if they are the same
 		end
@@ -4130,7 +4130,7 @@ local function citation0( config, args )
 				if 'bot: unknown' == UrlStatus then
 					utilities.set_message ('maint_bot_unknown');				-- and add a category if not already added
 				else
-					utilities.add_prop_cat ('unfit');							-- and add a category if not already added
+					-- utilities.add_prop_cat ('unfit');							-- and add a category if not already added
 				end
 			else																-- UrlStatus is empty, 'dead'
 				if utilities.is_set (ArchiveDate) then
@@ -4498,7 +4498,7 @@ local function validate (name, cite_class, empty)
 		end
 		if 'tracked' == state then
 			local base_name = name:gsub ('%d', '');								-- strip enumerators from parameter names that have them to get the base name
-			utilities.add_prop_cat ('tracked-param', {base_name}, base_name);	-- add a properties category; <base_name> modifies <key>
+			-- utilities.add_prop_cat ('tracked-param', {base_name}, base_name);	-- add a properties category; <base_name> modifies <key>
 			return true;
 		end
 		return nil;
