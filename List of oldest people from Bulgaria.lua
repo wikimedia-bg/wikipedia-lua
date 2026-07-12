@@ -101,7 +101,7 @@ function p.displaySortedTable(persons, frame)
 		.. tostring(keyLast - numberOfLiving) 
 		.. "'''||border=1px solid #AAAAAA}}")
 		.. '\n' .. [[
-<br/>
+<br>
 <small>‡{{Бележка|Възраст}} посочва датата на смъртта или, ако лицето е живо – възрастта към {{Datum}}</small>
 {|class="wikitable sortable" width=75%
 |-
@@ -110,9 +110,9 @@ function p.displaySortedTable(persons, frame)
 !width=3%  |Пол
 !width=15% |Дата на раждане
 !width=15% |Дата на смъртта
-!width=15% |Възраст {{ref label|Възраст|‡}}
+!width=15% |Възраст {{Ref label|Възраст|‡}}
 !nowrap width=25% |Място на раждане
-!nowrap width=25% |Място на смъртта или местоживеене
+!nowrap width=25% |Място на смъртта<br>или местоживеене
 ]]
 	return header .. '\n' .. result .. tostring(root) .. '\n|}'
 end
