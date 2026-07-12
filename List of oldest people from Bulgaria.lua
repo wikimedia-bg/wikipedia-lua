@@ -72,7 +72,7 @@ function p.displaySortedTable(persons, frame)
 			row:attr('bgcolor', aliveColor)
 			numberOfLiving = numberOfLiving + 1
 		end
---		row:tag('td'):wikitext(person.sex)
+		row:tag('td'):css('text-align', 'center'):wikitext(person.sex)
 		row:tag('td'):wikitext(formatDateSortable(person.dateBirth))
 		if person.dateDeath ~= nil then -- Dead
 			row:tag('td'):wikitext(formatDateSortable(person.dateDeath))
