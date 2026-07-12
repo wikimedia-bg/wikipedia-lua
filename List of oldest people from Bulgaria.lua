@@ -77,7 +77,11 @@ function p.displaySortedTable(persons, frame)
 		if person.dateDeath ~= nil then -- Dead
 			row:tag('td'):wikitext(formatDateSortable(person.dateDeath))
 		else
-			row:tag('td'):wikitext(person.sex == 'F' and 'жива' or 'жив')
+			if person.sex == 'Ж' then
+				row:tag('td'):wikitext("'''''Жива'''''")
+			else
+				row:tag('td'):wikitext("'''''Жив'''''")
+			end
 		end
 		row:tag('td'):wikitext(ageInYearsMonthsAndDaysFormat(person.age))
 		row:tag('td'):wikitext(person.nation or '')
