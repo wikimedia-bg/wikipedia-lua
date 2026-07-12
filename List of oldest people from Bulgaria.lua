@@ -85,6 +85,7 @@ function p.displaySortedTable(persons, frame)
 		end
 		row:tag('td'):wikitext(ageInYearsMonthsAndDaysFormat(person.age))
 		row:tag('td'):wikitext(person.nation or '')
+		row:tag('td'):wikitext(person.Nation or '')
 	end
 	if rankCell ~= nil and keyLast > rank then
 		rankCell:attr('rowspan', tostring(keyLast - rank + 1))
