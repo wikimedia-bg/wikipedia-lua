@@ -107,7 +107,8 @@ function p.displaySortedTable(persons, frame)
 !Дата на раждане
 !Дата на смъртта
 !Възраст
-!Страна
+!Място на раждане
+!Място на смъртта или местоживеене
 ]]
 	return header .. '\n' .. result .. tostring(root) .. '\n|}'
 end
