@@ -99,6 +99,7 @@ function p.displaySortedTable(persons, frame)
 {|class="wikitable sortable"
 !#
 !Име
+!Пол
 !Дата на раждане
 !Дата на смъртта
 !Възраст
