@@ -1,0 +1,8 @@
+return {
+	name = 'Иберия и Мароко',
+	top = 44.4,
+	bottom = 27.3,
+	left = -13.55,
+	right = 4.8,
+	image = 'Iberia Morocco location map.svg'
+}
