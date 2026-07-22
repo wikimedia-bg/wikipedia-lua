@@ -306,6 +306,7 @@ return {
 		{ 'Словакия', 'Flag of Slovakia.svg|border' },
 		{ 'Словения', 'Flag of Slovenia.svg' },
 		{ 'Сърбия', 'Flag of Serbia.svg|border' },
+	    { 'Сърбия и Черна гора', 'Flag of Serbia and Montenegro (1992–2006).svg|border'},
 		{ 'Украйна', 'Flag of Ukraine.svg' },
 			{ 'Одеска област', 'Одесская область.png' },
 		{ 'Унгария', 'Flag of Hungary.svg' },
