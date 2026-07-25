@@ -412,7 +412,7 @@ local function createFileNode(file)
 		caption = string.format('<div>%s</div>', file.description)
 	end
 	
-	local image = file.name:sub(1, 1) == '<' and file.name or to.link(string.format('File:%s|frameless%s|250px', file.name, title))
+	local image = file.name:sub(1, 1) == '<' and file.name or to.link(string.format('File:%s|frameless%s|240px', file.name, title))
 	local node = mw.html.create('tr')
 		:tag('td')
 			:css('padding', '5px')
