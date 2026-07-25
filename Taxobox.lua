@@ -412,7 +412,7 @@ local function createFileNode(file)
 		caption = string.format('<div>%s</div>', file.description)
 	end
 	
-	local image = file.name:sub(1, 1) == '<' and file.name or to.link(string.format('File:%s|frameless%s|240px', file.name, title))
+	local image = file.name:sub(1, 1) == '<' and file.name or to.link(string.format('File:%s|frameless%s|250px', file.name, title))
 	local node = mw.html.create('tr')
 		:tag('td')
 			:css('padding', '5px')
@@ -681,7 +681,7 @@ end
 
 local function getStatus(status, categorize)
 	if status then
-		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|240px|%s|class=skin-invert-image', status, status)) .. '<br/>'
+		local result = to.link(string.format('File:Status iucn' .. (status == 'CD' and '2.3' or '3.1') .. ' %s bg.svg|250px|%s|class=skin-invert-image', status, status)) .. '<br/>'
 		local category = ''
 		if status == 'LC' then
 			result = result .. to.link('Незастрашен вид|Незастрашен')
