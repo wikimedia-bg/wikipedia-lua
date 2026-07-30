@@ -165,7 +165,7 @@ function i.InfoboxImage(frame)
         if mw.title.getCurrentTitle().namespace == 0 and (mw.ustring.find(image, "|%s*thumb%s*[|%]]") or mw.ustring.find(image, "|%s*thumbnail%s*[|%]]")) then
             return image .. "[[Категория:Страници, използващи инфокутии с изображения миниатюри]]";
         elseif mw.title.getCurrentTitle().namespace == 0 then
-            return image .. "[[Категория::Страници, използващи изображения с непрепоръчителен формат]]";
+            return image .. "[[Категория:Страници, използващи изображения с непрепоръчителен формат]]";
         else
             return image;
         end
