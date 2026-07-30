@@ -163,9 +163,9 @@ function i.InfoboxImage(frame)
     if mw.ustring.sub(image,1,2) == "[[" then
         -- search for thumbnail images and add to tracking cat if found
         if mw.title.getCurrentTitle().namespace == 0 and (mw.ustring.find(image, "|%s*thumb%s*[|%]]") or mw.ustring.find(image, "|%s*thumbnail%s*[|%]]")) then
-            return image .. "[[Category:Pages using infoboxes with thumbnail images]]";
+            return image .. "[[Категория:Страници, използващи инфокутии с изображения миниатюри]]";
         elseif mw.title.getCurrentTitle().namespace == 0 then
-            return image .. "[[Category:Pages using deprecated image syntax]]";
+            return image .. "[[Категория::Страници, използващи изображения с непрепоръчителен формат]]";
         else
             return image;
         end
