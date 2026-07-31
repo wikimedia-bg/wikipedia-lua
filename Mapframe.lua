@@ -749,12 +749,11 @@ Makes attributes for the maplink or mapframe tag.
 ]]--
 function make.tagAttribs(args, isTitle)
 	local attribs = {}
-	attribs.class = 'noviewer'
 	if util.getParameterValue(args, 'zoom') then
 		attribs.zoom = util.getParameterValue(args, 'zoom')
 	end
 	if util.isDeclined(util.getParameterValue(args, 'icon')) then
-		attribs.class = attribs.class .. " " .. "no-icon"
+		attribs.class = "no-icon"
 	end
 	if util.getParameterValue(args, 'type') == L10n.str.point and not coordsDerivedFromFeatures then
 		local lat, long = make.coords(args, 'plainOutput')
@@ -1011,6 +1010,9 @@ function p.main(frame)
 		output = p.multi(parent.args)
 	else
 		output = p._main(parent.args)
+	end
+	if mw.text.trim(output or '') ~= '' then
+		output = mw.text.tag('div', { class = 'noviewer' }, output)
 	end
 	-- Preprocess output before returning it
 	return frame:preprocess(output)
