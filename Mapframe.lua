@@ -1011,6 +1011,9 @@ function p.main(frame)
 	else
 		output = p._main(parent.args)
 	end
+	if mw.text.trim(output or '') ~= '' then
+		output = mw.text.tag('div', { class = 'noviewer' }, output)
+	end
 	-- Preprocess output before returning it
 	return frame:preprocess(output)
 end
