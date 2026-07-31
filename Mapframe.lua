@@ -805,11 +805,7 @@ page (the same place where coords with |display=title are positioned).
 ]]--
 function make.titleOutput(args, tagContent)
 	local titleTag = mw.text.tag('maplink', make.tagAttribs(args, true), tagContent)
-	local spanAttribs = {
-		style = "font-size: small;",
-		id = "coordinates"
-	}
-	return mw.text.tag('span', spanAttribs, titleTag)
+	return mw.text.tag('indicator', { name = 'coordinates' }, titleTag)
 end
 
 --[[
