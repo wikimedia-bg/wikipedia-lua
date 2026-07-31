@@ -876,7 +876,7 @@ function make.switcherHtml(params, options)
 		:addClass("mw-kartographer-container")
 		:addClass("thumb")
 	if options.alignment == "left" or options.alignment == "right" then
-		outerCountainer:addClass("t"..options.alignment)
+		outerCountainer:addClass("float"..options.alignment)
 	else -- alignment is "center"
 		outerCountainer
 			:addClass("tnone")
