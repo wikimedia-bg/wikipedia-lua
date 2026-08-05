@@ -95,6 +95,7 @@ local databases = {
 	{ id = 'TA', property = 1323, pattern = 'A%d%d%.%d%.%d%d%.%d%d%d[FM]?' },
 	{ id = 'TLS', property = 1362, pattern = '%u[%S_]+' },
 	{ id = 'ULAN', property = 245, pattern = '500%d%d%d%d%d%d' },
+	{ id = 'UNESCO OKJ ID', property = 14698, pattern = '%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x' },
 	{ id = 'USCongress', label = 'US Congress', property = 1157, pattern = '[A-Z]00[01]%d%d%d' },
 	{ id = 'VIAF', property = 214, pattern = { '[1-9]%d' .. rep('%d?', 7), '[1-9]%d?%d?%d?' .. rep('%d', 18) } },
 	{ id = 'WorldCat Entities', label = 'WorldCat', property = 10832, pattern = {'[a-zA-Z%d][a-zA-Z%d]' .. rep('[a-zA-Z%d]?', 26)} },
