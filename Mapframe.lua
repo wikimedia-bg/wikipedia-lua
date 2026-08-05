@@ -1000,16 +1000,13 @@ function p.main(frame)
 	local isMulti = switch and mw.text.trim(switch) ~= ""
 	-- Create output by choosing method to suit options
 	local output
-	local wrapperTag = 'div'
 	if hasOverlay then
 		output = p.withOverlay(parent.args)
 	elseif isMulti then
 		output = p.multi(parent.args)
 	else
 		output = p._main(parent.args)
-		wrapperTag = 'span'
 	end
-	output = mw.text.tag(wrapperTag, { class = 'noviewer' }, output)
 	-- Preprocess output before returning it
 	return frame:preprocess(output)
 end
