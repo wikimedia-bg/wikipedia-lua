@@ -50,6 +50,8 @@ local placeholder_image = {
 	"Example.jpg",
 	"Image placeholder.png",
 	"No male portrait.svg",
+    "No image (male).svg",
+    "No image (female).svg",
 	"Nocover-upload.png",
 	"NoDVDcover copy.png",
 	"Noribbon.svg",
