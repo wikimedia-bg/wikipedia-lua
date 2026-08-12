@@ -135,7 +135,7 @@ return {
 		{ 'Шри Ланка', 'Flag of Sri Lanka.svg' },
 		{ 'Южна Корея', 'Flag of South Korea.svg|border' },
 		{ 'Япония', 'Flag of Japan.svg|border' },
-	{ 'Антарктика', 'Proposed flag of Antarctica (Graham Bartram).svg' },
+	{ 'Антарктика|Антарктида', 'Proposed flag of Antarctica (Graham Bartram).svg' },
 	{ 'Африка', 'Africa_ico.png' },
 		{ 'Западна Африка', 'africa-countries-western.svg' },
 			{ 'Бенин', 'Flag of Benin.svg' },
