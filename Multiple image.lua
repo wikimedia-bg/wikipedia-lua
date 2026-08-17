@@ -1,4 +1,4 @@
--- implements [[Template:Multiple image]]
+-- иплементира [[Шаблон:Няколко картинки]]
 local p = {}
 
 local autoscaledimages
@@ -319,7 +319,7 @@ function p.render( frame )
 	local tracking = check({
 		['unknown'] = frame:expandTemplate{
 			title = 'main other',
-			args = {'[[Category:Pages using multiple image with unknown parameters|_VALUE_ ]]'}
+			args = {'[[Категория:Страници, използващи Шаблон:Няколко картинки с неизвестни параметри|_VALUE_ ]]'}
 		},
 		['preview'] = 'Page using [[Template:Multiple image]] with unknown parameter "_VALUE_"',
 		['ignoreblank'] = 'y',
@@ -341,10 +341,10 @@ function p.render( frame )
 	
 	return frame:extensionTag {name = 'templatestyles', args = {src = 'Multiple image/styles.css', wrapper = ".tmulti"}}
 		.. renderMultipleImages( frame )
-		.. (autoscaledimages and '[[Category:Pages using multiple image with auto scaled images]]' or '')
-		.. (nonautoscaledimages and '[[Category:Pages using multiple image with manual scaled images]]' or '')
-		.. ( (numberofimages == 0) and '[[Category:Pages using multiple image with zero images]]' or '')
-		.. ( (numberofimages == 1) and '[[Category:Pages using multiple image with one image]]' or '' )
+		.. (autoscaledimages and '[[Категория:Страници, използващи Шаблон:Няколко картинки с автоматично оразмерени изображения]]' or '')
+		.. (nonautoscaledimages and '[[Категория:Страници, използващи Шаблон:Няколко картинки с ръчно оразмерени изображения]]' or '')
+		.. ( (numberofimages == 0) and '[[Категория:Страници, използващи Шаблон:Няколко картинки без никакви изображения]]' or '')
+		.. ( (numberofimages == 1) and '[[Категория:Страници, използващи Шаблон:Няколко картинки с едно изображение]]' or '' )
 		.. tracking
 end
 
