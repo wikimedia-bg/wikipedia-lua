@@ -89,6 +89,7 @@ local databases = {
 	{ id = 'SELIBR', label = 'LIBRIS', property = 906, pattern = '[1-9]%d%d%d%d%d?' },
 		{ id = 'LIBRIS', property = 5587, pattern = rep('[a-z%d]', 12) .. '[a-z%d]*' }, --alternative to SELIBR
 	{ id = 'SIKART', property = 781, pattern = '%d%d%d%d%d%d%d%d?%d?' },
+	{ id = 'SMR', label = 'ЕРП София', property = 14797, pattern = '[1-9]%d*' }, -- Sofia monuments register ID
 	{ id = 'SNAC-ID', label = 'SNAC', property = 3430, pattern = '%d*[A-Za-z][%dA-Za-z]*' },
 	{ id = 'STRAZHA', label = 'Стража', property = 11446, pattern = { 'parl%-groups/[a-z%d-]+', 'parliaments/[a-z%d-]+', 'mps/[a-z%d-]+' } },
 	{ id = 'SUDOC', label = 'IdRef', property = 269, pattern = '%d%d%d%d%d%d%d%d[%dX]' },
