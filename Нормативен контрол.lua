@@ -322,10 +322,10 @@ local function getLink(property, val, label)
 		local valurl = val
 		if mw.ustring.find(link, 'antweb.org') then valurl = mw.ustring.gsub(valurl, ' ', '%%20') end
 		if type(property) == 'number' then
-			--doublecheck language for Wildflowers of Israel ID
-			if property == 3746 then link = mw.ustring.gsub(link, '/hebrew/', '/english/') end
 			--remove spaces in ISNI
 			if property == 213 then valurl = mw.ustring.gsub(valurl, ' ', '') end
+			--doublecheck language for Wildflowers of Israel ID
+			if property == 3746 then link = mw.ustring.gsub(link, '/hebrew/', '/english/') end
 			--format spaces in PfaF, e.g. for "Elaeagnus x ebbingei"
 			if property == 4301 then valurl = mw.ustring.gsub(valurl, ' ', '+') end
 		end
@@ -337,6 +337,8 @@ local function getLink(property, val, label)
 	--val = mw.ustring.match(val, '([^=/]*)/?$') -- get display name from end of URL
 	if not nilOrEmpty(link) then
 		if mw.ustring.find(link, '//') then
+			-- encode square brackets for external links
+			link = mw.ustring.gsub(link, '[%[%]]', function(match) return match == '[' and '%5B' or '%5D' end)
 			returnVal.text = '[' .. link .. ' ' .. label .. ']'
 		else
 			returnVal.text = '[[' .. link .. '|' .. label .. ']]'
