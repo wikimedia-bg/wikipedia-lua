@@ -71,11 +71,9 @@ function p.removeDuplicates(arr)
 		if isNan(v) then
 			-- NaNs can't be table keys, and they are also unique, so we don't need to check existence.
 			ret[#ret + 1] = v
-		else
-			if not exists[v] then
-				ret[#ret + 1] = v
-				exists[v] = true
-			end
+		elseif not exists[v] then
+			ret[#ret + 1] = v
+			exists[v] = true
 		end
 	end
 	return ret
@@ -379,38 +377,36 @@ end
 -- Recursive deep copy function. Preserves identities of subtables.
 ------------------------------------------------------------------------------------
 local function _deepCopy(orig, includeMetatable, already_seen)
-	-- Stores copies of tables indexed by the original table.
-	already_seen = already_seen or {}
-
+	if type(orig) ~= "table" then
+		return orig
+	end
+	
+	-- already_seen stores copies of tables indexed by the original table.
 	local copy = already_seen[orig]
 	if copy ~= nil then
 		return copy
 	end
-
-	if type(orig) == 'table' then
-		copy = {}
-		for orig_key, orig_value in pairs(orig) do
-			copy[_deepCopy(orig_key, includeMetatable, already_seen)] = _deepCopy(orig_value, includeMetatable, already_seen)
-		end
-		already_seen[orig] = copy
-
-		if includeMetatable then
-			local mt = getmetatable(orig)
-			if mt ~= nil then
-				local mt_copy = _deepCopy(mt, includeMetatable, already_seen)
-				setmetatable(copy, mt_copy)
-				already_seen[mt] = mt_copy
-			end
-		end
-	else -- number, string, boolean, etc
-		copy = orig
+	
+	copy = {}
+	already_seen[orig] = copy -- memoize before any recursion, to avoid infinite loops
+	
+	for orig_key, orig_value in pairs(orig) do
+		copy[_deepCopy(orig_key, includeMetatable, already_seen)] = _deepCopy(orig_value, includeMetatable, already_seen)
 	end
+	
+	if includeMetatable then
+		local mt = getmetatable(orig)
+		if mt ~= nil then
+			setmetatable(copy, _deepCopy(mt, true, already_seen))
+		end
+	end
+	
 	return copy
 end
 
 function p.deepCopy(orig, noMetatable, already_seen)
 	checkType("deepCopy", 3, already_seen, "table", true)
-	return _deepCopy(orig, not noMetatable, already_seen)
+	return _deepCopy(orig, not noMetatable, already_seen or {})
 end
 
 ------------------------------------------------------------------------------------
@@ -463,18 +459,66 @@ end
 ------------------------------------------------------------------------------------
 -- inArray
 --
--- Returns true if valueToFind is a member of the array, and false otherwise.
+-- Returns true if searchElement is a member of the array, and false otherwise.
+-- Equivalent to JavaScript array.includes(searchElement) or
+-- array.includes(searchElement, fromIndex), except fromIndex is 1 indexed
 ------------------------------------------------------------------------------------
-function p.inArray(arr, valueToFind)
-	checkType("inArray", 1, arr, "table")
-	-- if valueToFind is nil, error?
+function p.inArray(array, searchElement, fromIndex)
+	checkType("inArray", 1, array, "table")
+	-- if searchElement is nil, error?
 
-	for _, v in ipairs(arr) do
-		if v == valueToFind then
-			return true
+	fromIndex = tonumber(fromIndex)
+	if fromIndex then
+		if (fromIndex < 0) then
+			fromIndex = #array + fromIndex + 1
+		end
+		if fromIndex < 1 then fromIndex = 1 end
+		for _, v in ipairs({unpack(array, fromIndex)}) do
+			if v == searchElement then
+				return true
+			end
+		end
+	else
+		for _, v in pairs(array) do
+			if v == searchElement then
+				return true
+			end
 		end
 	end
 	return false
+end
+
+------------------------------------------------------------------------------------
+-- merge
+--
+-- Given the arrays, returns an array containing the elements of each input array
+-- in sequence.
+------------------------------------------------------------------------------------
+function p.merge(...)
+	local arrays = {...}
+	local ret = {}
+	for i, arr in ipairs(arrays) do
+		checkType('merge', i, arr, 'table')
+		for _, v in ipairs(arr) do
+			ret[#ret + 1] = v
+		end
+	end
+	return ret
+end
+
+------------------------------------------------------------------------------------
+-- extend
+--
+-- Extends the first array in place by appending all elements from the second
+-- array.
+------------------------------------------------------------------------------------
+function p.extend(arr1, arr2)
+	checkType('extend', 1, arr1, 'table')
+	checkType('extend', 2, arr2, 'table')
+
+	for _, v in ipairs(arr2) do
+		arr1[#arr1 + 1] = v
+	end
 end
 
 return p
