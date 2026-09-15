@@ -1,0 +1,30 @@
+local cfg = {}
+
+cfg['subpage_blacklist'] = {
+	['doc'] = true,
+	['sandbox'] = true,
+	['sandbox2'] = true,
+	['testcases'] = true,
+}
+
+cfg['sandbox_title'] = 'sandbox'
+
+cfg['error_category'] = 'Uses TemplateStyles templates with errors'
+
+cfg['default_category'] = 'Templates using TemplateStyles'
+
+cfg['protection_conflict_category'] = 'Templates using TemplateStyles with a different protection level'
+ 
+cfg['protection_hierarchy']  = {
+	autoconfirmed = 1,
+	extendedconfirmed = 2,
+	templateeditor = 3,
+	sysop = 4
+}
+
+cfg['padlock_pattern'] = '{{pp-'
+
+cfg['missing_padlock_category'] = 'Templates using TemplateStyles without padlocks'
+
+cfg['default_subpage_name'] = 'styles.css'
+return cfg
