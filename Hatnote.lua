@@ -206,11 +206,14 @@ function p._hatnote(s, options)
 	if selfref then
 		classes[#classes + 1] = 'selfref'
 	end
-	return string.format(
-		'<div class="%s">%s</div>',
-		table.concat(classes, ' '),
-		s
-	)
+	return mw.getCurrentFrame():extensionTag{
+	name = 'templatestyles',
+	args = { src = 'Модул:Hatnote/styles.css' }
+} .. string.format(
+	'<div class="%s">%s</div>',
+	table.concat(classes, ' '),
+	s
+)
 end
 
 return p
