@@ -14,6 +14,10 @@ div.hatnote {
 	font-style: normal;
 }
 
+.redirect-hatnote {
+	border-bottom: 1px solid #aaa;
+}
+
 /* The templatestyles element inserts a link element before hatnotes.
  * TODO: Remove link if/when WMF resolves T200206 */
 .hatnote + link + .hatnote {
