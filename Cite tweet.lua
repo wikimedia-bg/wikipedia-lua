@@ -34,13 +34,13 @@ p[''] = function(frame)
 	if _if(args.last1 or args.last) then
 		cite_args.author = (args.last1 or args.last) ..
 			(_if(args.first1 or args.first) and (', ' .. (args.first1 or args.first)) or '') ..
-			' [@' .. (args.user or '') .. ']'
+			' [{{@}}' .. (args.user or '') .. ']'
 	elseif _if(args.author1 or args.author) then
-		cite_args.author = (args.author1 or args.author) .. ' [@' .. (args.user or '') .. ']'
+		cite_args.author = (args.author1 or args.author) .. ' [{{@}}' .. (args.user or '') .. ']'
 	elseif _if(args['author-link']) then
-		cite_args.author = args['author-link'] .. ' [@' .. (args.user or '') .. ']'
+		cite_args.author = args['author-link'] .. ' [{{@}}' .. (args.user or '') .. ']'
 	else
-		cite_args.author = '@' .. (args.user or '')
+		cite_args.author = '{{@}}' .. (args.user or '')
 	end
 	cite_args.date = args.date or (_if(args.number) and TwitterSnowflake.snowflakeToDate{ args = {id_str = args.number} })
 	
