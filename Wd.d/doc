@@ -1,7 +1,10 @@
 {{Подстраница с документация}}
 <!-- МОЛЯ ДОБАВЯЙТЕ КАТЕГОРИИТЕ В КРАЯ НА ТАЗИ СТРАНИЦА, А МЕЖДУУИКИ ВРЪЗКИТЕ – В УИКИДАННИ -->
 
-{{ombox|text=You might want to use one of the user-friendly wrapper templates {{t|Wikidata}} and {{t|WikidataOI}} instead of invoking this module directly.}}
+{{ombox
+| type      = notice
+| text      = Може би ще предпочетете да използвате някой от удобните за потребителя шаблони като {{tl|Wikidata}} и {{tl|WikidataOI}}, вместо да извиквате този модул директно.
+}}
 {{Wd/doc|prename=<nowiki/>#invoke:|prename_code=#invoke:|section==== Main class ===
 <table class="wikitable">
 <tr>
