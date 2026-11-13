@@ -916,8 +916,14 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				return datavalue
 			end
 		elseif datatype == 'monolingualtext' then
-			if anyLang or self.explicitLang then
-				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'])
+			if self.explicitLang then
+				if datavalue['language'] == self.langCode then
+					return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'])
+				else
+					return nil
+				end
+			elseif anyLang then
+				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'], self.langCode)
 			elseif datavalue['language'] == self.langCode then
 				return datavalue['text']
 			else
