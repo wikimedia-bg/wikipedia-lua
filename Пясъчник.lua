@@ -179,6 +179,20 @@ function Config.new()
 	return cfg
 end
 
+function Config:setLanguage(args)
+	local lang = args[p.args.lang]
+
+	if lang and lang ~= "" then
+		lang = mw.text.trim(lang):lower()
+
+		if mw.language.isValidCode(lang) then
+			self.langCode = lang
+			self.langObj = mw.language.new(lang)
+			self.explicitLang = true
+		end
+	end
+end
+
 local State = {}
 State.__index = State
 
@@ -901,7 +915,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				return datavalue
 			end
 		elseif datatype == 'monolingualtext' then
-			if anyLang then
+			if anyLang or (self.explicitLang and self.langCode ~= 'bg') then
 				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'], self.langCode)
 			elseif datavalue['language'] == self.langCode then
 				return datavalue['text']
@@ -1628,7 +1642,9 @@ function Config:processFlag(flag)
 		self.curState.shortName = true
 		return true
 	elseif flag == p.flags.multilanguage then
-		self.curState.anyLanguage = true
+		if not self.explicitLang then
+			self.curState.anyLanguage = true
+		end
 		return true
 	elseif flag == p.flags.unit then
 		self.curState.unitOnly = true
@@ -2257,6 +2273,7 @@ end
 
 function claimCommand(args, funcName)
 	local _ = Config.new()
+	_:setLanguage(args)
 	_:processFlagOrCommand(funcName)  -- process first command (== function name)
 	
 	local lastArg, parsedFormat, formatParams, claims, value
@@ -2460,6 +2477,7 @@ end
 
 function generalCommand(args, funcName)
 	local _ = Config.new()
+	_:setLanguage(args)
 	_.curState = State.new(_)
 	
 	local lastArg
