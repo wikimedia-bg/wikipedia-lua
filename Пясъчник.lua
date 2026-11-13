@@ -2,10 +2,10 @@
 
 local p = {}
 --local arg = ...
---local i18n
+local i18n
 
---[[function loadSubmodules(frame)
-	local title
+function loadSubmodules(frame)
+	--[[local title
 	
 	if frame then
 		-- current module invoked by page/template, get its title from frame
@@ -15,9 +15,9 @@ local p = {}
 		title = arg
 	end ]]--
 	
-	local i18n = require("Модул:Wd/i18n")
+	i18n = require("Модул:Wd/i18n")
 	p.aliasesP = p.aliasesP or mw.loadData("Модул:Wd/aliasesP")
---end
+end
 
 p.claimCommands = {
 	property   = "property",
