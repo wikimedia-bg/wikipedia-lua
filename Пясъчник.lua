@@ -164,8 +164,9 @@ function Config.new()
 	cfg.inSitelinks = false
 	
 	cfg.tracking = false
-	
-	cfg.langCode = mw.language.getContentLanguage().code
+
+	cfg.homeWikiLangCode = mw.language.getContentLanguage().code
+	cfg.langCode = cfg.homeWikiLangCode
 	cfg.langName = mw.language.fetchLanguageName(cfg.langCode, cfg.langCode)
 	cfg.langObj = mw.language.new(cfg.langCode)
 	
@@ -186,8 +187,13 @@ function Config:setLanguage(args)
 	if lang and lang ~= "" then
 		lang = mw.text.trim(lang):lower()
 
+		if lang == self.homeWikiLangCode then
+			return nil
+		end
+
 		if mw.language.isValidCode(lang) then
 			self.langCode = lang
+			self.langName = mw.language.fetchLanguageName(lang, lang)
 			self.langObj = mw.language.new(lang)
 			self.explicitLang = true
 		end
@@ -689,7 +695,7 @@ function Config:getLabel(id, raw, link, short)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, self.langCode)
+			label = mw.wikibase.getLabelByLang(id, self.homeWikiLangCode) or mw.wikibase.getLabelByLang(id, self.langCode)
 		end
 	end
 	
