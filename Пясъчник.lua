@@ -63,7 +63,8 @@ p.flags = {
 
 p.args = {
 	eid  = "eid",
-	date = "date"
+	date = "date",
+	lang = "lang"
 }
 
 local aliasesQ = {
