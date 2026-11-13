@@ -689,7 +689,7 @@ function Config:getLabel(id, raw, link, short)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, self.langCode) or mw.wikibase.getLabelByLang(id, 'mul')
+			label = mw.wikibase.getLabelByLang(id, self.langCode)
 		end
 	end
 	
