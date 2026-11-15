@@ -744,8 +744,12 @@ function Config:getUnitSymbol(id, raw, link, short)
 	
 	-- otherwise try unit symbol
 	if not symbol or symbol == '' then
-		-- get unit symbol in local language/multilanguage
-		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id, [p.args.lang] = 'mul'})
+		-- get unit symbol in local language
+		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id})
+		if symbol == '' then
+			-- try multilanguage text unit symbol
+			symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id, [p.args.lang] = 'mul'})
+		end
 	end
 	
 	if symbol == "" then
