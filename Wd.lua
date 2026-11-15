@@ -63,7 +63,8 @@ p.flags = {
 
 p.args = {
 	eid  = "eid",
-	date = "date"
+	date = "date",
+	lang = "lang"
 }
 
 local aliasesQ = {
@@ -163,8 +164,9 @@ function Config.new()
 	cfg.inSitelinks = false
 	
 	cfg.tracking = false
-	
-	cfg.langCode = mw.language.getContentLanguage().code
+
+	cfg.initialLangCode = mw.language.getContentLanguage().code
+	cfg.langCode = cfg.initialLangCode
 	cfg.langName = mw.language.fetchLanguageName(cfg.langCode, cfg.langCode)
 	cfg.langObj = mw.language.new(cfg.langCode)
 	
@@ -177,6 +179,23 @@ function Config.new()
 	cfg.prefetchedRefs = nil
 	
 	return cfg
+end
+
+function Config:setLanguage(args)
+	local lang = args[p.args.lang]
+
+	if lang and lang ~= "" then
+		lang = mw.text.trim(lang):lower()
+
+		if lang == self.initialLangCode then
+			return nil
+		end
+
+		if mw.language.isValidCode(lang) then
+			self.langCode = lang
+			self.explicitLang = true
+		end
+	end
 end
 
 local State = {}
@@ -634,7 +653,7 @@ function sortOnRank(claims, specialFlags)
 end
 
 -- if id == nil then item connected to current page is used
-function Config:getLabel(id, raw, link, short)
+function Config:getLabel(id, raw, link, short, anyLanguage)
 	local label = nil
 	local title = nil
 	local prefix= ""
@@ -674,7 +693,9 @@ function Config:getLabel(id, raw, link, short)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, self.langCode) or mw.wikibase.getLabelByLang(id, 'mul')
+			label = mw.wikibase.getLabelByLang(id, self.initialLangCode)
+					or (anyLanguage and mw.wikibase.getLabelByLang(id, 'mul'))
+					or mw.wikibase.getLabelByLang(id, self.langCode)
 		end
 	end
 	
@@ -723,11 +744,8 @@ function Config:getUnitSymbol(id, raw, link, short)
 	
 	-- otherwise try unit symbol
 	if not symbol or symbol == '' then
-		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id}) -- get unit symbol in local language
-		if symbol == '' then
-			local mul = p._properties({p.flags.multilanguage, p.aliasesP.unitSymbol, [p.args.eid] = id})
-			symbol = mw.ustring.match(mul, '<span[^<>]-lang="mul"[^<>]*>(.-)</span>') -- get multilanguage unit symbol
-		end
+		-- get unit symbol in local language/multilanguage
+		symbol = p._property({p.aliasesP.unitSymbol, [p.args.eid] = id, [p.args.lang] = 'mul'})
 	end
 	
 	if symbol == "" then
@@ -784,7 +802,7 @@ function Config:getEditIcon()
 		back = '</span>'
 	end
 	
-	value = "[[File:OOjs UI icon edit-ltr-progressive.svg|frameless|text-top|10px|alt=" .. i18n['info']['edit-on-wikidata'] .. "|link=https://www.wikidata.org/wiki/" .. prefix .. self.entityID .. "?uselang=" .. self.langCode
+	value = "[[File:OOjs UI icon edit-ltr-progressive.svg|frameless|text-top|10px|alt=" .. i18n['info']['edit-on-wikidata'] .. "|link=https://www.wikidata.org/wiki/" .. prefix .. self.entityID .. "?uselang=" .. self.initialLangCode
 	
 	if self.propertyID then
 		value = value .. "#" .. self.propertyID
@@ -861,7 +879,7 @@ function Config:convertUnit(unit, raw, link, short, unitOnly)
 	return ""
 end
 
-function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, unitOnly, noSpecial)
+function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLanguage, unitOnly, noSpecial)
 	if snak.snaktype == 'value' then
 		local datatype = snak.datavalue.type
 		local subtype = snak.datatype
@@ -901,7 +919,13 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				return datavalue
 			end
 		elseif datatype == 'monolingualtext' then
-			if anyLang then
+			if self.explicitLang then
+				if datavalue['language'] == self.langCode then
+					return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'])
+				else
+					return nil
+				end
+			elseif anyLanguage then
 				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'], self.langCode)
 			elseif datavalue['language'] == self.langCode then
 				return datavalue['text']
@@ -1375,7 +1399,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				latLink = table.concat({latDegrees, latMinutes, latSeconds}, "_")
 				lonLink = table.concat({lonDegrees, lonMinutes, lonSeconds}, "_")
 				
-				value = "[https://tools.wmflabs.org/geohack/geohack.php?language="..self.langCode.."&params="..latLink.."_"..latDirectionEN.."_"..lonLink.."_"..lonDirectionEN.."_globe:"..globe.." "..value.."]"
+				value = "[https://tools.wmflabs.org/geohack/geohack.php?language="..self.initialLangCode.."&params="..latLink.."_"..latDirectionEN.."_"..lonLink.."_"..lonDirectionEN.."_globe:"..globe.." "..value.."]"
 			end
 			
 			return value
@@ -1391,7 +1415,7 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLang, un
 				return '<strong class="error">' .. errorText('unknown-data-type', subtype) .. '</strong>'
 			end
 			
-			label = self:getLabel(itemID, raw, link, short)
+			label = self:getLabel(itemID, raw, link, short, anyLanguage)
 			
 			if label == "" then
 				self.tracking = true
@@ -1628,7 +1652,9 @@ function Config:processFlag(flag)
 		self.curState.shortName = true
 		return true
 	elseif flag == p.flags.multilanguage then
-		self.curState.anyLanguage = true
+		if not self.explicitLang then
+			self.curState.anyLanguage = true
+		end
 		return true
 	elseif flag == p.flags.unit then
 		self.curState.unitOnly = true
@@ -1925,7 +1951,7 @@ function State:getReference(statement)
 	
 	if statement.snaks then
 		-- don't include "language" if it is equal to the local one
-		if self:getReferenceDetail(statement.snaks, p.aliasesP.language) == self.conf.langName then
+		if self:getReferenceDetail(statement.snaks, p.aliasesP.language) == self.conf.initialLangCode then
 			statement.snaks[p.aliasesP.language] = nil
 		end
 		
@@ -1983,7 +2009,7 @@ function State:getReference(statement)
 				
 				-- multiple authors may be given
 				if i == p.aliasesP.author or i == p.aliasesP.authorNameString then
-					for _, author in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLang = true
+					for _, author in pairs(self:getReferenceDetails(statement.snaks, i, false, self.linked, true)) do -- link = true/false, anyLanguage = true
 						if text.trim(author or '') ~= '' then
 							authors[#authors + 1] = text.trim(author)
 						end
@@ -1991,7 +2017,7 @@ function State:getReference(statement)
 				elseif i == p.aliasesP.language then
 					val = p._property({self:getReferenceDetail(statement.snaks, i, true), 'P424'})
 				else
-					val = self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)  -- link = true/false, anyLang = true
+					val = self:getReferenceDetail(statement.snaks, i, false, (self.linked or (i == p.aliasesP.statedIn)) and (statement.snaks[i][1].datatype ~= 'url'), true)  -- link = true/false, anyLanguage = true
 				end
 				
 				if text.trim(val or '') ~= '' then
@@ -2052,36 +2078,36 @@ function State:getReference(statement)
 end
 
 -- gets a detail of one particular type for a reference
-function State:getReferenceDetail(snaks, dType, raw, link, anyLang)
-	local switchLang = anyLang
+function State:getReferenceDetail(snaks, dType, raw, link, anyLanguage)
+	local switchLang = anyLanguage
 	local value = nil
 	
 	if not snaks[dType] then
 		return nil
 	end
 	
-	-- if anyLang, first try the local language and otherwise any language
+	-- if anyLanguage, first try the local language and otherwise any language
 	repeat
 		for i, v in ipairs(snaks[dType]) do
-			value = self.conf:getValue(v, raw, link, false, anyLang and not switchLang, false, true)  -- noSpecial = true
+			value = self.conf:getValue(v, raw, link, false, anyLanguage and not switchLang, false, true)  -- noSpecial = true
 			
 			if value then
 				break
 			end
 		end
 		
-		if value or not anyLang then
+		if value or not anyLanguage then
 			break
 		end
 		
 		switchLang = not switchLang
-	until anyLang and switchLang
+	until anyLanguage and switchLang
 	
 	return value
 end
 
 -- gets the details of one particular type for a reference
-function State:getReferenceDetails(snaks, dType, raw, link, anyLang)
+function State:getReferenceDetails(snaks, dType, raw, link, anyLanguage)
 	local values = {}
 	
 	if not snaks[dType] then
@@ -2090,7 +2116,7 @@ function State:getReferenceDetails(snaks, dType, raw, link, anyLang)
 	
 	for i, v in ipairs(snaks[dType]) do
 		-- if nil is returned then it will not be added to the table
-		values[#values + 1] = self.conf:getValue(v, raw, link, false, anyLang, false, true)  -- noSpecial = true
+		values[#values + 1] = self.conf:getValue(v, raw, link, false, anyLanguage, false, true)  -- noSpecial = true
 	end
 	
 	return values
@@ -2124,7 +2150,7 @@ end
 
 -- level 1 hook
 function State:getBadge(value)
-	value = self.conf:getLabel(value, self.rawValue, self.linked, self.shortName)
+	value = self.conf:getLabel(value, self.rawValue, self.linked, self.shortName, self.anyLanguage)
 	
 	if value == "" then
 		value = nil
@@ -2257,6 +2283,7 @@ end
 
 function claimCommand(args, funcName)
 	local _ = Config.new()
+	_:setLanguage(args)
 	_:processFlagOrCommand(funcName)  -- process first command (== function name)
 	
 	local lastArg, parsedFormat, formatParams, claims, value
@@ -2460,6 +2487,7 @@ end
 
 function generalCommand(args, funcName)
 	local _ = Config.new()
+	_:setLanguage(args)
 	_.curState = State.new(_)
 	
 	local lastArg
@@ -2487,7 +2515,7 @@ function generalCommand(args, funcName)
 	
 	-- serve according to the given command
 	if funcName == p.generalCommands.label then
-		value = _:getLabel(_.entityID, _.curState.rawValue, _.curState.linked, _.curState.shortName)
+		value = _:getLabel(_.entityID, _.curState.rawValue, _.curState.linked, _.curState.shortName, _.curState.anyLanguage)
 	elseif funcName == p.generalCommands.title then
 		_.inSitelinks = true
 		
@@ -2501,8 +2529,12 @@ function generalCommand(args, funcName)
 	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 		
-		if _.entity and _.entity.descriptions and _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
-			value = _.entity.descriptions[_.langCode].value
+		if _.entity and _.entity.descriptions then 
+			if _.entity.descriptions[_.langCode] then
+				value = _.entity.descriptions[_.langCode].value
+			elseif _.curState.anyLanguage and _.entity.descriptions['mul'] then
+				value = _.entity.descriptions['mul'].value
+			end
 		end
 	else
 		local parsedFormat, formatParams
@@ -2519,11 +2551,14 @@ function generalCommand(args, funcName)
 		end
 		
 		if funcName == p.generalCommands.alias or funcName == p.generalCommands.aliases then
-			if not _.entity.aliases or not _.entity.aliases[_.langCode] then
-				return ""  -- there is no use to continue without any aliasses
+			local aliases
+			if _.entity.aliases and (_.entity.aliases[_.langCode] or (_.curState.anyLanguage and _.entity.aliases['mul'])) then
+				aliases = _.entity.aliases[_.langCode] or _.entity.aliases['mul']
 			end
 			
-			local aliases = _.entity.aliases[_.langCode]
+			if not aliases then
+				return ""  -- there is no use to continue without any aliasses
+			end	
 			
 			-- parse the desired format, or parse the default aliases format
 			if args["format"] then
