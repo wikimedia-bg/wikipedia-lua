@@ -2533,12 +2533,8 @@ function generalCommand(args, funcName)
 	elseif funcName == p.generalCommands.description then
 		_.entity = mw.wikibase.getEntity(_.entityID)
 		
-		if _.entity and _.entity.descriptions then 
-			if _.entity.descriptions[_.langCode] then
-				value = _.entity.descriptions[_.langCode].value
-			elseif _.curState.anyLanguage and _.entity.descriptions['mul'] then
-				value = _.entity.descriptions['mul'].value
-			end
+		if _.entity and _.entity.descriptions and _.entity.descriptions[_.langCode] and _.entity.descriptions[_.langCode].language == _.langCode then
+			value = _.entity.descriptions[_.langCode].value
 		end
 	else
 		local parsedFormat, formatParams
