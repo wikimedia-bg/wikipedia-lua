@@ -693,9 +693,7 @@ function Config:getLabel(id, raw, link, short, anyLanguage)
 		
 		-- get label
 		if not label then
-			label = mw.wikibase.getLabelByLang(id, self.initialLangCode)
-					or (anyLanguage and mw.wikibase.getLabelByLang(id, 'mul'))
-					or mw.wikibase.getLabelByLang(id, self.langCode)
+			label = mw.wikibase.getLabelByLang(id, self.langCode) or anyLanguage and mw.wikibase.getLabelByLang(id, 'mul')
 		end
 	end
 	
@@ -923,12 +921,8 @@ function Config:getValue(snak, raw, link, lat_only, lon_only, short, anyLanguage
 				return datavalue
 			end
 		elseif datatype == 'monolingualtext' then
-			if self.explicitLang then
-				if datavalue['language'] == self.langCode then
-					return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'])
-				else
-					return nil
-				end
+			if self.explicitLang and datavalue['language'] == self.langCode then
+				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'])
 			elseif anyLanguage then
 				return i18n.formatMultilanguageText(datavalue['text'], datavalue['language'], self.langCode)
 			elseif datavalue['language'] == self.langCode then
