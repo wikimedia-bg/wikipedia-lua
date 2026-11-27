@@ -526,4 +526,20 @@ function str.join( frame )
     return result;
 end
 
+function str.strip_tags(frame)
+	local result = frame.args[1] or ''
+	local count1, count2
+	-- Note: MediaWiki often converts <ref> and <nowiki> into strip markers 
+	-- before passing arguments to Lua mw.text.killMarkers removes those
+	result = mw.text.killMarkers(result)
+
+	repeat
+		-- match self-closing and normal tags in the string and remove them
+		result, count1 = mw.ustring.gsub(result, '<%f[%w]%w+%f[%W][^<>]*/>', '')
+		result, count2 = mw.ustring.gsub(result, '<%f[%w](%w+)%f[%W][^<>]*>.-</%1%s*>', '')
+	until (count1 + count2) > 0
+
+	return result
+end
+
 return str
