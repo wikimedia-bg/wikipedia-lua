@@ -537,7 +537,7 @@ function str.strip_tags(frame)
 		-- match self-closing and normal tags in the string and remove them
 		result, count1 = mw.ustring.gsub(result, '<%f[%w]%w+%f[%W][^<>]*/>', '')
 		result, count2 = mw.ustring.gsub(result, '<%f[%w](%w+)%f[%W][^<>]*>.-</%1%s*>', '')
-	until (count1 + count2) > 0
+	until (count1 + count2) == 0
 
 	return result
 end
