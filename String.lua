@@ -538,7 +538,7 @@ function str.strip_tags(frame)
 		result, count[1] = mw.ustring.gsub(result, '<%f[%w]%w+%f[%W][^<>]*/>', '')
 		result, count[2] = mw.ustring.gsub(result, '<%f[%w](%w+)%f[%W][^<>]*>.-</%1%s*>', '')
 		-- remove strip markers
-		result, count[3] = mw.ustring.gsub(result, '\127' .. "'" .. '"`[Uq][Nn][Ii][Qq].-[Qq][Ii][Nn][Uu]`"' .. "'" .. '\127', '')
+		result, count[3] = mw.ustring.gsub(result, '\127\'"`[Uq][Nn][Ii][Qq].-[Qq][Ii][Nn][Uu]`"\'\127', '')
 	until (count[1] + count[2] + count[3]) == 0
 
 	return result
